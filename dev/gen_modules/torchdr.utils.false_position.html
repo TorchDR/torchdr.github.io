@@ -92,7 +92,7 @@
 <h1>torchdr.utils.false_position<a class="headerlink" href="#torchdr-utils-false-position" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="torchdr.utils.false_position">
-<span class="sig-prename descclassname"><span class="pre">torchdr.utils.</span></span><span class="sig-name descname"><span class="pre">false_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">begin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-09</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/utils/root_finding.html#false_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.utils.false_position" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchdr.utils.</span></span><span class="sig-name descname"><span class="pre">false_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">begin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-09</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">torch.float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/utils/optim.html#false_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.utils.false_position" title="Link to this definition"></a></dt>
 <dd><p>Performs a batched false position method to find the root
 of an increasing function f.</p>
 <dl class="field-list">
@@ -102,9 +102,9 @@ of an increasing function f.</p>
 </dd>
 <dt><strong>n</strong><span class="classifier">int</span></dt><dd><p>size of the input of f.</p>
 </dd>
-<dt><strong>begin</strong><span class="classifier">torch.Tensor of shape (n) or float, optional</span></dt><dd><p>initial lower bound of the root.</p>
+<dt><strong>begin</strong><span class="classifier">tensor of shape (n) or float, optional</span></dt><dd><p>initial lower bound of the root.</p>
 </dd>
-<dt><strong>end</strong><span class="classifier">torch.Tensor of shape (n) or float, optional</span></dt><dd><p>initial upper bound of the root.</p>
+<dt><strong>end</strong><span class="classifier">tensor of shape (n) or float, optional</span></dt><dd><p>initial upper bound of the root.</p>
 </dd>
 <dt><strong>max_iter</strong><span class="classifier">int, optional</span></dt><dd><p>maximum iterations of search.</p>
 </dd>
@@ -112,11 +112,13 @@ of an increasing function f.</p>
 </dd>
 <dt><strong>verbose</strong><span class="classifier">bool, optional</span></dt><dd><p>if True, prints current bounds.</p>
 </dd>
+<dt><strong>dtype</strong><span class="classifier">torch.dtype, optional</span></dt><dd><p>data type of the input.</p>
+</dd>
 </dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>m</strong><span class="classifier">torch.Tensor of shape (n)</span></dt><dd><p>root of f.</p>
+<dt><strong>m</strong><span class="classifier">tensor of shape (n)</span></dt><dd><p>root of f.</p>
 </dd>
 </dl>
 </dd>

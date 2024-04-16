@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>torchdr.affinity._entropic &mdash; TorchDR 0.0.0-alpha documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=8e37ee27"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            TorchDR
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">Welcome to TorchDR’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../all.html">API and modules</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">TorchDR</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">torchdr.affinity._entropic</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for torchdr.affinity._entropic</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Entropic projections to construct (entropic) affinity matrices</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Author: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
+<span class="c1">#         Titouan Vayer &lt;titouan.vayer@inria.fr&gt;</span>
+<span class="c1">#         Rémi Flamary &lt;remi.flamary@polytechnique.edu&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD 3-Clause License</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="kn">from</span> <span class="nn">torchdr.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">false_position</span><span class="p">,</span>
+    <span class="n">pairwise_distances</span><span class="p">,</span>
+    <span class="n">wrap_vectors</span><span class="p">,</span>
+    <span class="n">sum_matrix_vector</span><span class="p">,</span>
+    <span class="n">kmin</span><span class="p">,</span>
+    <span class="n">kmax</span><span class="p">,</span>
+    <span class="n">check_NaNs</span><span class="p">,</span>
+    <span class="n">OPTIMIZERS</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">torchdr.affinity._base</span> <span class="kn">import</span> <span class="n">LogAffinity</span>
+
+
+<span class="k">def</span> <span class="nf">entropy</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the entropy of P along axis dim.</span>
+<span class="sd">    Supports log domain input.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
+        <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="n">P</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="n">P</span> <span class="o">*</span> <span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">log</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+
+
+<span class="nd">@wrap_vectors</span>
+<span class="k">def</span> <span class="nf">log_Pe</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">eps</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the log of the directed entropic affinity matrix</span>
+<span class="sd">    with prescribed kernel bandwidth epsilon.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">log_P</span> <span class="o">=</span> <span class="o">-</span><span class="n">C</span> <span class="o">/</span> <span class="n">eps</span>
+    <span class="k">return</span> <span class="n">log_P</span> <span class="o">-</span> <span class="n">log_P</span><span class="o">.</span><span class="n">logsumexp</span><span class="p">(</span><span class="mi">1</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">]</span>
+
+
+<span class="nd">@wrap_vectors</span>
+<span class="k">def</span> <span class="nf">log_Pse</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">eps_square</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the log of the symmetric entropic affinity matrix</span>
+<span class="sd">    with given (dual) variables epsilon and mu.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">eps_square</span><span class="p">:</span>
+        <span class="n">eps</span> <span class="o">=</span> <span class="n">eps</span><span class="o">**</span><span class="mi">2</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">mu</span> <span class="o">+</span> <span class="n">mu</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">C</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">eps</span> <span class="o">+</span> <span class="n">eps</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+
+<span class="nd">@wrap_vectors</span>
+<span class="k">def</span> <span class="nf">log_Pds</span><span class="p">(</span><span class="n">log_K</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the log of the doubly stochastic normalization of log_K (in log domain)</span>
+<span class="sd">    given a scaling vector f which can be computed via the Sinkhorn iterations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">f</span> <span class="o">+</span> <span class="n">f</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">log_K</span>
+
+
+<span class="k">def</span> <span class="nf">bounds_entropic_affinity</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">perplexity</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the bounds derived in [4]_ for the entropic affinity root.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    C : tensor or lazy tensor of shape (n_samples, n_samples)</span>
+<span class="sd">        Distance matrix between the samples.</span>
+<span class="sd">    perplexity : float</span>
+<span class="sd">        Perplexity parameter, related to the number of &#39;effective&#39; nearest neighbors.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    begin : tensor of shape (n_samples)</span>
+<span class="sd">        Lower bound of the root.</span>
+<span class="sd">    end : tensor of shape (n_samples)</span>
+<span class="sd">        Upper bound of the root.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [4]  Max Vladymyrov, Miguel A. Carreira-Perpinan (2013).</span>
+<span class="sd">            Entropic Affinities: Properties and Efficient Numerical Computation.</span>
+<span class="sd">            International Conference on Machine Learning (ICML).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># we use the same notations as in [4] for clarity purposes</span>
+
+    <span class="c1"># solve a unique 1D root finding problem</span>
+    <span class="k">def</span> <span class="nf">find_p1</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">N</span><span class="p">),</span> <span class="n">perplexity</span><span class="p">]))</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
+            <span class="n">N</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x</span><span class="p">))</span>
+        <span class="p">)</span>
+
+    <span class="n">begin</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">/</span> <span class="mi">4</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="mf">1e-6</span>
+    <span class="n">p1</span> <span class="o">=</span> <span class="n">false_position</span><span class="p">(</span>
+        <span class="n">f</span><span class="o">=</span><span class="n">find_p1</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">begin</span><span class="o">=</span><span class="n">begin</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+    <span class="c1"># retrieve greatest and smallest pairwise distances</span>
+    <span class="n">dN</span> <span class="o">=</span> <span class="n">kmax</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">d12</span> <span class="o">=</span> <span class="n">kmin</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">d1</span> <span class="o">=</span> <span class="n">d12</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">d2</span> <span class="o">=</span> <span class="n">d12</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">Delta_N</span> <span class="o">=</span> <span class="n">dN</span> <span class="o">-</span> <span class="n">d1</span>
+    <span class="n">Delta_2</span> <span class="o">=</span> <span class="n">d2</span> <span class="o">-</span> <span class="n">d1</span>
+
+    <span class="c1"># compute bounds derived in [4]</span>
+    <span class="n">beta_L</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">N</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">N</span> <span class="o">/</span> <span class="n">perplexity</span><span class="p">))</span> <span class="o">/</span> <span class="p">((</span><span class="n">N</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">Delta_N</span><span class="p">),</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">N</span> <span class="o">/</span> <span class="n">perplexity</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">dN</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">d1</span><span class="o">**</span><span class="mi">2</span><span class="p">)),</span>
+    <span class="p">)</span>
+    <span class="n">beta_U</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">Delta_2</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">((</span><span class="n">N</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">p1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p1</span><span class="p">))</span>
+
+    <span class="c1"># convert to our notations</span>
+    <span class="n">begin</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">beta_U</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">beta_L</span>
+
+    <span class="k">return</span> <span class="n">begin</span><span class="p">,</span> <span class="n">end</span>
+
+
+<div class="viewcode-block" id="EntropicAffinity">
+<a class="viewcode-back" href="../../../gen_modules/torchdr.affinity.EntropicAffinity.html#torchdr.affinity.EntropicAffinity">[docs]</a>
+<span class="k">class</span> <span class="nc">EntropicAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Solves the directed entropic affinity problem introduced in [1]_.</span>
+<span class="sd">    Corresponds to the matrix :math:`\mathbf{P}^{\mathrm{e}}` in [3]_, solving the convex optimization problem</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \mathbf{P}^{\mathrm{e}} \in \mathop{\arg\min}_{\mathbf{P} \in \mathbb{R}_+^{n \times n}} \: &amp;\langle \mathbf{C}, \mathbf{P} \rangle \\</span>
+<span class="sd">        \text{s.t.} \quad  &amp;\mathbf{P} \mathbf{1} = \mathbf{1} \\</span>
+<span class="sd">                            &amp;\forall i, \: \mathrm{h}(\mathbf{P}_{i:}) \geq \log (\xi) + 1 \:.</span>
+
+<span class="sd">    where :</span>
+
+<span class="sd">    - :math:`\mathbf{C}`: symmetric pairwise distance matrix between the samples.</span>
+<span class="sd">    - :math:`\xi`: perplexity parameter.</span>
+<span class="sd">    - :math:`\mathrm{h}`: (row-wise) Shannon entropy such that :math:`\mathrm{h}(\mathbf{p}) = - \sum_{i} p_{i} (\log p_{i} - 1)`.</span>
+<span class="sd">    - :math:`\mathbf{1} := (1,...,1)^\top`: all-ones vector.</span>
+
+<span class="sd">    The entropic affinity matrix is akin to a **soft** :math:`k` **-NN affinity**, with the perplexity parameter :math:`\xi` acting as :math:`k`. Each point distributes a unit mass among its closest neighbors to minimize a transport cost given by :math:`\mathbf{C}`.</span>
+
+<span class="sd">    The entropic constraint is saturated at the optimum and governs mass spread. With small :math:`\xi`, mass concentrates on a few neighbors; with large :math:`\xi`, it spreads across more neighbors thus capturing larger scales of dependencies.</span>
+
+<span class="sd">    The algorithm computes the optimal dual variable :math:`\mathbf{\varepsilon}^* \in \mathbb{R}^n_{&gt;0}` such that</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \forall i, \: \mathrm{h}(\mathbf{P}^{\mathrm{e}}_{i:}) = \log (\xi) + 1 \quad \text{where} \quad \forall (i,j), \: P^{\mathrm{e}}_{ij} = \frac{\exp(- C_{ij} / \varepsilon_i^\star)}{\sum_{\ell} \exp(- C_{i\ell} / \varepsilon_i^\star)}   \:.</span>
+
+<span class="sd">    :math:`\mathbf{\varepsilon}^*` is computed by performing one dimensional searches since rows of :math:`\mathbf{P}^{\mathrm{e}}` are independent subproblems.</span>
+
+<span class="sd">    .. note:: Symmetric versions are also available. For the affinity matrix of t-SNE [2]_, use :class:`~torchdr.affinity.L2SymmetricEntropicAffinity`. For the affinity matrix of SNEkhorn/t-SNEkhorn [3]_, use :class:`~torchdr.affinity.SymmetricEntropicAffinity`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    perplexity : float</span>
+<span class="sd">        Perplexity parameter, related to the number of &#39;effective&#39; nearest neighbors.</span>
+<span class="sd">        Consider selecting a value between 2 and the number of samples.</span>
+<span class="sd">    tol : float, optional</span>
+<span class="sd">        Precision threshold at which the root finding algorithm stops.</span>
+<span class="sd">    metric : str, optional</span>
+<span class="sd">        Metric to use for computing distances (default &quot;euclidean&quot;).</span>
+<span class="sd">    max_iter : int, optional</span>
+<span class="sd">        Number of maximum iterations for the root finding algorithm.</span>
+<span class="sd">    verbose : bool, optional</span>
+<span class="sd">        Verbosity.</span>
+<span class="sd">    keops : bool, optional</span>
+<span class="sd">        Whether to use KeOps for computation.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1]  Geoffrey Hinton, Sam Roweis (2002).</span>
+<span class="sd">            Stochastic Neighbor Embedding.</span>
+<span class="sd">            Advances in neural information processing systems 15 (NeurIPS).</span>
+
+<span class="sd">    .. [2]  Laurens van der Maaten, Geoffrey Hinton (2008).</span>
+<span class="sd">            Visualizing Data using t-SNE.</span>
+<span class="sd">            The Journal of Machine Learning Research 9.11 (JMLR).</span>
+
+<span class="sd">    .. [3]  Hugues Van Assel, Titouan Vayer, Rémi Flamary, Nicolas Courty (2023).</span>
+<span class="sd">            SNEkhorn: Dimension Reduction with Symmetric Entropic Affinities.</span>
+<span class="sd">            Advances in Neural Information Processing Systems 36 (NeurIPS).</span>
+<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">perplexity</span><span class="p">,</span>
+        <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
+        <span class="n">tol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+        <span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">keops</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span> <span class="o">=</span> <span class="n">perplexity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metric</span> <span class="o">=</span> <span class="n">metric</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tol</span> <span class="o">=</span> <span class="n">tol</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">=</span> <span class="n">max_iter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keops</span> <span class="o">=</span> <span class="n">keops</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Solves the problem (EA) in [1]_ to compute the entropic affinity matrix in</span>
+<span class="sd">        log space (which is **not** symmetric).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : tensor of shape (n_samples, n_features)</span>
+<span class="sd">            Data on which affinity is computed.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self : EntropicAffinity</span>
+<span class="sd">            The fitted instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+        <span class="n">C</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span> <span class="n">keops</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">keops</span><span class="p">)</span>
+
+        <span class="n">target_entropy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;[TorchDR] Affinity : The perplexity parameter must be between &quot;</span>
+                <span class="s2">&quot;2 and number of samples.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">entropy_gap</span><span class="p">(</span><span class="n">eps</span><span class="p">):</span>  <span class="c1"># function to find the root of</span>
+            <span class="k">return</span> <span class="n">entropy</span><span class="p">(</span><span class="n">log_Pe</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">eps</span><span class="p">),</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-</span> <span class="n">target_entropy</span>
+
+        <span class="n">begin</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">bounds_entropic_affinity</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">eps_</span> <span class="o">=</span> <span class="n">false_position</span><span class="p">(</span>
+            <span class="n">f</span><span class="o">=</span><span class="n">entropy_gap</span><span class="p">,</span>
+            <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span>
+            <span class="n">begin</span><span class="o">=</span><span class="n">begin</span><span class="p">,</span>
+            <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span>
+            <span class="n">tol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tol</span><span class="p">,</span>
+            <span class="n">max_iter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_affinity_matrix_</span> <span class="o">=</span> <span class="n">log_Pe</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps_</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+
+<div class="viewcode-block" id="L2SymmetricEntropicAffinity">
+<a class="viewcode-back" href="../../../gen_modules/torchdr.affinity.L2SymmetricEntropicAffinity.html#torchdr.affinity.L2SymmetricEntropicAffinity">[docs]</a>
+<span class="k">class</span> <span class="nc">L2SymmetricEntropicAffinity</span><span class="p">(</span><span class="n">EntropicAffinity</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the L2-symmetrized entropic affinity matrix :math:`\overline{\mathbf{P}^{\mathrm{e}}}` of t-SNE [2]_.</span>
+
+<span class="sd">    From the :class:`~torchdr.affinity.EntropicAffinity` matrix :math:`\mathbf{P}^{\mathrm{e}}`, it is computed as</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \overline{\mathbf{P}^{\mathrm{e}}} = \frac{\mathbf{P}^{\mathrm{e}} + (\mathbf{P}^{\mathrm{e}})^\top}{2} \:.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    perplexity : float</span>
+<span class="sd">        Perplexity parameter, related to the number of &#39;effective&#39; nearest neighbors.</span>
+<span class="sd">        Consider selecting a value between 2 and the number of samples.</span>
+<span class="sd">    tol : float, optional</span>
+<span class="sd">        Precision threshold at which the root finding algorithm stops.</span>
+<span class="sd">    max_iter : int, optional</span>
+<span class="sd">        Number of maximum iterations for the root finding algorithm.</span>
+<span class="sd">    verbose : bool, optional</span>
+<span class="sd">        Verbosity.</span>
+<span class="sd">    keops : bool, optional</span>
+<span class="sd">        Whether to use KeOps for computation.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [2] Visualizing Data using t-SNE.</span>
+<span class="sd">        Laurens Van der Maaten, Geoffrey Hinton, JMLR 2008.</span>
+<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">perplexity</span><span class="p">,</span>
+        <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
+        <span class="n">tol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span>
+        <span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">keops</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">perplexity</span><span class="o">=</span><span class="n">perplexity</span><span class="p">,</span>
+            <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
+            <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span>
+            <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="n">keops</span><span class="o">=</span><span class="n">keops</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">log_P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_affinity_matrix_</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">affinity_matrix_</span> <span class="o">=</span> <span class="p">(</span><span class="n">log_P</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span> <span class="o">+</span> <span class="n">log_P</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_affinity_matrix_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_matrix_</span><span class="o">.</span><span class="n">log</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="SymmetricEntropicAffinity">
+<a class="viewcode-back" href="../../../gen_modules/torchdr.affinity.SymmetricEntropicAffinity.html#torchdr.affinity.SymmetricEntropicAffinity">[docs]</a>
+<span class="k">class</span> <span class="nc">SymmetricEntropicAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the solution :math:`\mathbf{P}^{\mathrm{se}}` to the symmetric entropic affinity problem (SEA) described in [3]_ with the dual ascent procedure.</span>
+<span class="sd">    It amounts to the following convex optimization problem:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \mathbf{P}^{\mathrm{se}} \in \mathop{\arg\min}_{\mathbf{P} \in \mathbb{R}_+^{n \times n}} \: &amp;\langle \mathbf{C}, \mathbf{P} \rangle \\</span>
+<span class="sd">        \text{s.t.} \quad  &amp;\mathbf{P} \mathbf{1} = \mathbf{1} \\</span>
+<span class="sd">                            &amp;\forall i, \: \mathrm{h}(\mathbf{P}_{i:}) \geq \log (\xi) + 1 \\</span>
+<span class="sd">                            &amp;\mathbf{P} = \mathbf{P}^\top \:.</span>
+
+<span class="sd">    where :</span>
+
+<span class="sd">    - :math:`\mathbf{C}`: symmetric pairwise distance matrix between the samples.</span>
+<span class="sd">    - :math:`\xi`: perplexity parameter.</span>
+<span class="sd">    - :math:`\mathrm{h}`: (row-wise) Shannon entropy such that :math:`\mathrm{h}(\mathbf{p}) = - \sum_{i} p_{i} (\log p_{i} - 1)`.</span>
+<span class="sd">    - :math:`\mathbf{1} := (1,...,1)^\top`: all-ones vector.</span>
+
+<span class="sd">    It is a symmetric version of :class:`~torchdr.affinity.EntropicAffinity`, where we simply added symmetry as a constraint in the optimization problem.</span>
+
+<span class="sd">    The algorithm computes the optimal dual variable :math:`\mathbf{\mu}^\star \in \mathbb{R}^n` and :math:`\mathbf{\varepsilon}^\star \in \mathbb{R}^n_{&gt;0}` using dual ascent. The affinity matrix is then given by</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \forall (i,j), \: P^{\mathrm{se}}_{ij} = \exp \left( \frac{\mu^\star_{i} + \mu^\star_j - 2 C_{ij}}{\varepsilon^\star_i + \varepsilon^\star_j} \right) \:.</span>
+
+<span class="sd">    .. note:: Unlike :class:`~torchdr.affinity.L2SymmetricEntropicAffinity` that is used in t-SNE, :class:`~torchdr.affinity.SymmetricEntropicAffinity` enables to control the entropy and mass of each row/column of the affinity matrix.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    perplexity : float</span>
+<span class="sd">        Perplexity parameter, related to the number of &#39;effective&#39; nearest</span>
+<span class="sd">        neighbors. Consider selecting a value between 2 and the number of</span>
+<span class="sd">        samples.</span>
+<span class="sd">    lr : float, optional</span>
+<span class="sd">        Learning rate used to update dual variables.</span>
+<span class="sd">    eps_square : bool, optional</span>
+<span class="sd">        Whether to optimize on the square of the dual variables.</span>
+<span class="sd">        May be more stable in practice.</span>
+<span class="sd">    metric : str, optional</span>
+<span class="sd">        Metric to use for computing distances, by default &quot;euclidean&quot;.</span>
+<span class="sd">    tol : float, optional</span>
+<span class="sd">        Precision threshold at which the algorithm stops, by default 1e-5.</span>
+<span class="sd">    max_iter : int, optional</span>
+<span class="sd">        Number of maximum iterations for the algorithm, by default 500.</span>
+<span class="sd">    optimizer : {&#39;SGD&#39;, &#39;Adam&#39;, &#39;NAdam&#39;}, optional</span>
+<span class="sd">        Which pytorch optimizer to use (default &#39;Adam&#39;).</span>
+<span class="sd">    verbose : bool, optional</span>
+<span class="sd">        Verbosity (default True).</span>
+<span class="sd">    tolog : bool, optional</span>
+<span class="sd">        Whether to store intermediate result in a dictionary (default False).</span>
+<span class="sd">    keops : bool, optional</span>
+<span class="sd">        Whether to use KeOps for computation.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    log : dictionary</span>
+<span class="sd">        Contains the dual variables at each iteration of the</span>
+<span class="sd">        optimization algorithm when tolog = True.</span>
+<span class="sd">    n_iter_ : int</span>
+<span class="sd">        Number of iterations run.</span>
+<span class="sd">    eps_ : torch.Tensor of shape (n_samples)</span>
+<span class="sd">        Dual variable associated to the entropy constraint.</span>
+<span class="sd">    mu_ : torch.Tensor of shape (n_samples)</span>
+<span class="sd">        Dual variable associated to the marginal constraint.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [3] SNEkhorn: Dimension Reduction with Symmetric Entropic Affinities,</span>
+<span class="sd">        Hugues Van Assel, Titouan Vayer, Rémi Flamary, Nicolas Courty, NeurIPS 2023.</span>
+<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">perplexity</span><span class="p">,</span>
+        <span class="n">lr</span><span class="o">=</span><span class="mf">1e0</span><span class="p">,</span>
+        <span class="n">eps_square</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
+        <span class="n">tol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+        <span class="n">max_iter</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+        <span class="n">optimizer</span><span class="o">=</span><span class="s2">&quot;Adam&quot;</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">tolog</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">keops</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span> <span class="o">=</span> <span class="n">perplexity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lr</span> <span class="o">=</span> <span class="n">lr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tol</span> <span class="o">=</span> <span class="n">tol</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">=</span> <span class="n">max_iter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tolog</span> <span class="o">=</span> <span class="n">tolog</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eps_square</span> <span class="o">=</span> <span class="n">eps_square</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metric</span> <span class="o">=</span> <span class="n">metric</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keops</span> <span class="o">=</span> <span class="n">keops</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Solves the problem (SEA) in [3]_ to compute the symmetric entropic affinity matrix.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : tensor of shape (n_samples, n_features)</span>
+<span class="sd">            Data on which affinity is computed.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self : SymmetricEntropicAffinity</span>
+<span class="sd">            The fitted instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+        <span class="n">C</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span> <span class="n">keops</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">keops</span><span class="p">)</span>
+
+        <span class="n">n</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;[TorchDR] Affinity : The perplexity parameter must be between &quot;</span>
+                <span class="s2">&quot;1 and number of samples.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">target_entropy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="c1"># dual variables, size (n_samples)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eps_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mu_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="c1"># primal variable, size (n_samples, n_samples)</span>
+        <span class="n">log_P</span> <span class="o">=</span> <span class="n">log_Pse</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu_</span><span class="p">,</span> <span class="n">eps_square</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eps_square</span><span class="p">)</span>
+
+        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">OPTIMIZERS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">]([</span><span class="bp">self</span><span class="o">.</span><span class="n">eps_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu_</span><span class="p">],</span> <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lr</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolog</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">[</span><span class="s2">&quot;eps&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">eps_</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">[</span><span class="s2">&quot;mu&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">eps_</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;[TorchDR] Affinity : Computing the Symmetric Entropic Affinity matrix.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">one</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">),</span> <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">pbar</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+                <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+                <span class="n">H</span> <span class="o">=</span> <span class="n">entropy</span><span class="p">(</span><span class="n">log_P</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps_square</span><span class="p">:</span>
+                    <span class="c1"># the Jacobian must be corrected by 2 * diag(eps)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">eps_</span><span class="o">.</span><span class="n">grad</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps_</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="n">H</span> <span class="o">-</span> <span class="n">target_entropy</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">eps_</span><span class="o">.</span><span class="n">grad</span> <span class="o">=</span> <span class="n">H</span> <span class="o">-</span> <span class="n">target_entropy</span>
+
+                <span class="n">P_sum</span> <span class="o">=</span> <span class="n">log_P</span><span class="o">.</span><span class="n">logsumexp</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>  <span class="c1"># squeeze for keops</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mu_</span><span class="o">.</span><span class="n">grad</span> <span class="o">=</span> <span class="n">P_sum</span> <span class="o">-</span> <span class="n">one</span>
+                <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps_square</span><span class="p">:</span>  <span class="c1"># optimize on eps &gt; 0</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">eps_</span><span class="o">.</span><span class="n">clamp_</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+                <span class="n">log_P</span> <span class="o">=</span> <span class="n">log_Pse</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu_</span><span class="p">,</span> <span class="n">eps_square</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eps_square</span><span class="p">)</span>
+
+                <span class="n">check_NaNs</span><span class="p">(</span>
+                    <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">eps_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu_</span><span class="p">],</span>
+                    <span class="n">msg</span><span class="o">=</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;[TorchDR] Affinity (ERROR): NaN at iter </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">, &quot;</span>
+                        <span class="s2">&quot;consider decreasing the learning rate.&quot;</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolog</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">[</span><span class="s2">&quot;eps&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eps_</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">())</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">[</span><span class="s2">&quot;mu&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mu_</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">())</span>
+
+                <span class="n">perps</span> <span class="o">=</span> <span class="p">(</span><span class="n">H</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                    <span class="n">pbar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;PERPLEXITY:</span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">perps</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">())</span><span class="si">:</span><span class="s2"> .2e</span><span class="si">}</span><span class="s2"> &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;(std:</span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">perps</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">())</span><span class="si">:</span><span class="s2"> .2e</span><span class="si">}</span><span class="s2">), &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;MARGINAL:</span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">P_sum</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">())</span><span class="si">:</span><span class="s2"> .2e</span><span class="si">}</span><span class="s2"> &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;(std:</span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">P_sum</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">())</span><span class="si">:</span><span class="s2"> .2e</span><span class="si">}</span><span class="s2">)&quot;</span>
+                    <span class="p">)</span>
+
+                <span class="k">if</span> <span class="p">((</span><span class="n">H</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">tol</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="ow">and</span> <span class="p">(</span>
+                    <span class="p">(</span><span class="n">P_sum</span> <span class="o">-</span> <span class="n">one</span><span class="p">)</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">tol</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[TorchDR] Affinity : breaking at iter </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+                <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="s2">&quot;[TorchDR] Affinity (WARNING) : max iter attained, algorithm &quot;</span>
+                        <span class="s2">&quot;stops but may not have converged.&quot;</span>
+                    <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span> <span class="o">=</span> <span class="n">k</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_affinity_matrix_</span> <span class="o">=</span> <span class="n">log_P</span></div>
+
+
+
+<div class="viewcode-block" id="DoublyStochasticEntropic">
+<a class="viewcode-back" href="../../../gen_modules/torchdr.affinity.DoublyStochasticEntropic.html#torchdr.affinity.DoublyStochasticEntropic">[docs]</a>
+<span class="k">class</span> <span class="nc">DoublyStochasticEntropic</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the symmetric doubly stochastic affinity matrix :math:`\mathbf{P}^{\mathrm{ds}}` with controlled global entropy using the symmetric Sinkhorn algorithm [5].</span>
+<span class="sd">    Consists in solving the following convex optimization problem:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \mathbf{P}^{\mathrm{ds}} \in \mathop{\arg\min}_{\mathbf{P} \in \mathbb{R}_+^{n \times n}} \: &amp;\langle \mathbf{C},</span>
+<span class="sd">        \mathbf{P} \rangle + \varepsilon \mathrm{H}(\mathbf{P}) \\</span>
+<span class="sd">        \text{s.t.} \quad  &amp;\mathbf{P} \mathbf{1} = \mathbf{1} \\</span>
+<span class="sd">                            &amp;\mathbf{P} = \mathbf{P}^\top</span>
+
+<span class="sd">    where :</span>
+
+<span class="sd">    - :math:`\mathbf{C}`: symmetric pairwise distance matrix between the samples.</span>
+<span class="sd">    - :math:`\varepsilon`: entropic regularization parameter.</span>
+<span class="sd">    - :math:`\mathrm{H}`: (global) Shannon entropy such that :math:`\mathrm{H}(\mathbf{P}) := - \sum_{ij} P_{ij} (\log P_{ij} - 1)`.</span>
+<span class="sd">    - :math:`\mathbf{1} := (1,...,1)^\top`: all-ones vector.</span>
+
+<span class="sd">    The algorithm computes the optimal dual variable :math:`\mathbf{f}^\star \in \mathbb{R}^n` such that</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \mathbf{P}^{\mathrm{ds}} \mathbf{1} = \mathbf{1} \quad \text{where} \quad \forall (i,j), \: P^{\mathrm{ds}}_{ij} = \exp(f^\star_i + f^\star_j - C_{ij} / \varepsilon) \:.</span>
+
+<span class="sd">    :math:`\mathbf{f}^\star` is computed by performing dual ascent via the Sinkhorn fixed-point iteration.</span>
+
+<span class="sd">    **Bregman projection.** Another way to write this problem is to consider the KL projection of the Gibbs kernel onto the set of doubly stochastic matrices:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \mathbf{P}^{\mathrm{ds}} = \mathrm{Proj}_{\mathcal{DS}}^{\mathrm{KL}}(\mathbf{K}_\varepsilon) := \mathop{\arg\min}_{\mathbf{P} \in \mathcal{DS}} \: \mathrm{KL}(\mathbf{P} \| \mathbf{K}_\varepsilon) \:.</span>
+
+<span class="sd">    where :</span>
+
+<span class="sd">    - :math:`\mathbf{K}_\varepsilon := \exp(-\mathbf{C} / \varepsilon)`: Gibbs kernel.</span>
+<span class="sd">    - :math:`\mathrm{KL}(\mathbf{P} \| \mathbf{Q}) := \sum_{ij} P_{ij} (\log (Q_{ij} / P_{ij}) - 1) + Q_{ij}`: Kullback Leibler divergence between :math:`\mathbf{P}` and :math:`\mathbf{Q}`.</span>
+<span class="sd">    - :math:`\mathcal{DS} := \left\{ \mathbf{P} \in \mathbb{R}_+^{n \times n}: \: \mathbf{P} = \mathbf{P}^\top \:,\: \mathbf{P} \mathbf{1} = \mathbf{1} \right\}`: set of symmetric doubly stochastic matrices.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    eps : float, optional</span>
+<span class="sd">        Regularization parameter for the Sinkhorn algorithm.</span>
+<span class="sd">    f : tensor of shape (n_samples), optional</span>
+<span class="sd">        Initialization for the dual variable of the Sinkhorn algorithm (default None).</span>
+<span class="sd">    tol : float, optional</span>
+<span class="sd">        Precision threshold at which the algorithm stops.</span>
+<span class="sd">    max_iter : int, optional</span>
+<span class="sd">        Number of maximum iterations for the algorithm.</span>
+<span class="sd">    student : bool, optional</span>
+<span class="sd">        Whether to use a t-Student kernel instead of a Gaussian kernel.</span>
+<span class="sd">    verbose : bool, optional</span>
+<span class="sd">        Verbosity.</span>
+<span class="sd">    tolog : bool, optional</span>
+<span class="sd">        Whether to store intermediate result in a dictionary.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [5]  Jean Feydy, Thibault Séjourné, François-Xavier Vialard, Shun-ichi Amari,</span>
+<span class="sd">            Alain Trouvé, Gabriel Peyré (2019).</span>
+<span class="sd">            Interpolating between Optimal Transport and MMD using Sinkhorn Divergences.</span>
+<span class="sd">            International Conference on Artificial Intelligence and Statistics</span>
+<span class="sd">            (AISTATS).</span>
+<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">eps</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">f</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">tol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span>
+        <span class="n">max_iter</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+        <span class="n">student</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">tolog</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
+        <span class="n">keops</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="o">=</span> <span class="n">eps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="n">f</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tol</span> <span class="o">=</span> <span class="n">tol</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">=</span> <span class="n">max_iter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">student</span> <span class="o">=</span> <span class="n">student</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tolog</span> <span class="o">=</span> <span class="n">tolog</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metric</span> <span class="o">=</span> <span class="n">metric</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keops</span> <span class="o">=</span> <span class="n">keops</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Computes the entropic doubly stochastic affinity matrix from input data X.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : tensor of shape (n_samples, n_features)</span>
+<span class="sd">            Data on which affinity is computed.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self : DoublyStochasticEntropic</span>
+<span class="sd">            The fitted instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+        <span class="n">C</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span> <span class="n">keops</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">keops</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">student</span><span class="p">:</span>
+            <span class="n">C</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">C</span><span class="p">)</span><span class="o">.</span><span class="n">log</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;[TorchDR] Affinity : Computing the (KL) Doubly Stochastic &quot;</span>
+                <span class="s2">&quot;Affinity matrix.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">n</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">log_K</span> <span class="o">=</span> <span class="o">-</span><span class="n">C</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps</span>
+
+        <span class="c1"># Performs warm-start if a dual variable f is provided</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolog</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">[</span><span class="s2">&quot;f&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()]</span>
+
+        <span class="c1"># Sinkhorn iterations</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">):</span>
+
+            <span class="c1"># well conditioned symmetric Sinkhorn iteration from Feydy et al. (2019)</span>
+            <span class="n">reduction</span> <span class="o">=</span> <span class="o">-</span><span class="n">sum_matrix_vector</span><span class="p">(</span><span class="n">log_K</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">logsumexp</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">f</span> <span class="o">+</span> <span class="n">reduction</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolog</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">[</span><span class="s2">&quot;f&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">())</span>
+
+            <span class="n">check_NaNs</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[TorchDR] Affinity (ERROR): NaN at iter </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="p">((</span><span class="n">f</span> <span class="o">-</span> <span class="n">reduction</span><span class="p">)</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">tol</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[TorchDR] Affinity : breaking at iter </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                <span class="k">break</span>
+
+            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="s2">&quot;[TorchDR] Affinity (WARNING) : max iter attained, algorithm &quot;</span>
+                    <span class="s2">&quot;stops but may not have converged.&quot;</span>
+                <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span> <span class="o">=</span> <span class="n">k</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_affinity_matrix_</span> <span class="o">=</span> <span class="n">log_Pds</span><span class="p">(</span><span class="n">log_K</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, TorchDR team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -18,10 +18,11 @@
         <script src="_static/documentation_options.js?v=8e37ee27"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="torchdr.utils.binary_search" href="gen_modules/torchdr.utils.binary_search.html" />
+    <link rel="next" title="torchdr.affinity.EntropicAffinity" href="gen_modules/torchdr.affinity.EntropicAffinity.html" />
     <link rel="prev" title="Welcome to TorchDR’s documentation!" href="index.html" /> 
 </head>
 
@@ -49,10 +50,16 @@
 <li class="toctree-l1"><a class="reference internal" href="index.html">Welcome to TorchDR’s documentation!</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API and modules</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#main-module-torchdr">Main module <code class="xref py py-mod docutils literal notranslate"><span class="pre">torchdr</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#affinity-module-torchdr-affinity">Affinity module <code class="xref py py-mod docutils literal notranslate"><span class="pre">torchdr.affinity</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="gen_modules/torchdr.affinity.EntropicAffinity.html">torchdr.affinity.EntropicAffinity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gen_modules/torchdr.affinity.SymmetricEntropicAffinity.html">torchdr.affinity.SymmetricEntropicAffinity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gen_modules/torchdr.affinity.L2SymmetricEntropicAffinity.html">torchdr.affinity.L2SymmetricEntropicAffinity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gen_modules/torchdr.affinity.DoublyStochasticEntropic.html">torchdr.affinity.DoublyStochasticEntropic</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#module-torchdr.utils">Utility function <code class="xref py py-mod docutils literal notranslate"><span class="pre">torchdr.utils</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="gen_modules/torchdr.utils.binary_search.html">torchdr.utils.binary_search</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gen_modules/torchdr.utils.false_position.html">torchdr.utils.false_position</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gen_modules/torchdr.utils.init_bounds.html">torchdr.utils.init_bounds</a></li>
 </ul>
 </li>
 </ul>
@@ -88,6 +95,25 @@
 <section id="main-module-torchdr">
 <h2>Main module <a class="reference internal" href="#module-torchdr" title="torchdr"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchdr</span></code></a><a class="headerlink" href="#main-module-torchdr" title="Link to this heading"></a></h2>
 <span class="target" id="module-torchdr"></span></section>
+<section id="affinity-module-torchdr-affinity">
+<h2>Affinity module <a class="reference internal" href="#module-torchdr.affinity" title="torchdr.affinity"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchdr.affinity</span></code></a><a class="headerlink" href="#affinity-module-torchdr-affinity" title="Link to this heading"></a></h2>
+<span class="target" id="module-torchdr.affinity"></span><table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.affinity.EntropicAffinity.html#torchdr.affinity.EntropicAffinity" title="torchdr.affinity.EntropicAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EntropicAffinity</span></code></a>(perplexity[, metric, tol, ...])</p></td>
+<td><p>Solves the directed entropic affinity problem introduced in <a class="reference internal" href="gen_modules/torchdr.affinity.EntropicAffinity.html#r1333502c7ceb-1" id="id1"><span>[R1333502c7ceb-1]</span></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.affinity.SymmetricEntropicAffinity.html#torchdr.affinity.SymmetricEntropicAffinity" title="torchdr.affinity.SymmetricEntropicAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SymmetricEntropicAffinity</span></code></a>(perplexity[, lr, ...])</p></td>
+<td><p>Computes the solution <span class="math notranslate nohighlight">\(\mathbf{P}^{\mathrm{se}}\)</span> to the symmetric entropic affinity problem (SEA) described in <a class="reference internal" href="gen_modules/torchdr.affinity.SymmetricEntropicAffinity.html#r10aba7b01f7e-3" id="id2"><span>[R10aba7b01f7e-3]</span></a> with the dual ascent procedure.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.affinity.L2SymmetricEntropicAffinity.html#torchdr.affinity.L2SymmetricEntropicAffinity" title="torchdr.affinity.L2SymmetricEntropicAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">L2SymmetricEntropicAffinity</span></code></a>(perplexity[, ...])</p></td>
+<td><p>Computes the L2-symmetrized entropic affinity matrix <span class="math notranslate nohighlight">\(\overline{\mathbf{P}^{\mathrm{e}}}\)</span> of t-SNE <a class="reference internal" href="gen_modules/torchdr.affinity.L2SymmetricEntropicAffinity.html#rc6132c17e3ca-2" id="id3"><span>[Rc6132c17e3ca-2]</span></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.affinity.DoublyStochasticEntropic.html#torchdr.affinity.DoublyStochasticEntropic" title="torchdr.affinity.DoublyStochasticEntropic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DoublyStochasticEntropic</span></code></a>([eps, f, tol, ...])</p></td>
+<td><p>Computes the symmetric doubly stochastic affinity matrix <span class="math notranslate nohighlight">\(\mathbf{P}^{\mathrm{ds}}\)</span> with controlled global entropy using the symmetric Sinkhorn algorithm [5].</p></td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="module-torchdr.utils">
 <span id="utility-function-torchdr-utils"></span><h2>Utility function <a class="reference internal" href="#module-torchdr.utils" title="torchdr.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchdr.utils</span></code></a><a class="headerlink" href="#module-torchdr.utils" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
@@ -97,9 +123,6 @@
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.utils.false_position.html#torchdr.utils.false_position" title="torchdr.utils.false_position"><code class="xref py py-obj docutils literal notranslate"><span class="pre">false_position</span></code></a>(f, n[, begin, end, max_iter, ...])</p></td>
 <td><p>Performs a batched false position method to find the root of an increasing function f.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.utils.init_bounds.html#torchdr.utils.init_bounds" title="torchdr.utils.init_bounds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_bounds</span></code></a>(f, n[, begin, end, dtype, ...])</p></td>
-<td><p>Initializes the bounds of the root search.</p></td>
 </tr>
 </tbody>
 </table>
@@ -111,7 +134,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="index.html" class="btn btn-neutral float-left" title="Welcome to TorchDR’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="gen_modules/torchdr.utils.binary_search.html" class="btn btn-neutral float-right" title="torchdr.utils.binary_search" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="gen_modules/torchdr.affinity.EntropicAffinity.html" class="btn btn-neutral float-right" title="torchdr.affinity.EntropicAffinity" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

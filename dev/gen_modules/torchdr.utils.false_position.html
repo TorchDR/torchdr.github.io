@@ -22,7 +22,6 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="torchdr.utils.init_bounds" href="torchdr.utils.init_bounds.html" />
     <link rel="prev" title="torchdr.utils.binary_search" href="torchdr.utils.binary_search.html" /> 
 </head>
 
@@ -50,13 +49,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to TorchDR’s documentation!</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../all.html">API and modules</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../all.html#main-module-torchdr">Main module <code class="xref py py-mod docutils literal notranslate"><span class="pre">torchdr</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../all.html#affinity-module-torchdr-affinity">Affinity module <code class="xref py py-mod docutils literal notranslate"><span class="pre">torchdr.affinity</span></code></a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../all.html#module-torchdr.utils">Utility function <code class="xref py py-mod docutils literal notranslate"><span class="pre">torchdr.utils</span></code></a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="torchdr.utils.binary_search.html">torchdr.utils.binary_search</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">torchdr.utils.false_position</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#torchdr.utils.false_position"><code class="docutils literal notranslate"><span class="pre">false_position()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="torchdr.utils.init_bounds.html">torchdr.utils.init_bounds</a></li>
 </ul>
 </li>
 </ul>
@@ -92,7 +91,7 @@
 <h1>torchdr.utils.false_position<a class="headerlink" href="#torchdr-utils-false-position" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="torchdr.utils.false_position">
-<span class="sig-prename descclassname"><span class="pre">torchdr.utils.</span></span><span class="sig-name descname"><span class="pre">false_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">begin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-09</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">torch.float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/utils/optim.html#false_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.utils.false_position" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchdr.utils.</span></span><span class="sig-name descname"><span class="pre">false_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">begin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-09</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">torch.float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/utils/_optim.html#false_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.utils.false_position" title="Link to this definition"></a></dt>
 <dd><p>Performs a batched false position method to find the root
 of an increasing function f.</p>
 <dl class="field-list">
@@ -132,7 +131,6 @@ of an increasing function f.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="torchdr.utils.binary_search.html" class="btn btn-neutral float-left" title="torchdr.utils.binary_search" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="torchdr.utils.init_bounds.html" class="btn btn-neutral float-right" title="torchdr.utils.init_bounds" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

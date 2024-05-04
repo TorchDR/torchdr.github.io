@@ -16,7 +16,7 @@
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="../_static/documentation_options.js?v=8e37ee27"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -94,7 +94,7 @@
 <h1>torchdr.affinity.EntropicAffinity<a class="headerlink" href="#torchdr-affinity-entropicaffinity" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="torchdr.affinity.EntropicAffinity">
-<span class="sig-prename descclassname"><span class="pre">torchdr.affinity.</span></span><span class="sig-name descname"><span class="pre">EntropicAffinity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">perplexity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'euclidean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keops</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/affinity/_entropic.html#EntropicAffinity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.affinity.EntropicAffinity" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchdr.affinity.</span></span><span class="sig-name descname"><span class="pre">EntropicAffinity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">perplexity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sparsity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'euclidean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keops</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/affinity/_entropic.html#EntropicAffinity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.affinity.EntropicAffinity" title="Link to this definition"></a></dt>
 <dd><p>Solves the directed entropic affinity problem introduced in <a class="reference internal" href="#r1333502c7ceb-1" id="id1">[1]</a>.
 Corresponds to the matrix <span class="math notranslate nohighlight">\(\mathbf{P}^{\mathrm{e}}\)</span> in <a class="reference internal" href="#r1333502c7ceb-3" id="id2">[3]</a>, solving the convex optimization problem</p>
 <div class="math notranslate nohighlight">
@@ -108,7 +108,7 @@ Corresponds to the matrix <span class="math notranslate nohighlight">\(\mathbf{P
 <li><p><span class="math notranslate nohighlight">\(\mathrm{h}\)</span>: (row-wise) Shannon entropy such that <span class="math notranslate nohighlight">\(\mathrm{h}(\mathbf{p}) = - \sum_{i} p_{i} (\log p_{i} - 1)\)</span>.</p></li>
 <li><p><span class="math notranslate nohighlight">\(\mathbf{1} := (1,...,1)^\top\)</span>: all-ones vector.</p></li>
 </ul>
-<p>The entropic affinity matrix is akin to a <strong>soft</strong> <span class="math notranslate nohighlight">\(k\)</span> <strong>-NN affinity</strong>, with the perplexity parameter <span class="math notranslate nohighlight">\(\xi\)</span> acting as <span class="math notranslate nohighlight">\(k\)</span>. Each point distributes a unit mass among its closest neighbors to minimize a transport cost given by <span class="math notranslate nohighlight">\(\mathbf{C}\)</span>.</p>
+<p>The entropic affinity matrix is akin to a <strong>soft</strong> <span class="math notranslate nohighlight">\(k\)</span> <strong>-NN affinity</strong>, with the perplexity parameter <span class="math notranslate nohighlight">\(\xi\)</span> acting as <span class="math notranslate nohighlight">\(k\)</span>. Each point distributes a unit mass among its closest neighbors while minimizing a transport cost given by <span class="math notranslate nohighlight">\(\mathbf{C}\)</span>.</p>
 <p>The entropic constraint is saturated at the optimum and governs mass spread. With small <span class="math notranslate nohighlight">\(\xi\)</span>, mass concentrates on a few neighbors; with large <span class="math notranslate nohighlight">\(\xi\)</span>, it spreads across more neighbors thus capturing larger scales of dependencies.</p>
 <p>The algorithm computes the optimal dual variable <span class="math notranslate nohighlight">\(\mathbf{\varepsilon}^* \in \mathbb{R}^n_{&gt;0}\)</span> such that</p>
 <div class="math notranslate nohighlight">
@@ -126,13 +126,18 @@ Consider selecting a value between 2 and the number of samples.</p>
 </dd>
 <dt><strong>tol</strong><span class="classifier">float, optional</span></dt><dd><p>Precision threshold at which the root finding algorithm stops.</p>
 </dd>
-<dt><strong>metric</strong><span class="classifier">str, optional</span></dt><dd><p>Metric to use for computing distances (default “euclidean”).</p>
-</dd>
 <dt><strong>max_iter</strong><span class="classifier">int, optional</span></dt><dd><p>Number of maximum iterations for the root finding algorithm.</p>
 </dd>
-<dt><strong>verbose</strong><span class="classifier">bool, optional</span></dt><dd><p>Verbosity.</p>
+<dt><strong>sparsity: bool, optional</strong></dt><dd><p>If True, keeps only the 3 * perplexity smallest element on each row of
+the ground cost matrix. Recommended if perplexity is small (&lt;50).</p>
+</dd>
+<dt><strong>metric</strong><span class="classifier">str, optional</span></dt><dd><p>Metric to use for computing distances (default “euclidean”).</p>
+</dd>
+<dt><strong>device</strong><span class="classifier">str, optional</span></dt><dd><p>Device to use for computation.</p>
 </dd>
 <dt><strong>keops</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to use KeOps for computation.</p>
+</dd>
+<dt><strong>verbose</strong><span class="classifier">bool, optional</span></dt><dd><p>Verbosity.</p>
 </dd>
 </dl>
 </dd>

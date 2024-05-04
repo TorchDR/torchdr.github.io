@@ -16,7 +16,7 @@
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="../_static/documentation_options.js?v=8e37ee27"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -94,9 +94,9 @@
 <h1>torchdr.affinity.DoublyStochasticEntropic<a class="headerlink" href="#torchdr-affinity-doublystochasticentropic" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="torchdr.affinity.DoublyStochasticEntropic">
-<span class="sig-prename descclassname"><span class="pre">torchdr.affinity.</span></span><span class="sig-name descname"><span class="pre">DoublyStochasticEntropic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">student</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'euclidean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keops</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/affinity/_entropic.html#DoublyStochasticEntropic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.affinity.DoublyStochasticEntropic" title="Link to this definition"></a></dt>
-<dd><p>Computes the symmetric doubly stochastic affinity matrix <span class="math notranslate nohighlight">\(\mathbf{P}^{\mathrm{ds}}\)</span> with controlled global entropy using the symmetric Sinkhorn algorithm [5].
-Consists in solving the following convex optimization problem:</p>
+<span class="sig-prename descclassname"><span class="pre">torchdr.affinity.</span></span><span class="sig-name descname"><span class="pre">DoublyStochasticEntropic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_dual</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">student</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'euclidean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keops</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/affinity/_entropic.html#DoublyStochasticEntropic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.affinity.DoublyStochasticEntropic" title="Link to this definition"></a></dt>
+<dd><p>Computes the symmetric doubly stochastic affinity matrix <span class="math notranslate nohighlight">\(\mathbf{P}^{\mathrm{ds}}\)</span> with controlled global entropy using the symmetric Sinkhorn algorithm <a class="reference internal" href="#r3be52251fbbb-5" id="id1">[5]</a>.
+Consists in solving the following symmetric entropic optimal transport problem [6]:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\mathbf{P}^{\mathrm{ds}} \in \mathop{\arg\min}_{\mathbf{P} \in \mathbb{R}_+^{n \times n}} \: &amp;\langle \mathbf{C},
 \mathbf{P} \rangle + \varepsilon \mathrm{H}(\mathbf{P}) \\
@@ -109,11 +109,13 @@ Consists in solving the following convex optimization problem:</p>
 <li><p><span class="math notranslate nohighlight">\(\mathrm{H}\)</span>: (global) Shannon entropy such that <span class="math notranslate nohighlight">\(\mathrm{H}(\mathbf{P}) := - \sum_{ij} P_{ij} (\log P_{ij} - 1)\)</span>.</p></li>
 <li><p><span class="math notranslate nohighlight">\(\mathbf{1} := (1,...,1)^\top\)</span>: all-ones vector.</p></li>
 </ul>
-<p>The algorithm computes the optimal dual variable <span class="math notranslate nohighlight">\(\mathbf{f}^\star \in \mathbb{R}^n\)</span> such that</p>
+<p>The algorithm computes the optimal dual variable
+<span class="math notranslate nohighlight">\(\mathbf{f}^\star \in \mathbb{R}^n\)</span> such that</p>
 <div class="math notranslate nohighlight">
 \[\mathbf{P}^{\mathrm{ds}} \mathbf{1} = \mathbf{1} \quad \text{where} \quad \forall (i,j), \: P^{\mathrm{ds}}_{ij} = \exp(f^\star_i + f^\star_j - C_{ij} / \varepsilon) \:.\]</div>
-<p><span class="math notranslate nohighlight">\(\mathbf{f}^\star\)</span> is computed by performing dual ascent via the Sinkhorn fixed-point iteration.</p>
-<p><strong>Bregman projection.</strong> Another way to write this problem is to consider the KL projection of the Gibbs kernel onto the set of doubly stochastic matrices:</p>
+<p><span class="math notranslate nohighlight">\(\mathbf{f}^\star\)</span> is computed by performing dual ascent via the Sinkhorn fixed-point iteration (equation in 25 in [7]).</p>
+<p><strong>Bregman projection.</strong> Another way to write this problem is to consider the
+KL projection of the Gibbs kernel onto the set of doubly stochastic matrices:</p>
 <div class="math notranslate nohighlight">
 \[\mathbf{P}^{\mathrm{ds}} = \mathrm{Proj}_{\mathcal{DS}}^{\mathrm{KL}}(\mathbf{K}_\varepsilon) := \mathop{\arg\min}_{\mathbf{P} \in \mathcal{DS}} \: \mathrm{KL}(\mathbf{P} \| \mathbf{K}_\varepsilon) \:.\]</div>
 <p>where :</p>
@@ -135,9 +137,15 @@ Consists in solving the following convex optimization problem:</p>
 </dd>
 <dt><strong>student</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to use a t-Student kernel instead of a Gaussian kernel.</p>
 </dd>
-<dt><strong>verbose</strong><span class="classifier">bool, optional</span></dt><dd><p>Verbosity.</p>
-</dd>
 <dt><strong>tolog</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to store intermediate result in a dictionary.</p>
+</dd>
+<dt><strong>metric</strong><span class="classifier">str, optional</span></dt><dd><p>Metric to use for computing distances (default “euclidean”).</p>
+</dd>
+<dt><strong>device</strong><span class="classifier">str, optional</span></dt><dd><p>Device to use for computation.</p>
+</dd>
+<dt><strong>keops</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to use KeOps for computation.</p>
+</dd>
+<dt><strong>verbose</strong><span class="classifier">bool, optional</span></dt><dd><p>Verbosity.</p>
 </dd>
 </dl>
 </dd>
@@ -145,7 +153,19 @@ Consists in solving the following convex optimization problem:</p>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
 <div class="citation" id="r3be52251fbbb-5" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">5</a><span class="fn-bracket">]</span></span>
+<p>Richard Sinkhorn, Paul Knopp (1967).
+Concerning nonnegative matrices and doubly stochastic matrices.
+Pacific Journal of Mathematics, 21(2), 343-348.</p>
+</div>
+<div class="citation" id="r3be52251fbbb-6" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></span>
+<p>Marco Cuturi (2013).
+Sinkhorn Distances: Lightspeed Computation of Optimal Transport.
+Advances in Neural Information Processing Systems 26 (NeurIPS).</p>
+</div>
+<div class="citation" id="r3be52251fbbb-7" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></span>
 <p>Jean Feydy, Thibault Séjourné, François-Xavier Vialard, Shun-ichi Amari,
 Alain Trouvé, Gabriel Peyré (2019).
 Interpolating between Optimal Transport and MMD using Sinkhorn Divergences.

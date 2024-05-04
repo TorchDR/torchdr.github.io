@@ -15,7 +15,7 @@
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="../../../_static/documentation_options.js?v=8e37ee27"></script>
-        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -109,6 +109,7 @@
 <span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Performs a batched binary search to find the root of an increasing function f.</span>
+<span class="sd">    The domain of f is restricted to positive floats.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -150,11 +151,11 @@
         <span class="n">fm</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-            <span class="n">mean_f</span> <span class="o">=</span> <span class="n">fm</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
-            <span class="n">std_f</span> <span class="o">=</span> <span class="n">fm</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+            <span class="n">mean_f</span> <span class="o">=</span> <span class="n">fm</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+            <span class="n">std_f</span> <span class="o">=</span> <span class="n">fm</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
             <span class="n">pbar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;f mean : </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">mean_f</span><span class="p">)</span><span class="si">:</span><span class="s2"> .2e</span><span class="si">}</span><span class="s2">, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;f std : </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">std_f</span><span class="p">)</span><span class="si">:</span><span class="s2"> .2e</span><span class="si">}</span><span class="s2">, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;|f| mean : </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">mean_f</span><span class="p">)</span><span class="si">:</span><span class="s2"> .2e</span><span class="si">}</span><span class="s2">, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;|f| std : </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">std_f</span><span class="p">)</span><span class="si">:</span><span class="s2"> .2e</span><span class="si">}</span><span class="s2">, &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;begin mean : </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">begin</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">())</span><span class="si">:</span><span class="s2"> .2e</span><span class="si">}</span><span class="s2">, &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;end mean : </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">end</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">())</span><span class="si">:</span><span class="s2"> .2e</span><span class="si">}</span><span class="s2"> &quot;</span>
             <span class="p">)</span>
@@ -179,6 +180,7 @@
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Performs a batched false position method to find the root</span>
 <span class="sd">    of an increasing function f.</span>
+<span class="sd">    The domain of f is restricted to positive floats.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -230,11 +232,11 @@
         <span class="n">fm</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-            <span class="n">mean_f</span> <span class="o">=</span> <span class="n">fm</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
-            <span class="n">std_f</span> <span class="o">=</span> <span class="n">fm</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+            <span class="n">mean_f</span> <span class="o">=</span> <span class="n">fm</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+            <span class="n">std_f</span> <span class="o">=</span> <span class="n">fm</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
             <span class="n">pbar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;f mean : </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">mean_f</span><span class="p">)</span><span class="si">:</span><span class="s2"> .2e</span><span class="si">}</span><span class="s2">, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;f std : </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">std_f</span><span class="p">)</span><span class="si">:</span><span class="s2"> .2e</span><span class="si">}</span><span class="s2">, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;|f| mean : </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">mean_f</span><span class="p">)</span><span class="si">:</span><span class="s2"> .2e</span><span class="si">}</span><span class="s2">, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;|f| std : </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">std_f</span><span class="p">)</span><span class="si">:</span><span class="s2"> .2e</span><span class="si">}</span><span class="s2">, &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;begin mean : </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">begin</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">())</span><span class="si">:</span><span class="s2"> .2e</span><span class="si">}</span><span class="s2">, &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;end mean : </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">end</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">())</span><span class="si">:</span><span class="s2"> .2e</span><span class="si">}</span><span class="s2"> &quot;</span>
             <span class="p">)</span>

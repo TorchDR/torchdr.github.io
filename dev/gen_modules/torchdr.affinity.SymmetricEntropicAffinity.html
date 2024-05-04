@@ -16,7 +16,7 @@
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="../_static/documentation_options.js?v=8e37ee27"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -94,8 +94,9 @@
 <h1>torchdr.affinity.SymmetricEntropicAffinity<a class="headerlink" href="#torchdr-affinity-symmetricentropicaffinity" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="torchdr.affinity.SymmetricEntropicAffinity">
-<span class="sig-prename descclassname"><span class="pre">torchdr.affinity.</span></span><span class="sig-name descname"><span class="pre">SymmetricEntropicAffinity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">perplexity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_square</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'euclidean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Adam'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keops</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/affinity/_entropic.html#SymmetricEntropicAffinity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.affinity.SymmetricEntropicAffinity" title="Link to this definition"></a></dt>
-<dd><p>Computes the solution <span class="math notranslate nohighlight">\(\mathbf{P}^{\mathrm{se}}\)</span> to the symmetric entropic affinity problem (SEA) described in <a class="reference internal" href="#r10aba7b01f7e-3" id="id1">[3]</a> with the dual ascent procedure.
+<span class="sig-prename descclassname"><span class="pre">torchdr.affinity.</span></span><span class="sig-name descname"><span class="pre">SymmetricEntropicAffinity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">perplexity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_square</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Adam'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'euclidean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keops</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/affinity/_entropic.html#SymmetricEntropicAffinity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.affinity.SymmetricEntropicAffinity" title="Link to this definition"></a></dt>
+<dd><p>Computes the solution <span class="math notranslate nohighlight">\(\mathbf{P}^{\mathrm{se}}\)</span> to the symmetric entropic
+affinity problem (SEA) described in <a class="reference internal" href="#r10aba7b01f7e-3" id="id1">[3]</a> with the dual ascent procedure.
 It amounts to the following convex optimization problem:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\mathbf{P}^{\mathrm{se}} \in \mathop{\arg\min}_{\mathbf{P} \in \mathbb{R}_+^{n \times n}} \: &amp;\langle \mathbf{C}, \mathbf{P} \rangle \\
@@ -110,7 +111,7 @@ It amounts to the following convex optimization problem:</p>
 <li><p><span class="math notranslate nohighlight">\(\mathbf{1} := (1,...,1)^\top\)</span>: all-ones vector.</p></li>
 </ul>
 <p>It is a symmetric version of <a class="reference internal" href="torchdr.affinity.EntropicAffinity.html#torchdr.affinity.EntropicAffinity" title="torchdr.affinity.EntropicAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">EntropicAffinity</span></code></a>, where we simply added symmetry as a constraint in the optimization problem.</p>
-<p>The algorithm computes the optimal dual variable <span class="math notranslate nohighlight">\(\mathbf{\mu}^\star \in \mathbb{R}^n\)</span> and <span class="math notranslate nohighlight">\(\mathbf{\varepsilon}^\star \in \mathbb{R}^n_{&gt;0}\)</span> using dual ascent. The affinity matrix is then given by</p>
+<p>The algorithm computes the optimal dual variables <span class="math notranslate nohighlight">\(\mathbf{\mu}^\star \in \mathbb{R}^n\)</span> and <span class="math notranslate nohighlight">\(\mathbf{\varepsilon}^\star \in \mathbb{R}^n_{&gt;0}\)</span> using dual ascent. The affinity matrix is then given by</p>
 <div class="math notranslate nohighlight">
 \[\forall (i,j), \: P^{\mathrm{se}}_{ij} = \exp \left( \frac{\mu^\star_{i} + \mu^\star_j - 2 C_{ij}}{\varepsilon^\star_i + \varepsilon^\star_j} \right) \:.\]</div>
 <div class="admonition note">
@@ -129,19 +130,21 @@ samples.</p>
 <dt><strong>eps_square</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to optimize on the square of the dual variables.
 May be more stable in practice.</p>
 </dd>
-<dt><strong>metric</strong><span class="classifier">str, optional</span></dt><dd><p>Metric to use for computing distances, by default “euclidean”.</p>
-</dd>
 <dt><strong>tol</strong><span class="classifier">float, optional</span></dt><dd><p>Precision threshold at which the algorithm stops, by default 1e-5.</p>
 </dd>
 <dt><strong>max_iter</strong><span class="classifier">int, optional</span></dt><dd><p>Number of maximum iterations for the algorithm, by default 500.</p>
 </dd>
-<dt><strong>optimizer</strong><span class="classifier">{‘SGD’, ‘Adam’, ‘NAdam’}, optional</span></dt><dd><p>Which pytorch optimizer to use (default ‘Adam’).</p>
-</dd>
-<dt><strong>verbose</strong><span class="classifier">bool, optional</span></dt><dd><p>Verbosity (default True).</p>
+<dt><strong>optimizer</strong><span class="classifier">{‘SGD’, ‘Adam’, ‘NAdam’, ‘LBFGS}, optional</span></dt><dd><p>Which pytorch optimizer to use (default ‘Adam’).</p>
 </dd>
 <dt><strong>tolog</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to store intermediate result in a dictionary (default False).</p>
 </dd>
+<dt><strong>metric</strong><span class="classifier">str, optional</span></dt><dd><p>Metric to use for computing distances, by default “euclidean”.</p>
+</dd>
+<dt><strong>device</strong><span class="classifier">str, optional</span></dt><dd><p>Device to use for computation.</p>
+</dd>
 <dt><strong>keops</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to use KeOps for computation.</p>
+</dd>
+<dt><strong>verbose</strong><span class="classifier">bool, optional</span></dt><dd><p>Verbosity (default True).</p>
 </dd>
 </dl>
 </dd>

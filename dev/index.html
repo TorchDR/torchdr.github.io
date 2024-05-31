@@ -96,8 +96,50 @@
 <div><p>[!WARNING]
 This library is currently in a phase of active development. All features are subject to change without prior notice. If you are interested in collaborating, please feel free to reach out by opening an issue or starting a discussion.</p>
 </div></blockquote>
+<p>TorchDR is an open-source dimensionality reduction (DR) library using PyTorch.</p>
 <p>Website and documentation: <a class="reference external" href="https://torchdr.github.io/">https://torchdr.github.io/</a></p>
 <p>Source code: <a class="reference external" href="https://github.com/TorchDR/TorchDR">https://github.com/TorchDR/TorchDR</a></p>
+<section id="why-torchdr">
+<h3>Why <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code>?<a class="headerlink" href="#why-torchdr" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> aims to accelerate the development of new DR methods by providing a common simplified framework.</p>
+<p>DR aims to construct a low-dimensional representation (or embedding) $<code class="docutils literal notranslate"><span class="pre">\mathbf{Z}</span></code>$ of an input dataset $<code class="docutils literal notranslate"><span class="pre">\mathbf{X}</span></code>$ that best preserves its geometry, encoded via a pairwise affinity matrix $<code class="docutils literal notranslate"><span class="pre">\mathbf{A_X}</span></code>$. To this end, DR methods optimize $<code class="docutils literal notranslate"><span class="pre">\mathbf{Z}</span></code>$ such that a pairwise affinity matrix in the embedding space (denoted $<code class="docutils literal notranslate"><span class="pre">\mathbf{A_Z}</span></code>$) matches $<code class="docutils literal notranslate"><span class="pre">\mathbf{A_X}</span></code>$. This general problem is as follows</p>
+<div class="highlight-math notranslate"><div class="highlight"><pre><span></span>\min_{\mathbf{Z}} \: \sum_{ij} L( [\mathbf{A_X}]_{ij}, [\mathbf{A_Z}]_{ij}) \quad \text{(DR)}
+</pre></div>
+</div>
+<p>where $<code class="docutils literal notranslate"><span class="pre">L</span></code>$ is typically the $<code class="docutils literal notranslate"><span class="pre">\ell_2</span></code>$, $<code class="docutils literal notranslate"><span class="pre">\mathrm{KL}</span></code>$ or $<code class="docutils literal notranslate"><span class="pre">\mathrm{BCE}</span></code>$ loss.
+Each DR method is thus characterized by a triplet $<code class="docutils literal notranslate"><span class="pre">(L,</span> <span class="pre">\mathbf{A_X},</span> <span class="pre">\mathbf{A_Z})</span></code>$.</p>
+<p><code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> is structured around the above formulation $<code class="docutils literal notranslate"><span class="pre">\text{(DR)}</span></code>$.
+Defining a DR algorithm solely requires providing an <code class="docutils literal notranslate"><span class="pre">Affinity</span></code> object for both input and embedding as well as a loss function $<code class="docutils literal notranslate"><span class="pre">L</span></code>$.
+Code for other aspects, including optimization, is shared across methods, allowing a fair benchmarking focusing on core differences.</p>
+<p>Advantages of <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> also include:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Modularity</strong></p></td>
+<td><p>All of it is written in python in a highly modular way, making it easy to create or transform components.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Speed</strong></p></td>
+<td><p>Supports GPU acceleration and batching strategies inspired from constrastive learning.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Memory efficiency</strong></p></td>
+<td><p>Relies on <a class="reference external" href="https://www.kernel-operations.io/keops/index.html"><code class="docutils literal notranslate"><span class="pre">KeOps</span></code></a> symbolic tensors to completely avoid memory overflows.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Compatibility</strong></p></td>
+<td><p>Implemented methods are fully compatible with the <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code> API and <code class="docutils literal notranslate"><span class="pre">torch</span></code> ecosystem.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Parametric estimators</strong></p></td>
+<td><p>Neural estimators are seamelessly integrated for all methods.</p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="license">
 <h3>License<a class="headerlink" href="#license" title="Link to this heading"></a></h3>
 <p>The library is distributed under the 3-Clause BSD license.</p>

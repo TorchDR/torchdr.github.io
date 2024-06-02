@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>torchdr.affinity.DoublyStochasticEntropic &mdash; TorchDR 0.0.0-alpha documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=8e37ee27"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Neighbor embedding algorithms" href="../torchdr.neighbor-embedding.html" />
+    <link rel="prev" title="torchdr.affinity.L2SymmetricEntropicAffinity" href="torchdr.affinity.L2SymmetricEntropicAffinity.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: white" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/torchdr_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../torchdr.overview.html">Overview of Dimensionality Reduction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../torchdr.affinities.html">Affinities</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="torchdr.affinity.EntropicAffinity.html">torchdr.affinity.EntropicAffinity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchdr.affinity.SymmetricEntropicAffinity.html">torchdr.affinity.SymmetricEntropicAffinity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchdr.affinity.L2SymmetricEntropicAffinity.html">torchdr.affinity.L2SymmetricEntropicAffinity</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">torchdr.affinity.DoublyStochasticEntropic</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#torchdr.affinity.DoublyStochasticEntropic"><code class="docutils literal notranslate"><span class="pre">DoublyStochasticEntropic</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../torchdr.neighbor-embedding.html">Neighbor embedding algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../torchdr.notation.html">Math Notations</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: white" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">TorchDR</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../torchdr.affinities.html">Affinities</a></li>
+      <li class="breadcrumb-item active">torchdr.affinity.DoublyStochasticEntropic</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/stubs/torchdr.affinity.DoublyStochasticEntropic.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="torchdr-affinity-doublystochasticentropic">
+<h1>torchdr.affinity.DoublyStochasticEntropic<a class="headerlink" href="#torchdr-affinity-doublystochasticentropic" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="torchdr.affinity.DoublyStochasticEntropic">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchdr.affinity.</span></span><span class="sig-name descname"><span class="pre">DoublyStochasticEntropic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_dual</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_kernel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'gaussian'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolog</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'euclidean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keops</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/affinity/entropic.html#DoublyStochasticEntropic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.affinity.DoublyStochasticEntropic" title="Link to this definition"></a></dt>
+<dd><p>Computes the symmetric doubly stochastic affinity matrix <span class="math notranslate nohighlight">\(\mathbf{P}^{\mathrm{ds}}\)</span> with controlled global entropy using the symmetric Sinkhorn algorithm <a class="reference internal" href="#r3be52251fbbb-5" id="id1">[5]</a>.
+Consists in solving the following symmetric entropic optimal transport problem [6]:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\mathbf{P}^{\mathrm{ds}} \in \mathop{\arg\min}_{\mathbf{P} \in \mathbb{R}_+^{n \times n}} \: &amp;\langle \mathbf{C},
+\mathbf{P} \rangle + \varepsilon \mathrm{H}(\mathbf{P}) \\
+\text{s.t.} \quad  &amp;\mathbf{P} \mathbf{1} = \mathbf{1} \\
+                    &amp;\mathbf{P} = \mathbf{P}^\top\end{split}\]</div>
+<p>where :</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\mathbf{C}\)</span>: symmetric pairwise distance matrix between the samples.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\varepsilon\)</span>: entropic regularization parameter.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathrm{H}\)</span>: (global) Shannon entropy such that <span class="math notranslate nohighlight">\(\mathrm{H}(\mathbf{P}) := - \sum_{ij} P_{ij} (\log P_{ij} - 1)\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathbf{1} := (1,...,1)^\top\)</span>: all-ones vector.</p></li>
+</ul>
+<p>The algorithm computes the optimal dual variable
+<span class="math notranslate nohighlight">\(\mathbf{f}^\star \in \mathbb{R}^n\)</span> such that</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{P}^{\mathrm{ds}} \mathbf{1} = \mathbf{1} \quad \text{where} \quad \forall (i,j), \: P^{\mathrm{ds}}_{ij} = \exp(f^\star_i + f^\star_j - C_{ij} / \varepsilon) \:.\]</div>
+<p><span class="math notranslate nohighlight">\(\mathbf{f}^\star\)</span> is computed by performing dual ascent via the Sinkhorn fixed-point iteration (equation in 25 in [7]).</p>
+<p><strong>Bregman projection.</strong> Another way to write this problem is to consider the
+KL projection of the Gibbs kernel onto the set of doubly stochastic matrices:</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{P}^{\mathrm{ds}} = \mathrm{Proj}_{\mathcal{DS}}^{\mathrm{KL}}(\mathbf{K}_\varepsilon) := \mathop{\arg\min}_{\mathbf{P} \in \mathcal{DS}} \: \mathrm{KL}(\mathbf{P} \| \mathbf{K}_\varepsilon) \:.\]</div>
+<p>where :</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\mathbf{K}_\varepsilon := \exp(-\mathbf{C} / \varepsilon)\)</span>: Gibbs kernel.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathrm{KL}(\mathbf{P} \| \mathbf{Q}) := \sum_{ij} P_{ij} (\log (Q_{ij} / P_{ij}) - 1) + Q_{ij}\)</span>: Kullback Leibler divergence between <span class="math notranslate nohighlight">\(\mathbf{P}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{Q}\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathcal{DS} := \left\{ \mathbf{P} \in \mathbb{R}_+^{n \times n}: \: \mathbf{P} = \mathbf{P}^\top \:,\: \mathbf{P} \mathbf{1} = \mathbf{1} \right\}\)</span>: set of symmetric doubly stochastic matrices.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>eps</strong><span class="classifier">float, optional</span></dt><dd><p>Regularization parameter for the Sinkhorn algorithm.</p>
+</dd>
+<dt><strong>f</strong><span class="classifier">tensor of shape (n_samples), optional</span></dt><dd><p>Initialization for the dual variable of the Sinkhorn algorithm (default None).</p>
+</dd>
+<dt><strong>tol</strong><span class="classifier">float, optional</span></dt><dd><p>Precision threshold at which the algorithm stops.</p>
+</dd>
+<dt><strong>max_iter</strong><span class="classifier">int, optional</span></dt><dd><p>Number of maximum iterations for the algorithm.</p>
+</dd>
+<dt><strong>base_kernel</strong><span class="classifier">{“gaussian”, “student”}, optional</span></dt><dd><p>Which base kernel to normalize as doubly stochastic.</p>
+</dd>
+<dt><strong>tolog</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to store intermediate result in a dictionary.</p>
+</dd>
+<dt><strong>metric</strong><span class="classifier">str, optional</span></dt><dd><p>Metric to use for computing distances (default “euclidean”).</p>
+</dd>
+<dt><strong>device</strong><span class="classifier">str, optional</span></dt><dd><p>Device to use for computation.</p>
+</dd>
+<dt><strong>keops</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to use KeOps for computation.</p>
+</dd>
+<dt><strong>verbose</strong><span class="classifier">bool, optional</span></dt><dd><p>Verbosity.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<div role="list" class="citation-list">
+<div class="citation" id="r3be52251fbbb-5" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">5</a><span class="fn-bracket">]</span></span>
+<p>Richard Sinkhorn, Paul Knopp (1967).
+Concerning nonnegative matrices and doubly stochastic matrices.
+Pacific Journal of Mathematics, 21(2), 343-348.</p>
+</div>
+<div class="citation" id="r3be52251fbbb-6" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></span>
+<p>Marco Cuturi (2013).
+Sinkhorn Distances: Lightspeed Computation of Optimal Transport.
+Advances in Neural Information Processing Systems 26 (NeurIPS).</p>
+</div>
+<div class="citation" id="r3be52251fbbb-7" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></span>
+<p>Jean Feydy, Thibault Séjourné, François-Xavier Vialard, Shun-ichi Amari,
+Alain Trouvé, Gabriel Peyré (2019).
+Interpolating between Optimal Transport and MMD using Sinkhorn Divergences.
+International Conference on Artificial Intelligence and Statistics
+(AISTATS).</p>
+</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>log</strong><span class="classifier">dictionary</span></dt><dd><p>Contains the dual variable at each iteration of the
+optimization algorithm when tolog = True.</p>
+</dd>
+<dt><strong>n_iter_</strong><span class="classifier">int</span></dt><dd><p>Number of iterations run.</p>
+</dd>
+<dt><strong>f_</strong><span class="classifier">torch.Tensor of shape (n_samples)</span></dt><dd><p>Dual variable associated with the marginal constraint.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="torchdr.affinity.L2SymmetricEntropicAffinity.html" class="btn btn-neutral float-left" title="torchdr.affinity.L2SymmetricEntropicAffinity" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../torchdr.neighbor-embedding.html" class="btn btn-neutral float-right" title="Neighbor embedding algorithms" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, TorchDR team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

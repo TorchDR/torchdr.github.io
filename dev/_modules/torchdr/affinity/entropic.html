@@ -26,12 +26,13 @@
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: white" >
 
           
           
-          <a href="../../../index.html" class="icon icon-home">
-            TorchDR
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/torchdr_logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -41,17 +42,19 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../index.html">Welcome to TorchDR’s documentation!</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../all.html">API and modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../torchdr.overview.html">Overview of Dimensionality Reduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../torchdr.affinities.html">Affinities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../torchdr.neighbor-embedding.html">Neighbor embedding algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../torchdr.notation.html">Math Notations</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: white" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">TorchDR</a>
       </nav>
@@ -197,7 +200,7 @@
 
 
 <div class="viewcode-block" id="EntropicAffinity">
-<a class="viewcode-back" href="../../../gen_modules/torchdr.affinity.EntropicAffinity.html#torchdr.affinity.EntropicAffinity">[docs]</a>
+<a class="viewcode-back" href="../../../stubs/torchdr.affinity.EntropicAffinity.html#torchdr.affinity.EntropicAffinity">[docs]</a>
 <span class="k">class</span> <span class="nc">EntropicAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Solves the directed entropic affinity problem introduced in [1]_.</span>
@@ -377,7 +380,7 @@
 
 
 <div class="viewcode-block" id="L2SymmetricEntropicAffinity">
-<a class="viewcode-back" href="../../../gen_modules/torchdr.affinity.L2SymmetricEntropicAffinity.html#torchdr.affinity.L2SymmetricEntropicAffinity">[docs]</a>
+<a class="viewcode-back" href="../../../stubs/torchdr.affinity.L2SymmetricEntropicAffinity.html#torchdr.affinity.L2SymmetricEntropicAffinity">[docs]</a>
 <span class="k">class</span> <span class="nc">L2SymmetricEntropicAffinity</span><span class="p">(</span><span class="n">EntropicAffinity</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the L2-symmetrized entropic affinity matrix :math:`\overline{\mathbf{P}^{\mathrm{e}}}` of t-SNE [2]_.</span>
@@ -474,7 +477,7 @@
 
 
 <div class="viewcode-block" id="SymmetricEntropicAffinity">
-<a class="viewcode-back" href="../../../gen_modules/torchdr.affinity.SymmetricEntropicAffinity.html#torchdr.affinity.SymmetricEntropicAffinity">[docs]</a>
+<a class="viewcode-back" href="../../../stubs/torchdr.affinity.SymmetricEntropicAffinity.html#torchdr.affinity.SymmetricEntropicAffinity">[docs]</a>
 <span class="k">class</span> <span class="nc">SymmetricEntropicAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the solution :math:`\mathbf{P}^{\mathrm{se}}` to the symmetric entropic</span>
@@ -745,7 +748,7 @@
 
 
 <div class="viewcode-block" id="DoublyStochasticEntropic">
-<a class="viewcode-back" href="../../../gen_modules/torchdr.affinity.DoublyStochasticEntropic.html#torchdr.affinity.DoublyStochasticEntropic">[docs]</a>
+<a class="viewcode-back" href="../../../stubs/torchdr.affinity.DoublyStochasticEntropic.html#torchdr.affinity.DoublyStochasticEntropic">[docs]</a>
 <span class="k">class</span> <span class="nc">DoublyStochasticEntropic</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the symmetric doubly stochastic affinity matrix :math:`\mathbf{P}^{\mathrm{ds}}` with controlled global entropy using the symmetric Sinkhorn algorithm [5]_.</span>

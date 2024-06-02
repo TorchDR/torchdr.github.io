@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to TorchDR’s documentation! &mdash; TorchDR 0.0.0-alpha documentation</title>
+  <title>TorchDR: a Pytorch library for dimensionality reduction &mdash; TorchDR 0.0.0-alpha documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -22,19 +22,20 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="API and modules" href="all.html" /> 
+    <link rel="next" title="Overview of Dimensionality Reduction" href="torchdr.overview.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: white" >
 
           
           
-          <a href="#" class="icon icon-home">
-            TorchDR
+          <a href="#">
+            
+              <img src="_static/torchdr_logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -44,17 +45,19 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Welcome to TorchDR’s documentation!</a></li>
-<li class="toctree-l1"><a class="reference internal" href="all.html">API and modules</a></li>
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.overview.html">Overview of Dimensionality Reduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.affinities.html">Affinities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.neighbor-embedding.html">Neighbor embedding algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.notation.html">Math Notations</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: white" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="#">TorchDR</a>
       </nav>
@@ -64,7 +67,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Welcome to TorchDR’s documentation!</li>
+      <li class="breadcrumb-item active">TorchDR: a Pytorch library for dimensionality reduction</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -74,104 +77,36 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="welcome-to-torchdr-s-documentation">
-<h1>Welcome to TorchDR’s documentation!<a class="headerlink" href="#welcome-to-torchdr-s-documentation" title="Link to this heading"></a></h1>
-<div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Welcome to TorchDR’s documentation!</a></li>
-<li class="toctree-l1"><a class="reference internal" href="all.html">API and modules</a></li>
-</ul>
-</div>
-<section id="torchdr-pytorch-dimensionality-reduction">
-<h2>TorchDR - PyTorch Dimensionality Reduction<a class="headerlink" href="#torchdr-pytorch-dimensionality-reduction" title="Link to this heading"></a></h2>
-<p><a class="reference external" href="https://badge.fury.io/py/torchdr"><img alt="PyPI version" src="https://badge.fury.io/py/torchdr.svg" /></a>
-<a class="reference external" href="https://pytorch.org/get-started/locally/"><img alt="PyTorch" src="https://img.shields.io/badge/PyTorch_1.8+-ee4c2c?logo=pytorch&amp;logoColor=white" /></a>
-<a class="reference external" href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg" /></a>
-<a class="reference external" href="https://github.com/torchdr/torchdr/actions"><img alt="Build Status" src="https://github.com/torchdr/torchdr/actions/workflows/testing.yml/badge.svg" /></a>
-<a class="reference external" href="https://codecov.io/gh/torchdr/torchdr"><img alt="Codecov Status" src="https://codecov.io/gh/torchdr/torchdr/branch/main/graph/badge.svg" /></a>
-<a class="reference external" href="https://opensource.org/licenses/BSD-3-Clause"><img alt="License" src="https://img.shields.io/badge/License-BSD_3--Clause-blue.svg" /></a>
-<a class="reference external" href="https://github.com/dwyl/esta/issues"><img alt="contributions welcome" src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat" /></a></p>
-<blockquote>
-<div><p>[!WARNING]
-This library is currently in a phase of active development. All features are subject to change without prior notice. If you are interested in collaborating, please feel free to reach out by opening an issue or starting a discussion.</p>
-</div></blockquote>
-<p>TorchDR is an open-source dimensionality reduction (DR) library using PyTorch.</p>
-<p>Website and documentation: <a class="reference external" href="https://torchdr.github.io/">https://torchdr.github.io/</a></p>
-<p>Source code: <a class="reference external" href="https://github.com/TorchDR/TorchDR">https://github.com/TorchDR/TorchDR</a></p>
-<section id="why-torchdr">
-<h3>Why <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code>?<a class="headerlink" href="#why-torchdr" title="Link to this heading"></a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> aims to accelerate the development of new DR methods by providing a common simplified framework.</p>
-<p>DR aims to construct a low-dimensional representation (or embedding) $<code class="docutils literal notranslate"><span class="pre">\mathbf{Z}</span></code>$ of an input dataset $<code class="docutils literal notranslate"><span class="pre">\mathbf{X}</span></code>$ that best preserves its geometry, encoded via a pairwise affinity matrix $<code class="docutils literal notranslate"><span class="pre">\mathbf{A_X}</span></code>$. To this end, DR methods optimize $<code class="docutils literal notranslate"><span class="pre">\mathbf{Z}</span></code>$ such that a pairwise affinity matrix in the embedding space (denoted $<code class="docutils literal notranslate"><span class="pre">\mathbf{A_Z}</span></code>$) matches $<code class="docutils literal notranslate"><span class="pre">\mathbf{A_X}</span></code>$. This general problem is as follows</p>
-<div class="highlight-math notranslate"><div class="highlight"><pre><span></span>\min_{\mathbf{Z}} \: \sum_{ij} L( [\mathbf{A_X}]_{ij}, [\mathbf{A_Z}]_{ij}) \quad \text{(DR)}
-</pre></div>
-</div>
-<p>where $<code class="docutils literal notranslate"><span class="pre">L</span></code>$ is typically the $<code class="docutils literal notranslate"><span class="pre">\ell_2</span></code>$, $<code class="docutils literal notranslate"><span class="pre">\mathrm{KL}</span></code>$ or $<code class="docutils literal notranslate"><span class="pre">\mathrm{BCE}</span></code>$ loss.
-Each DR method is thus characterized by a triplet $<code class="docutils literal notranslate"><span class="pre">(L,</span> <span class="pre">\mathbf{A_X},</span> <span class="pre">\mathbf{A_Z})</span></code>$.</p>
-<p><code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> is structured around the above formulation $<code class="docutils literal notranslate"><span class="pre">\text{(DR)}</span></code>$.
-Defining a DR algorithm solely requires providing an <code class="docutils literal notranslate"><span class="pre">Affinity</span></code> object for both input and embedding as well as a loss function $<code class="docutils literal notranslate"><span class="pre">L</span></code>$.
-Code for other aspects, including optimization, is shared across methods, allowing a fair benchmarking focusing on core differences.</p>
-<p>Advantages of <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> also include:</p>
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p></p></th>
-<th class="head"><p></p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><strong>Modularity</strong></p></td>
-<td><p>All of it is written in python in a highly modular way, making it easy to create or transform components.</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>Speed</strong></p></td>
-<td><p>Supports GPU acceleration and batching strategies inspired from constrastive learning.</p></td>
-</tr>
-<tr class="row-even"><td><p><strong>Memory efficiency</strong></p></td>
-<td><p>Relies on <a class="reference external" href="https://www.kernel-operations.io/keops/index.html"><code class="docutils literal notranslate"><span class="pre">KeOps</span></code></a> symbolic tensors to completely avoid memory overflows.</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>Compatibility</strong></p></td>
-<td><p>Implemented methods are fully compatible with the <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code> API and <code class="docutils literal notranslate"><span class="pre">torch</span></code> ecosystem.</p></td>
-</tr>
-<tr class="row-even"><td><p><strong>Parametric estimators</strong></p></td>
-<td><p>Neural estimators are seamelessly integrated for all methods.</p></td>
-</tr>
-<tr class="row-odd"><td><p></p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="license">
-<h3>License<a class="headerlink" href="#license" title="Link to this heading"></a></h3>
-<p>The library is distributed under the 3-Clause BSD license.</p>
-</section>
-<section id="references">
-<h3>References<a class="headerlink" href="#references" title="Link to this heading"></a></h3>
-<p>[1] Geoffrey Hinton, Sam Roweis (2002). <a class="reference external" href="https://proceedings.neurips.cc/paper_files/paper/2002/file/6150ccc6069bea6b5716254057a194ef-Paper.pdf">Stochastic Neighbor Embedding</a>. Advances in neural information processing systems 15 (NeurIPS).</p>
-<p>[2] Laurens van der Maaten, Geoffrey Hinton (2008). <a class="reference external" href="https://www.jmlr.org/papers/volume9/vandermaaten08a/vandermaaten08a.pdf?fbcl">Visualizing Data using t-SNE</a>. The Journal of Machine Learning Research 9.11 (JMLR).</p>
-<p>[3] Hugues Van Assel, Titouan Vayer, Rémi Flamary, Nicolas Courty (2023). <a class="reference external" href="https://proceedings.neurips.cc/paper_files/paper/2023/file/8b54ecd9823fff6d37e61ece8f87e534-Paper-Conference.pdf">SNEkhorn: Dimension Reduction with Symmetric Entropic Affinities</a>. Advances in Neural Information Processing Systems 36 (NeurIPS).</p>
-<p>[4] Max Vladymyrov, Miguel A. Carreira-Perpinan (2013). <a class="reference external" href="https://proceedings.mlr.press/v28/vladymyrov13.pdf">Entropic Affinities: Properties and Efficient Numerical Computation</a>. International Conference on Machine Learning (ICML).</p>
-<p>[5] Richard Sinkhorn, Paul Knopp (1967). <a class="reference external" href="https://msp.org/pjm/1967/21-2/pjm-v21-n2-p14-p.pdf">Concerning nonnegative matrices and doubly stochastic matrices</a>. Pacific Journal of Mathematics, 21(2), 343-348.</p>
-<p>[6] Marco Cuturi (2013). <a class="reference external" href="https://proceedings.neurips.cc/paper/2013/file/af21d0c97db2e27e13572cbf59eb343d-Paper.pdf">Sinkhorn Distances: Lightspeed Computation of Optimal Transport</a>. Advances in Neural Information Processing Systems 26 (NeurIPS).</p>
-<p>[7] Jean Feydy, Thibault Séjourné, François-Xavier Vialard, Shun-ichi Amari, Alain Trouvé, Gabriel Peyré (2019). <a class="reference external" href="https://proceedings.mlr.press/v89/feydy19a/feydy19a.pdf">Interpolating between Optimal Transport and MMD using Sinkhorn Divergences</a>. International Conference on Artificial Intelligence and Statistics (AISTATS).</p>
-<!-- [] Yao Lu, Jukka Corander, Zhirong Yang. ["Doubly Stochastic Neighbor Embedding on Spheres."](https://www.sciencedirect.com/science/article/pii/S0167865518305099) Pattern Recognition Letters 128 (2019): 100-106.
-
-[] Stephen Zhang, Gilles Mordant, Tetsuya Matsumoto, Geoffrey Schiebinger. ["Manifold Learning with Sparse Regularised Optimal Transport."](https://arxiv.org/abs/2307.09816) arXiv preprint (2023). --></section>
-</section>
-</section>
-<section id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h1>
+  <section id="torchdr-a-pytorch-library-for-dimensionality-reduction">
+<h1>TorchDR: a Pytorch library for dimensionality reduction<a class="headerlink" href="#torchdr-a-pytorch-library-for-dimensionality-reduction" title="Link to this heading"></a></h1>
+<p>Github repository: <a class="reference external" href="https://github.com/torchdr/torchdr">https://github.com/torchdr/torchdr</a>.</p>
+<p><strong>TorchDR</strong> provides a simple unified framework for <a class="reference internal" href="torchdr.overview.html#overview"><span class="std std-ref">dimensionality reduction</span></a> methods.</p>
+<p>The library offers:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
-<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
-<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+<li><p>A large collection of <a class="reference internal" href="torchdr.affinities.html#affinities"><span class="std std-ref">affinity matrices</span></a>.</p></li>
+<li><p>A simple and unified interface for <a class="reference internal" href="torchdr.neighbor-embedding.html#neighbor-embedding"><span class="std std-ref">neighbor embedding</span></a> methods.</p></li>
 </ul>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.overview.html">Overview of Dimensionality Reduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.affinities.html">Affinities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.neighbor-embedding.html">Neighbor embedding algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.notation.html">Math Notations</a></li>
+</ul>
+</div>
+</section>
+<section id="finding-help">
+<h1>Finding Help<a class="headerlink" href="#finding-help" title="Link to this heading"></a></h1>
+<p>If you have any questions or suggestions, feel free to open an issue on the
+<a class="reference external" href="https://github.com/torchdr/torchdr/issues">issue tracker</a> or contact <a class="reference external" href="https://huguesva.github.io/">Hugues Van Assel</a> directly.</p>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="all.html" class="btn btn-neutral float-right" title="API and modules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="torchdr.overview.html" class="btn btn-neutral float-right" title="Overview of Dimensionality Reduction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

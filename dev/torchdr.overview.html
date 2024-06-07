@@ -4,9 +4,13 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Overview of Dimensionality Reduction &mdash; TorchDR 0.0.0-alpha documentation</title>
+  <title>DR estimators &mdash; TorchDR 0.0.0-alpha documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
 
   
   <!--[if lt IE 9]>
@@ -18,11 +22,11 @@
         <script src="_static/documentation_options.js?v=8e37ee27"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script>window.MathJax = {"tex": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}, "macros": {"forw": ["{A\\left({#1}\\right)}", 1], "noise": ["{N\\left({#1}\\right)}", 1], "inverse": ["{R\\left({#1}\\right)}", 1], "inversef": ["{R\\left({#1},{#2}\\right)}", 2], "reg": ["{g_\\sigma\\left({#1}\\right)}", 1], "regname": "g_\\sigma", "sensor": ["{\\eta\\left({#1}\\right)}", 1], "datafid": ["{f\\left({#1},{#2}\\right)}", 2], "datafidname": "f", "distance": ["{d\\left({#1},{#2}\\right)}", 2], "distancename": "d", "denoiser": ["{\\operatorname{D}_{{#2}}\\left({#1}\\right)}", 2], "denoisername": "\\operatorname{D}_{\\sigma}", "xset": "\\mathcal{X}", "yset": "\\mathcal{Y}", "group": "\\mathcal{G}", "metric": ["{d\\left({#1},{#2}\\right)}", 2], "loss": ["{\\mathcal\\left({#1}\\right)}", 1], "conj": ["{\\overline{#1}^{\\top}}", 1]}}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Affinities" href="torchdr.affinities.html" />
-    <link rel="prev" title="TorchDR: a Pytorch library for dimensionality reduction" href="index.html" /> 
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,14 +49,17 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Overview of Dimensionality Reduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torchdr.affinities.html">Affinities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torchdr.neighbor-embedding.html">Neighbor embedding algorithms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torchdr.notation.html">Math Notations</a></li>
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">DR estimators</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#spectral-methods">Spectral methods</a></li>
+<li><a class="reference internal" href="#metric-mds">Metric MDS</a></li>
+<li><a class="reference internal" href="#neighbor-embedding">Neighbor Embedding</a></li>
 </ul>
-
+</li>
+</ul>
+</div>
         </div>
       </div>
     </nav>
@@ -67,7 +74,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Overview of Dimensionality Reduction</li>
+      <li class="breadcrumb-item active">DR estimators</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/torchdr.overview.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -77,17 +84,52 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="overview-of-dimensionality-reduction">
-<span id="overview"></span><h1>Overview of Dimensionality Reduction<a class="headerlink" href="#overview-of-dimensionality-reduction" title="Link to this heading"></a></h1>
+  <section id="dr-estimators">
+<span id="overview"></span><h1>DR estimators<a class="headerlink" href="#dr-estimators" title="Link to this heading"></a></h1>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h2>
+<p>DR aims to construct a low-dimensional representation (or embedding) <span class="math notranslate nohighlight">\(\mathbf{Z} = (\mathbf{z}_1, ..., \mathbf{z}_n)^\top\)</span> of an input dataset <span class="math notranslate nohighlight">\(\mathbf{X} = (\mathbf{x}_1, ..., \mathbf{x}_n)^\top\)</span> that best preserves its geometry, encoded via a pairwise affinity matrix <span class="math notranslate nohighlight">\(\mathbf{A_X}\)</span>. To this end, DR methods optimize <span class="math notranslate nohighlight">\(\mathbf{Z}\)</span> such that a pairwise affinity matrix in the embedding space (denoted <span class="math notranslate nohighlight">\(\mathbf{A_Z}\)</span>) matches <span class="math notranslate nohighlight">\(\mathbf{A_X}\)</span>. This general problem is as follows</p>
+<div class="math notranslate nohighlight">
+\[\min_{\mathbf{Z}} \: \sum_{ij} L( [\mathbf{A_X}]_{ij}, [\mathbf{A_Z}]_{ij}) \quad \text{(DR)}\]</div>
+<p>where <span class="math notranslate nohighlight">\(L\)</span> is typically the <span class="math notranslate nohighlight">\(\ell_2\)</span>, <span class="math notranslate nohighlight">\(\mathrm{KL}\)</span> or <span class="math notranslate nohighlight">\(\mathrm{BCE}\)</span> loss.
+Each DR method is thus characterized by a triplet <span class="math notranslate nohighlight">\((L, \mathbf{A_X}, \mathbf{A_Z})\)</span>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> is structured around the above formulation <span class="math notranslate nohighlight">\(\text{(DR)}\)</span>.
+Defining a DR algorithm solely requires providing an <code class="docutils literal notranslate"><span class="pre">Affinity</span></code> object for both input and embedding as well as a loss function <span class="math notranslate nohighlight">\(L\)</span>.</p>
+<p>All DR estimators inherit the structure of the <code class="xref py py-meth docutils literal notranslate"><span class="pre">DRModule()</span></code> class:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="stubs/torchdr.base.DRModule.html#torchdr.base.DRModule" title="torchdr.base.DRModule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchdr.base.DRModule</span></code></a></p></td>
+<td><p>Base class for DR methods.</p></td>
+</tr>
+</tbody>
+</table>
+<p>They are <code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.base.BaseEstimator</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.base.TransformerMixin</span></code> classes which can be called with the <code class="docutils literal notranslate"><span class="pre">fit_transform</span></code> method.</p>
+</section>
+<section id="spectral-methods">
+<h2>Spectral methods<a class="headerlink" href="#spectral-methods" title="Link to this heading"></a></h2>
+<div class="math notranslate nohighlight">
+\[\min_{\mathbf{Z}} \: \sum_{ij} ( [\mathbf{A_X}]_{ij} - \langle \mathbf{z}_i, \mathbf{z}_j \rangle )^{2}\]</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>PCA (available at <code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.spectral.PCA</span></code>) corresponds to choosing <span class="math notranslate nohighlight">\([\mathbf{A_X}]_{ij} = \langle \mathbf{x}_i, \mathbf{x}_j \rangle\)</span>.</p>
+</div>
+</section>
+<section id="metric-mds">
+<h2>Metric MDS<a class="headerlink" href="#metric-mds" title="Link to this heading"></a></h2>
+<div class="math notranslate nohighlight">
+\[\min_{\mathbf{Z}} \: \sum_{ij} ( [\mathbf{A_X}]_{ij} - [\mathbf{A_Z}]_{ij} )^{2}\]</div>
+</section>
+<section id="neighbor-embedding">
+<h2>Neighbor Embedding<a class="headerlink" href="#neighbor-embedding" title="Link to this heading"></a></h2>
+<div class="math notranslate nohighlight">
+\[\min_{\mathbf{Z}} \: - \sum_{ij} [\mathbf{A_X}]_{ij} \log [\mathbf{A_Z}]_{ij}\]</div>
+</section>
 </section>
 
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="TorchDR: a Pytorch library for dimensionality reduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="torchdr.affinities.html" class="btn btn-neutral float-right" title="Affinities" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 

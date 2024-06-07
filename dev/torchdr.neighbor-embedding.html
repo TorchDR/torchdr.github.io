@@ -7,6 +7,10 @@
   <title>Neighbor embedding algorithms &mdash; TorchDR 0.0.0-alpha documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
 
   
   <!--[if lt IE 9]>
@@ -18,11 +22,11 @@
         <script src="_static/documentation_options.js?v=8e37ee27"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script>window.MathJax = {"tex": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}, "macros": {"forw": ["{A\\left({#1}\\right)}", 1], "noise": ["{N\\left({#1}\\right)}", 1], "inverse": ["{R\\left({#1}\\right)}", 1], "inversef": ["{R\\left({#1},{#2}\\right)}", 2], "reg": ["{g_\\sigma\\left({#1}\\right)}", 1], "regname": "g_\\sigma", "sensor": ["{\\eta\\left({#1}\\right)}", 1], "datafid": ["{f\\left({#1},{#2}\\right)}", 2], "datafidname": "f", "distance": ["{d\\left({#1},{#2}\\right)}", 2], "distancename": "d", "denoiser": ["{\\operatorname{D}_{{#2}}\\left({#1}\\right)}", 2], "denoisername": "\\operatorname{D}_{\\sigma}", "xset": "\\mathcal{X}", "yset": "\\mathcal{Y}", "group": "\\mathcal{G}", "metric": ["{d\\left({#1},{#2}\\right)}", 2], "loss": ["{\\mathcal\\left({#1}\\right)}", 1], "conj": ["{\\overline{#1}^{\\top}}", 1]}}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Math Notations" href="torchdr.notation.html" />
-    <link rel="prev" title="torchdr.affinity.DoublyStochasticEntropic" href="stubs/torchdr.affinity.DoublyStochasticEntropic.html" /> 
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,14 +49,18 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="torchdr.overview.html">Overview of Dimensionality Reduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torchdr.affinities.html">Affinities</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Neighbor embedding algorithms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torchdr.notation.html">Math Notations</a></li>
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Neighbor embedding algorithms</a><ul>
+<li><a class="reference internal" href="#part-i-cross-entropy-based-objectives-t-sne-like">Part I : cross entropy based objectives (t-SNE like)</a><ul>
 </ul>
-
+</li>
+<li><a class="reference internal" href="#part-ii-binary-cross-entropy-based-objectives-umap-like">Part II : binary cross entropy based objectives (UMAP like)</a></li>
+<li><a class="reference internal" href="#part-iii-relating-the-two-families-via-contrastive-learning">Part III : relating the two families via contrastive learning</a></li>
+</ul>
+</li>
+</ul>
+</div>
         </div>
       </div>
     </nav>
@@ -79,15 +87,45 @@
              
   <section id="neighbor-embedding-algorithms">
 <span id="neighbor-embedding"></span><h1>Neighbor embedding algorithms<a class="headerlink" href="#neighbor-embedding-algorithms" title="Link to this heading"></a></h1>
+<p>This package aims to implement most popular neighbor embedding (NE) algorithms.
+In this section we briefly go through the main NE algorithms and their variants.</p>
+<p>We refer to <a class="reference external" href="https://proceedings.neurips.cc/paper_files/paper/2022/file/45994782a61bb51cad5c2bae36834265-Paper-Conference.pdf">“A Probabilistic Graph Coupling View of
+Dimension Reduction”</a>
+for a probabilistic point of view on these losses.</p>
+<p>NE methods can be divided into two main categories: cross-entropy (CE) and binary cross-entropy (BCE) based methods.</p>
+<section id="part-i-cross-entropy-based-objectives-t-sne-like">
+<h2>Part I : cross entropy based objectives (t-SNE like)<a class="headerlink" href="#part-i-cross-entropy-based-objectives-t-sne-like" title="Link to this heading"></a></h2>
+<div class="math notranslate nohighlight">
+\[\min_{\mathbf{Z}} \: - \sum_{ij} [\mathbf{A_X}]_{ij} \log [\mathbf{A_Z}]_{ij}\]</div>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="stubs/torchdr.affinity.EntropicAffinity.html#torchdr.affinity.EntropicAffinity" title="torchdr.affinity.EntropicAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchdr.affinity.EntropicAffinity</span></code></a></p></td>
+<td><p>Solves the directed entropic affinity problem introduced in <a href="#id2"><span class="problematic" id="id1">[1]_</span></a>.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="stubs/torchdr.affinity.StudentAffinity.html#torchdr.affinity.StudentAffinity" title="torchdr.affinity.StudentAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchdr.affinity.StudentAffinity</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="part-ii-binary-cross-entropy-based-objectives-umap-like">
+<h2>Part II : binary cross entropy based objectives (UMAP like)<a class="headerlink" href="#part-ii-binary-cross-entropy-based-objectives-umap-like" title="Link to this heading"></a></h2>
+</section>
+<section id="part-iii-relating-the-two-families-via-contrastive-learning">
+<h2>Part III : relating the two families via contrastive learning<a class="headerlink" href="#part-iii-relating-the-two-families-via-contrastive-learning" title="Link to this heading"></a></h2>
+<p><a class="reference external" href="https://arxiv.org/pdf/2206.01816">“From t-SNE to UMAP
+with contrastive learning”</a></p>
+</section>
 </section>
 
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="stubs/torchdr.affinity.DoublyStochasticEntropic.html" class="btn btn-neutral float-left" title="torchdr.affinity.DoublyStochasticEntropic" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="torchdr.notation.html" class="btn btn-neutral float-right" title="Math Notations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 

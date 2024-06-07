@@ -7,6 +7,10 @@
   <title>torchdr.affinity.SymmetricEntropicAffinity &mdash; TorchDR 0.0.0-alpha documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
 
   
   <!--[if lt IE 9]>
@@ -18,12 +22,11 @@
         <script src="../_static/documentation_options.js?v=8e37ee27"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"tex": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}, "macros": {"forw": ["{A\\left({#1}\\right)}", 1], "noise": ["{N\\left({#1}\\right)}", 1], "inverse": ["{R\\left({#1}\\right)}", 1], "inversef": ["{R\\left({#1},{#2}\\right)}", 2], "reg": ["{g_\\sigma\\left({#1}\\right)}", 1], "regname": "g_\\sigma", "sensor": ["{\\eta\\left({#1}\\right)}", 1], "datafid": ["{f\\left({#1},{#2}\\right)}", 2], "datafidname": "f", "distance": ["{d\\left({#1},{#2}\\right)}", 2], "distancename": "d", "denoiser": ["{\\operatorname{D}_{{#2}}\\left({#1}\\right)}", 2], "denoisername": "\\operatorname{D}_{\\sigma}", "xset": "\\mathcal{X}", "yset": "\\mathcal{Y}", "group": "\\mathcal{G}", "metric": ["{d\\left({#1},{#2}\\right)}", 2], "loss": ["{\\mathcal\\left({#1}\\right)}", 1], "conj": ["{\\overline{#1}^{\\top}}", 1]}}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="torchdr.affinity.L2SymmetricEntropicAffinity" href="torchdr.affinity.L2SymmetricEntropicAffinity.html" />
-    <link rel="prev" title="torchdr.affinity.EntropicAffinity" href="torchdr.affinity.EntropicAffinity.html" /> 
+    <link rel="search" title="Search" href="../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,23 +49,20 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../torchdr.overview.html">Overview of Dimensionality Reduction</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../torchdr.affinities.html">Affinities</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="torchdr.affinity.EntropicAffinity.html">torchdr.affinity.EntropicAffinity</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">torchdr.affinity.SymmetricEntropicAffinity</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#torchdr.affinity.SymmetricEntropicAffinity"><code class="docutils literal notranslate"><span class="pre">SymmetricEntropicAffinity</span></code></a></li>
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">torchdr.affinity.SymmetricEntropicAffinity</a><ul>
+<li><a class="reference internal" href="#torchdr.affinity.SymmetricEntropicAffinity"><code class="docutils literal notranslate"><span class="pre">SymmetricEntropicAffinity</span></code></a><ul>
+<li><a class="reference internal" href="#torchdr.affinity.SymmetricEntropicAffinity.log"><code class="docutils literal notranslate"><span class="pre">SymmetricEntropicAffinity.log</span></code></a></li>
+<li><a class="reference internal" href="#torchdr.affinity.SymmetricEntropicAffinity.n_iter_"><code class="docutils literal notranslate"><span class="pre">SymmetricEntropicAffinity.n_iter_</span></code></a></li>
+<li><a class="reference internal" href="#torchdr.affinity.SymmetricEntropicAffinity.eps_"><code class="docutils literal notranslate"><span class="pre">SymmetricEntropicAffinity.eps_</span></code></a></li>
+<li><a class="reference internal" href="#torchdr.affinity.SymmetricEntropicAffinity.mu_"><code class="docutils literal notranslate"><span class="pre">SymmetricEntropicAffinity.mu_</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="torchdr.affinity.L2SymmetricEntropicAffinity.html">torchdr.affinity.L2SymmetricEntropicAffinity</a></li>
-<li class="toctree-l2"><a class="reference internal" href="torchdr.affinity.DoublyStochasticEntropic.html">torchdr.affinity.DoublyStochasticEntropic</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../torchdr.neighbor-embedding.html">Neighbor embedding algorithms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../torchdr.notation.html">Math Notations</a></li>
 </ul>
-
+</div>
         </div>
       </div>
     </nav>
@@ -77,7 +77,6 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../torchdr.affinities.html">Affinities</a></li>
       <li class="breadcrumb-item active">torchdr.affinity.SymmetricEntropicAffinity</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/stubs/torchdr.affinity.SymmetricEntropicAffinity.rst.txt" rel="nofollow"> View page source</a>
@@ -92,9 +91,9 @@
 <h1>torchdr.affinity.SymmetricEntropicAffinity<a class="headerlink" href="#torchdr-affinity-symmetricentropicaffinity" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="torchdr.affinity.SymmetricEntropicAffinity">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchdr.affinity.</span></span><span class="sig-name descname"><span class="pre">SymmetricEntropicAffinity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">perplexity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_square</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Adam'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'euclidean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keops</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolog</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/affinity/entropic.html#SymmetricEntropicAffinity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.affinity.SymmetricEntropicAffinity" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchdr.affinity.</span></span><span class="sig-name descname"><span class="pre">SymmetricEntropicAffinity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">perplexity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_square</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Adam'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'euclidean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.4/library/constants.html#None" title="(in Python v3.4)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keops</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolog</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/affinity/entropic.html#SymmetricEntropicAffinity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.affinity.SymmetricEntropicAffinity" title="Link to this definition"></a></dt>
 <dd><p>Computes the solution <span class="math notranslate nohighlight">\(\mathbf{P}^{\mathrm{se}}\)</span> to the symmetric entropic
-affinity problem (SEA) described in <a class="reference internal" href="#r10aba7b01f7e-3" id="id1">[3]</a> with the dual ascent procedure.
+affinity problem (SEA) described in <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> with the dual ascent procedure.
 It amounts to the following convex optimization problem:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\mathbf{P}^{\mathrm{se}} \in \mathop{\arg\min}_{\mathbf{P} \in \mathbb{R}_+^{n \times n}} \: &amp;\langle \mathbf{C}, \mathbf{P} \rangle \\
@@ -118,58 +117,77 @@ It amounts to the following convex optimization problem:</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>perplexity</strong><span class="classifier">float</span></dt><dd><p>Perplexity parameter, related to the number of ‘effective’ nearest
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>perplexity</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><em>float</em></a>) – Perplexity parameter, related to the number of ‘effective’ nearest
 neighbors. Consider selecting a value between 2 and the number of
-samples.</p>
-</dd>
-<dt><strong>lr</strong><span class="classifier">float, optional</span></dt><dd><p>Learning rate used to update dual variables.</p>
-</dd>
-<dt><strong>eps_square</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to optimize on the square of the dual variables.
-May be more stable in practice.</p>
-</dd>
-<dt><strong>tol</strong><span class="classifier">float, optional</span></dt><dd><p>Precision threshold at which the algorithm stops, by default 1e-5.</p>
-</dd>
-<dt><strong>max_iter</strong><span class="classifier">int, optional</span></dt><dd><p>Number of maximum iterations for the algorithm, by default 500.</p>
-</dd>
-<dt><strong>optimizer</strong><span class="classifier">{‘SGD’, ‘Adam’, ‘NAdam’, ‘LBFGS}, optional</span></dt><dd><p>Which pytorch optimizer to use (default ‘Adam’).</p>
-</dd>
-<dt><strong>tolog</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to store intermediate result in a dictionary (default False).</p>
-</dd>
-<dt><strong>metric</strong><span class="classifier">str, optional</span></dt><dd><p>Metric to use for computing distances, by default “euclidean”.</p>
-</dd>
-<dt><strong>device</strong><span class="classifier">str, optional</span></dt><dd><p>Device to use for computation.</p>
-</dd>
-<dt><strong>keops</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to use KeOps for computation.</p>
-</dd>
-<dt><strong>verbose</strong><span class="classifier">bool, optional</span></dt><dd><p>Verbosity (default True).</p>
+samples.</p></li>
+<li><p><strong>lr</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><em>float</em></a><em>, </em><em>optional</em>) – Learning rate used to update dual variables.</p></li>
+<li><p><strong>eps_square</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to optimize on the square of the dual variables.
+May be more stable in practice.</p></li>
+<li><p><strong>tol</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><em>float</em></a><em>, </em><em>optional</em>) – Precision threshold at which the algorithm stops, by default 1e-5.</p></li>
+<li><p><strong>max_iter</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a><em>, </em><em>optional</em>) – Number of maximum iterations for the algorithm, by default 500.</p></li>
+<li><p><strong>optimizer</strong> (<em>{'SGD'</em><em>, </em><em>'Adam'</em><em>, </em><em>'NAdam'</em><em>, </em><em>'LBFGS}</em><em>, </em><em>optional</em>) – Which pytorch optimizer to use (default ‘Adam’).</p></li>
+<li><p><strong>tolog</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to store intermediate result in a dictionary (default False).</p></li>
+<li><p><strong>metric</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a><em>, </em><em>optional</em>) – Metric to use for computing distances, by default “euclidean”.</p></li>
+<li><p><strong>device</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a><em>, </em><em>optional</em>) – Device to use for computation.</p></li>
+<li><p><strong>keops</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to use KeOps for computation.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><em>bool</em></a><em>, </em><em>optional</em>) – Verbosity (default True).</p></li>
+</ul>
 </dd>
 </dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchdr.affinity.SymmetricEntropicAffinity.log">
+<span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#torchdr.affinity.SymmetricEntropicAffinity.log" title="Link to this definition"></a></dt>
+<dd><p>Contains the dual variables at each iteration of the
+optimization algorithm when tolog = True.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dictionary</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchdr.affinity.SymmetricEntropicAffinity.n_iter_">
+<span class="sig-name descname"><span class="pre">n_iter_</span></span><a class="headerlink" href="#torchdr.affinity.SymmetricEntropicAffinity.n_iter_" title="Link to this definition"></a></dt>
+<dd><p>Number of iterations run.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchdr.affinity.SymmetricEntropicAffinity.eps_">
+<span class="sig-name descname"><span class="pre">eps_</span></span><a class="headerlink" href="#torchdr.affinity.SymmetricEntropicAffinity.eps_" title="Link to this definition"></a></dt>
+<dd><p>Dual variable associated with the entropy constraint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)">torch.Tensor</a> of shape (n_samples)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchdr.affinity.SymmetricEntropicAffinity.mu_">
+<span class="sig-name descname"><span class="pre">mu_</span></span><a class="headerlink" href="#torchdr.affinity.SymmetricEntropicAffinity.mu_" title="Link to this definition"></a></dt>
+<dd><p>Dual variable associated with the marginal constraint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)">torch.Tensor</a> of shape (n_samples)</p>
+</dd>
+</dl>
+</dd></dl>
+
 <p class="rubric">References</p>
-<div role="list" class="citation-list">
-<div class="citation" id="r10aba7b01f7e-3" role="doc-biblioentry">
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id2" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">3</a><span class="fn-bracket">]</span></span>
 <p>SNEkhorn: Dimension Reduction with Symmetric Entropic Affinities,
 Hugues Van Assel, Titouan Vayer, Rémi Flamary, Nicolas Courty, NeurIPS 2023.</p>
-</div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Attributes<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>log</strong><span class="classifier">dictionary</span></dt><dd><p>Contains the dual variables at each iteration of the
-optimization algorithm when tolog = True.</p>
-</dd>
-<dt><strong>n_iter_</strong><span class="classifier">int</span></dt><dd><p>Number of iterations run.</p>
-</dd>
-<dt><strong>eps_</strong><span class="classifier">torch.Tensor of shape (n_samples)</span></dt><dd><p>Dual variable associated with the entropy constraint.</p>
-</dd>
-<dt><strong>mu_</strong><span class="classifier">torch.Tensor of shape (n_samples)</span></dt><dd><p>Dual variable associated with the marginal constraint.</p>
-</dd>
-</dl>
-</dd>
-</dl>
+</aside>
+</aside>
 </dd></dl>
 
 </section>
@@ -177,10 +195,7 @@ optimization algorithm when tolog = True.</p>
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="torchdr.affinity.EntropicAffinity.html" class="btn btn-neutral float-left" title="torchdr.affinity.EntropicAffinity" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="torchdr.affinity.L2SymmetricEntropicAffinity.html" class="btn btn-neutral float-right" title="torchdr.affinity.L2SymmetricEntropicAffinity" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 

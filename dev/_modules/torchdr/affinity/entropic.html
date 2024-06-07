@@ -6,6 +6,10 @@
   <title>torchdr.affinity.entropic &mdash; TorchDR 0.0.0-alpha documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
 
   
   <!--[if lt IE 9]>
@@ -42,14 +46,8 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../torchdr.overview.html">Overview of Dimensionality Reduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../torchdr.affinities.html">Affinities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../torchdr.neighbor-embedding.html">Neighbor embedding algorithms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../torchdr.notation.html">Math Notations</a></li>
-</ul>
-
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
         </div>
       </div>
     </nav>
@@ -233,7 +231,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    perplexity : float</span>
+<span class="sd">    perplexity : float, optional</span>
 <span class="sd">        Perplexity parameter, related to the number of &#39;effective&#39; nearest neighbors.</span>
 <span class="sd">        Consider selecting a value between 2 and the number of samples.</span>
 <span class="sd">    tol : float, optional</span>
@@ -307,7 +305,7 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        X : tensor of shape (n_samples, n_features)</span>
+<span class="sd">        X : array-like of shape (n_samples, n_features)</span>
 <span class="sd">            Data on which affinity is computed.</span>
 
 <span class="sd">        Returns</span>

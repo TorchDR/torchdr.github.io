@@ -12,6 +12,7 @@
       <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
 
   
+    <link rel="shortcut icon" href="../../_static/logo.ico"/>
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -46,8 +47,14 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"></div>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../torchdr.overview.html">DR estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../torchdr.affinities.html">Affinities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../torchdr.neighbor-embedding.html">Neighbor embedding algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../torchdr.notation.html">Math notations</a></li>
+</ul>
+
         </div>
       </div>
     </nav>
@@ -115,6 +122,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">n_features_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">return</span> <span class="bp">self</span>
 
+<div class="viewcode-block" id="DRModule.fit">
+<a class="viewcode-back" href="../../stubs/torchdr.base.DRModule.html#torchdr.base.DRModule.fit">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Projects input data X onto a low-dimensional space.</span>
@@ -135,6 +144,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[TorchDR] Fitting DR model ...&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
+</div>
 
 </pre></div>
 

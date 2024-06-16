@@ -13,6 +13,7 @@
       <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
 
   
+    <link rel="shortcut icon" href="_static/logo.ico"/>
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -22,9 +23,12 @@
         <script src="_static/documentation_options.js?v=8e37ee27"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script>window.MathJax = {"tex": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="DR estimators" href="torchdr.overview.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -47,14 +51,14 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">Introduction</a></li>
-<li><a class="reference internal" href="#implemented-methods">Implemented Methods</a></li>
-<li><a class="reference internal" href="#finding-help">Finding Help</a></li>
-<li><a class="reference internal" href="#references">References</a></li>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.overview.html">DR estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.affinities.html">Affinities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.neighbor-embedding.html">Neighbor embedding algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.notation.html">Math notations</a></li>
 </ul>
-</div>
+
         </div>
       </div>
     </nav>
@@ -81,16 +85,16 @@
              
   <a class="reference internal image-reference" href="https://github.com/torchdr/torchdr/raw/main/docs/source/figures/torchdr_logo.png"><img alt="torchdr logo" class="align-center" src="https://github.com/torchdr/torchdr/raw/main/docs/source/figures/torchdr_logo.png" style="width: 800px;" /></a>
 <p><a class="reference external" href="https://pytorch.org/get-started/locally/"><img alt="Pytorch" src="https://img.shields.io/badge/PyTorch_1.8+-ee4c2c?logo=pytorch&amp;logoColor=white" /></a> <a class="reference external" href="https://www.python.org/downloads/release/python-3100/"><img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-blue" /></a> <a class="reference external" href="https://github.com/psf/black"><img alt="Black" src="https://img.shields.io/badge/code%20style-black-000000.svg" /></a> <img alt="Test Status" src="https://github.com/torchdr/torchdr/actions/workflows/testing.yml/badge.svg" /> <a class="reference external" href="https://codecov.io/gh/torchdr/torchdr"><img alt="codecov" src="https://codecov.io/gh/torchdr/torchdr/branch/main/graph/badge.svg" /></a> <a class="reference external" href="https://opensource.org/licenses/BSD-3-Clause"><img alt="License" src="https://img.shields.io/badge/License-BSD_3--Clause-blue.svg" /></a></p>
-<p>Github repository: <a class="reference external" href="https://github.com/torchdr/torchdr">https://github.com/torchdr/torchdr</a>.</p>
+<p>Github repository: <a class="reference external" href="https://github.com/torchdr/torchdr/">https://github.com/torchdr/torchdr/</a>.</p>
 <p>Documentation: <a class="reference external" href="https://torchdr.github.io/">https://torchdr.github.io/</a>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> is an open-source <strong>dimensionality reduction (DR)</strong> library using PyTorch. Its goal is to accelerate the development of new DR methods by providing a common simplified framework.</p>
 <section id="introduction">
-<span id="id1"></span><h1>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h1>
+<h1>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h1>
 <p>DR aims to construct a low-dimensional representation (or embedding) of an input dataset that best preserves its geometry encoded via a pairwise affinity matrix . To this end, DR methods optimize the embedding such that its associated pairwise affinity matches the input affinity.</p>
 <p><code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> provides a general framework for solving problems of this form.
 Defining a DR algorithm solely requires providing an <code class="docutils literal notranslate"><span class="pre">Affinity</span></code> object for both input and embedding as well as an objective function.
 Code for other aspects, including optimization, is shared across methods. It ensures a fair benchmarking focusing on core differences.</p>
-<p>Advantages of <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> also include:</p>
+<p>Benefits of <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> include:</p>
 <table class="docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><strong>Modularity</strong></p></td>
@@ -112,69 +116,73 @@ Code for other aspects, including optimization, is shared across methods. It ens
 </table>
 </section>
 <section id="implemented-methods">
-<span id="id2"></span><h1>Implemented Methods<a class="headerlink" href="#implemented-methods" title="Link to this heading"></a></h1>
+<h1>Implemented Methods<a class="headerlink" href="#implemented-methods" title="Link to this heading"></a></h1>
 <ul class="simple">
-<li><p>SNE <a class="footnote-reference brackets" href="#id9" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p></li>
-<li><p>t-SNE <a class="footnote-reference brackets" href="#id10" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a></p></li>
-<li><p>SNEkhorn / t-SNEkhorn <a class="footnote-reference brackets" href="#id11" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a></p></li>
-<li><p>UMAP <a class="footnote-reference brackets" href="#id16" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></a></p></li>
+<li><p>SNE <a class="footnote-reference brackets" href="#id5" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p></li>
+<li><p>t-SNE <a class="footnote-reference brackets" href="#id6" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a></p></li>
+<li><p>SNEkhorn / t-SNEkhorn <a class="footnote-reference brackets" href="#id7" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a></p></li>
+<li><p>UMAP <a class="footnote-reference brackets" href="#id12" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></a></p></li>
 </ul>
 </section>
 <section id="finding-help">
-<span id="id7"></span><h1>Finding Help<a class="headerlink" href="#finding-help" title="Link to this heading"></a></h1>
+<h1>Finding Help<a class="headerlink" href="#finding-help" title="Link to this heading"></a></h1>
 <p>If you have any questions or suggestions, feel free to open an issue on the
 <a class="reference external" href="https://github.com/torchdr/torchdr/issues">issue tracker</a> or contact <a class="reference external" href="https://huguesva.github.io/">Hugues Van Assel</a> directly.</p>
 </section>
 <section id="references">
-<span id="id8"></span><h1>References<a class="headerlink" href="#references" title="Link to this heading"></a></h1>
+<h1>References<a class="headerlink" href="#references" title="Link to this heading"></a></h1>
 <aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id9" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">1</a><span class="fn-bracket">]</span></span>
+<aside class="footnote brackets" id="id5" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
 <p>Geoffrey Hinton, Sam Roweis (2002). <a class="reference external" href="https://proceedings.neurips.cc/paper_files/paper/2002/file/6150ccc6069bea6b5716254057a194ef-Paper.pdf">Stochastic Neighbor Embedding</a>. Advances in Neural Information Processing Systems 15 (NeurIPS).</p>
 </aside>
-<aside class="footnote brackets" id="id10" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">2</a><span class="fn-bracket">]</span></span>
+<aside class="footnote brackets" id="id6" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
 <p>Laurens van der Maaten, Geoffrey Hinton (2008). <a class="reference external" href="https://www.jmlr.org/papers/volume9/vandermaaten08a/vandermaaten08a.pdf?fbcl">Visualizing Data using t-SNE</a>. The Journal of Machine Learning Research 9.11 (JMLR).</p>
 </aside>
-<aside class="footnote brackets" id="id11" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">3</a><span class="fn-bracket">]</span></span>
+<aside class="footnote brackets" id="id7" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
 <p>Hugues Van Assel, Titouan Vayer, Rémi Flamary, Nicolas Courty (2023). <a class="reference external" href="https://proceedings.neurips.cc/paper_files/paper/2023/file/8b54ecd9823fff6d37e61ece8f87e534-Paper-Conference.pdf">SNEkhorn: Dimension Reduction with Symmetric Entropic Affinities</a>. Advances in Neural Information Processing Systems 36 (NeurIPS).</p>
 </aside>
-<aside class="footnote brackets" id="id12" role="doc-footnote">
+<aside class="footnote brackets" id="id8" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></span>
 <p>Max Vladymyrov, Miguel A. Carreira-Perpinan (2013). <a class="reference external" href="https://proceedings.mlr.press/v28/vladymyrov13.pdf">Entropic Affinities: Properties and Efficient Numerical Computation</a>. International Conference on Machine Learning (ICML).</p>
 </aside>
-<aside class="footnote brackets" id="id13" role="doc-footnote">
+<aside class="footnote brackets" id="id9" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></span>
 <p>Richard Sinkhorn, Paul Knopp (1967). <a class="reference external" href="https://msp.org/pjm/1967/21-2/pjm-v21-n2-p14-p.pdf">Concerning nonnegative matrices and doubly stochastic matrices</a>. Pacific Journal of Mathematics, 21(2), 343-348.</p>
 </aside>
-<aside class="footnote brackets" id="id14" role="doc-footnote">
+<aside class="footnote brackets" id="id10" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></span>
 <p>Marco Cuturi (2013). <a class="reference external" href="https://proceedings.neurips.cc/paper/2013/file/af21d0c97db2e27e13572cbf59eb343d-Paper.pdf">Sinkhorn Distances: Lightspeed Computation of Optimal Transport</a>. Advances in Neural Information Processing Systems 26 (NeurIPS).</p>
 </aside>
-<aside class="footnote brackets" id="id15" role="doc-footnote">
+<aside class="footnote brackets" id="id11" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></span>
 <p>Jean Feydy, Thibault Séjourné, François-Xavier Vialard, Shun-ichi Amari, Alain Trouvé, Gabriel Peyré (2019). <a class="reference external" href="https://proceedings.mlr.press/v89/feydy19a/feydy19a.pdf">Interpolating between Optimal Transport and MMD using Sinkhorn Divergences</a>. International Conference on Artificial Intelligence and Statistics (AISTATS).</p>
 </aside>
-<aside class="footnote brackets" id="id16" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">8</a><span class="fn-bracket">]</span></span>
+<aside class="footnote brackets" id="id12" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">8</a><span class="fn-bracket">]</span></span>
 <p>Leland McInnes, John Healy, James Melville (2018). <a class="reference external" href="https://arxiv.org/abs/1802.03426">UMAP: Uniform manifold approximation and projection for dimension reduction</a>. arXiv preprint arXiv:1802.03426.</p>
 </aside>
-<aside class="footnote brackets" id="id17" role="doc-footnote">
+<aside class="footnote brackets" id="id13" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>9<span class="fn-bracket">]</span></span>
-<p>Yao Lu, Jukka Corander, Zhirong Yang. <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0167865518305099">Doubly Stochastic Neighbor Embedding on Spheres</a>. Pattern Recognition Letters 128 (2019): 100-106.</p>
+<p>Yao Lu, Jukka Corander, Zhirong Yang (2019). <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0167865518305099">Doubly Stochastic Neighbor Embedding on Spheres</a>. Pattern Recognition Letters 128 : 100-106.</p>
 </aside>
-<aside class="footnote brackets" id="id18" role="doc-footnote">
+<aside class="footnote brackets" id="id14" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>10<span class="fn-bracket">]</span></span>
-<p>Stephen Zhang, Gilles Mordant, Tetsuya Matsumoto, Geoffrey Schiebinger. <a class="reference external" href="https://arxiv.org/abs/2307.09816">Manifold Learning with Sparse Regularised Optimal Transport</a>. arXiv preprint (2023).</p>
+<p>Stephen Zhang, Gilles Mordant, Tetsuya Matsumoto, Geoffrey Schiebinger (2023). <a class="reference external" href="https://arxiv.org/abs/2307.09816">Manifold Learning with Sparse Regularised Optimal Transport</a>. arXiv preprint.</p>
 </aside>
 </aside>
+<div class="toctree-wrapper compound">
+</div>
 </section>
 
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="torchdr.overview.html" class="btn btn-neutral float-right" title="DR estimators" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

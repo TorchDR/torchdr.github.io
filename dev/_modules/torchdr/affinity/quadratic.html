@@ -101,7 +101,7 @@
 <span class="k">def</span> <span class="nf">_Pds</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">dual</span><span class="p">,</span> <span class="n">eps</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the quadratic doubly stochastic matrix P</span>
-<span class="sd">    from the dual variable f and log_K = -C / eps.</span>
+<span class="sd">    from the dual variable f and cost matrix C.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dual_t</span> <span class="o">=</span> <span class="n">batch_transpose</span><span class="p">(</span><span class="n">dual</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">dual</span> <span class="o">+</span> <span class="n">dual_t</span> <span class="o">-</span> <span class="n">C</span><span class="p">)</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">))</span> <span class="o">/</span> <span class="n">eps</span>

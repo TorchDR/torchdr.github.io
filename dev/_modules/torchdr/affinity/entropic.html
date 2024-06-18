@@ -52,6 +52,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../torchdr.overview.html">DR estimators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../torchdr.affinities.html">Affinities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../torchdr.neighbor-embedding.html">Neighbor embedding algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../auto_examples/index.html">Toy examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../torchdr.notation.html">Math notations</a></li>
 </ul>
 
@@ -210,16 +211,18 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;[TorchDR] ERROR : Input has less than one sample : n_samples = </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="s2">&quot;[TorchDR] ERROR (Affinity): Input has less than one sample : &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;n_samples = </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">.&quot;</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">perplexity</span> <span class="o">&gt;=</span> <span class="n">n</span> <span class="ow">or</span> <span class="n">perplexity</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">new_value</span> <span class="o">=</span> <span class="n">n</span> <span class="o">//</span> <span class="mi">2</span>
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span>
-                <span class="s2">&quot;[TorchDR] WARNING : The perplexity parameter must be greater than &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;1 and smaller than the number of samples (here n = </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">). &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;Got perplexity = </span><span class="si">{</span><span class="n">perplexity</span><span class="si">}</span><span class="s2">. Setting perplexity to </span><span class="si">{</span><span class="n">new_value</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="s2">&quot;[TorchDR] WARNING (Affinity): The perplexity parameter must be &quot;</span>
+                <span class="s2">&quot;greater than 1 and smaller than the number of samples &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;(here n = </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">). Got perplexity = </span><span class="si">{</span><span class="n">perplexity</span><span class="si">}</span><span class="s2">. &quot;</span>
+                <span class="s2">&quot;Setting perplexity to </span><span class="si">{new_value}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">new_value</span>
     <span class="k">else</span><span class="p">:</span>
@@ -313,7 +316,7 @@
 
         <span class="k">if</span> <span class="n">sparsity</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span> <span class="o">&gt;</span> <span class="mi">100</span> <span class="ow">and</span> <span class="n">verbose</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span>
-                <span class="s2">&quot;[TorchDR] Affinity (WARNING): sparsity is not recommended &quot;</span>
+                <span class="s2">&quot;[TorchDR] WARNING (Affinity): sparsity is not recommended &quot;</span>
                 <span class="s2">&quot;for a large value of perplexity.&quot;</span>
             <span class="p">)</span>
 
@@ -677,7 +680,7 @@
             <span class="n">check_NaNs</span><span class="p">(</span>
                 <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">eps_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu_</span><span class="p">],</span>
                 <span class="n">msg</span><span class="o">=</span><span class="p">(</span>
-                    <span class="s2">&quot;[TorchDR] Affinity (ERROR): NaN in dual variables, &quot;</span>
+                    <span class="s2">&quot;[TorchDR] ERROR (Affinity): NaN in dual variables, &quot;</span>
                     <span class="s2">&quot;consider decreasing the learning rate.&quot;</span>
                 <span class="p">),</span>
             <span class="p">)</span>
@@ -723,7 +726,7 @@
                     <span class="n">check_NaNs</span><span class="p">(</span>
                         <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">eps_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu_</span><span class="p">],</span>
                         <span class="n">msg</span><span class="o">=</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;[TorchDR] Affinity (ERROR): NaN at iter </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">, &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;[TorchDR] ERROR (Affinity): NaN at iter </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">, &quot;</span>
                             <span class="s2">&quot;consider decreasing the learning rate.&quot;</span>
                         <span class="p">),</span>
                     <span class="p">)</span>
@@ -754,7 +757,7 @@
 
                     <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
                         <span class="nb">print</span><span class="p">(</span>
-                            <span class="s2">&quot;[TorchDR] Affinity (WARNING) : max iter attained, &quot;</span>
+                            <span class="s2">&quot;[TorchDR] WARNING (Affinity): max iter attained, &quot;</span>
                             <span class="s2">&quot;algorithm stops but may not have converged.&quot;</span>
                         <span class="p">)</span>
 
@@ -943,7 +946,7 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolog</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">[</span><span class="s2">&quot;dual&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dual_</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">())</span>
 
-            <span class="n">check_NaNs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dual_</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[TorchDR] Affinity (ERROR): NaN at iter </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="n">check_NaNs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dual_</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[TorchDR] ERROR (Affinity): NaN at iter </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dual_</span> <span class="o">-</span> <span class="n">reduction</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">tol</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
@@ -952,7 +955,7 @@
 
             <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span>
-                    <span class="s2">&quot;[TorchDR] Affinity (WARNING) : max iter attained, algorithm &quot;</span>
+                    <span class="s2">&quot;[TorchDR] WARNING (Affinity): max iter attained, algorithm &quot;</span>
                     <span class="s2">&quot;stops but may not have converged.&quot;</span>
                 <span class="p">)</span>
 

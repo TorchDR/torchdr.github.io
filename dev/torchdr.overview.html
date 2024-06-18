@@ -60,12 +60,19 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#spectral-methods">Spectral methods</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#metric-mds">Metric MDS</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#neighbor-embedding">Neighbor Embedding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#affinity-matching-methods">Affinity matching methods</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="stubs/torchdr.affinity_matcher.AffinityMatcher.html">AffinityMatcher</a></li>
+<li class="toctree-l3"><a class="reference internal" href="stubs/torchdr.affinity_matcher.BatchedAffinityMatcher.html">BatchedAffinityMatcher</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metric-mds">Metric MDS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#neighbor-embedding">Neighbor Embedding</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="torchdr.affinities.html">Affinities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchdr.neighbor-embedding.html">Neighbor embedding algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">Toy examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchdr.notation.html">Math notations</a></li>
 </ul>
 
@@ -118,21 +125,47 @@ Defining a DR algorithm solely requires providing an <code class="docutils liter
 <h2>Spectral methods<a class="headerlink" href="#spectral-methods" title="Link to this heading"></a></h2>
 <div class="math notranslate nohighlight">
 \[\min_{\mathbf{Z}} \: \sum_{ij} ( [\mathbf{A_X}]_{ij} - \langle \mathbf{z}_i, \mathbf{z}_j \rangle )^{2}\]</div>
+<p>This problem is commonly known as kernel Principal Component Analysis <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>11<span class="fn-bracket">]</span></a> and an optimal solution is given by</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{Z}^{\star} = (\sqrt{\lambda_1} \mathbf{v}_1, ..., \sqrt{\lambda_d} \mathbf{v}_d)^\top\]</div>
+<p>where <span class="math notranslate nohighlight">\(\lambda_1, ..., \lambda_d\)</span> are the largest eigenvalues of the centered kernel matrix <span class="math notranslate nohighlight">\(\mathbf{A_X}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{v}_1, ..., \mathbf{v}_d\)</span> are the corresponding eigenvectors.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>PCA (available at <code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.spectral.PCA</span></code>) corresponds to choosing <span class="math notranslate nohighlight">\([\mathbf{A_X}]_{ij} = \langle \mathbf{x}_i, \mathbf{x}_j \rangle\)</span>.</p>
 </div>
 </section>
+<section id="affinity-matching-methods">
+<h2>Affinity matching methods<a class="headerlink" href="#affinity-matching-methods" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="stubs/torchdr.affinity_matcher.AffinityMatcher.html#torchdr.affinity_matcher.AffinityMatcher" title="torchdr.affinity_matcher.AffinityMatcher"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchdr.affinity_matcher.AffinityMatcher</span></code></a></p></td>
+<td><p>Performs dimensionality reduction by matching two affinity matrices.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="stubs/torchdr.affinity_matcher.BatchedAffinityMatcher.html#torchdr.affinity_matcher.BatchedAffinityMatcher" title="torchdr.affinity_matcher.BatchedAffinityMatcher"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchdr.affinity_matcher.BatchedAffinityMatcher</span></code></a></p></td>
+<td><p>Performs dimensionality reduction by matching two batched affinity matrices.</p></td>
+</tr>
+</tbody>
+</table>
 <section id="metric-mds">
-<h2>Metric MDS<a class="headerlink" href="#metric-mds" title="Link to this heading"></a></h2>
+<h3>Metric MDS<a class="headerlink" href="#metric-mds" title="Link to this heading"></a></h3>
 <div class="math notranslate nohighlight">
 \[\min_{\mathbf{Z}} \: \sum_{ij} ( [\mathbf{A_X}]_{ij} - [\mathbf{A_Z}]_{ij} )^{2}\]</div>
 </section>
 <section id="neighbor-embedding">
-<h2>Neighbor Embedding<a class="headerlink" href="#neighbor-embedding" title="Link to this heading"></a></h2>
+<h3>Neighbor Embedding<a class="headerlink" href="#neighbor-embedding" title="Link to this heading"></a></h3>
 <div class="math notranslate nohighlight">
 \[\min_{\mathbf{Z}} \: - \sum_{ij} [\mathbf{A_X}]_{ij} \log [\mathbf{A_Z}]_{ij}\]</div>
 <p>For more details, see <a class="reference internal" href="torchdr.neighbor-embedding.html#neighbor-embedding"><span class="std std-ref">Neighbor embedding algorithms</span></a>.</p>
+</section>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id2" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">11</a><span class="fn-bracket">]</span></span>
+<p>Ham, J., Lee, D. D., Mika, S., &amp; Schölkopf, B. (2004). <a class="reference external" href="https://icml.cc/Conferences/2004/proceedings/papers/296.pdf">A kernel view of the dimensionality reduction of manifolds</a>. In Proceedings of the twenty-first international conference on Machine learning (ICML).</p>
+</aside>
+</aside>
 </section>
 </section>
 

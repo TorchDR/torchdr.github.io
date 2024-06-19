@@ -52,7 +52,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../torchdr.overview.html">DR estimators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../torchdr.affinities.html">Affinities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../torchdr.neighbor-embedding.html">Neighbor embedding algorithms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../auto_examples/index.html">Toy examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../auto_examples/index.html">Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../torchdr.notation.html">Math notations</a></li>
 </ul>
 
@@ -162,6 +162,8 @@
 <span class="sd">        Whether to store intermediate result in a dictionary.</span>
 <span class="sd">    metric : str, optional</span>
 <span class="sd">        Metric to use for computing distances (default &quot;euclidean&quot;).</span>
+<span class="sd">    nodiag : bool, optional</span>
+<span class="sd">        Whether to set the diagonal elements of the affinity matrix to 0.</span>
 <span class="sd">    device : str, optional</span>
 <span class="sd">        Device to use for computation.</span>
 <span class="sd">    keops : bool, optional</span>
@@ -188,11 +190,14 @@
         <span class="n">base_kernel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gaussian&quot;</span><span class="p">,</span>
         <span class="n">tolog</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
+        <span class="n">nodiag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">keops</span><span class="o">=</span><span class="n">keops</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span> <span class="n">nodiag</span><span class="o">=</span><span class="n">nodiag</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">keops</span><span class="o">=</span><span class="n">keops</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="o">=</span> <span class="n">eps</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_dual</span> <span class="o">=</span> <span class="n">init_dual</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tol</span> <span class="o">=</span> <span class="n">tol</span>

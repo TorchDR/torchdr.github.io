@@ -68,6 +68,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../torchdr.notation.html">Math notations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../torchdr.contributing.html">How to Contribute</a></li>
 </ul>
 
         </div>
@@ -179,8 +180,8 @@ their neighbors.</p>
 <p>To remedy this issue, we can use an <strong>entropic affinity</strong>. The entropic affinity
 employs an <strong>adaptive bandwidth</strong> that depends on the local density of points.
 By controling the entropy of each row of the affinity matrix, it ensures that
-<strong>each point has the same number of effective neighbors</strong> (handled by
-the <code class="docutils literal notranslate"><span class="pre">perplexity</span></code> parameter) regardless of the local density around them.</p>
+<strong>each point has the same number of effective neighbors</strong> (given by
+the <code class="docutils literal notranslate"><span class="pre">perplexity</span></code> parameter) regardless of the local density around it.</p>
 <p>In <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code>, this object is available here :
 <a class="reference internal" href="../../stubs/torchdr.affinity.EntropicAffinity.html#torchdr.affinity.EntropicAffinity" title="torchdr.affinity.EntropicAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.affinity.EntropicAffinity</span></code></a> .</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">EA</span></a> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">EntropicAffinity</span></a><span class="p">(</span>
@@ -204,7 +205,7 @@ the <code class="docutils literal notranslate"><span class="pre">perplexity</spa
 Thus, the entropic affinity effectively filters out the various noise levels.</p>
 <p>This affinity is an important component of the <strong>TSNE</strong> algorithm,
 available in <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> at <a class="reference internal" href="../../stubs/torchdr.neighbor_embedding.TSNE.html#torchdr.neighbor_embedding.TSNE" title="torchdr.neighbor_embedding.TSNE"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.neighbor_embedding.TSNE</span></code></a>.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.584 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.109 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-affinities-demo-ea-adaptivity-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/17d429f11ca029172465ca0d7bb1879e/demo_ea_adaptivity.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">demo_ea_adaptivity.ipynb</span></code></a></p>

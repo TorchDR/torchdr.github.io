@@ -159,8 +159,8 @@ Entropic affinity (adaptive bandwidth)
 To remedy this issue, we can use an **entropic affinity**. The entropic affinity
 employs an **adaptive bandwidth** that depends on the local density of points.
 By controling the entropy of each row of the affinity matrix, it ensures that
-**each point has the same number of effective neighbors** (handled by
-the ``perplexity`` parameter) regardless of the local density around them.
+**each point has the same number of effective neighbors** (given by
+the ``perplexity`` parameter) regardless of the local density around it.
 
 In ``TorchDR``, this object is available here :
 :class:`torchdr.affinity.EntropicAffinity` .
@@ -210,7 +210,7 @@ available in ``TorchDR`` at :class:`torchdr.neighbor_embedding.TSNE`.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.584 seconds)
+   **Total running time of the script:** (0 minutes 3.109 seconds)
 
 
 .. _sphx_glr_download_auto_examples_affinities_demo_ea_adaptivity.py:

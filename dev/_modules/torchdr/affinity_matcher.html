@@ -49,11 +49,12 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../torchdr.overview.html">DR estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../all.html">API and Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../torchdr.overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../torchdr.affinities.html">Affinities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../torchdr.neighbor-embedding.html">Neighbor embedding algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../torchdr.neighbor-embedding.html">Neighbor Embedding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../auto_examples/index.html">Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../torchdr.notation.html">Math notations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../torchdr.notation.html">Math Notations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../torchdr.contributing.html">How to Contribute</a></li>
 </ul>
 
@@ -115,7 +116,7 @@
 
 
 <div class="viewcode-block" id="AffinityMatcher">
-<a class="viewcode-back" href="../../stubs/torchdr.affinity_matcher.AffinityMatcher.html#torchdr.affinity_matcher.AffinityMatcher">[docs]</a>
+<a class="viewcode-back" href="../../stubs/torchdr.affinity_matcher.AffinityMatcher.html#torchdr.AffinityMatcher">[docs]</a>
 <span class="k">class</span> <span class="nc">AffinityMatcher</span><span class="p">(</span><span class="n">DRModule</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Performs dimensionality reduction by matching two affinity matrices.</span>
@@ -228,7 +229,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">kwargs_affinity_out</span> <span class="o">=</span> <span class="n">kwargs_affinity_out</span>
 
 <div class="viewcode-block" id="AffinityMatcher.fit_transform">
-<a class="viewcode-back" href="../../stubs/torchdr.affinity_matcher.AffinityMatcher.html#torchdr.affinity_matcher.AffinityMatcher.fit_transform">[docs]</a>
+<a class="viewcode-back" href="../../stubs/torchdr.affinity_matcher.AffinityMatcher.html#torchdr.AffinityMatcher.fit_transform">[docs]</a>
     <span class="nd">@handle_backend</span>
     <span class="k">def</span> <span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -251,7 +252,7 @@
 
 
 <div class="viewcode-block" id="AffinityMatcher.fit">
-<a class="viewcode-back" href="../../stubs/torchdr.affinity_matcher.AffinityMatcher.html#torchdr.affinity_matcher.AffinityMatcher.fit">[docs]</a>
+<a class="viewcode-back" href="../../stubs/torchdr.affinity_matcher.AffinityMatcher.html#torchdr.AffinityMatcher.fit">[docs]</a>
     <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fits the model to the provided data.</span>
@@ -410,7 +411,7 @@
 
 
 <div class="viewcode-block" id="BatchedAffinityMatcher">
-<a class="viewcode-back" href="../../stubs/torchdr.affinity_matcher.BatchedAffinityMatcher.html#torchdr.affinity_matcher.BatchedAffinityMatcher">[docs]</a>
+<a class="viewcode-back" href="../../stubs/torchdr.affinity_matcher.BatchedAffinityMatcher.html#torchdr.BatchedAffinityMatcher">[docs]</a>
 <span class="k">class</span> <span class="nc">BatchedAffinityMatcher</span><span class="p">(</span><span class="n">AffinityMatcher</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Performs dimensionality reduction by matching two batched affinity matrices.</span>
@@ -512,7 +513,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
 
 <div class="viewcode-block" id="BatchedAffinityMatcher.batched_affinity_in_out">
-<a class="viewcode-back" href="../../stubs/torchdr.affinity_matcher.BatchedAffinityMatcher.html#torchdr.affinity_matcher.BatchedAffinityMatcher.batched_affinity_in_out">[docs]</a>
+<a class="viewcode-back" href="../../stubs/torchdr.affinity_matcher.BatchedAffinityMatcher.html#torchdr.BatchedAffinityMatcher.batched_affinity_in_out">[docs]</a>
     <span class="k">def</span> <span class="nf">batched_affinity_in_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs_affinity_out</span><span class="o">=</span><span class="p">{}):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns batched affinity matrices for the input and output spaces.</span>

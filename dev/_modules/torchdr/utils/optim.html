@@ -6,8 +6,13 @@
   <title>torchdr.utils.optim &mdash; TorchDR 0.0.0-alpha documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
 
   
+    <link rel="shortcut icon" href="../../../_static/logo.ico"/>
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -26,12 +31,13 @@
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: white" >
 
           
           
-          <a href="../../../index.html" class="icon icon-home">
-            TorchDR
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/torchdr_logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -43,15 +49,20 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../index.html">Welcome to TorchDR’s documentation!</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../all.html">API and modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../all.html">API and Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../torchdr.overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../torchdr.affinities.html">Affinities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../torchdr.neighbor-embedding.html">Neighbor Embedding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../auto_examples/index.html">Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../torchdr.notation.html">Math Notations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../torchdr.contributing.html">How to Contribute</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: white" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">TorchDR</a>
       </nav>
@@ -96,7 +107,7 @@
 
 
 <div class="viewcode-block" id="binary_search">
-<a class="viewcode-back" href="../../../gen_modules/torchdr.utils.binary_search.html#torchdr.utils.binary_search">[docs]</a>
+<a class="viewcode-back" href="../../../gen_modules/torchdr.binary_search.html#torchdr.binary_search">[docs]</a>
 <span class="k">def</span> <span class="nf">binary_search</span><span class="p">(</span>
     <span class="n">f</span><span class="p">,</span>
     <span class="n">n</span><span class="p">,</span>
@@ -130,7 +141,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    m : tensor of shape (n)</span>
+<span class="sd">    m : torch.Tensor of shape (n)</span>
 <span class="sd">        root of f.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">begin</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">init_bounds</span><span class="p">(</span><span class="n">f</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">begin</span><span class="o">=</span><span class="n">begin</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
@@ -165,7 +176,7 @@
 
 
 <div class="viewcode-block" id="false_position">
-<a class="viewcode-back" href="../../../gen_modules/torchdr.utils.false_position.html#torchdr.utils.false_position">[docs]</a>
+<a class="viewcode-back" href="../../../gen_modules/torchdr.false_position.html#torchdr.false_position">[docs]</a>
 <span class="k">def</span> <span class="nf">false_position</span><span class="p">(</span>
     <span class="n">f</span><span class="p">,</span>
     <span class="n">n</span><span class="p">,</span>
@@ -188,9 +199,9 @@
 <span class="sd">        increasing function which root should be computed.</span>
 <span class="sd">    n : int</span>
 <span class="sd">        size of the input of f.</span>
-<span class="sd">    begin : tensor of shape (n) or float, optional</span>
+<span class="sd">    begin : torch.Tensor of shape (n) or float, optional</span>
 <span class="sd">        initial lower bound of the root.</span>
-<span class="sd">    end : tensor of shape (n) or float, optional</span>
+<span class="sd">    end : torch.Tensor of shape (n) or float, optional</span>
 <span class="sd">        initial upper bound of the root.</span>
 <span class="sd">    max_iter : int, optional</span>
 <span class="sd">        maximum iterations of search.</span>
@@ -203,7 +214,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    m : tensor of shape (n)</span>
+<span class="sd">    m : torch.Tensor of shape (n)</span>
 <span class="sd">        root of f.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">begin</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">init_bounds</span><span class="p">(</span>

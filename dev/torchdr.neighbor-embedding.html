@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Neighbor embedding algorithms &mdash; TorchDR 0.0.0-alpha documentation</title>
+  <title>Neighbor Embedding &mdash; TorchDR 0.0.0-alpha documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=61a4c737" />
@@ -28,8 +28,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="TSNE" href="stubs/torchdr.neighbor_embedding.TSNE.html" />
-    <link rel="prev" title="DoublyStochasticQuadratic" href="stubs/torchdr.affinity.DoublyStochasticQuadratic.html" /> 
+    <link rel="next" title="Gallery" href="auto_examples/index.html" />
+    <link rel="prev" title="LogAffinity" href="stubs/torchdr.LogAffinity.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -54,21 +54,16 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="torchdr.overview.html">DR estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="all.html">API and Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchdr.affinities.html">Affinities</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Neighbor embedding algorithms</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#part-i-cross-entropy-based-objectives-t-sne-like">Part I : cross entropy based objectives (t-SNE like)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="stubs/torchdr.affinity.EntropicAffinity.html">EntropicAffinity</a></li>
-<li class="toctree-l3"><a class="reference internal" href="stubs/torchdr.affinity.StudentAffinity.html">StudentAffinity</a></li>
-<li class="toctree-l3"><a class="reference internal" href="stubs/torchdr.neighbor_embedding.TSNE.html">TSNE</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#part-ii-binary-cross-entropy-based-objectives-umap-like">Part II : binary cross entropy based objectives (UMAP like)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#part-iii-relating-the-two-families-via-contrastive-learning">Part III : relating the two families via contrastive learning</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Neighbor Embedding</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview-of-ne-via-attraction-and-repulsion">Overview of NE via Attraction and Repulsion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torchdr.notation.html">Math notations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.notation.html">Math Notations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchdr.contributing.html">How to Contribute</a></li>
 </ul>
 
@@ -86,7 +81,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Neighbor embedding algorithms</li>
+      <li class="breadcrumb-item active">Neighbor Embedding</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/torchdr.neighbor-embedding.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -96,47 +91,94 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="neighbor-embedding-algorithms">
-<span id="neighbor-embedding"></span><h1>Neighbor embedding algorithms<a class="headerlink" href="#neighbor-embedding-algorithms" title="Link to this heading"></a></h1>
-<p>This package aims to implement most popular neighbor embedding (NE) algorithms.
+  <section id="module-torchdr">
+<span id="neighbor-embedding"></span><span id="id1"></span><h1>Neighbor Embedding<a class="headerlink" href="#module-torchdr" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> aims to implement most popular <strong>neighbor embedding (NE)</strong> algorithms.
 In this section we briefly go through the main NE algorithms and their variants.</p>
-<p>We refer to <a class="reference external" href="https://proceedings.neurips.cc/paper_files/paper/2022/file/45994782a61bb51cad5c2bae36834265-Paper-Conference.pdf">“A Probabilistic Graph Coupling View of
-Dimension Reduction”</a>
-for a probabilistic point of view on these losses.</p>
-<p>NE methods can be divided into two main categories: cross-entropy (CE) and binary cross-entropy (BCE) based methods.</p>
-<section id="part-i-cross-entropy-based-objectives-t-sne-like">
-<h2>Part I : cross entropy based objectives (t-SNE like)<a class="headerlink" href="#part-i-cross-entropy-based-objectives-t-sne-like" title="Link to this heading"></a></h2>
+<p>For consistency with the literature, we will denote the input affinity matrix by <span class="math notranslate nohighlight">\(\mathbf{P}\)</span> and the output affinity matrix by <span class="math notranslate nohighlight">\(\mathbf{Q}\)</span>. These affinities can be viewed as <strong>soft neighborhood graphs</strong>, hence the term <em>neighbor embedding</em>.</p>
+<section id="overview-of-ne-via-attraction-and-repulsion">
+<h2>Overview of NE via Attraction and Repulsion<a class="headerlink" href="#overview-of-ne-via-attraction-and-repulsion" title="Link to this heading"></a></h2>
+<p>NE objectives share a common structure: they aim to minimize the weighted sum of an attractive term and a repulsive term. Interestingly, the attractive term is often the cross-entropy between the input and output affinities. Additionally, the repulsive term is typically a function of the output affinities only. Thus, the NE problem can be formulated as the following minimization problem:</p>
 <div class="math notranslate nohighlight">
-\[\min_{\mathbf{Z}} \: - \sum_{ij} [\mathbf{A_X}]_{ij} \log [\mathbf{A_Z}]_{ij}\]</div>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="stubs/torchdr.affinity.EntropicAffinity.html#torchdr.affinity.EntropicAffinity" title="torchdr.affinity.EntropicAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchdr.affinity.EntropicAffinity</span></code></a></p></td>
-<td><p>Solves the directed entropic affinity problem introduced in <a href="#id3"><span class="problematic" id="id1">[1]_</span></a>.</p></td>
+\[\min_{\mathbf{Z}} \: - \sum_{ij} P_{ij} \log Q_{ij} + \gamma \mathcal{L}_{\mathrm{rep}}(\mathbf{Q}) \:.\]</div>
+<p>In the above, <span class="math notranslate nohighlight">\(\mathcal{L}_{\mathrm{rep}}(\mathbf{Q})\)</span> represents the repulsive part of the loss function while <span class="math notranslate nohighlight">\(\gamma\)</span> is a hyperparameter that controls the balance between attraction and repulsion.</p>
+<p>Many NE methods can be represented within this framework. The following table summarizes the ones implemented in <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code>, detailing their respective repulsive loss function, as well as their input and output affinities.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>Method</strong></p></th>
+<th class="head"><p><strong>Repulsive term</strong> <span class="math notranslate nohighlight">\(\mathcal{L}_{\mathrm{rep}}\)</span></p></th>
+<th class="head"><p><strong>Affinity input</strong> <span class="math notranslate nohighlight">\(\mathbf{P}\)</span></p></th>
+<th class="head"><p><strong>Affinity output</strong> <span class="math notranslate nohighlight">\(\mathbf{Q}\)</span></p></th>
 </tr>
-</tbody>
-</table>
-<table class="autosummary longtable docutils align-default">
+</thead>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="stubs/torchdr.affinity.StudentAffinity.html#torchdr.affinity.StudentAffinity" title="torchdr.affinity.StudentAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchdr.affinity.StudentAffinity</span></code></a></p></td>
-<td><p>Computes the Student affinity matrix based on the Student-t distribution:</p></td>
+<tr class="row-even"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">SNE</span></code> <a class="footnote-reference brackets" href="#id9" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(\sum_{i} \log(\sum_j Q_{ij})\)</span></p></td>
+<td><p><a class="reference internal" href="gen_modules/torchdr.EntropicAffinity.html#torchdr.EntropicAffinity" title="torchdr.EntropicAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">EntropicAffinity</span></code></a></p></td>
+<td><p><a class="reference internal" href="gen_modules/torchdr.GibbsAffinity.html#torchdr.GibbsAffinity" title="torchdr.GibbsAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">GibbsAffinity</span></code></a></p></td>
 </tr>
-</tbody>
-</table>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="stubs/torchdr.neighbor_embedding.TSNE.html#torchdr.neighbor_embedding.TSNE" title="torchdr.neighbor_embedding.TSNE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchdr.neighbor_embedding.TSNE</span></code></a></p></td>
-<td><p>Implementation of the t-Stochastic Neighbor Embedding (t-SNE) algorithm introduced in <a href="#id4"><span class="problematic" id="id2">[2]_</span></a>.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.TSNE.html#torchdr.TSNE" title="torchdr.TSNE"><code class="xref py py-class docutils literal notranslate"><span class="pre">TSNE</span></code></a> <a class="footnote-reference brackets" href="#id10" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(\log(\sum_{ij} Q_{ij})\)</span></p></td>
+<td><p><a class="reference internal" href="gen_modules/torchdr.L2SymmetricEntropicAffinity.html#torchdr.L2SymmetricEntropicAffinity" title="torchdr.L2SymmetricEntropicAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">L2SymmetricEntropicAffinity</span></code></a></p></td>
+<td><p><a class="reference internal" href="gen_modules/torchdr.StudentAffinity.html#torchdr.StudentAffinity" title="torchdr.StudentAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StudentAffinity</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.InfoTSNE.html#torchdr.InfoTSNE" title="torchdr.InfoTSNE"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoTSNE</span></code></a> <a class="footnote-reference brackets" href="#id14" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>15<span class="fn-bracket">]</span></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(\log(\sum_{(ij) \in B} Q_{ij})\)</span></p></td>
+<td><p><a class="reference internal" href="gen_modules/torchdr.L2SymmetricEntropicAffinity.html#torchdr.L2SymmetricEntropicAffinity" title="torchdr.L2SymmetricEntropicAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">L2SymmetricEntropicAffinity</span></code></a></p></td>
+<td><p><a class="reference internal" href="gen_modules/torchdr.StudentAffinity.html#torchdr.StudentAffinity" title="torchdr.StudentAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StudentAffinity</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>SNEkhorn <a class="footnote-reference brackets" href="#id11" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(\log(\sum_{ij} Q_{ij})\)</span></p></td>
+<td><p><a class="reference internal" href="gen_modules/torchdr.SymmetricEntropicAffinity.html#torchdr.SymmetricEntropicAffinity" title="torchdr.SymmetricEntropicAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">SymmetricEntropicAffinity</span></code></a></p></td>
+<td><p><a class="reference internal" href="gen_modules/torchdr.SinkhornAffinity.html#torchdr.SinkhornAffinity" title="torchdr.SinkhornAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">SinkhornAffinity(base_kernel=&quot;gaussian&quot;)</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p>TSNEkhorn <a class="footnote-reference brackets" href="#id11" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(\log(\sum_{ij} Q_{ij})\)</span></p></td>
+<td><p><a class="reference internal" href="gen_modules/torchdr.SymmetricEntropicAffinity.html#torchdr.SymmetricEntropicAffinity" title="torchdr.SymmetricEntropicAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">SymmetricEntropicAffinity</span></code></a></p></td>
+<td><p><a class="reference internal" href="gen_modules/torchdr.SinkhornAffinity.html#torchdr.SinkhornAffinity" title="torchdr.SinkhornAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">SinkhornAffinity(base_kernel=&quot;student&quot;)</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>UMAP <a class="footnote-reference brackets" href="#id12" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(- \sum_{ij} \log (1 - Q_{ij})\)</span></p></td>
+<td><p><a class="reference internal" href="gen_modules/torchdr.UMAPAffinityIn.html#torchdr.UMAPAffinityIn" title="torchdr.UMAPAffinityIn"><code class="xref py py-class docutils literal notranslate"><span class="pre">UMAPAffinityIn</span></code></a></p></td>
+<td><p><a class="reference internal" href="gen_modules/torchdr.UMAPAffinityOut.html#torchdr.UMAPAffinityOut" title="torchdr.UMAPAffinityOut"><code class="xref py py-class docutils literal notranslate"><span class="pre">UMAPAffinityOut</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p>LargeVis <a class="footnote-reference brackets" href="#id13" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>13<span class="fn-bracket">]</span></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(- \sum_{ij} \log (1 - Q_{ij})\)</span></p></td>
+<td><p><a class="reference internal" href="gen_modules/torchdr.L2SymmetricEntropicAffinity.html#torchdr.L2SymmetricEntropicAffinity" title="torchdr.L2SymmetricEntropicAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">L2SymmetricEntropicAffinity</span></code></a></p></td>
+<td><p><a class="reference internal" href="gen_modules/torchdr.StudentAffinity.html#torchdr.StudentAffinity" title="torchdr.StudentAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StudentAffinity</span></code></a></p></td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="part-ii-binary-cross-entropy-based-objectives-umap-like">
-<h2>Part II : binary cross entropy based objectives (UMAP like)<a class="headerlink" href="#part-ii-binary-cross-entropy-based-objectives-umap-like" title="Link to this heading"></a></h2>
-</section>
-<section id="part-iii-relating-the-two-families-via-contrastive-learning">
-<h2>Part III : relating the two families via contrastive learning<a class="headerlink" href="#part-iii-relating-the-two-families-via-contrastive-learning" title="Link to this heading"></a></h2>
-<p><a class="reference external" href="https://arxiv.org/pdf/2206.01816">“From t-SNE to UMAP
-with contrastive learning”</a></p>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id9" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">1</a><span class="fn-bracket">]</span></span>
+<p>Geoffrey Hinton, Sam Roweis (2002). <a class="reference external" href="https://proceedings.neurips.cc/paper_files/paper/2002/file/6150ccc6069bea6b5716254057a194ef-Paper.pdf">Stochastic Neighbor Embedding</a>. Advances in Neural Information Processing Systems 15 (NeurIPS).</p>
+</aside>
+<aside class="footnote brackets" id="id10" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">2</a><span class="fn-bracket">]</span></span>
+<p>Laurens van der Maaten, Geoffrey Hinton (2008). <a class="reference external" href="https://www.jmlr.org/papers/volume9/vandermaaten08a/vandermaaten08a.pdf?fbcl">Visualizing Data using t-SNE</a>. The Journal of Machine Learning Research 9.11 (JMLR).</p>
+</aside>
+<aside class="footnote brackets" id="id11" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id5">1</a>,<a role="doc-backlink" href="#id6">2</a>)</span>
+<p>Hugues Van Assel, Titouan Vayer, Rémi Flamary, Nicolas Courty (2023). <a class="reference external" href="https://proceedings.neurips.cc/paper_files/paper/2023/file/8b54ecd9823fff6d37e61ece8f87e534-Paper-Conference.pdf">SNEkhorn: Dimension Reduction with Symmetric Entropic Affinities</a>. Advances in Neural Information Processing Systems 36 (NeurIPS).</p>
+</aside>
+<aside class="footnote brackets" id="id12" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">8</a><span class="fn-bracket">]</span></span>
+<p>Leland McInnes, John Healy, James Melville (2018). <a class="reference external" href="https://arxiv.org/abs/1802.03426">UMAP: Uniform manifold approximation and projection for dimension reduction</a>. arXiv preprint arXiv:1802.03426.</p>
+</aside>
+<aside class="footnote brackets" id="id13" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">13</a><span class="fn-bracket">]</span></span>
+<p>Tang, J., Liu, J., Zhang, M., &amp; Mei, Q. (2016). <a class="reference external" href="https://dl.acm.org/doi/pdf/10.1145/2872427.2883041?casa_token=9ybi1tW9opcAAAAA:yVfVBu47DYa5_cpmJnQZm4PPWaTdVJgRu2pIMqm3nvNrZV5wEsM9pde03fCWixTX0_AlT-E7D3QRZw">Visualizing Large-Scale and High-Dimensional Data</a>. In Proceedings of the 25th international conference on world wide web.</p>
+</aside>
+<aside class="footnote brackets" id="id14" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">15</a><span class="fn-bracket">]</span></span>
+<p>Sebastian Damrich, Jan Niklas Böhm, Fred Hamprecht, Dmitry Kobak (2023). <a class="reference external" href="https://openreview.net/pdf?id=B8a1FcY0vi">From t-SNE to UMAP with contrastive learning</a>. International Conference on Learning Representations (ICLR).</p>
+</aside>
+</aside>
 </section>
 </section>
 
@@ -144,8 +186,8 @@ with contrastive learning”</a></p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="stubs/torchdr.affinity.DoublyStochasticQuadratic.html" class="btn btn-neutral float-left" title="DoublyStochasticQuadratic" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="stubs/torchdr.neighbor_embedding.TSNE.html" class="btn btn-neutral float-right" title="TSNE" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="stubs/torchdr.LogAffinity.html" class="btn btn-neutral float-left" title="LogAffinity" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="auto_examples/index.html" class="btn btn-neutral float-right" title="Gallery" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

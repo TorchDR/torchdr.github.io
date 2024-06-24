@@ -53,26 +53,27 @@ We use the following modules from ``TorchDR``:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 28-29
+.. GENERATED FROM PYTHON SOURCE LINES 28-30
 
-We generate three Gaussian clusters of points with different standard deviations.
+We generate three Gaussian clusters of points with different standard deviations
+(respectively std=1, 2 and 3).
 
-.. GENERATED FROM PYTHON SOURCE LINES 29-57
+.. GENERATED FROM PYTHON SOURCE LINES 30-58
 
 .. code-block:: Python
 
 
-    torch.manual_seed(10)
+    torch.manual_seed(0)
     n_cluster = 20  # number of points per cluster
 
     X1 = torch.Tensor([-10, -10])[None, :] + torch.normal(
         0, 1, size=(n_cluster, 2), dtype=torch.double
     )
     X2 = torch.Tensor([10, -10])[None, :] + torch.normal(
-        0, 3, size=(n_cluster, 2), dtype=torch.double
+        0, 2, size=(n_cluster, 2), dtype=torch.double
     )
     X3 = torch.Tensor([0, 10])[None, :] + torch.normal(
-        0, 4, size=(n_cluster, 2), dtype=torch.double
+        0, 3, size=(n_cluster, 2), dtype=torch.double
     )
 
     X = torch.cat([X1, X2, X3], 0)
@@ -96,7 +97,7 @@ We generate three Gaussian clusters of points with different standard deviations
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 58-70
+.. GENERATED FROM PYTHON SOURCE LINES 59-71
 
 Row-normalised Gibbs affinity with constant bandwidth
 -----------------------------------------------------
@@ -107,11 +108,11 @@ Such a global bandwidth **only controls the global
 entropy** of the affinity.
 
 In ``TorchDR``, we can easily implement it using
-:class:`torchdr.affinity.GibbsAffinity` and setting the
+:class:`torchdr.GibbsAffinity` and setting the
 parameter ``normalization_dim=1``.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 70-87
+.. GENERATED FROM PYTHON SOURCE LINES 71-88
 
 .. code-block:: Python
 
@@ -144,14 +145,14 @@ parameter ``normalization_dim=1``.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 88-92
+.. GENERATED FROM PYTHON SOURCE LINES 89-93
 
 We can observe a remarkable **heterogeneity in the density of connections**.
 This occurs because it is less costly to create connections in high-density regions.
 As a consequence, points in sparse regions create very few connections with
 their neighbors.
 
-.. GENERATED FROM PYTHON SOURCE LINES 94-105
+.. GENERATED FROM PYTHON SOURCE LINES 95-106
 
 Entropic affinity (adaptive bandwidth)
 --------------------------------------
@@ -163,9 +164,9 @@ By controling the entropy of each row of the affinity matrix, it ensures that
 the ``perplexity`` parameter) regardless of the local density around it.
 
 In ``TorchDR``, this object is available here :
-:class:`torchdr.affinity.EntropicAffinity` .
+:class:`torchdr.EntropicAffinity`.
 
-.. GENERATED FROM PYTHON SOURCE LINES 105-123
+.. GENERATED FROM PYTHON SOURCE LINES 106-124
 
 .. code-block:: Python
 
@@ -199,18 +200,18 @@ In ``TorchDR``, this object is available here :
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 124-129
+.. GENERATED FROM PYTHON SOURCE LINES 125-130
 
 We can now observe a **homogeneous density of connections** across clusters.
 Thus, the entropic affinity effectively filters out the various noise levels.
 
-This affinity is an important component of the **TSNE** algorithm,
-available in ``TorchDR`` at :class:`torchdr.neighbor_embedding.TSNE`.
+This affinity is an important component of the **TSNE** algorithm.
+
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.125 seconds)
+   **Total running time of the script:** (0 minutes 3.082 seconds)
 
 
 .. _sphx_glr_download_auto_examples_affinities_demo_ea_adaptivity.py:

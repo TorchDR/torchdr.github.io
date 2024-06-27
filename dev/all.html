@@ -29,7 +29,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="DRModule" href="gen_modules/torchdr.DRModule.html" />
-    <link rel="prev" title="Introduction" href="index.html" /> 
+    <link rel="prev" title="BatchedAffinityMatcher" href="stubs/torchdr.affinity_matcher.BatchedAffinityMatcher.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -54,22 +54,25 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Torch Dimensionality Reduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.quick_start.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.user_guide.html">User Guide</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API and Modules</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#dr-modules">DR modules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#base-dr-module-torchdr-base">Base DR module <code class="xref py py-mod docutils literal notranslate"><span class="pre">torchdr.base</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dr-modules-sklearn-compatible">DR Modules - <code class="docutils literal notranslate"><span class="pre">sklearn</span></code> Compatible</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#base-dr-module">Base DR Module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="gen_modules/torchdr.DRModule.html">DRModule</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#spectral-dr-torchdr-spectral">Spectral DR <code class="xref py py-mod docutils literal notranslate"><span class="pre">torchdr.spectral</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#spectral-dr">Spectral DR</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="gen_modules/torchdr.PCA.html">PCA</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#affinity-matcher-torchdr-affinity-matcher">Affinity matcher <code class="xref py py-mod docutils literal notranslate"><span class="pre">torchdr.affinity_matcher</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#affinity-matcher">Affinity Matcher</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="gen_modules/torchdr.AffinityMatcher.html">AffinityMatcher</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gen_modules/torchdr.BatchedAffinityMatcher.html">BatchedAffinityMatcher</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#neighbor-embedding-torchdr-neighbor-embedding">Neighbor embedding <code class="xref py py-mod docutils literal notranslate"><span class="pre">torchdr.neighbor_embedding</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#neighbor-embedding">Neighbor Embedding</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="gen_modules/torchdr.SNE.html">SNE</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gen_modules/torchdr.TSNE.html">TSNE</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gen_modules/torchdr.InfoTSNE.html">InfoTSNE</a></li>
@@ -77,14 +80,17 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#affinity-modules">Affinity modules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#affinities-torchdr-affinities">Affinities <code class="xref py py-mod docutils literal notranslate"><span class="pre">torchdr.affinities</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#simple-affinities">Simple affinities</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#entropic-affinities">Entropic affinities</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#quadratic-affinities">Quadratic affinities</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#umap-affinities">UMAP affinities</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#affinity-modules">Affinity Modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="gen_modules/torchdr.GibbsAffinity.html">GibbsAffinity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gen_modules/torchdr.StudentAffinity.html">StudentAffinity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gen_modules/torchdr.ScalarProductAffinity.html">ScalarProductAffinity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gen_modules/torchdr.EntropicAffinity.html">EntropicAffinity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gen_modules/torchdr.L2SymmetricEntropicAffinity.html">L2SymmetricEntropicAffinity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gen_modules/torchdr.SinkhornAffinity.html">SinkhornAffinity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gen_modules/torchdr.SymmetricEntropicAffinity.html">SymmetricEntropicAffinity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gen_modules/torchdr.DoublyStochasticQuadraticAffinity.html">DoublyStochasticQuadraticAffinity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gen_modules/torchdr.UMAPAffinityIn.html">UMAPAffinityIn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gen_modules/torchdr.UMAPAffinityOut.html">UMAPAffinityOut</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#utils">Utils</a><ul>
@@ -96,11 +102,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="torchdr.overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torchdr.affinities.html">Affinities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torchdr.neighbor-embedding.html">Neighbor Embedding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torchdr.notation.html">Math Notations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.releases.html">Releases</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchdr.contributing.html">How to Contribute</a></li>
 </ul>
 
@@ -130,10 +133,10 @@
              
   <section id="module-torchdr">
 <span id="id1"></span><span id="api-and-modules"></span><h1>API and Modules<a class="headerlink" href="#module-torchdr" title="Link to this heading"></a></h1>
-<section id="dr-modules">
-<h2>DR modules<a class="headerlink" href="#dr-modules" title="Link to this heading"></a></h2>
-<section id="base-dr-module-torchdr-base">
-<h3>Base DR module <code class="xref py py-mod docutils literal notranslate"><span class="pre">torchdr.base</span></code><a class="headerlink" href="#base-dr-module-torchdr-base" title="Link to this heading"></a></h3>
+<section id="dr-modules-sklearn-compatible">
+<h2>DR Modules - <code class="docutils literal notranslate"><span class="pre">sklearn</span></code> Compatible<a class="headerlink" href="#dr-modules-sklearn-compatible" title="Link to this heading"></a></h2>
+<section id="base-dr-module">
+<h3>Base DR Module<a class="headerlink" href="#base-dr-module" title="Link to this heading"></a></h3>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.DRModule.html#torchdr.DRModule" title="torchdr.DRModule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DRModule</span></code></a>([n_components, device, keops, verbose])</p></td>
@@ -142,8 +145,8 @@
 </tbody>
 </table>
 </section>
-<section id="spectral-dr-torchdr-spectral">
-<h3>Spectral DR <code class="xref py py-mod docutils literal notranslate"><span class="pre">torchdr.spectral</span></code><a class="headerlink" href="#spectral-dr-torchdr-spectral" title="Link to this heading"></a></h3>
+<section id="spectral-dr">
+<h3>Spectral DR<a class="headerlink" href="#spectral-dr" title="Link to this heading"></a></h3>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.PCA.html#torchdr.PCA" title="torchdr.PCA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PCA</span></code></a>([n_components, device, verbose])</p></td>
@@ -152,8 +155,8 @@
 </tbody>
 </table>
 </section>
-<section id="affinity-matcher-torchdr-affinity-matcher">
-<h3>Affinity matcher <code class="xref py py-mod docutils literal notranslate"><span class="pre">torchdr.affinity_matcher</span></code><a class="headerlink" href="#affinity-matcher-torchdr-affinity-matcher" title="Link to this heading"></a></h3>
+<section id="affinity-matcher">
+<h3>Affinity Matcher<a class="headerlink" href="#affinity-matcher" title="Link to this heading"></a></h3>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.AffinityMatcher.html#torchdr.AffinityMatcher" title="torchdr.AffinityMatcher"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AffinityMatcher</span></code></a>(affinity_in, affinity_out[, ...])</p></td>
@@ -165,8 +168,8 @@
 </tbody>
 </table>
 </section>
-<section id="neighbor-embedding-torchdr-neighbor-embedding">
-<h3>Neighbor embedding <code class="xref py py-mod docutils literal notranslate"><span class="pre">torchdr.neighbor_embedding</span></code><a class="headerlink" href="#neighbor-embedding-torchdr-neighbor-embedding" title="Link to this heading"></a></h3>
+<section id="neighbor-embedding">
+<h3>Neighbor Embedding<a class="headerlink" href="#neighbor-embedding" title="Link to this heading"></a></h3>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.SNE.html#torchdr.SNE" title="torchdr.SNE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SNE</span></code></a>([perplexity, n_components, lr, ...])</p></td>
@@ -183,11 +186,7 @@
 </section>
 </section>
 <section id="affinity-modules">
-<h2>Affinity modules<a class="headerlink" href="#affinity-modules" title="Link to this heading"></a></h2>
-<section id="affinities-torchdr-affinities">
-<h3>Affinities <code class="xref py py-mod docutils literal notranslate"><span class="pre">torchdr.affinities</span></code><a class="headerlink" href="#affinities-torchdr-affinities" title="Link to this heading"></a></h3>
-<section id="simple-affinities">
-<h4>Simple affinities<a class="headerlink" href="#simple-affinities" title="Link to this heading"></a></h4>
+<h2>Affinity Modules<a class="headerlink" href="#affinity-modules" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.GibbsAffinity.html#torchdr.GibbsAffinity" title="torchdr.GibbsAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GibbsAffinity</span></code></a>([sigma, normalization_dim, ...])</p></td>
@@ -201,9 +200,6 @@
 </tr>
 </tbody>
 </table>
-</section>
-<section id="entropic-affinities">
-<h4>Entropic affinities<a class="headerlink" href="#entropic-affinities" title="Link to this heading"></a></h4>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.EntropicAffinity.html#torchdr.EntropicAffinity" title="torchdr.EntropicAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EntropicAffinity</span></code></a>([perplexity, tol, ...])</p></td>
@@ -220,9 +216,6 @@
 </tr>
 </tbody>
 </table>
-</section>
-<section id="quadratic-affinities">
-<h4>Quadratic affinities<a class="headerlink" href="#quadratic-affinities" title="Link to this heading"></a></h4>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.DoublyStochasticQuadraticAffinity.html#torchdr.DoublyStochasticQuadraticAffinity" title="torchdr.DoublyStochasticQuadraticAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DoublyStochasticQuadraticAffinity</span></code></a>([eps, ...])</p></td>
@@ -230,9 +223,6 @@
 </tr>
 </tbody>
 </table>
-</section>
-<section id="umap-affinities">
-<h4>UMAP affinities<a class="headerlink" href="#umap-affinities" title="Link to this heading"></a></h4>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.UMAPAffinityIn.html#torchdr.UMAPAffinityIn" title="torchdr.UMAPAffinityIn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UMAPAffinityIn</span></code></a>([n_neighbors, tol, max_iter, ...])</p></td>
@@ -243,8 +233,6 @@
 </tr>
 </tbody>
 </table>
-</section>
-</section>
 </section>
 <section id="utils">
 <h2>Utils<a class="headerlink" href="#utils" title="Link to this heading"></a></h2>
@@ -295,7 +283,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="stubs/torchdr.affinity_matcher.BatchedAffinityMatcher.html" class="btn btn-neutral float-left" title="BatchedAffinityMatcher" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="gen_modules/torchdr.DRModule.html" class="btn btn-neutral float-right" title="DRModule" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

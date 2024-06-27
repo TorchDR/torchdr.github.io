@@ -54,27 +54,34 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Torch Dimensionality Reduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../torchdr.quick_start.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../torchdr.user_guide.html">User Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../all.html">API and Modules</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../all.html#dr-modules">DR modules</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../all.html#affinity-modules">Affinity modules</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="../all.html#affinities-torchdr-affinities">Affinities <code class="xref py py-mod docutils literal notranslate"><span class="pre">torchdr.affinities</span></code></a><ul class="current">
-<li class="toctree-l4 current"><a class="reference internal" href="../all.html#simple-affinities">Simple affinities</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../all.html#entropic-affinities">Entropic affinities</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../all.html#quadratic-affinities">Quadratic affinities</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../all.html#umap-affinities">UMAP affinities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../all.html#dr-modules-sklearn-compatible">DR Modules - <code class="docutils literal notranslate"><span class="pre">sklearn</span></code> Compatible</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../all.html#affinity-modules">Affinity Modules</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">GibbsAffinity</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#torchdr.GibbsAffinity"><code class="docutils literal notranslate"><span class="pre">GibbsAffinity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#examples-using-gibbsaffinity">Examples using <code class="docutils literal notranslate"><span class="pre">GibbsAffinity</span></code>:</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="torchdr.StudentAffinity.html">StudentAffinity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torchdr.ScalarProductAffinity.html">ScalarProductAffinity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torchdr.EntropicAffinity.html">EntropicAffinity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torchdr.L2SymmetricEntropicAffinity.html">L2SymmetricEntropicAffinity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torchdr.SinkhornAffinity.html">SinkhornAffinity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torchdr.SymmetricEntropicAffinity.html">SymmetricEntropicAffinity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torchdr.DoublyStochasticQuadraticAffinity.html">DoublyStochasticQuadraticAffinity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torchdr.UMAPAffinityIn.html">UMAPAffinityIn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torchdr.UMAPAffinityOut.html">UMAPAffinityOut</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../all.html#utils">Utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../all.html#references">References</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../torchdr.overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../torchdr.affinities.html">Affinities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../torchdr.neighbor-embedding.html">Neighbor Embedding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../torchdr.notation.html">Math Notations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../torchdr.releases.html">Releases</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../torchdr.contributing.html">How to Contribute</a></li>
 </ul>
 
@@ -108,7 +115,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="torchdr.GibbsAffinity">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchdr.</span></span><span class="sig-name descname"><span class="pre">GibbsAffinity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalization_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(0,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'euclidean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodiag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.4/library/constants.html#None" title="(in Python v3.4)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keops</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/affinity/simple.html#GibbsAffinity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.GibbsAffinity" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="../stubs/torchdr.affinity.LogAffinity.html#torchdr.affinity.LogAffinity" title="torchdr.affinity.base.LogAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">LogAffinity</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../stubs/torchdr.LogAffinity.html#torchdr.LogAffinity" title="torchdr.affinity.base.LogAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">LogAffinity</span></code></a></p>
 <p>Computes the Gibbs affinity matrix <span class="math notranslate nohighlight">\(\exp( - \mathbf{C} / \sigma)\)</span>
 where <span class="math notranslate nohighlight">\(\mathbf{C}\)</span> is the pairwise distance matrix and
 <span class="math notranslate nohighlight">\(\sigma\)</span> is the bandwidth parameter. The affinity can be normalized

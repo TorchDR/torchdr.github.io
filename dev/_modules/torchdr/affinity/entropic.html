@@ -213,7 +213,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;[TorchDR] ERROR (Affinity): Input has less than one sample : &quot;</span>
+            <span class="s2">&quot;[TorchDR] ERROR Affinity: Input has less than one sample : &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;n_samples = </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">.&quot;</span>
         <span class="p">)</span>
 
@@ -309,8 +309,8 @@
         <span class="n">sparsity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
         <span class="n">nodiag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -470,7 +470,7 @@
         <span class="n">sparsity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
         <span class="n">nodiag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
         <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
@@ -611,7 +611,7 @@
         <span class="n">tolog</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
         <span class="n">nodiag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
         <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
@@ -696,7 +696,7 @@
             <span class="n">check_NaNs</span><span class="p">(</span>
                 <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">eps_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu_</span><span class="p">],</span>
                 <span class="n">msg</span><span class="o">=</span><span class="p">(</span>
-                    <span class="s2">&quot;[TorchDR] ERROR (Affinity): NaN in dual variables, &quot;</span>
+                    <span class="s2">&quot;[TorchDR] ERROR Affinity: NaN in dual variables, &quot;</span>
                     <span class="s2">&quot;consider decreasing the learning rate.&quot;</span>
                 <span class="p">),</span>
             <span class="p">)</span>
@@ -742,7 +742,7 @@
                     <span class="n">check_NaNs</span><span class="p">(</span>
                         <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">eps_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu_</span><span class="p">],</span>
                         <span class="n">msg</span><span class="o">=</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;[TorchDR] ERROR (Affinity): NaN at iter </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">, &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;[TorchDR] ERROR Affinity: NaN at iter </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">, &quot;</span>
                             <span class="s2">&quot;consider decreasing the learning rate.&quot;</span>
                         <span class="p">),</span>
                     <span class="p">)</span>
@@ -902,7 +902,7 @@
         <span class="n">tolog</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
         <span class="n">nodiag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
         <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
@@ -967,7 +967,7 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolog</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">[</span><span class="s2">&quot;dual&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dual_</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">())</span>
 
-            <span class="n">check_NaNs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dual_</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[TorchDR] ERROR (Affinity): NaN at iter </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="n">check_NaNs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dual_</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[TorchDR] ERROR Affinity: NaN at iter </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dual_</span> <span class="o">-</span> <span class="n">reduction</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">tol</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>

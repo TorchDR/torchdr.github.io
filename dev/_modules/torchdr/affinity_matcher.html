@@ -159,12 +159,12 @@
 <span class="sd">    tolog : bool, optional</span>
 <span class="sd">        If True, logs the optimization process. Default is False.</span>
 <span class="sd">    device : str, optional</span>
-<span class="sd">        Device to use for computations. Default is None.</span>
+<span class="sd">        Device to use for computations. Default is &quot;auto&quot;.</span>
 <span class="sd">    keops : bool, optional</span>
-<span class="sd">        Whether to use KeOps for computations. Default is True.</span>
+<span class="sd">        Whether to use KeOps for computations. Default is False.</span>
 <span class="sd">    verbose : bool, optional</span>
 <span class="sd">        Verbosity of the optimization process. Default is True.</span>
-<span class="sd">    seed : float, optional</span>
+<span class="sd">    random_state : float, optional</span>
 <span class="sd">        Random seed for reproducibility. Default is 0.</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
 
@@ -186,16 +186,21 @@
         <span class="n">init</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pca&quot;</span><span class="p">,</span>
         <span class="n">init_scaling</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-4</span><span class="p">,</span>
         <span class="n">tolog</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">seed</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">random_state</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">n_components</span><span class="o">=</span><span class="n">n_components</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">keops</span><span class="o">=</span><span class="n">keops</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
+            <span class="n">n_components</span><span class="o">=</span><span class="n">n_components</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">keops</span><span class="o">=</span><span class="n">keops</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="k">assert</span> <span class="n">optimizer</span> <span class="ow">in</span> <span class="n">OPTIMIZERS</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Optimizer </span><span class="si">{</span><span class="n">optimizer</span><span class="si">}</span><span class="s2"> not supported.&quot;</span>
+        <span class="k">if</span> <span class="n">optimizer</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">OPTIMIZERS</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[TorchDR] ERROR : Optimizer </span><span class="si">{</span><span class="n">optimizer</span><span class="si">}</span><span class="s2"> not supported.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_kwargs</span> <span class="o">=</span> <span class="n">optimizer_kwargs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lr</span> <span class="o">=</span> <span class="n">lr</span>
@@ -204,7 +209,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="o">=</span> <span class="n">scheduler</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_kwargs</span> <span class="o">=</span> <span class="n">scheduler_kwargs</span>
 
-        <span class="k">assert</span> <span class="n">loss_fn</span> <span class="ow">in</span> <span class="n">LOSS_DICT</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Loss function </span><span class="si">{</span><span class="n">loss_fn</span><span class="si">}</span><span class="s2"> not supported.&quot;</span>
+        <span class="k">if</span> <span class="n">loss_fn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">LOSS_DICT</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;[TorchDR] ERROR : Loss function </span><span class="si">{</span><span class="n">loss_fn</span><span class="si">}</span><span class="s2"> not supported.&quot;</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span> <span class="o">=</span> <span class="n">loss_fn</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kwargs_loss</span> <span class="o">=</span> <span class="n">kwargs_loss</span>
 
@@ -213,7 +221,6 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">tolog</span> <span class="o">=</span> <span class="n">tolog</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">seed</span> <span class="o">=</span> <span class="n">seed</span>
 
         <span class="c1"># --- check affinity_in ---</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">affinity_in</span><span class="p">,</span> <span class="n">Affinity</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">affinity_in</span> <span class="o">==</span> <span class="s2">&quot;precomputed&quot;</span><span class="p">:</span>
@@ -275,15 +282,15 @@
 
 
     <span class="k">def</span> <span class="nf">_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_features_in_</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_instantiate_generator</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_check_n_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_features_in_</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span>
 
         <span class="c1"># --- check if affinity_in is precomputed else compute it ---</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span> <span class="o">==</span> <span class="s2">&quot;precomputed&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_features_in_</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s1">&#39;[TorchDR] (Error) : When affinity_in=&quot;precomputed&quot; the input X &#39;</span>
+                    <span class="s1">&#39;[TorchDR] ERROR : When affinity_in=&quot;precomputed&quot; the input X &#39;</span>
                     <span class="s2">&quot;in fit must be a tensor of lazy tensor of shape &quot;</span>
                     <span class="s2">&quot;(n_samples, n_samples).&quot;</span>
                 <span class="p">)</span>
@@ -292,21 +299,18 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">PX_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;early_exaggeration&quot;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_embedding</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_params</span><span class="p">()</span>
-        <span class="n">optimizer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_optimizer</span><span class="p">()</span>
-        <span class="n">scheduler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_scheduler</span><span class="p">(</span><span class="n">optimizer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_optimizer</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_scheduler</span><span class="p">()</span>
 
         <span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">),</span> <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">pbar</span><span class="p">:</span>
-            <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
             <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loss</span><span class="p">()</span>
             <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
-            <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
-            <span class="n">scheduler</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
 
             <span class="n">check_NaNs</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span>
@@ -317,13 +321,7 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
                 <span class="n">pbar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loss : </span><span class="si">{</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="p">(</span>  <span class="c1"># stop early exaggeration phase</span>
-                <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;early_exaggeration&quot;</span><span class="p">)</span>
-                <span class="ow">and</span> <span class="n">k</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_iter</span>
-            <span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_</span> <span class="o">=</span> <span class="mi">1</span>
-                <span class="n">optimizer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_optimizer</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_set_scheduler</span><span class="p">(</span><span class="n">optimizer</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_additional_updates</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span> <span class="o">=</span> <span class="n">k</span>
 
@@ -334,48 +332,63 @@
         <span class="n">loss</span> <span class="o">=</span> <span class="n">LOSS_DICT</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">PX_</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs_loss</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">loss</span>
 
+    <span class="k">def</span> <span class="nf">_additional_updates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+        <span class="k">pass</span>
+
     <span class="k">def</span> <span class="nf">_set_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params_</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">}]</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_</span>
 
     <span class="k">def</span> <span class="nf">_set_optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">OPTIMIZERS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">](</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_</span> <span class="o">=</span> <span class="n">OPTIMIZERS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">](</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">params_</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lr</span><span class="p">,</span> <span class="o">**</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer_kwargs</span> <span class="ow">or</span> <span class="p">{})</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">optimizer</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_</span>
 
-    <span class="k">def</span> <span class="nf">_set_scheduler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_set_scheduler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;optimizer_&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;[TorchDR] ERROR : optimizer not set. &quot;</span>
+                <span class="s2">&quot;Please call _set_optimizer before _set_scheduler.&quot;</span>
+            <span class="p">)</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="o">==</span> <span class="s2">&quot;constant&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">ConstantLR</span><span class="p">(</span>
-                <span class="n">optimizer</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">total_iters</span><span class="o">=</span><span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">ConstantLR</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">total_iters</span><span class="o">=</span><span class="mi">0</span>
             <span class="p">)</span>
 
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
             <span class="n">linear_decay</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">epoch</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">epoch</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">LambdaLR</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">lr_lambda</span><span class="o">=</span><span class="n">linear_decay</span><span class="p">)</span>
-
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="o">==</span> <span class="s2">&quot;plateau&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">ReduceLROnPlateau</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">LambdaLR</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_</span><span class="p">,</span> <span class="n">lr_lambda</span><span class="o">=</span><span class="n">linear_decay</span>
+            <span class="p">)</span>
 
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="o">==</span> <span class="s2">&quot;exponential&quot;</span><span class="p">:</span>  <span class="c1"># param gamma</span>
-            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">ExponentialLR</span><span class="p">(</span>
-                <span class="n">optimizer</span><span class="p">,</span> <span class="o">**</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scheduler_kwargs</span> <span class="ow">or</span> <span class="p">{})</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">ExponentialLR</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_</span><span class="p">,</span> <span class="o">**</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scheduler_kwargs</span> <span class="ow">or</span> <span class="p">{})</span>
             <span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[TorchDR] scheduler : </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="si">}</span><span class="s2"> not supported.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;[TorchDR] ERROR : scheduler </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="si">}</span><span class="s2"> not supported.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_</span>
+
+    <span class="k">def</span> <span class="nf">_instantiate_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generator_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span>
+            <span class="n">seed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span>
+        <span class="p">)</span>  <span class="c1"># we use numpy because torch.Generator is not picklable</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator_</span>
 
     <span class="k">def</span> <span class="nf">_init_embedding</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
         <span class="n">n</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="o">==</span> <span class="s2">&quot;normal&quot;</span><span class="p">:</span>
-            <span class="n">generator</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Generator</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seed</span><span class="p">)</span>
-            <span class="n">embedding_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span>
-                <span class="n">n</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">,</span>
+            <span class="n">embedding_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">generator_</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">)),</span>
                 <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
                 <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
-                <span class="n">generator</span><span class="o">=</span><span class="n">generator</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="o">==</span> <span class="s2">&quot;pca&quot;</span><span class="p">:</span>
@@ -383,30 +396,11 @@
 
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;[TorchDR] init : </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="si">}</span><span class="s2"> not supported in AffinityMatcher.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;[TorchDR] ERROR : init </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="si">}</span><span class="s2"> not supported in AffinityMatcher.&quot;</span>
             <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_scaling</span> <span class="o">*</span> <span class="n">embedding_</span> <span class="o">/</span> <span class="n">embedding_</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">requires_grad_</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">_check_n_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-        <span class="n">param_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;perplexity&quot;</span><span class="p">,</span> <span class="s2">&quot;n_neighbors&quot;</span><span class="p">]</span>
-
-        <span class="k">for</span> <span class="n">param_name</span> <span class="ow">in</span> <span class="n">param_list</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_name</span><span class="p">):</span>
-                <span class="n">param_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_name</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="n">param_value</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-                        <span class="nb">print</span><span class="p">(</span>
-                            <span class="s2">&quot;[TorchDR] WARNING : Number of samples is smaller than &quot;</span>
-                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">param_name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> &lt;= </span><span class="si">{</span><span class="n">param_value</span><span class="si">}</span><span class="s2">), setting &quot;</span>
-                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">param_name</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">n</span><span class="o">//</span><span class="mi">2</span><span class="si">}</span><span class="s2"> (which corresponds to n//2).&quot;</span>
-                        <span class="p">)</span>
-                    <span class="n">new_value</span> <span class="o">=</span> <span class="n">n</span> <span class="o">//</span> <span class="mi">2</span>
-                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_name</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
-                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="bp">self</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">requires_grad_</span><span class="p">()</span></div>
 
 
 
@@ -455,14 +449,14 @@
 <span class="sd">    tolog : bool, optional</span>
 <span class="sd">        If True, logs the optimization process. Default is False.</span>
 <span class="sd">    device : str, optional</span>
-<span class="sd">        Device to use for computations. Default is None.</span>
+<span class="sd">        Device to use for computations. Default is &quot;auto&quot;.</span>
 <span class="sd">    keops : bool, optional</span>
-<span class="sd">        Whether to use KeOps for computations. Default is True.</span>
+<span class="sd">        Whether to use KeOps for computations. Default is False.</span>
 <span class="sd">    verbose : bool, optional</span>
 <span class="sd">        Verbosity of the optimization process. Default is True.</span>
-<span class="sd">    seed : float, optional</span>
+<span class="sd">    random_state : float, optional</span>
 <span class="sd">        Random seed for reproducibility. Default is 0.</span>
-<span class="sd">    batch_size : int, optional</span>
+<span class="sd">    batch_size : int or str, optional</span>
 <span class="sd">        Batch size for processing. Default is None.</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
 
@@ -482,11 +476,11 @@
         <span class="n">init</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pca&quot;</span><span class="p">,</span>
         <span class="n">init_scaling</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-4</span><span class="p">,</span>
         <span class="n">tolog</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">seed</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">random_state</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -507,14 +501,14 @@
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
             <span class="n">keops</span><span class="o">=</span><span class="n">keops</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-            <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
 
 <div class="viewcode-block" id="BatchedAffinityMatcher.batched_affinity_in_out">
 <a class="viewcode-back" href="../../stubs/torchdr.affinity_matcher.BatchedAffinityMatcher.html#torchdr.BatchedAffinityMatcher.batched_affinity_in_out">[docs]</a>
-    <span class="k">def</span> <span class="nf">batched_affinity_in_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs_affinity_out</span><span class="o">=</span><span class="p">{}):</span>
+    <span class="k">def</span> <span class="nf">batched_affinity_in_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs_affinity_out</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns batched affinity matrices for the input and output spaces.</span>
 
@@ -551,40 +545,44 @@
         <span class="k">return</span> <span class="n">batched_affinity_in_</span><span class="p">,</span> <span class="n">batched_affinity_out_</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_instantiate_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">generator_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span>
-            <span class="n">seed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">seed</span>
-        <span class="p">)</span>  <span class="c1"># we use numpy because torch.Generator is not picklable</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator_</span>
-
     <span class="k">def</span> <span class="nf">_set_batch_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">batch_size_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size_</span>
+        <span class="n">activate_auto</span> <span class="o">=</span> <span class="kc">False</span>
 
-        <span class="k">else</span><span class="p">:</span>  <span class="c1"># looking for a suitable batch_size</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">batch_size_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="s2">&quot;[TorchDR] WARNING: batch_size not suitable (must divide the &quot;</span>
+                        <span class="s2">&quot;number of samples). Switching to auto mode to set batch_size.&quot;</span>
+                    <span class="p">)</span>
+                <span class="n">activate_auto</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span> <span class="ow">or</span> <span class="n">activate_auto</span><span class="p">:</span>
+            <span class="c1"># looking for a suitable batch_size</span>
             <span class="k">for</span> <span class="n">candidate_n_batches_</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">%</span> <span class="n">candidate_n_batches_</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">batch_size_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">//</span> <span class="n">candidate_n_batches_</span>
 
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
                         <span class="nb">print</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;[TorchDR] WARNING : batch_size not provided or suitable, &quot;</span>
-                            <span class="sa">f</span><span class="s2">&quot;setting batch_size to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size_</span><span class="si">}</span><span class="s2"> (for a total &quot;</span>
-                            <span class="sa">f</span><span class="s2">&quot;of </span><span class="si">{</span><span class="n">candidate_n_batches_</span><span class="si">}</span><span class="s2"> batches).&quot;</span>
+                            <span class="s2">&quot;[TorchDR] WARNING : batch_size in auto mode. &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;Setting batch_size to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size_</span><span class="si">}</span><span class="s2"> (for a &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;total of </span><span class="si">{</span><span class="n">candidate_n_batches_</span><span class="si">}</span><span class="s2"> batches).&quot;</span>
                         <span class="p">)</span>
-                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size_</span>
 
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;[TorchDR] ERROR : could not find a suitable batch size. &quot;</span>
-                <span class="s2">&quot;Please provide one. It should be a diviser of n_samples &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="si">}</span><span class="s2"> here). &quot;</span>
-            <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">batch_size_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">//</span> <span class="n">candidate_n_batches_</span>
 
-    <span class="k">def</span> <span class="nf">_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_instantiate_generator</span><span class="p">()</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span></div>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="s2">&quot;[TorchDR] WARNING: setting batch_size to the number of samples &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="si">}</span><span class="s2">).&quot;</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">batch_size_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size_</span></div>
 
 </pre></div>
 

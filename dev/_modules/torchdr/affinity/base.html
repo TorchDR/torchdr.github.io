@@ -113,6 +113,7 @@
 <span class="sd">        Whether to set the diagonal of the affinity matrix to zero.</span>
 <span class="sd">    device : str, optional</span>
 <span class="sd">        The device to use for computation. Typically &quot;cuda&quot; for GPU or &quot;cpu&quot; for CPU.</span>
+<span class="sd">        If &quot;auto&quot;, uses the device of the input data.</span>
 <span class="sd">    keops : bool, optional</span>
 <span class="sd">        Whether to use KeOps for efficient computation of large-scale kernel operations.</span>
 <span class="sd">    verbose : bool, optional</span>
@@ -123,8 +124,8 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
         <span class="n">nodiag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;cuda&quot;</span><span class="p">,</span>
-        <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="p">{}</span>
@@ -303,6 +304,7 @@
 <span class="sd">        The distance metric to use for computing pairwise distances.</span>
 <span class="sd">    device : str, optional</span>
 <span class="sd">        The device to use for computation. Typically &quot;cuda&quot; for GPU or &quot;cpu&quot; for CPU.</span>
+<span class="sd">        If &quot;auto&quot;, uses the device of the input data.</span>
 <span class="sd">    keops : bool, optional</span>
 <span class="sd">        Whether to use KeOps for efficient computation of large-scale kernel operations.</span>
 <span class="sd">    verbose : bool, optional</span>
@@ -313,8 +315,8 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
         <span class="n">nodiag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;cuda&quot;</span><span class="p">,</span>
-        <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -357,7 +359,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;log_affinity_matrix_&quot;</span>
-        <span class="p">),</span> <span class="s2">&quot;[TorchDR] Affinity (Error) : log_affinity_matrix_ should be computed &quot;</span>
+        <span class="p">),</span> <span class="s2">&quot;[TorchDR] ERROR Affinity : log_affinity_matrix_ should be computed &quot;</span>
         <span class="s2">&quot;in  fit method of a LogAffinity.&quot;</span>
 
         <span class="k">if</span> <span class="n">log</span><span class="p">:</span>  <span class="c1"># return the log of the affinity matrix</span>

@@ -378,13 +378,19 @@
 
 
 
+<div class="viewcode-block" id="SelfTuningGibbsAffinity">
+<a class="viewcode-back" href="../../../gen_modules/torchdr.SelfTuningGibbsAffinity.html#torchdr.SelfTuningGibbsAffinity">[docs]</a>
 <span class="k">class</span> <span class="nc">SelfTuningGibbsAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes the Gibbs affinity matrix</span>
-<span class="sd">    :math:`\exp( - \mathbf{C} / \mathbf{\sigma} \mathbf{\sigma}^\top)` with</span>
-<span class="sd">    sample-wise bandwidth :math:`\mathbf{\sigma} \in \R^n` based on the</span>
-<span class="sd">    neirest neighbor strategy of [22]_, where :math:`\mathbf{C}` is the</span>
-<span class="sd">    pairwise distance matrix.</span>
+<span class="sd">    Computes the self-tuning [22]_ Gibbs affinity matrix with</span>
+<span class="sd">    sample-wise bandwidth :math:`\mathbf{\sigma} \in \mathbb{R}^n`.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \exp \left( - \frac{C_{ij}}{\sigma_i \sigma_j} \right)</span>
+
+<span class="sd">    In the above, :math:`\mathbf{C}` is the pairwise distance matrix and</span>
+<span class="sd">    :math:`\sigma_i` is the distance from the K’th nearest neighbor of data point</span>
+<span class="sd">    :math:`\mathbf{x}_i`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -426,6 +432,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">K</span> <span class="o">=</span> <span class="n">K</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">normalization_dim</span> <span class="o">=</span> <span class="n">normalization_dim</span>
 
+<div class="viewcode-block" id="SelfTuningGibbsAffinity.fit">
+<a class="viewcode-back" href="../../../gen_modules/torchdr.SelfTuningGibbsAffinity.html#torchdr.SelfTuningGibbsAffinity.fit">[docs]</a>
     <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fits the local Gibbs affinity model to the provided data.</span>
@@ -455,8 +463,11 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">log_affinity_matrix_</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_normalization_</span>
             <span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
+
+<div class="viewcode-block" id="SelfTuningGibbsAffinity.get_batch">
+<a class="viewcode-back" href="../../../gen_modules/torchdr.SelfTuningGibbsAffinity.html#torchdr.SelfTuningGibbsAffinity.get_batch">[docs]</a>
     <span class="k">def</span> <span class="nf">get_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extracts the affinity submatrix corresponding to the indices.</span>
@@ -488,7 +499,9 @@
         <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">log_P_batch</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">log_P_batch</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">log_P_batch</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span></div>
+</div>
+
 
 
 <div class="viewcode-block" id="StudentAffinity">

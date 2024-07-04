@@ -94,7 +94,7 @@
 
 <span class="kn">from</span> <span class="nn">torchdr.neighbor_embedding.base</span> <span class="kn">import</span> <span class="n">NeighborEmbedding</span>
 <span class="kn">from</span> <span class="nn">torchdr.affinity</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">L2SymmetricEntropicAffinity</span><span class="p">,</span>
+    <span class="n">EntropicAffinity</span><span class="p">,</span>
     <span class="n">StudentAffinity</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">torchdr.utils</span> <span class="kn">import</span> <span class="n">logsumexp_red</span>
@@ -200,7 +200,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">max_iter_affinity</span> <span class="o">=</span> <span class="n">max_iter_affinity</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tol_affinity</span> <span class="o">=</span> <span class="n">tol_affinity</span>
 
-        <span class="n">affinity_in</span> <span class="o">=</span> <span class="n">L2SymmetricEntropicAffinity</span><span class="p">(</span>
+        <span class="n">affinity_in</span> <span class="o">=</span> <span class="n">EntropicAffinity</span><span class="p">(</span>
             <span class="n">perplexity</span><span class="o">=</span><span class="n">perplexity</span><span class="p">,</span>
             <span class="n">metric</span><span class="o">=</span><span class="n">metric_in</span><span class="p">,</span>
             <span class="n">tol</span><span class="o">=</span><span class="n">tol_affinity</span><span class="p">,</span>

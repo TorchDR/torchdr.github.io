@@ -96,7 +96,11 @@
 
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">torchdr.utils</span> <span class="kn">import</span> <span class="n">pairwise_distances</span><span class="p">,</span> <span class="n">to_torch</span>
+<span class="kn">from</span> <span class="nn">torchdr.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">symmetric_pairwise_distances</span><span class="p">,</span>
+    <span class="n">symmetric_pairwise_distances_indices</span><span class="p">,</span>
+    <span class="n">pairwise_distances</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <div class="viewcode-block" id="Affinity">
@@ -134,6 +138,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">keops</span> <span class="o">=</span> <span class="n">keops</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zero_diag</span> <span class="o">=</span> <span class="n">zero_diag</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_diagonal</span> <span class="o">=</span> <span class="mf">1e12</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">zero_diag</span> <span class="k">else</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="Affinity.fit">
 <a class="viewcode-back" href="../../../stubs/torchdr.Affinity.html#torchdr.Affinity.fit">[docs]</a>
@@ -143,17 +149,11 @@
 <span class="sd">        Prepares and stores the input data :math:`\mathbf{X}` for computing</span>
 <span class="sd">        the affinity matrix.</span>
 
-<span class="sd">        This method must be overridden by subclasses. This base implementation</span>
-<span class="sd">        only converts the input data to a torch tensor and stores it</span>
-<span class="sd">        in the `data_` attribute.</span>
-
-<span class="sd">        Subclasses should call `super().fit(X)` to utilize this functionality</span>
-<span class="sd">        and then implement additional steps required for computing the specific</span>
-<span class="sd">        affinity matrix.</span>
+<span class="sd">        This method must be overridden by subclasses.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        X : torch.Tensor or np.ndarray</span>
+<span class="sd">        X : torch.Tensor or np.ndarray of shape (n_samples, n_features)</span>
 <span class="sd">            Input data to be converted and stored.</span>
 
 <span class="sd">        Returns</span>
@@ -161,8 +161,10 @@
 <span class="sd">        self : object</span>
 <span class="sd">            Returns the instance itself.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data_</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;[TorchDR] ERROR : fit method not implemented for affinity &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">. &quot;</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Affinity.fit_transform">
@@ -177,7 +179,7 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        X : torch.Tensor or np.ndarray</span>
+<span class="sd">        X : torch.Tensor or np.ndarray of shape (n_samples, n_features)</span>
 <span class="sd">            Input data used to compute the affinity matrix.</span>
 
 <span class="sd">        Returns</span>
@@ -193,12 +195,12 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_is_fitted</span><span class="p">(</span>
-            <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;[TorchDR] Error : affinity_matrix_ should be computed in fit method.&quot;</span>
+            <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;[TorchDR] ERROR : affinity_matrix_ should be computed in fit method.&quot;</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_matrix_</span>  <span class="c1"># type: ignore</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_pairwise_distance_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_distance_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes the pairwise distance matrix :math:`\mathbf{C}` for the input tensor.</span>
 
@@ -208,8 +210,8 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        X : torch.Tensor</span>
-<span class="sd">            A 2D tensor of shape (n_samples, n_features) containing the input data.</span>
+<span class="sd">        X : torch.Tensor of shape (n_samples, n_features)</span>
+<span class="sd">            Input data.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -218,9 +220,11 @@
 <span class="sd">            value of the `keops` attribute. If `keops` is True, a KeOps LazyTensor</span>
 <span class="sd">            is returned. Otherwise, a torch.Tensor is returned.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">add_diagonal</span> <span class="o">=</span> <span class="mf">1e12</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">zero_diag</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="n">C</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span>
-            <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span> <span class="n">keops</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">keops</span><span class="p">,</span> <span class="n">add_diagonal</span><span class="o">=</span><span class="n">add_diagonal</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="n">symmetric_pairwise_distances</span><span class="p">(</span>
+            <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>
+            <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span>
+            <span class="n">keops</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">keops</span><span class="p">,</span>
+            <span class="n">add_diagonal</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">add_diagonal</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">C</span>
 
@@ -242,7 +246,7 @@
 <span class="sd">            the model has not been fitted.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;affinity_matrix_&quot;</span><span class="p">),</span> <span class="p">(</span>
-            <span class="n">msg</span> <span class="ow">or</span> <span class="s2">&quot;[TorchDR] Error : Affinity not fitted.&quot;</span>
+            <span class="n">msg</span> <span class="ow">or</span> <span class="s2">&quot;[TorchDR] ERROR : Affinity not fitted.&quot;</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Affinity.get_batch">
@@ -268,22 +272,98 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        C_batch : torch.Tensor or pykeops.torch.LazyTensor</span>
+<span class="sd">        C_batch : torch.Tensor or pykeops.torch.LazyTensor of shape</span>
+<span class="sd">        (n_batch, batch_size, batch_size)</span>
 <span class="sd">            The batched pairwise distance matrix.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_is_fitted</span><span class="p">()</span>
         <span class="k">assert</span> <span class="p">(</span>
             <span class="n">indices</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span>
-        <span class="p">),</span> <span class="s1">&#39;[TorchDR] Error: indices in &quot;get_batch&quot; should be a 2D torch tensor &#39;</span>
+        <span class="p">),</span> <span class="s1">&#39;[TorchDR] ERROR : indices in &quot;get_batch&quot; should be a 2D torch tensor &#39;</span>
         <span class="s2">&quot;of shape (n_batch, batch_size).&quot;</span>
         <span class="k">assert</span> <span class="p">(</span>
             <span class="n">indices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">indices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="p">),</span> <span class="s1">&#39;[TorchDR] Error: indices in &quot;get_batch&quot; should have a product &#39;</span>
+        <span class="p">),</span> <span class="s1">&#39;[TorchDR] ERROR : indices in &quot;get_batch&quot; should have a product &#39;</span>
         <span class="s2">&quot;of dimensions equal to the number of samples.&quot;</span>
 
         <span class="n">data_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
-        <span class="n">C_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pairwise_distance_matrix</span><span class="p">(</span><span class="n">data_batch</span><span class="p">)</span>
+        <span class="n">C_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_matrix</span><span class="p">(</span><span class="n">data_batch</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">C_batch</span></div>
+
+
+<div class="viewcode-block" id="Affinity.transform">
+<a class="viewcode-back" href="../../../stubs/torchdr.Affinity.html#torchdr.Affinity.transform">[docs]</a>
+    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">Y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">indices</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the affinity between points without fitting any parameter.</span>
+<span class="sd">        Thus it can only be called for affinities that do not require any fitting.</span>
+<span class="sd">        For such affinities, this method must be overridden.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        NotImplementedError</span>
+<span class="sd">            If the method is called for an affinity that requires fitting, an error</span>
+<span class="sd">            is raised.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;[TorchDR] ERROR : transform method not implemented for affinity &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">. This means that the affinity has normalizing &quot;</span>
+            <span class="s2">&quot;parameters that need to be fitted. Thus it can only be called using the &quot;</span>
+            <span class="s2">&quot;fit_transform method.&quot;</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_distance_matrix_transform</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">Y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">indices</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the pairwise distance matrix between two datasets X and Y (useful for</span>
+<span class="sd">        the transform method of kernel PCA) or between a dataset X and itself (regular</span>
+<span class="sd">        usecase of dimensionality reduction).</span>
+<span class="sd">        If indices is provided, computes pairwise distances between X and iteself</span>
+<span class="sd">        for a subset of pairs given by indices.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">Y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">&quot;[TorchDR] ERROR : transform method cannot be called with both Y &quot;</span>
+                <span class="s2">&quot;and indices at the same time.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">symmetric_pairwise_distances_indices</span><span class="p">(</span>
+                <span class="n">X</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span>
+            <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">Y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pairwise_distances</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span> <span class="n">keops</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">keops</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">symmetric_pairwise_distances</span><span class="p">(</span>
+                <span class="n">X</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span> <span class="n">keops</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">keops</span><span class="p">,</span> <span class="n">add_diagonal</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">add_diagonal</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="Affinity.check_transform_implemented">
+<a class="viewcode-back" href="../../../stubs/torchdr.Affinity.html#torchdr.Affinity.check_transform_implemented">[docs]</a>
+    <span class="k">def</span> <span class="nf">check_transform_implemented</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if the transform method has been implemented (must be overridden and</span>
+<span class="sd">        not just the base class).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check if the method is overridden and not just the base class method</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;transform&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">method</span><span class="o">.</span><span class="vm">__func__</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Affinity</span><span class="o">.</span><span class="n">transform</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
 </div>
 
 
@@ -341,7 +421,7 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        X : torch.Tensor or np.ndarray</span>
+<span class="sd">        X : torch.Tensor or np.ndarray of shape (n_samples, n_features)</span>
 <span class="sd">            Input data used to compute the affinity matrix.</span>
 
 <span class="sd">        log : bool, optional</span>
@@ -350,7 +430,8 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        affinity_matrix_ : torch.Tensor or pykeops.torch.LazyTensor</span>
+<span class="sd">        affinity_matrix_ : torch.Tensor or pykeops.torch.LazyTensor of shape</span>
+<span class="sd">        (n_samples, n_samples)</span>
 <span class="sd">            The computed affinity matrix. If `log` is True, returns the log affinity</span>
 <span class="sd">            matrix. Otherwise, returns the exponentiated log affinity matrix.</span>
 
@@ -363,7 +444,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;log_affinity_matrix_&quot;</span>
-        <span class="p">),</span> <span class="s2">&quot;[TorchDR] ERROR Affinity : log_affinity_matrix_ should be computed &quot;</span>
+        <span class="p">),</span> <span class="s2">&quot;[TorchDR] ERROR : log_affinity_matrix_ should be computed &quot;</span>
         <span class="s2">&quot;in  fit method of a LogAffinity.&quot;</span>
 
         <span class="k">if</span> <span class="n">log</span><span class="p">:</span>  <span class="c1"># return the log of the affinity matrix</span>
@@ -392,7 +473,7 @@
 <span class="sd">            the model has not been fitted.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;log_affinity_matrix_&quot;</span><span class="p">),</span> <span class="p">(</span>
-            <span class="n">msg</span> <span class="ow">or</span> <span class="s2">&quot;[TorchDR] Error : LogAffinity not fitted.&quot;</span>
+            <span class="n">msg</span> <span class="ow">or</span> <span class="s2">&quot;[TorchDR] ERROR : LogAffinity not fitted.&quot;</span>
         <span class="p">)</span></div>
 
 </pre></div>

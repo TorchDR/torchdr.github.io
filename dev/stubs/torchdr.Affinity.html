@@ -124,19 +124,21 @@ If “auto”, uses the device of the input data.</p></li>
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="torchdr.Affinity.check_transform_implemented">
+<span class="sig-name descname"><span class="pre">check_transform_implemented</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/affinity/base.html#Affinity.check_transform_implemented"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.Affinity.check_transform_implemented" title="Link to this definition"></a></dt>
+<dd><p>Checks if the transform method has been implemented (must be overridden and
+not just the base class).</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="torchdr.Affinity.fit">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><span class="pre">Tensor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/affinity/base.html#Affinity.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.Affinity.fit" title="Link to this definition"></a></dt>
 <dd><p>Prepares and stores the input data <span class="math notranslate nohighlight">\(\mathbf{X}\)</span> for computing
 the affinity matrix.</p>
-<p>This method must be overridden by subclasses. This base implementation
-only converts the input data to a torch tensor and stores it
-in the <cite>data_</cite> attribute.</p>
-<p>Subclasses should call <cite>super().fit(X)</cite> to utilize this functionality
-and then implement additional steps required for computing the specific
-affinity matrix.</p>
+<p>This method must be overridden by subclasses.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>X</strong> (<a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><em>torch.Tensor</em></a><em> or </em><em>np.ndarray</em>) – Input data to be converted and stored.</p>
+<dd class="field-odd"><p><strong>X</strong> (<a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><em>torch.Tensor</em></a><em> or </em><em>np.ndarray</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – Input data to be converted and stored.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>self</strong> – Returns the instance itself.</p>
@@ -156,7 +158,7 @@ the resulting matrix.</p>
 the input data and then returns the computed affinity matrix.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>X</strong> (<a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><em>torch.Tensor</em></a><em> or </em><em>np.ndarray</em>) – Input data used to compute the affinity matrix.</p>
+<dd class="field-odd"><p><strong>X</strong> (<a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><em>torch.Tensor</em></a><em> or </em><em>np.ndarray</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – Input data used to compute the affinity matrix.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>affinity_matrix_</strong> – The computed affinity matrix.</p>
@@ -187,10 +189,25 @@ and the batch size.</p>
 The number of samples must equal the product of n_batch and batch_size.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>C_batch</strong> – The batched pairwise distance matrix.</p>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>C_batch</strong> (<em>torch.Tensor or pykeops.torch.LazyTensor of shape</em>)</p></li>
+<li><p><em>(n_batch, batch_size, batch_size)</em> – The batched pairwise distance matrix.</p></li>
+</ul>
+</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)">torch.Tensor</a> or <a class="reference external" href="https://www.kernel-operations.io/keops/python/api/pytorch/LazyTensor.html#pykeops.torch.LazyTensor" title="(in KeOps v2.2.2)">pykeops.torch.LazyTensor</a></p>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchdr.Affinity.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><span class="pre">Tensor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><span class="pre">Tensor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.4/library/constants.html#None" title="(in Python v3.4)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><span class="pre">Tensor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.4/library/constants.html#None" title="(in Python v3.4)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/affinity/base.html#Affinity.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.Affinity.transform" title="Link to this definition"></a></dt>
+<dd><p>Computes the affinity between points without fitting any parameter.
+Thus it can only be called for affinities that do not require any fitting.
+For such affinities, this method must be overridden.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.4/library/exceptions.html#NotImplementedError" title="(in Python v3.4)"><strong>NotImplementedError</strong></a> – If the method is called for an affinity that requires fitting, an error
+    is raised.</p>
 </dd>
 </dl>
 </dd></dl>

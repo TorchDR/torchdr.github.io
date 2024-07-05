@@ -103,6 +103,7 @@
     <span class="n">kmin</span><span class="p">,</span>
     <span class="n">wrap_vectors</span><span class="p">,</span>
     <span class="n">batch_transpose</span><span class="p">,</span>
+    <span class="n">to_torch</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -202,8 +203,8 @@
 <span class="sd">        self : LocalGibbsAffinity</span>
 <span class="sd">            The fitted local Gibbs affinity model.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-        <span class="n">C</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pairwise_distance_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_</span><span class="p">)</span>
 
         <span class="n">minK_values</span><span class="p">,</span> <span class="n">minK_indices</span> <span class="o">=</span> <span class="n">kmin</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sigma_</span> <span class="o">=</span> <span class="n">minK_values</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>

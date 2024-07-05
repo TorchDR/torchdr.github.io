@@ -30,7 +30,7 @@ We use the following modules from ``TorchDR``:
    :toctree: stubs
    :template: myclass_template.rst
 
-   torchdr.GibbsAffinity
+   torchdr.NormalizedGibbsAffinity
    torchdr.EntropicAffinity
 
 .. GENERATED FROM PYTHON SOURCE LINES 18-28
@@ -43,7 +43,7 @@ We use the following modules from ``TorchDR``:
     from matplotlib import cm
 
     from torchdr import (
-        GibbsAffinity,
+        NormalizedGibbsAffinity,
         EntropicAffinity,
     )
 
@@ -109,7 +109,7 @@ Such a global bandwidth **only controls the global
 entropy** of the affinity.
 
 In ``TorchDR``, we can easily implement it using
-:class:`torchdr.GibbsAffinity` and setting the
+:class:`torchdr.NormalizedGibbsAffinity` and setting the
 parameter ``normalization_dim=1``.
 
 
@@ -118,7 +118,7 @@ parameter ``normalization_dim=1``.
 .. code-block:: Python
 
 
-    K = GibbsAffinity(
+    K = NormalizedGibbsAffinity(
         sigma=1, normalization_dim=1, keops=False, nodiag=False
     ).fit_transform(X)
 
@@ -212,7 +212,7 @@ This affinity is an important component of the **TSNE** algorithm.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 5.995 seconds)
+   **Total running time of the script:** (0 minutes 2.958 seconds)
 
 
 .. _sphx_glr_download_auto_examples_affinities_demo_ea_adaptivity.py:

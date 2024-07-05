@@ -158,10 +158,10 @@
 <span class="sd">        Precision threshold for the symmetric entropic affinity computation.</span>
 <span class="sd">    max_iter_affinity_in : int, optional</span>
 <span class="sd">        Number of maximum iterations for the symmetric entropic affinity computation.</span>
-<span class="sd">    metric_in : {&#39;euclidean&#39;, &#39;manhattan&#39;}, optional</span>
-<span class="sd">        Metric to use for the input affinity, by default &#39;euclidean&#39;.</span>
-<span class="sd">    metric_out : {&#39;euclidean&#39;, &#39;manhattan&#39;}, optional</span>
-<span class="sd">        Metric to use for the output affinity, by default &#39;euclidean&#39;.</span>
+<span class="sd">    metric_in : {&#39;sqeuclidean&#39;, &#39;manhattan&#39;}, optional</span>
+<span class="sd">        Metric to use for the input affinity, by default &#39;sqeuclidean&#39;.</span>
+<span class="sd">    metric_out : {&#39;sqeuclidean&#39;, &#39;manhattan&#39;}, optional</span>
+<span class="sd">        Metric to use for the output affinity, by default &#39;sqeuclidean&#39;.</span>
 <span class="sd">    unrolling : bool, optional</span>
 <span class="sd">        Whether to use unrolling for solving inverse OT. If False, uses</span>
 <span class="sd">        the gap objective. Default is False.</span>
@@ -200,8 +200,8 @@
         <span class="n">eps_square_affinity_in</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">tol_affinity_in</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
         <span class="n">max_iter_affinity_in</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
-        <span class="n">metric_in</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
-        <span class="n">metric_out</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
+        <span class="n">metric_in</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
+        <span class="n">metric_out</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
         <span class="n">unrolling</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
 
@@ -323,10 +323,10 @@
 <span class="sd">        Precision threshold for the symmetric entropic affinity computation.</span>
 <span class="sd">    max_iter_affinity_in : int, optional</span>
 <span class="sd">        Number of maximum iterations for the symmetric entropic affinity computation.</span>
-<span class="sd">    metric_in : {&#39;euclidean&#39;, &#39;manhattan&#39;}, optional</span>
-<span class="sd">        Metric to use for the input affinity, by default &#39;euclidean&#39;.</span>
-<span class="sd">    metric_out : {&#39;euclidean&#39;, &#39;manhattan&#39;}, optional</span>
-<span class="sd">        Metric to use for the output affinity, by default &#39;euclidean&#39;.</span>
+<span class="sd">    metric_in : {&#39;sqeuclidean&#39;, &#39;manhattan&#39;}, optional</span>
+<span class="sd">        Metric to use for the input affinity, by default &#39;sqeuclidean&#39;.</span>
+<span class="sd">    metric_out : {&#39;sqeuclidean&#39;, &#39;manhattan&#39;}, optional</span>
+<span class="sd">        Metric to use for the output affinity, by default &#39;sqeuclidean&#39;.</span>
 <span class="sd">    unrolling : bool, optional</span>
 <span class="sd">        Whether to use unrolling for solving inverse OT. If False, uses</span>
 <span class="sd">        the gap objective. Default is False.</span>
@@ -365,8 +365,8 @@
         <span class="n">eps_square_affinity_in</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">tol_affinity_in</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
         <span class="n">max_iter_affinity_in</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
-        <span class="n">metric_in</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
-        <span class="n">metric_out</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
+        <span class="n">metric_in</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
+        <span class="n">metric_out</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
         <span class="n">unrolling</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
 

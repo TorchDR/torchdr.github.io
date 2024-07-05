@@ -153,10 +153,10 @@
 <span class="sd">        Precision threshold for the entropic affinity root search.</span>
 <span class="sd">    max_iter_affinity : int, optional</span>
 <span class="sd">        Number of maximum iterations for the entropic affinity root search.</span>
-<span class="sd">    metric_in : {&#39;euclidean&#39;, &#39;manhattan&#39;}, optional</span>
-<span class="sd">        Metric to use for the input affinity, by default &#39;euclidean&#39;.</span>
-<span class="sd">    metric_out : {&#39;euclidean&#39;, &#39;manhattan&#39;}, optional</span>
-<span class="sd">        Metric to use for the output affinity, by default &#39;euclidean&#39;.</span>
+<span class="sd">    metric_in : {&#39;sqeuclidean&#39;, &#39;manhattan&#39;}, optional</span>
+<span class="sd">        Metric to use for the input affinity, by default &#39;sqeuclidean&#39;.</span>
+<span class="sd">    metric_out : {&#39;sqeuclidean&#39;, &#39;manhattan&#39;}, optional</span>
+<span class="sd">        Metric to use for the output affinity, by default &#39;sqeuclidean&#39;.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -190,8 +190,8 @@
         <span class="n">early_exaggeration_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">250</span><span class="p">,</span>
         <span class="n">tol_affinity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
         <span class="n">max_iter_affinity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
-        <span class="n">metric_in</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
-        <span class="n">metric_out</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
+        <span class="n">metric_in</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
+        <span class="n">metric_out</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
     <span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">metric_in</span> <span class="o">=</span> <span class="n">metric_in</span>
@@ -211,7 +211,6 @@
         <span class="p">)</span>
         <span class="n">affinity_out</span> <span class="o">=</span> <span class="n">StudentAffinity</span><span class="p">(</span>
             <span class="n">metric</span><span class="o">=</span><span class="n">metric_out</span><span class="p">,</span>
-            <span class="n">normalization_dim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># normalization is the repulsive loss</span>
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
             <span class="n">keops</span><span class="o">=</span><span class="n">keops</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>

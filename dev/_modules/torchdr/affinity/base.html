@@ -109,7 +109,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    metric : str, optional</span>
 <span class="sd">        The distance metric to use for computing pairwise distances.</span>
-<span class="sd">    nodiag : bool, optional</span>
+<span class="sd">    zero_diag : bool, optional</span>
 <span class="sd">        Whether to set the diagonal of the affinity matrix to zero.</span>
 <span class="sd">    device : str, optional</span>
 <span class="sd">        The device to use for computation. Typically &quot;cuda&quot; for GPU or &quot;cpu&quot; for CPU.</span>
@@ -123,14 +123,14 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
-        <span class="n">nodiag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">zero_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
         <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metric</span> <span class="o">=</span> <span class="n">metric</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">nodiag</span> <span class="o">=</span> <span class="n">nodiag</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zero_diag</span> <span class="o">=</span> <span class="n">zero_diag</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">keops</span> <span class="o">=</span> <span class="n">keops</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
@@ -218,7 +218,7 @@
 <span class="sd">            value of the `keops` attribute. If `keops` is True, a KeOps LazyTensor</span>
 <span class="sd">            is returned. Otherwise, a torch.Tensor is returned.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">add_diagonal</span> <span class="o">=</span> <span class="mf">1e12</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodiag</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">add_diagonal</span> <span class="o">=</span> <span class="mf">1e12</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">zero_diag</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="n">C</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span>
             <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span> <span class="n">keops</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">keops</span><span class="p">,</span> <span class="n">add_diagonal</span><span class="o">=</span><span class="n">add_diagonal</span>
         <span class="p">)</span>
@@ -314,13 +314,17 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
-        <span class="n">nodiag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">zero_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
         <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span> <span class="n">nodiag</span><span class="o">=</span><span class="n">nodiag</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">keops</span><span class="o">=</span><span class="n">keops</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
+            <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
+            <span class="n">zero_diag</span><span class="o">=</span><span class="n">zero_diag</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">keops</span><span class="o">=</span><span class="n">keops</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="LogAffinity.fit_transform">

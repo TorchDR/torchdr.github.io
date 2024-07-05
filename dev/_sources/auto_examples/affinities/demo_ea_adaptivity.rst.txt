@@ -119,7 +119,7 @@ parameter ``normalization_dim=1``.
 
 
     K = NormalizedGibbsAffinity(
-        sigma=1, normalization_dim=1, keops=False, nodiag=False
+        sigma=1, normalization_dim=1, keops=False, zero_diag=False
     ).fit_transform(X)
 
     plt.figure(1, (6, 3))
@@ -173,7 +173,7 @@ In ``TorchDR``, this object is available here :
 
 
     EA = EntropicAffinity(
-        perplexity=5, keops=False, verbose=False, nodiag=False
+        perplexity=5, keops=False, verbose=False, zero_diag=False
     ).fit_transform(X)
 
     plt.figure(1, (6, 3))
@@ -212,7 +212,7 @@ This affinity is an important component of the **TSNE** algorithm.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.958 seconds)
+   **Total running time of the script:** (0 minutes 3.102 seconds)
 
 
 .. _sphx_glr_download_auto_examples_affinities_demo_ea_adaptivity.py:

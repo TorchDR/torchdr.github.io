@@ -229,8 +229,10 @@
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">P</span><span class="p">,</span> <span class="n">log_Q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batched_affinity_in_out</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">log_Q</span> <span class="o">=</span> <span class="n">log_Q</span> <span class="o">-</span> <span class="n">log_Q</span><span class="o">.</span><span class="n">logsumexp</span><span class="p">(</span><span class="mi">2</span><span class="p">)[:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">]</span>  <span class="c1"># beware of the batch dimension</span>
+        <span class="n">log_Q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PX_</span>
+
+        <span class="n">log_Q</span> <span class="o">=</span> <span class="n">log_Q</span> <span class="o">-</span> <span class="n">log_Q</span><span class="o">.</span><span class="n">logsumexp</span><span class="p">(</span><span class="mi">1</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">]</span>  <span class="c1"># beware of the batch dimension</span>
         <span class="n">losses</span> <span class="o">=</span> <span class="n">cross_entropy_loss</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">log_Q</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">loss</span> <span class="o">=</span> <span class="n">losses</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">loss</span></div>

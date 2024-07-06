@@ -99,7 +99,6 @@
 <span class="kn">from</span> <span class="nn">torchdr.utils</span> <span class="kn">import</span> <span class="n">logsumexp_red</span>
 <span class="kn">from</span> <span class="nn">torchdr.affinity.base</span> <span class="kn">import</span> <span class="n">LogAffinity</span>
 <span class="kn">from</span> <span class="nn">torchdr.utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">extract_batch_normalization</span><span class="p">,</span>
     <span class="n">kmin</span><span class="p">,</span>
     <span class="n">wrap_vectors</span><span class="p">,</span>
     <span class="n">batch_transpose</span><span class="p">,</span>
@@ -219,42 +218,6 @@
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span></div>
-
-
-<div class="viewcode-block" id="SelfTuningGibbsAffinity.get_batch">
-<a class="viewcode-back" href="../../../gen_modules/torchdr.SelfTuningGibbsAffinity.html#torchdr.SelfTuningGibbsAffinity.get_batch">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Extracts the affinity submatrix corresponding to the indices.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        indices : torch.Tensor of shape (n_batch, batch_size)</span>
-<span class="sd">            Indices of the batch.</span>
-<span class="sd">        log : bool, optional</span>
-<span class="sd">            If True, returns the log of the affinity matrix.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        P_batch : torch.Tensor or pykeops.torch.LazyTensor</span>
-<span class="sd">            of shape (n_batch, batch_size, batch_size)</span>
-<span class="sd">            The affinity matrix for the batch indices.</span>
-<span class="sd">            In log domain if `log` is True.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">C_batch</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_batch</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
-        <span class="n">sigma_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma_</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
-        <span class="n">log_P_batch</span> <span class="o">=</span> <span class="n">_log_SelfTuningGibbs</span><span class="p">(</span><span class="n">C_batch</span><span class="p">,</span> <span class="n">sigma_batch</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalization_dim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">log_normalization_batch</span> <span class="o">=</span> <span class="n">extract_batch_normalization</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log_normalization_</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalization_dim</span>
-            <span class="p">)</span>
-            <span class="n">log_P_batch</span> <span class="o">=</span> <span class="n">log_P_batch</span> <span class="o">-</span> <span class="n">log_normalization_batch</span>
-
-        <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">log_P_batch</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">log_P_batch</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span></div>
 </div>
 
 </pre></div>

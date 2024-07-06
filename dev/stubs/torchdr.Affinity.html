@@ -124,13 +124,6 @@ If “auto”, uses the device of the input data.</p></li>
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="torchdr.Affinity.check_transform_implemented">
-<span class="sig-name descname"><span class="pre">check_transform_implemented</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/affinity/base.html#Affinity.check_transform_implemented"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.Affinity.check_transform_implemented" title="Link to this definition"></a></dt>
-<dd><p>Checks if the transform method has been implemented (must be overridden and
-not just the base class).</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="torchdr.Affinity.fit">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><span class="pre">Tensor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/affinity/base.html#Affinity.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.Affinity.fit" title="Link to this definition"></a></dt>
 <dd><p>Prepares and stores the input data <span class="math notranslate nohighlight">\(\mathbf{X}\)</span> for computing
@@ -169,31 +162,6 @@ the input data and then returns the computed affinity matrix.</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.4/library/exceptions.html#AssertionError" title="(in Python v3.4)"><strong>AssertionError</strong></a> – If the <cite>affinity_matrix_</cite> attribute is not set during the <cite>fit</cite> method,
     an assertion error is raised.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="torchdr.Affinity.get_batch">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/affinity/base.html#Affinity.get_batch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.Affinity.get_batch" title="Link to this definition"></a></dt>
-<dd><p>Decomposes the fitted affinity into batches based on the provided indices.</p>
-<p>This method must be overridden by subclasses. This base implementation returns
-the batched pairwise distance matrix. Subclasses should call
-<cite>super().get_batch(indices)</cite> as a first step to get the batched distance matrix
-and then implement additional steps to compute the affinity.</p>
-<p>The total number of samples must equal the product of the number of batches
-and the batch size.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>indices</strong> (<a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><em>torch.Tensor</em></a>) – A 2D tensor of shape (n_batch, batch_size) containing the batch indices.
-The number of samples must equal the product of n_batch and batch_size.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>C_batch</strong> (<em>torch.Tensor or pykeops.torch.LazyTensor of shape</em>)</p></li>
-<li><p><em>(n_batch, batch_size, batch_size)</em> – The batched pairwise distance matrix.</p></li>
-</ul>
-</p>
 </dd>
 </dl>
 </dd></dl>

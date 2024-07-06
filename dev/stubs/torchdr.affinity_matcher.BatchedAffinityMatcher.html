@@ -23,13 +23,9 @@
         <script src="../_static/documentation_options.js?v=8e37ee27"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script>window.MathJax = {"tex": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}}</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="API and Modules" href="../all.html" />
-    <link rel="prev" title="AffinityMatcher" href="torchdr.affinity_matcher.AffinityMatcher.html" /> 
+    <link rel="search" title="Search" href="../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -53,27 +49,10 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Torch Dimensionality Reduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../torchdr.quick_start.html">Quick Start Guide</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../torchdr.user_guide.html">User Guide</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../torchdr.user_guide.html#overview">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../torchdr.user_guide.html#affinities">Affinities</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../torchdr.user_guide.html#dr-modules">DR Modules</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="torchdr.base.DRModule.html">DRModule</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../torchdr.user_guide.html#spectral-methods">Spectral methods</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../torchdr.user_guide.html#affinity-matching-methods">Affinity matching methods</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="torchdr.affinity_matcher.AffinityMatcher.html">AffinityMatcher</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">BatchedAffinityMatcher</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../torchdr.user_guide.html#mds-like-methods">MDS-like Methods</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../torchdr.user_guide.html#neighbor-embedding">Neighbor Embedding</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../torchdr.user_guide.html#references">References</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../torchdr.user_guide.html">User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../all.html">API and Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../torchdr.releases.html">Releases</a></li>
@@ -94,7 +73,6 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../torchdr.user_guide.html">User Guide</a></li>
       <li class="breadcrumb-item active">BatchedAffinityMatcher</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/stubs/torchdr.affinity_matcher.BatchedAffinityMatcher.rst.txt" rel="nofollow"> View page source</a>
@@ -107,70 +85,12 @@
              
   <section id="batchedaffinitymatcher">
 <h1>BatchedAffinityMatcher<a class="headerlink" href="#batchedaffinitymatcher" title="Link to this heading"></a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="torchdr.affinity_matcher.BatchedAffinityMatcher">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchdr.affinity_matcher.</span></span><span class="sig-name descname"><span class="pre">BatchedAffinityMatcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">affinity_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="torchdr.Affinity.html#torchdr.Affinity" title="torchdr.affinity.base.Affinity"><span class="pre">Affinity</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">affinity_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="torchdr.Affinity.html#torchdr.Affinity" title="torchdr.affinity.base.Affinity"><span class="pre">Affinity</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs_affinity_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="(in Python v3.4)"><span class="pre">dict</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_components</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Adam'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="(in Python v3.4)"><span class="pre">dict</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.4/library/constants.html#None" title="(in Python v3.4)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheduler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'constant'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheduler_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="(in Python v3.4)"><span class="pre">dict</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.4/library/constants.html#None" title="(in Python v3.4)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'pca'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_scaling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolog</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keops</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.4/library/constants.html#None" title="(in Python v3.4)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/affinity_matcher.html#BatchedAffinityMatcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.affinity_matcher.BatchedAffinityMatcher" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="torchdr.affinity_matcher.AffinityMatcher.html#torchdr.affinity_matcher.AffinityMatcher" title="torchdr.affinity_matcher.AffinityMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">AffinityMatcher</span></code></a></p>
-<p>Performs dimensionality reduction by matching two batched affinity matrices.</p>
-<p>It amounts to solving the following optimization problem:</p>
-<div class="math notranslate nohighlight">
-\[\min_{\mathbf{Z}} \: \sum_{ij} L( [\mathbf{A_X}]_{ij}, [\mathbf{A_Z}]_{ij}) \:.\]</div>
-<p>Optimization of the embedding is perfomed using torch autodiff.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>affinity_in</strong> (<a class="reference internal" href="torchdr.Affinity.html#torchdr.Affinity" title="torchdr.Affinity"><em>Affinity</em></a>) – The affinity object for the input space.</p></li>
-<li><p><strong>affinity_out</strong> (<a class="reference internal" href="torchdr.Affinity.html#torchdr.Affinity" title="torchdr.Affinity"><em>Affinity</em></a>) – The affinity object for the output space.</p></li>
-<li><p><strong>kwargs_affinity_out</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="(in Python v3.4)"><em>dict</em></a><em>, </em><em>optional</em>) – Additional keyword arguments for the affinity_out fit_transform method.</p></li>
-<li><p><strong>n_components</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a><em>, </em><em>optional</em>) – Number of dimensions for the embedding. Default is 2.</p></li>
-<li><p><strong>optimizer</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a><em>, </em><em>optional</em>) – Optimizer to use for the optimization. Default is “Adam”.</p></li>
-<li><p><strong>optimizer_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="(in Python v3.4)"><em>dict</em></a><em>, </em><em>optional</em>) – Additional keyword arguments for the optimizer.</p></li>
-<li><p><strong>lr</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><em>float</em></a><em>, </em><em>optional</em>) – Learning rate for the optimizer. Default is 1e0.</p></li>
-<li><p><strong>scheduler</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a><em>, </em><em>optional</em>) – Learning rate scheduler. Default is “constant”.</p></li>
-<li><p><strong>scheduler_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="(in Python v3.4)"><em>dict</em></a><em>, </em><em>optional</em>) – Additional keyword arguments for the scheduler.</p></li>
-<li><p><strong>tol</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><em>float</em></a><em>, </em><em>optional</em>) – Tolerance for stopping criterion. Default is 1e-3.</p></li>
-<li><p><strong>max_iter</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a><em>, </em><em>optional</em>) – Maximum number of iterations. Default is 1000.</p></li>
-<li><p><strong>init</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a><em>, </em><em>optional</em>) – Initialization method for the embedding. Default is “pca”.</p></li>
-<li><p><strong>init_scaling</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><em>float</em></a><em>, </em><em>optional</em>) – Scaling factor for the initial embedding. Default is 1e-4.</p></li>
-<li><p><strong>tolog</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, logs the optimization process. Default is False.</p></li>
-<li><p><strong>device</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a><em>, </em><em>optional</em>) – Device to use for computations. Default is “auto”.</p></li>
-<li><p><strong>keops</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to use KeOps for computations. Default is False.</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><em>bool</em></a><em>, </em><em>optional</em>) – Verbosity of the optimization process. Default is True.</p></li>
-<li><p><strong>random_state</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><em>float</em></a><em>, </em><em>optional</em>) – Random seed for reproducibility. Default is 0.</p></li>
-<li><p><strong>batch_size</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a><em>, </em><em>optional</em>) – Batch size for processing. Default is None.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="torchdr.affinity_matcher.BatchedAffinityMatcher.batched_affinity_in_out">
-<span class="sig-name descname"><span class="pre">batched_affinity_in_out</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs_affinity_out</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/affinity_matcher.html#BatchedAffinityMatcher.batched_affinity_in_out"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.affinity_matcher.BatchedAffinityMatcher.batched_affinity_in_out" title="Link to this definition"></a></dt>
-<dd><p>Returns batched affinity matrices for the input and output spaces.</p>
-<p>This method firsts generate permuted indices for batching. Using these indices, it computes the batched affinity matrices for both the input data and the embedded data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>kwargs_affinity_out</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="(in Python v3.4)"><em>dict</em></a><em>, </em><em>optional</em>) – Additional keyword arguments for the affinity_out fit_transform method.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>batched_affinity_in_</strong> (<em>torch.Tensor or pykeops.torch.LazyTensor</em>) – The batched affinity matrix for the input space.</p></li>
-<li><p><strong>batched_affinity_out_</strong> (<em>torch.Tensor or pykeops.torch.LazyTensor</em>) – The batched affinity matrix for the output space.</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 <span class="target" id="sphx-glr-backref-torchdr-affinity-matcher-batchedaffinitymatcher"></span></section>
 
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="torchdr.affinity_matcher.AffinityMatcher.html" class="btn btn-neutral float-left" title="AffinityMatcher" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../all.html" class="btn btn-neutral float-right" title="API and Modules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 

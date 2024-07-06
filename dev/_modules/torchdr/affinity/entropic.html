@@ -99,6 +99,7 @@
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 <span class="kn">import</span> <span class="nn">contextlib</span>
 <span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
 
 <span class="kn">from</span> <span class="nn">torchdr.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">entropy</span><span class="p">,</span>
@@ -111,7 +112,6 @@
     <span class="n">logsumexp_red</span><span class="p">,</span>
     <span class="n">batch_transpose</span><span class="p">,</span>
     <span class="n">OPTIMIZERS</span><span class="p">,</span>
-    <span class="n">output_exp_if_not_log</span><span class="p">,</span>
     <span class="n">to_torch</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">torchdr.affinity.base</span> <span class="kn">import</span> <span class="n">LogAffinity</span>
@@ -240,7 +240,8 @@
 <span class="k">class</span> <span class="nc">EntropicAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Solves the directed entropic affinity problem introduced in [1]_.</span>
-<span class="sd">    Corresponds to the matrix :math:`\mathbf{P}^{\mathrm{e}}` in [3]_, solving the convex optimization problem</span>
+<span class="sd">    Corresponds to the matrix :math:`\mathbf{P}^{\mathrm{e}}` in [3]_,</span>
+<span class="sd">    solving the convex optimization problem</span>
 
 <span class="sd">    .. math::</span>
 <span class="sd">        \mathbf{P}^{\mathrm{e}} \in \mathop{\arg\min}_{\mathbf{P} \in \mathbb{R}_+^{n \times n}} \: &amp;\langle \mathbf{C}, \mathbf{P} \rangle \\</span>
@@ -254,18 +255,29 @@
 <span class="sd">    - :math:`\mathrm{h}`: (row-wise) Shannon entropy such that :math:`\mathrm{h}(\mathbf{p}) = - \sum_{i} p_{i} (\log p_{i} - 1)`.</span>
 <span class="sd">    - :math:`\mathbf{1} := (1,...,1)^\top`: all-ones vector.</span>
 
-<span class="sd">    The entropic affinity matrix is akin to a **soft** :math:`k` **-NN affinity**, with the perplexity parameter :math:`\xi` acting as :math:`k`. Each point distributes a unit mass among its closest neighbors while minimizing a transport cost given by :math:`\mathbf{C}`.</span>
+<span class="sd">    The entropic affinity matrix is akin to a **soft** :math:`k` **-NN affinity**,</span>
+<span class="sd">    with the perplexity parameter :math:`\xi` acting as :math:`k`.</span>
+<span class="sd">    Each point distributes a unit mass among its closest neighbors while minimizing</span>
+<span class="sd">    a transport cost given by :math:`\mathbf{C}`.</span>
 
-<span class="sd">    The entropic constraint is saturated at the optimum and governs mass spread. With small :math:`\xi`, mass concentrates on a few neighbors; with large :math:`\xi`, it spreads across more neighbors thus capturing larger scales of dependencies.</span>
+<span class="sd">    The entropic constraint is saturated at the optimum and governs mass spread.</span>
+<span class="sd">    With small :math:`\xi`, mass concentrates on a few neighbors;</span>
+<span class="sd">    with large :math:`\xi`, it spreads across more neighbors thus capturing</span>
+<span class="sd">    larger scales of dependencies.</span>
 
-<span class="sd">    The algorithm computes the optimal dual variable :math:`\mathbf{\varepsilon}^* \in \mathbb{R}^n_{&gt;0}` such that</span>
+<span class="sd">    The algorithm computes the optimal dual variable</span>
+<span class="sd">    :math:`\mathbf{\varepsilon}^* \in \mathbb{R}^n_{&gt;0}` such that</span>
 
 <span class="sd">    .. math::</span>
 <span class="sd">        \forall i, \: \mathrm{h}(\mathbf{P}^{\mathrm{e}}_{i:}) = \log (\xi) + 1 \quad \text{where} \quad \forall (i,j), \: P^{\mathrm{e}}_{ij} = \frac{\exp(- C_{ij} / \varepsilon_i^\star)}{\sum_{\ell} \exp(- C_{i\ell} / \varepsilon_i^\star)}   \:.</span>
 
-<span class="sd">    :math:`\mathbf{\varepsilon}^*` is computed by performing one dimensional searches since rows of :math:`\mathbf{P}^{\mathrm{e}}` are independent subproblems.</span>
+<span class="sd">    :math:`\mathbf{\varepsilon}^*` is computed by performing one dimensional searches</span>
+<span class="sd">    since rows of :math:`\mathbf{P}^{\mathrm{e}}` are independent subproblems.</span>
 
-<span class="sd">    .. note:: Symmetric versions are also available. For the affinity matrix of t-SNE [2]_, use :class:`~torchdr.affinity.L2SymmetricEntropicAffinity`. For the affinity matrix of SNEkhorn/t-SNEkhorn [3]_, use :class:`~torchdr.affinity.SymmetricEntropicAffinity`.</span>
+<span class="sd">    .. note:: Symmetric versions are also available. For the affinity matrix of</span>
+<span class="sd">    t-SNE [2]_, use :class:`~torchdr.affinity.L2SymmetricEntropicAffinity`.</span>
+<span class="sd">    For the affinity matrix of SNEkhorn/t-SNEkhorn [3]_, use</span>
+<span class="sd">    :class:`~torchdr.affinity.SymmetricEntropicAffinity`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -401,35 +413,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">log_affinity_matrix_</span> <span class="o">-=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span></div>
-
-
-<div class="viewcode-block" id="EntropicAffinity.get_batch">
-<a class="viewcode-back" href="../../../gen_modules/torchdr.EntropicAffinity.html#torchdr.EntropicAffinity.get_batch">[docs]</a>
-    <span class="nd">@output_exp_if_not_log</span>
-    <span class="k">def</span> <span class="nf">get_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Extracts the affinity submatrix corresponding to the indices.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        indices : torch.Tensor of shape (n_batch, batch_size)</span>
-<span class="sd">            Indices of the batch.</span>
-<span class="sd">        log : bool, optional</span>
-<span class="sd">            If True, returns the log of the affinity matrix.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        P_batch : torch.Tensor or pykeops.torch.LazyTensor</span>
-<span class="sd">            of shape (n_batch, batch_size, batch_size)</span>
-<span class="sd">            The affinity matrix for the batch indices.</span>
-<span class="sd">            In log domain if `log` is True.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">C_batch</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_batch</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
-        <span class="n">eps_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps_</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
-        <span class="n">log_P_batch</span> <span class="o">=</span> <span class="n">_log_Pe</span><span class="p">(</span><span class="n">C_batch</span><span class="p">,</span> <span class="n">eps_batch</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_normalization</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
-
-        <span class="n">log_P_batch</span> <span class="o">-=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">log_P_batch</span></div>
 </div>
 
 
@@ -455,14 +438,20 @@
 <span class="sd">    - :math:`\mathrm{h}`: (row-wise) Shannon entropy such that :math:`\mathrm{h}(\mathbf{p}) = - \sum_{i} p_{i} (\log p_{i} - 1)`.</span>
 <span class="sd">    - :math:`\mathbf{1} := (1,...,1)^\top`: all-ones vector.</span>
 
-<span class="sd">    It is a symmetric version of :class:`~torchdr.affinity.EntropicAffinity`, where we simply added symmetry as a constraint in the optimization problem.</span>
+<span class="sd">    It is a symmetric version of :class:`~torchdr.affinity.EntropicAffinity`,</span>
+<span class="sd">    where we simply added symmetry as a constraint in the optimization problem.</span>
 
-<span class="sd">    The algorithm computes the optimal dual variables :math:`\mathbf{\mu}^\star \in \mathbb{R}^n` and :math:`\mathbf{\varepsilon}^\star \in \mathbb{R}^n_{&gt;0}` using dual ascent. The affinity matrix is then given by</span>
+<span class="sd">    The algorithm computes the optimal dual variables</span>
+<span class="sd">    :math:`\mathbf{\mu}^\star \in \mathbb{R}^n` and</span>
+<span class="sd">    :math:`\mathbf{\varepsilon}^\star \in \mathbb{R}^n_{&gt;0}` using dual ascent.</span>
+<span class="sd">    The affinity matrix is then given by</span>
 
 <span class="sd">    .. math::</span>
 <span class="sd">        \forall (i,j), \: P^{\mathrm{se}}_{ij} = \exp \left( \frac{\mu^\star_{i} + \mu^\star_j - 2 C_{ij}}{\varepsilon^\star_i + \varepsilon^\star_j} \right) \:.</span>
 
-<span class="sd">    .. note:: Unlike :class:`~torchdr.affinity.L2SymmetricEntropicAffinity` that is used in t-SNE, :class:`~torchdr.affinity.SymmetricEntropicAffinity` enables to control the entropy and mass of each row/column of the affinity matrix.</span>
+<span class="sd">    .. note:: Unlike :class:`~torchdr.affinity.L2SymmetricEntropicAffinity` that is</span>
+<span class="sd">    used in t-SNE, :class:`~torchdr.affinity.SymmetricEntropicAffinity` enables to</span>
+<span class="sd">    control the entropy and mass of each row/column of the affinity matrix.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -695,36 +684,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">log_affinity_matrix_</span> <span class="o">-=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span></div>
-
-
-<div class="viewcode-block" id="SymmetricEntropicAffinity.get_batch">
-<a class="viewcode-back" href="../../../gen_modules/torchdr.SymmetricEntropicAffinity.html#torchdr.SymmetricEntropicAffinity.get_batch">[docs]</a>
-    <span class="nd">@output_exp_if_not_log</span>
-    <span class="k">def</span> <span class="nf">get_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Extracts the affinity submatrix corresponding to the indices.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        indices : torch.Tensor of shape (n_batch, batch_size)</span>
-<span class="sd">            Indices of the batch.</span>
-<span class="sd">        log : bool, optional</span>
-<span class="sd">            If True, returns the log of the affinity matrix.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        P_batch : torch.Tensor or pykeops.torch.LazyTensor</span>
-<span class="sd">            of shape (n_batch, batch_size, batch_size)</span>
-<span class="sd">            The affinity matrix for the batch indices.</span>
-<span class="sd">            In log domain if `log` is True.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">C_batch</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_batch</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
-        <span class="n">eps_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps_</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
-        <span class="n">mu_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu_</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
-        <span class="n">log_P_batch</span> <span class="o">=</span> <span class="n">_log_Pse</span><span class="p">(</span><span class="n">C_batch</span><span class="p">,</span> <span class="n">eps_batch</span><span class="p">,</span> <span class="n">mu_batch</span><span class="p">,</span> <span class="n">eps_square</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eps_square</span><span class="p">)</span>
-
-        <span class="n">log_P_batch</span> <span class="o">-=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">log_P_batch</span></div>
 </div>
 
 
@@ -733,7 +692,9 @@
 <a class="viewcode-back" href="../../../gen_modules/torchdr.SinkhornAffinity.html#torchdr.SinkhornAffinity">[docs]</a>
 <span class="k">class</span> <span class="nc">SinkhornAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes the symmetric doubly stochastic affinity matrix :math:`\mathbf{P}^{\mathrm{ds}}` with controlled global entropy using the symmetric Sinkhorn algorithm [5]_.</span>
+<span class="sd">    Computes the symmetric doubly stochastic affinity matrix</span>
+<span class="sd">    :math:`\mathbf{P}^{\mathrm{ds}}` with controlled global entropy using the</span>
+<span class="sd">    symmetric Sinkhorn algorithm [5]_.</span>
 <span class="sd">    Consists in solving the following symmetric entropic optimal transport problem [6]_:</span>
 
 <span class="sd">    .. math::</span>
@@ -756,12 +717,16 @@
 <span class="sd">    :math:`\mathbf{f}^\star` is computed by performing dual ascent via the Sinkhorn fixed-point iteration (equation in 25 in [7]_).</span>
 
 <span class="sd">    **Bregman projection.** Another way to write this problem is to consider the</span>
-<span class="sd">    KL projection of the Gibbs kernel :math:`\mathbf{K}_\varepsilon = \exp(- \mathbf{C} / \varepsilon)` onto the set of doubly stochastic matrices:</span>
+<span class="sd">    KL projection of the Gibbs kernel</span>
+<span class="sd">    :math:`\mathbf{K}_\varepsilon = \exp(- \mathbf{C} / \varepsilon)` onto the set</span>
+<span class="sd">    of doubly stochastic matrices:</span>
 
 <span class="sd">    .. math::</span>
 <span class="sd">        \mathbf{P}^{\mathrm{ds}} = \mathrm{Proj}_{\mathcal{DS}}^{\mathrm{KL}}(\mathbf{K}_\varepsilon) := \mathop{\arg\min}_{\mathbf{P} \in \mathcal{DS}} \: \mathrm{KL}(\mathbf{P} \| \mathbf{K}_\varepsilon)</span>
 
-<span class="sd">    where :math:`\mathrm{KL}(\mathbf{P} \| \mathbf{Q}) := \sum_{ij} P_{ij} (\log (Q_{ij} / P_{ij}) - 1) + Q_{ij}` is Kullback Leibler divergence between :math:`\mathbf{P}` and :math:`\mathbf{Q}`.</span>
+<span class="sd">    where :math:`\mathrm{KL}(\mathbf{P} \| \mathbf{Q}) := \sum_{ij} P_{ij} (\log (Q_{ij} / P_{ij}) - 1) + Q_{ij}`</span>
+<span class="sd">    is the Kullback Leibler divergence between :math:`\mathbf{P}` and</span>
+<span class="sd">    :math:`\mathbf{Q}`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -916,42 +881,87 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">log_affinity_matrix_</span> <span class="o">-=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span></div>
+</div>
 
 
-<div class="viewcode-block" id="SinkhornAffinity.get_batch">
-<a class="viewcode-back" href="../../../gen_modules/torchdr.SinkhornAffinity.html#torchdr.SinkhornAffinity.get_batch">[docs]</a>
-    <span class="nd">@output_exp_if_not_log</span>
-    <span class="k">def</span> <span class="nf">get_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+
+<span class="k">class</span> <span class="nc">NormalizedGibbsAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the Gibbs affinity matrix :math:`\exp( - \mathbf{C} / \sigma)`</span>
+<span class="sd">    where :math:`\mathbf{C}` is the pairwise distance matrix and</span>
+<span class="sd">    :math:`\sigma` is the bandwidth parameter. The affinity can be normalized</span>
+<span class="sd">    according to the specified normalization dimensions.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sigma : float, optional</span>
+<span class="sd">        Bandwidth parameter.</span>
+<span class="sd">    metric : str, optional</span>
+<span class="sd">        Metric to use for pairwise distances computation.</span>
+<span class="sd">    zero_diag : bool, optional</span>
+<span class="sd">        Whether to set the diagonal of the affinity matrix to zero.</span>
+<span class="sd">    device : str, optional</span>
+<span class="sd">        Device to use for computations.</span>
+<span class="sd">    keops : bool, optional</span>
+<span class="sd">        Whether to use KeOps for computations.</span>
+<span class="sd">    verbose : bool, optional</span>
+<span class="sd">        Verbosity.</span>
+<span class="sd">    normalization_dim : int or Tuple[int], optional</span>
+<span class="sd">        Dimension along which to normalize the affinity matrix.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">sigma</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
+        <span class="n">zero_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">normalization_dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
+            <span class="n">zero_diag</span><span class="o">=</span><span class="n">zero_diag</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">keops</span><span class="o">=</span><span class="n">keops</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalization_dim</span> <span class="o">=</span> <span class="n">normalization_dim</span>
+
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Extracts the affinity submatrix corresponding to the indices.</span>
+<span class="sd">        Fits the normalized Gibbs affinity model to the provided data.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        indices : torch.Tensor of shape (n_batch, batch_size)</span>
-<span class="sd">            Indices of the batch.</span>
-<span class="sd">        log : bool, optional</span>
-<span class="sd">            If True, returns the log of the affinity matrix.</span>
+<span class="sd">        X : torch.Tensor or np.ndarray of shape (n_samples, n_features)</span>
+<span class="sd">            Input data.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        P_batch : torch.Tensor or pykeops.torch.LazyTensor</span>
-<span class="sd">            of shape (n_batch, batch_size, batch_size)</span>
-<span class="sd">            The affinity matrix for the batch indices.</span>
-<span class="sd">            In log domain if `log` is True.</span>
+<span class="sd">        self : GibbsAffinity</span>
+<span class="sd">            The fitted Gibbs affinity model.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">C_batch</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_batch</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_kernel</span> <span class="o">==</span> <span class="s2">&quot;student&quot;</span><span class="p">:</span>
-            <span class="n">C_batch</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">C_batch</span><span class="p">)</span><span class="o">.</span><span class="n">log</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_</span><span class="p">)</span>
 
-        <span class="n">log_K_batch</span> <span class="o">=</span> <span class="o">-</span><span class="n">C_batch</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps</span>
-        <span class="n">dual_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dual_</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
-        <span class="n">log_P_batch</span> <span class="o">=</span> <span class="n">_log_Pds</span><span class="p">(</span><span class="n">log_K_batch</span><span class="p">,</span> <span class="n">dual_batch</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_affinity_matrix_</span> <span class="o">=</span> <span class="o">-</span><span class="n">C</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span>
 
-        <span class="n">log_P_batch</span> <span class="o">-=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalization_dim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_normalization_</span> <span class="o">=</span> <span class="n">logsumexp_red</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log_affinity_matrix_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalization_dim</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_affinity_matrix_</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log_affinity_matrix_</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_normalization_</span>
+            <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">log_P_batch</span></div>
-</div>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">normalization_dim</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_affinity_matrix_</span> <span class="o">-=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">)</span>
 
+        <span class="k">return</span> <span class="bp">self</span>
 </pre></div>
 
            </div>

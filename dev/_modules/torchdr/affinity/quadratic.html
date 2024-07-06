@@ -307,34 +307,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">affinity_matrix_</span> <span class="o">/=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span>
 
         <span class="k">return</span> <span class="bp">self</span></div>
-
-
-<div class="viewcode-block" id="DoublyStochasticQuadraticAffinity.get_batch">
-<a class="viewcode-back" href="../../../gen_modules/torchdr.DoublyStochasticQuadraticAffinity.html#torchdr.DoublyStochasticQuadraticAffinity.get_batch">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Extracts the affinity submatrix corresponding to the indices.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        indices : torch.Tensor of shape (n_batch, batch_size)</span>
-<span class="sd">            Indices of the batch.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        P_batch : torch.Tensor or pykeops.torch.LazyTensor</span>
-<span class="sd">            of shape (n_batch, batch_size, batch_size)</span>
-<span class="sd">            The affinity matrix for the batch indices.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">C_batch</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_batch</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_kernel</span> <span class="o">==</span> <span class="s2">&quot;student&quot;</span><span class="p">:</span>
-            <span class="n">C_batch</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">C_batch</span><span class="p">)</span><span class="o">.</span><span class="n">log</span><span class="p">()</span>
-
-        <span class="n">dual_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dual_</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
-        <span class="n">P_batch</span> <span class="o">=</span> <span class="n">_Pds</span><span class="p">(</span><span class="n">C_batch</span><span class="p">,</span> <span class="n">dual_batch</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps</span><span class="p">)</span>
-
-        <span class="n">P_batch</span> <span class="o">/=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span>
-        <span class="k">return</span> <span class="n">P_batch</span></div>
 </div>
 
 </pre></div>

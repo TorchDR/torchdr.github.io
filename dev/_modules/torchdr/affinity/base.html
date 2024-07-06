@@ -95,11 +95,14 @@
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 
 <span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">pykeops</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">torchdr.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">symmetric_pairwise_distances</span><span class="p">,</span>
     <span class="n">symmetric_pairwise_distances_indices</span><span class="p">,</span>
     <span class="n">pairwise_distances</span><span class="p">,</span>
+    <span class="n">to_torch</span><span class="p">,</span>
+    <span class="n">inputs_to_torch</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -249,48 +252,6 @@
             <span class="n">msg</span> <span class="ow">or</span> <span class="s2">&quot;[TorchDR] ERROR : Affinity not fitted.&quot;</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="Affinity.get_batch">
-<a class="viewcode-back" href="../../../stubs/torchdr.Affinity.html#torchdr.Affinity.get_batch">[docs]</a>
-    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">get_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Decomposes the fitted affinity into batches based on the provided indices.</span>
-
-<span class="sd">        This method must be overridden by subclasses. This base implementation returns</span>
-<span class="sd">        the batched pairwise distance matrix. Subclasses should call</span>
-<span class="sd">        `super().get_batch(indices)` as a first step to get the batched distance matrix</span>
-<span class="sd">        and then implement additional steps to compute the affinity.</span>
-
-<span class="sd">        The total number of samples must equal the product of the number of batches</span>
-<span class="sd">        and the batch size.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        indices : torch.Tensor</span>
-<span class="sd">            A 2D tensor of shape (n_batch, batch_size) containing the batch indices.</span>
-<span class="sd">            The number of samples must equal the product of n_batch and batch_size.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        C_batch : torch.Tensor or pykeops.torch.LazyTensor of shape</span>
-<span class="sd">        (n_batch, batch_size, batch_size)</span>
-<span class="sd">            The batched pairwise distance matrix.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_check_is_fitted</span><span class="p">()</span>
-        <span class="k">assert</span> <span class="p">(</span>
-            <span class="n">indices</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span>
-        <span class="p">),</span> <span class="s1">&#39;[TorchDR] ERROR : indices in &quot;get_batch&quot; should be a 2D torch tensor &#39;</span>
-        <span class="s2">&quot;of shape (n_batch, batch_size).&quot;</span>
-        <span class="k">assert</span> <span class="p">(</span>
-            <span class="n">indices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">indices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="p">),</span> <span class="s1">&#39;[TorchDR] ERROR : indices in &quot;get_batch&quot; should have a product &#39;</span>
-        <span class="s2">&quot;of dimensions equal to the number of samples.&quot;</span>
-
-        <span class="n">data_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
-        <span class="n">C_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_matrix</span><span class="p">(</span><span class="n">data_batch</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">C_batch</span></div>
-
-
 <div class="viewcode-block" id="Affinity.transform">
 <a class="viewcode-back" href="../../../stubs/torchdr.Affinity.html#torchdr.Affinity.transform">[docs]</a>
     <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span>
@@ -349,23 +310,116 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">symmetric_pairwise_distances</span><span class="p">(</span>
                 <span class="n">X</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span> <span class="n">keops</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">keops</span><span class="p">,</span> <span class="n">add_diagonal</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">add_diagonal</span>
-            <span class="p">)</span>
+            <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Affinity.check_transform_implemented">
-<a class="viewcode-back" href="../../../stubs/torchdr.Affinity.html#torchdr.Affinity.check_transform_implemented">[docs]</a>
-    <span class="k">def</span> <span class="nf">check_transform_implemented</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Checks if the transform method has been implemented (must be overridden and</span>
-<span class="sd">        not just the base class).</span>
+
+
+<span class="k">class</span> <span class="nc">TransformableAffinity</span><span class="p">(</span><span class="n">Affinity</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for affinities that do not require fitting parameters based on</span>
+<span class="sd">    the whole dataset. They can be called directly on a subset of the data using the</span>
+<span class="sd">    transform method.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    metric : str, optional</span>
+<span class="sd">        Metric to use for pairwise distances computation.</span>
+<span class="sd">    zero_diag : bool, optional</span>
+<span class="sd">        Whether to set the diagonal of the affinity matrix to zero.</span>
+<span class="sd">    device : str, optional</span>
+<span class="sd">        Device to use for computations.</span>
+<span class="sd">    keops : bool, optional</span>
+<span class="sd">        Whether to use KeOps for computations.</span>
+<span class="sd">    verbose : bool, optional</span>
+<span class="sd">        Verbosity.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
+        <span class="n">zero_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
+            <span class="n">zero_diag</span><span class="o">=</span><span class="n">zero_diag</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">keops</span><span class="o">=</span><span class="n">keops</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_affinity_formula</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">C</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">pykeops</span><span class="o">.</span><span class="n">torch</span><span class="o">.</span><span class="n">LazyTensor</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the affinity matrix from the pairwise distance matrix.</span>
+
+<span class="sd">        This method must be overridden by subclasses.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        C : torch.Tensor or pykeops.torch.LazyTensor</span>
+<span class="sd">            Pairwise distance matrix.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        P : torch.Tensor or pykeops.torch.LazyTensor</span>
+<span class="sd">            The associated affinity.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Check if the method is overridden and not just the base class method</span>
-        <span class="n">method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;transform&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">method</span><span class="o">.</span><span class="vm">__func__</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Affinity</span><span class="o">.</span><span class="n">transform</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span></div>
-</div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;[TorchDR] ERROR : _affinity_formula method not implemented for &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;affinity </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fits the Gibbs affinity model to the provided data.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : torch.Tensor or np.ndarray</span>
+<span class="sd">            Input data.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self : GibbsAffinity</span>
+<span class="sd">            The fitted Gibbs affinity model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">affinity_matrix_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_affinity_formula</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="nd">@inputs_to_torch</span>
+    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">Y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">indices</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the Gibbs affinity between X and Y.</span>
+<span class="sd">        If Y is None, sets Y = X.</span>
+<span class="sd">        If indices is not None, the output has shape (n, k) and its (i,j) element is the</span>
+<span class="sd">        affinity between X[i] and Y[indices[i, j]].</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : torch.Tensor or np.ndarray of shape (n_samples_x, n_features)</span>
+<span class="sd">            Input data.</span>
+<span class="sd">        Y : torch.Tensor or np.ndarray of shape (n_samples_y, n_features), optional</span>
+<span class="sd">            Second Input data. Default is None.</span>
+<span class="sd">        indices : torch.Tensor of shape (n_samples_x, batch_size), optional</span>
+<span class="sd">            Indices of pairs to compute. Default is None.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        P : torch.Tensor or pykeops.torch.LazyTensor</span>
+<span class="sd">            Scalar product between X and Y.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_matrix_transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="o">=</span><span class="n">Y</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_affinity_formula</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="LogAffinity">
@@ -476,6 +530,118 @@
             <span class="n">msg</span> <span class="ow">or</span> <span class="s2">&quot;[TorchDR] ERROR : LogAffinity not fitted.&quot;</span>
         <span class="p">)</span></div>
 
+
+
+<span class="k">class</span> <span class="nc">TransformableLogAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for affinities that do not require fitting parameters based on</span>
+<span class="sd">    the whole dataset. They can be called direclty on a subset of the data.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    metric : str, optional</span>
+<span class="sd">        Metric to use for pairwise distances computation.</span>
+<span class="sd">    zero_diag : bool, optional</span>
+<span class="sd">        Whether to set the diagonal of the affinity matrix to zero.</span>
+<span class="sd">    device : str, optional</span>
+<span class="sd">        Device to use for computations.</span>
+<span class="sd">    keops : bool, optional</span>
+<span class="sd">        Whether to use KeOps for computations.</span>
+<span class="sd">    verbose : bool, optional</span>
+<span class="sd">        Verbosity.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
+        <span class="n">zero_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
+            <span class="n">zero_diag</span><span class="o">=</span><span class="n">zero_diag</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">keops</span><span class="o">=</span><span class="n">keops</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_log_affinity_formula</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">C</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">pykeops</span><span class="o">.</span><span class="n">torch</span><span class="o">.</span><span class="n">LazyTensor</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the affinity matrix from the pairwise distance matrix.</span>
+
+<span class="sd">        This method must be overridden by subclasses.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        C : torch.Tensor or pykeops.torch.LazyTensor</span>
+<span class="sd">            Pairwise distance matrix.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        P : torch.Tensor or pykeops.torch.LazyTensor</span>
+<span class="sd">            The associated affinity.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;[TorchDR] ERROR : _affinity_formula method not implemented for &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;affinity </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fits the Gibbs affinity model to the provided data.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : torch.Tensor or np.ndarray</span>
+<span class="sd">            Input data.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self : GibbsAffinity</span>
+<span class="sd">            The fitted Gibbs affinity model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_affinity_matrix_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_affinity_formula</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="nd">@inputs_to_torch</span>
+    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">Y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">indices</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the Gibbs affinity between X and Y.</span>
+<span class="sd">        If Y is None, sets Y = X.</span>
+<span class="sd">        If indices is not None, the output has shape (n, k) and its (i,j) element is the</span>
+<span class="sd">        affinity between X[i] and Y[indices[i, j]].</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : torch.Tensor or np.ndarray of shape (n_samples_x, n_features)</span>
+<span class="sd">            Input data.</span>
+<span class="sd">        Y : torch.Tensor or np.ndarray of shape (n_samples_y, n_features), optional</span>
+<span class="sd">            Second Input data. Default is None.</span>
+<span class="sd">        indices : torch.Tensor of shape (n_samples_x, batch_size), optional</span>
+<span class="sd">            Indices of pairs to compute. Default is None.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        P : torch.Tensor or pykeops.torch.LazyTensor</span>
+<span class="sd">            Scalar product between X and Y.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_matrix_transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="o">=</span><span class="n">Y</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">)</span>
+        <span class="n">log_P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_affinity_formula</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">log_P</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">log_P</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
 </pre></div>
 
            </div>

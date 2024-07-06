@@ -23,8 +23,6 @@
         <script src="../_static/documentation_options.js?v=8e37ee27"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script>window.MathJax = {"tex": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}}</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -128,12 +126,10 @@ If “auto”, uses the device of the input data.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="torchdr.LogAffinity.fit_transform">
 <span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><span class="pre">Tensor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/affinity/base.html#LogAffinity.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.LogAffinity.fit_transform" title="Link to this definition"></a></dt>
-<dd><p>Fits the model to the input data <span class="math notranslate nohighlight">\(\mathbf{X}\)</span> and returns
-the affinity matrix.</p>
-<p>This method first calls the <cite>fit</cite> method to compute the log affinity matrix
-from the input data. It then returns either the log affinity matrix or the
-exponential of the log affinity matrix, depending on the value of
-the <cite>log</cite> parameter.</p>
+<dd><p>Computes the log affinity matrix from the input data using the <cite>fit</cite> method
+and returns the resulting affinity matrix.</p>
+<p>It returns either the log affinity matrix or the exponential of the log
+affinity matrix, depending on the value of the <cite>log</cite> parameter.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

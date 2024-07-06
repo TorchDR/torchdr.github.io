@@ -92,14 +92,14 @@
 <span class="c1">#</span>
 <span class="c1"># License: BSD 3-Clause License</span>
 
-<span class="kn">from</span> <span class="nn">torchdr.neighbor_embedding.base</span> <span class="kn">import</span> <span class="n">NeighborEmbedding</span>
+<span class="kn">from</span> <span class="nn">torchdr.neighbor_embedding.base</span> <span class="kn">import</span> <span class="n">SparseNeighborEmbedding</span>
 <span class="kn">from</span> <span class="nn">torchdr.affinity</span> <span class="kn">import</span> <span class="n">EntropicAffinity</span><span class="p">,</span> <span class="n">StudentAffinity</span>
 <span class="kn">from</span> <span class="nn">torchdr.utils</span> <span class="kn">import</span> <span class="n">cross_entropy_loss</span>
 
 
 <div class="viewcode-block" id="InfoTSNE">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.InfoTSNE.html#torchdr.InfoTSNE">[docs]</a>
-<span class="k">class</span> <span class="nc">InfoTSNE</span><span class="p">(</span><span class="n">NeighborEmbedding</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">InfoTSNE</span><span class="p">(</span><span class="n">SparseNeighborEmbedding</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    Parameters</span>
@@ -191,6 +191,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span> <span class="o">=</span> <span class="n">perplexity</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_iter_affinity</span> <span class="o">=</span> <span class="n">max_iter_affinity</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tol_affinity</span> <span class="o">=</span> <span class="n">tol_affinity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
 
         <span class="n">affinity_in</span> <span class="o">=</span> <span class="n">EntropicAffinity</span><span class="p">(</span>
             <span class="n">perplexity</span><span class="o">=</span><span class="n">perplexity</span><span class="p">,</span>
@@ -200,6 +201,7 @@
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
             <span class="n">keops</span><span class="o">=</span><span class="n">keops</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="n">sparsity</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">affinity_out</span> <span class="o">=</span> <span class="n">StudentAffinity</span><span class="p">(</span>
             <span class="n">metric</span><span class="o">=</span><span class="n">metric_out</span><span class="p">,</span>
@@ -225,12 +227,11 @@
             <span class="n">keops</span><span class="o">=</span><span class="n">keops</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
-            <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">log_Q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PX_</span>
+        <span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PX_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="n">log_Q</span> <span class="o">=</span> <span class="n">log_Q</span> <span class="o">-</span> <span class="n">log_Q</span><span class="o">.</span><span class="n">logsumexp</span><span class="p">(</span><span class="mi">1</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">]</span>  <span class="c1"># beware of the batch dimension</span>
         <span class="n">losses</span> <span class="o">=</span> <span class="n">cross_entropy_loss</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">log_Q</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>

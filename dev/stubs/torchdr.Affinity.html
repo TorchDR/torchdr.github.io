@@ -23,8 +23,6 @@
         <script src="../_static/documentation_options.js?v=8e37ee27"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script>window.MathJax = {"tex": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}}</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -126,29 +124,21 @@ If “auto”, uses the device of the input data.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="torchdr.Affinity.fit">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><span class="pre">Tensor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/affinity/base.html#Affinity.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.Affinity.fit" title="Link to this definition"></a></dt>
-<dd><p>Prepares and stores the input data <span class="math notranslate nohighlight">\(\mathbf{X}\)</span> for computing
-the affinity matrix.</p>
-<p>This method must be overridden by subclasses.</p>
+<dd><p>Fits the affinity matrix from the input data.
+This method must be overridden by subclasses.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>X</strong> (<a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><em>torch.Tensor</em></a><em> or </em><em>np.ndarray</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – Input data to be converted and stored.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>self</strong> – Returns the instance itself.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#object" title="(in Python v3.4)">object</a></p>
-</dd>
 </dl>
+<p>:raises NotImplementedError : If the method is not implemented for the affinity class.:</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="torchdr.Affinity.fit_transform">
 <span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><span class="pre">Tensor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/affinity/base.html#Affinity.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.Affinity.fit_transform" title="Link to this definition"></a></dt>
-<dd><p>Computes the affinity matrix from input data <span class="math notranslate nohighlight">\(\mathbf{X}\)</span> and returns
-the resulting matrix.</p>
-<p>It first calls the <cite>fit</cite> method to compute the affinity matrix from
-the input data and then returns the computed affinity matrix.</p>
+<dd><p>Computes the affinity matrix from the input data using the <cite>fit</cite> method and
+returns the resulting affinity matrix.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>X</strong> (<a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><em>torch.Tensor</em></a><em> or </em><em>np.ndarray</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – Input data used to compute the affinity matrix.</p>
@@ -173,8 +163,15 @@ the input data and then returns the computed affinity matrix.</p>
 Thus it can only be called for affinities that do not require any fitting.
 For such affinities, this method must be overridden.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.4/library/exceptions.html#NotImplementedError" title="(in Python v3.4)"><strong>NotImplementedError</strong></a> – If the method is called for an affinity that requires fitting, an error
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><em>torch.Tensor</em></a><em> or </em><em>np.ndarray</em><em> of </em><em>shape</em><em> (</em><em>n_samples_x</em><em>, </em><em>n_features</em><em>)</em>) – Input data.</p></li>
+<li><p><strong>Y</strong> (<a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><em>torch.Tensor</em></a><em> or </em><em>np.ndarray</em><em> of </em><em>shape</em><em> (</em><em>n_samples_y</em><em>, </em><em>n_features</em><em>)</em><em>, </em><em>optional</em>) – Second input data. If None, uses <cite>Y=X</cite>. Default is None.</p></li>
+<li><p><strong>indices</strong> (<a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><em>torch.Tensor</em></a><em> of </em><em>shape</em><em> (</em><em>n_samples_x</em><em>, </em><em>batch_size</em><em>)</em><em>, </em><em>optional</em>) – Indices of pairs to compute. Default is None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.4/library/exceptions.html#NotImplementedError" title="(in Python v3.4)"><strong>NotImplementedError</strong></a> – If the method is called for an affinity that requires fitting, an error
     is raised.</p>
 </dd>
 </dl>

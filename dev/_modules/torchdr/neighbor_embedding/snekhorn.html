@@ -97,7 +97,7 @@
     <span class="n">SymmetricEntropicAffinity</span><span class="p">,</span>
     <span class="n">SinkhornAffinity</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">torchdr.utils</span> <span class="kn">import</span> <span class="n">logsumexp_red</span>
+<span class="kn">from</span> <span class="nn">torchdr.utils</span> <span class="kn">import</span> <span class="n">logsumexp_red</span><span class="p">,</span> <span class="n">sum_red</span>
 
 
 <div class="viewcode-block" id="SNEkhorn">
@@ -257,11 +257,14 @@
             <span class="n">early_exaggeration_iter</span><span class="o">=</span><span class="n">early_exaggeration_iter</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_repulsive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_Q</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_repulsive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unrolling</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">0</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">logsumexp_red</span><span class="p">(</span><span class="n">log_Q</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span></div>
+            <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">logsumexp_red</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">sum_red</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span></div>
 
 
 
@@ -422,11 +425,14 @@
             <span class="n">early_exaggeration_iter</span><span class="o">=</span><span class="n">early_exaggeration_iter</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_repulsive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_Q</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_repulsive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unrolling</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">0</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">logsumexp_red</span><span class="p">(</span><span class="n">log_Q</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span></div>
+            <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">logsumexp_red</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">sum_red</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span></div>
 
 </pre></div>
 

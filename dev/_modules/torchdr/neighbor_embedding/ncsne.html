@@ -92,14 +92,14 @@
 <span class="c1">#</span>
 <span class="c1"># License: BSD 3-Clause License</span>
 
-<span class="kn">from</span> <span class="nn">torchdr.neighbor_embedding.base</span> <span class="kn">import</span> <span class="n">SparseNeighborEmbedding</span>
+<span class="kn">from</span> <span class="nn">torchdr.neighbor_embedding.base</span> <span class="kn">import</span> <span class="n">SampledNeighborEmbedding</span>
 <span class="kn">from</span> <span class="nn">torchdr.affinity</span> <span class="kn">import</span> <span class="n">EntropicAffinity</span><span class="p">,</span> <span class="n">StudentAffinity</span>
-<span class="kn">from</span> <span class="nn">torchdr.utils</span> <span class="kn">import</span> <span class="n">cross_entropy_loss</span>
+<span class="kn">from</span> <span class="nn">torchdr.utils</span> <span class="kn">import</span> <span class="n">logsumexp_red</span>
 
 
 <div class="viewcode-block" id="InfoTSNE">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.InfoTSNE.html#torchdr.InfoTSNE">[docs]</a>
-<span class="k">class</span> <span class="nc">InfoTSNE</span><span class="p">(</span><span class="n">SparseNeighborEmbedding</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">InfoTSNE</span><span class="p">(</span><span class="n">SampledNeighborEmbedding</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    Parameters</span>
@@ -150,8 +150,8 @@
 <span class="sd">        Metric to use for the input affinity, by default &#39;sqeuclidean&#39;.</span>
 <span class="sd">    metric_out : {&#39;sqeuclidean&#39;, &#39;manhattan&#39;}, optional</span>
 <span class="sd">        Metric to use for the output affinity, by default &#39;sqeuclidean&#39;.</span>
-<span class="sd">    batch_size : int or str, optional</span>
-<span class="sd">        Batch size for the optimization, by default &quot;auto&quot;.</span>
+<span class="sd">    n_negatives : int, optional</span>
+<span class="sd">        Number of negative samples for the noise-contrastive loss, by default 5.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -179,11 +179,13 @@
         <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">coeff_attraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span>
+        <span class="n">coeff_repulsion</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">tol_affinity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
         <span class="n">max_iter_affinity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
         <span class="n">metric_in</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
         <span class="n">metric_out</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
-        <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">n_negatives</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span>
     <span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">metric_in</span> <span class="o">=</span> <span class="n">metric_in</span>
@@ -191,7 +193,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span> <span class="o">=</span> <span class="n">perplexity</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_iter_affinity</span> <span class="o">=</span> <span class="n">max_iter_affinity</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tol_affinity</span> <span class="o">=</span> <span class="n">tol_affinity</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
 
         <span class="n">affinity_in</span> <span class="o">=</span> <span class="n">EntropicAffinity</span><span class="p">(</span>
             <span class="n">perplexity</span><span class="o">=</span><span class="n">perplexity</span><span class="p">,</span>
@@ -227,16 +228,15 @@
             <span class="n">keops</span><span class="o">=</span><span class="n">keops</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+            <span class="n">coeff_attraction</span><span class="o">=</span><span class="n">coeff_attraction</span><span class="p">,</span>
+            <span class="n">coeff_repulsion</span><span class="o">=</span><span class="n">coeff_repulsion</span><span class="p">,</span>
+            <span class="n">n_negatives</span><span class="o">=</span><span class="n">n_negatives</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">log_Q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PX_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-
-        <span class="n">log_Q</span> <span class="o">=</span> <span class="n">log_Q</span> <span class="o">-</span> <span class="n">log_Q</span><span class="o">.</span><span class="n">logsumexp</span><span class="p">(</span><span class="mi">1</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">]</span>  <span class="c1"># beware of the batch dimension</span>
-        <span class="n">losses</span> <span class="o">=</span> <span class="n">cross_entropy_loss</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">log_Q</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">loss</span> <span class="o">=</span> <span class="n">losses</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">loss</span></div>
+    <span class="k">def</span> <span class="nf">_repulsive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_negatives</span><span class="p">()</span>
+        <span class="n">log_Q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">logsumexp_red</span><span class="p">(</span><span class="n">log_Q</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span></div>
 
 </pre></div>
 

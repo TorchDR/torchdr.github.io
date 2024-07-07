@@ -60,10 +60,10 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../all.html">API and Modules</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../all.html#dr-modules-sklearn-compatible">DR Modules - <code class="docutils literal notranslate"><span class="pre">sklearn</span></code> Compatible</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../all.html#affinity-modules">Affinity Modules</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="torchdr.GibbsAffinity.html">GibbsAffinity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torchdr.GaussianAffinity.html">GaussianAffinity</a></li>
 <li class="toctree-l3"><a class="reference internal" href="torchdr.StudentAffinity.html">StudentAffinity</a></li>
 <li class="toctree-l3"><a class="reference internal" href="torchdr.ScalarProductAffinity.html">ScalarProductAffinity</a></li>
-<li class="toctree-l3"><a class="reference internal" href="torchdr.SelfTuningGibbsAffinity.html">SelfTuningGibbsAffinity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torchdr.SelfTuningAffinity.html">SelfTuningAffinity</a></li>
 <li class="toctree-l3"><a class="reference internal" href="torchdr.EntropicAffinity.html">EntropicAffinity</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">SinkhornAffinity</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#torchdr.SinkhornAffinity"><code class="docutils literal notranslate"><span class="pre">SinkhornAffinity</span></code></a></li>
@@ -135,7 +135,7 @@ Consists in solving the following symmetric entropic optimal transport problem <
 \[\mathbf{P}^{\mathrm{ds}} \mathbf{1} = \mathbf{1} \quad \text{where} \quad \forall (i,j), \: P^{\mathrm{ds}}_{ij} = \exp(f^\star_i + f^\star_j - C_{ij} / \varepsilon) \:.\]</div>
 <p><span class="math notranslate nohighlight">\(\mathbf{f}^\star\)</span> is computed by performing dual ascent via the Sinkhorn fixed-point iteration (equation in 25 in <a class="footnote-reference brackets" href="#id6" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></a>).</p>
 <p><strong>Bregman projection.</strong> Another way to write this problem is to consider the
-KL projection of the Gibbs kernel
+KL projection of the Gaussian kernel
 <span class="math notranslate nohighlight">\(\mathbf{K}_\varepsilon = \exp(- \mathbf{C} / \varepsilon)\)</span> onto the set
 of doubly stochastic matrices:</p>
 <div class="math notranslate nohighlight">

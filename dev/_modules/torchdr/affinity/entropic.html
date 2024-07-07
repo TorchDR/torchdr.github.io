@@ -727,7 +727,7 @@
 <span class="sd">    :math:`\mathbf{f}^\star` is computed by performing dual ascent via the Sinkhorn fixed-point iteration (equation in 25 in [7]_).</span>
 
 <span class="sd">    **Bregman projection.** Another way to write this problem is to consider the</span>
-<span class="sd">    KL projection of the Gibbs kernel</span>
+<span class="sd">    KL projection of the Gaussian kernel</span>
 <span class="sd">    :math:`\mathbf{K}_\varepsilon = \exp(- \mathbf{C} / \varepsilon)` onto the set</span>
 <span class="sd">    of doubly stochastic matrices:</span>
 
@@ -895,9 +895,9 @@
 
 
 
-<span class="k">class</span> <span class="nc">NormalizedGibbsAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">NormalizedGaussianAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes the Gibbs affinity matrix :math:`\exp( - \mathbf{C} / \sigma)`</span>
+<span class="sd">    Computes the Gaussian affinity matrix :math:`\exp( - \mathbf{C} / \sigma)`</span>
 <span class="sd">    where :math:`\mathbf{C}` is the pairwise distance matrix and</span>
 <span class="sd">    :math:`\sigma` is the bandwidth parameter. The affinity can be normalized</span>
 <span class="sd">    according to the specified normalization dimensions.</span>
@@ -942,7 +942,7 @@
 
     <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Fits the normalized Gibbs affinity model to the provided data.</span>
+<span class="sd">        Fits the normalized Gaussian affinity model to the provided data.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -951,8 +951,8 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        self : GibbsAffinity</span>
-<span class="sd">            The fitted Gibbs affinity model.</span>
+<span class="sd">        self : NormalizedGaussianAffinity</span>
+<span class="sd">            The fitted affinity model.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
         <span class="n">C</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_</span><span class="p">)</span>

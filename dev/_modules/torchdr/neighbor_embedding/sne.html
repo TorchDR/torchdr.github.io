@@ -95,7 +95,7 @@
 <span class="kn">from</span> <span class="nn">torchdr.neighbor_embedding.base</span> <span class="kn">import</span> <span class="n">SparseNeighborEmbedding</span>
 <span class="kn">from</span> <span class="nn">torchdr.affinity</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">EntropicAffinity</span><span class="p">,</span>
-    <span class="n">GibbsAffinity</span><span class="p">,</span>
+    <span class="n">GaussianAffinity</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">torchdr.utils</span> <span class="kn">import</span> <span class="n">logsumexp_red</span>
 
@@ -207,7 +207,7 @@
             <span class="n">keops</span><span class="o">=</span><span class="n">keops</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">affinity_out</span> <span class="o">=</span> <span class="n">GibbsAffinity</span><span class="p">(</span>
+        <span class="n">affinity_out</span> <span class="o">=</span> <span class="n">GaussianAffinity</span><span class="p">(</span>
             <span class="n">metric</span><span class="o">=</span><span class="n">metric_out</span><span class="p">,</span>
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
             <span class="n">keops</span><span class="o">=</span><span class="n">keops</span><span class="p">,</span>

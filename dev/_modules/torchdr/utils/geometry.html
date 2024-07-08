@@ -168,9 +168,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa E501</span>
 
     <span class="k">if</span> <span class="n">keops</span><span class="p">:</span>  <span class="c1"># recommended for large datasets</span>
-        <span class="n">C</span> <span class="o">=</span> <span class="n">_pairwise_distances_keops</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="n">_pairwise_distances_keops</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">C</span> <span class="o">=</span> <span class="n">_pairwise_distances_torch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="n">_pairwise_distances_torch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">add_diagonal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># add mass on the diagonal</span>
         <span class="n">I</span> <span class="o">=</span> <span class="n">identity_matrix</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">keops</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
@@ -179,7 +179,9 @@
     <span class="k">return</span> <span class="n">C</span>
 
 
-<span class="k">def</span> <span class="nf">_pairwise_distances_torch</span><span class="p">(</span><span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_pairwise_distances_torch</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute pairwise distances matrix between points in two datasets.</span>
 <span class="sd">    Returns the pairwise distance matrix as a torch tensor.</span>
@@ -201,6 +203,9 @@
     <span class="k">if</span> <span class="n">metric</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">LIST_METRICS</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[TorchDR] ERROR : The &#39;</span><span class="si">{</span><span class="n">metric</span><span class="si">}</span><span class="s2">&#39; distance is not supported.&quot;</span><span class="p">)</span>
 
+    <span class="k">if</span> <span class="n">Y</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">Y</span> <span class="o">=</span> <span class="n">X</span>
+
     <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">:</span>
         <span class="n">X_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">Y_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">Y</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
@@ -219,7 +224,9 @@
     <span class="k">return</span> <span class="n">C</span>
 
 
-<span class="k">def</span> <span class="nf">_pairwise_distances_keops</span><span class="p">(</span><span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_pairwise_distances_keops</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute pairwise distances matrix between points in two datasets.</span>
 <span class="sd">    Returns the pairwise distance matrix as KeOps lazy tensor.</span>
@@ -241,17 +248,20 @@
     <span class="k">if</span> <span class="n">metric</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">LIST_METRICS</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[TorchDR] ERROR : The &#39;</span><span class="si">{</span><span class="n">metric</span><span class="si">}</span><span class="s2">&#39; distance is not supported.&quot;</span><span class="p">)</span>
 
+    <span class="k">if</span> <span class="n">Y</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">Y</span> <span class="o">=</span> <span class="n">X</span>
+
     <span class="n">X_i</span> <span class="o">=</span> <span class="n">LazyTensor</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">))</span>
-    <span class="n">X_j</span> <span class="o">=</span> <span class="n">LazyTensor</span><span class="p">(</span><span class="n">Y</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">))</span>
+    <span class="n">Y_j</span> <span class="o">=</span> <span class="n">LazyTensor</span><span class="p">(</span><span class="n">Y</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">:</span>
-        <span class="n">C</span> <span class="o">=</span> <span class="p">((</span><span class="n">X_i</span> <span class="o">-</span> <span class="n">X_j</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="p">((</span><span class="n">X_i</span> <span class="o">-</span> <span class="n">Y_j</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;manhattan&quot;</span><span class="p">:</span>
-        <span class="n">C</span> <span class="o">=</span> <span class="p">(</span><span class="n">X_i</span> <span class="o">-</span> <span class="n">X_j</span><span class="p">)</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="p">(</span><span class="n">X_i</span> <span class="o">-</span> <span class="n">Y_j</span><span class="p">)</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;angular&quot;</span><span class="p">:</span>
-        <span class="n">C</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">X_i</span> <span class="o">|</span> <span class="n">X_j</span><span class="p">)</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">X_i</span> <span class="o">|</span> <span class="n">Y_j</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;hyperbolic&quot;</span><span class="p">:</span>
-        <span class="n">C</span> <span class="o">=</span> <span class="p">((</span><span class="n">X_i</span> <span class="o">-</span> <span class="n">X_j</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">X_i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">X_j</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="p">((</span><span class="n">X_i</span> <span class="o">-</span> <span class="n">Y_j</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">X_i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y_j</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
     <span class="k">return</span> <span class="n">C</span>
 
@@ -283,6 +293,14 @@
 
     <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">:</span>
         <span class="n">C_indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">X</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">X_indices</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;manhattan&quot;</span><span class="p">:</span>
+        <span class="n">C_indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">X_indices</span><span class="p">),</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;angular&quot;</span><span class="p">:</span>
+        <span class="n">C_indices</span> <span class="o">=</span> <span class="o">-</span><span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">X_indices</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;hyperbolic&quot;</span><span class="p">:</span>
+        <span class="n">C_indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">X</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">X_indices</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+            <span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">X_indices</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Metric &#39;</span><span class="si">{</span><span class="n">metric</span><span class="si">}</span><span class="s2">&#39; is not (yet) implemented.&quot;</span><span class="p">)</span>
 

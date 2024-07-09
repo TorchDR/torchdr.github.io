@@ -93,7 +93,7 @@
 <span class="c1"># License: BSD 3-Clause License</span>
 
 <span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">import</span> <span class="nn">pykeops</span>
+<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">LazyTensorType</span>
 
 <span class="kn">from</span> <span class="nn">torchdr.affinity.base</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">TransformableAffinity</span><span class="p">,</span>
@@ -143,7 +143,7 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma</span>
 
-    <span class="k">def</span> <span class="nf">_log_affinity_formula</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">C</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">pykeops</span><span class="o">.</span><span class="n">torch</span><span class="o">.</span><span class="n">LazyTensor</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_log_affinity_formula</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">C</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">LazyTensorType</span><span class="p">):</span>
         <span class="k">return</span> <span class="o">-</span><span class="n">C</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span></div>
 
 
@@ -193,7 +193,7 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">degrees_of_freedom</span> <span class="o">=</span> <span class="n">degrees_of_freedom</span>
 
-    <span class="k">def</span> <span class="nf">_log_affinity_formula</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">C</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">pykeops</span><span class="o">.</span><span class="n">torch</span><span class="o">.</span><span class="n">LazyTensor</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_log_affinity_formula</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">C</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">LazyTensorType</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="o">-</span><span class="mf">0.5</span>
             <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">degrees_of_freedom</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
@@ -233,7 +233,7 @@
             <span class="n">zero_diag</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_affinity_formula</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">C</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">pykeops</span><span class="o">.</span><span class="n">torch</span><span class="o">.</span><span class="n">LazyTensor</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_affinity_formula</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">C</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">LazyTensorType</span><span class="p">):</span>
         <span class="k">return</span> <span class="o">-</span><span class="n">C</span></div>
 
 </pre></div>

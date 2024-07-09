@@ -77,6 +77,8 @@
 <li class="toctree-l4"><a class="reference internal" href="gen_modules/torchdr.InfoTSNE.html">InfoTSNE</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gen_modules/torchdr.SNEkhorn.html">SNEkhorn</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gen_modules/torchdr.TSNEkhorn.html">TSNEkhorn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gen_modules/torchdr.LargeVis.html">LargeVis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gen_modules/torchdr.UMAP.html">UMAP</a></li>
 </ul>
 </li>
 </ul>
@@ -171,10 +173,10 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.SNE.html#torchdr.SNE" title="torchdr.SNE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SNE</span></code></a>([perplexity, n_components, lr, ...])</p></td>
-<td><p>Implementation of the Stochastic Neighbor Embedding (SNE) algorithm introduced in <a class="footnote-reference brackets" href="#id10" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p></td>
+<td><p>Implementation of the Stochastic Neighbor Embedding (SNE) algorithm introduced in <a class="footnote-reference brackets" href="#id14" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.TSNE.html#torchdr.TSNE" title="torchdr.TSNE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TSNE</span></code></a>([perplexity, n_components, lr, ...])</p></td>
-<td><p>Implementation of the t-Stochastic Neighbor Embedding (t-SNE) algorithm introduced in <a class="footnote-reference brackets" href="#id11" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.</p></td>
+<td><p>Implementation of the t-Stochastic Neighbor Embedding (t-SNE) algorithm introduced in <a class="footnote-reference brackets" href="#id15" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.InfoTSNE.html#torchdr.InfoTSNE" title="torchdr.InfoTSNE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InfoTSNE</span></code></a>([perplexity, n_components, lr, ...])</p></td>
 <td><p><dl class="field-list simple">
@@ -185,10 +187,16 @@
 </p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.SNEkhorn.html#torchdr.SNEkhorn" title="torchdr.SNEkhorn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SNEkhorn</span></code></a>([perplexity, n_components, lr, ...])</p></td>
-<td><p>Implementation of the SNEkhorn algorithm introduced in <a class="footnote-reference brackets" href="#id12" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.</p></td>
+<td><p>Implementation of the SNEkhorn algorithm introduced in <a class="footnote-reference brackets" href="#id16" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.TSNEkhorn.html#torchdr.TSNEkhorn" title="torchdr.TSNEkhorn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TSNEkhorn</span></code></a>([perplexity, n_components, lr, ...])</p></td>
-<td><p>Implementation of the TSNEkhorn algorithm introduced in <a class="footnote-reference brackets" href="#id12" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.</p></td>
+<td><p>Implementation of the TSNEkhorn algorithm introduced in <a class="footnote-reference brackets" href="#id16" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.LargeVis.html#torchdr.LargeVis" title="torchdr.LargeVis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LargeVis</span></code></a>([perplexity, n_components, lr, ...])</p></td>
+<td><p>Implementation of the LargeVis algorithm introduced in <a href="#id19"><span class="problematic" id="id6">[13]_</span></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.UMAP.html#torchdr.UMAP" title="torchdr.UMAP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UMAP</span></code></a>([n_neighbors, n_components, min_dist, ...])</p></td>
+<td><p>Implementation of the UMAP algorithm introduced in <a class="footnote-reference brackets" href="#id18" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></a> and further studied in <a href="#id20"><span class="problematic" id="id8">[12]_</span></a>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -204,24 +212,24 @@
 <tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.StudentAffinity.html#torchdr.StudentAffinity" title="torchdr.StudentAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StudentAffinity</span></code></a>([degrees_of_freedom, ...])</p></td>
 <td><p>Computes the Student affinity matrix based on the Student-t distribution:</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.ScalarProductAffinity.html#torchdr.ScalarProductAffinity" title="torchdr.ScalarProductAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ScalarProductAffinity</span></code></a>([device, keops, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.ScalarProductAffinity.html#torchdr.ScalarProductAffinity" title="torchdr.ScalarProductAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ScalarProductAffinity</span></code></a>([device, keops, verbose])</p></td>
 <td><p>Computes the scalar product affinity matrix <span class="math notranslate nohighlight">\(\mathbf{X} \mathbf{X}^\top\)</span> where <span class="math notranslate nohighlight">\(\mathbf{X}\)</span> is the input data.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.SelfTuningAffinity.html#torchdr.SelfTuningAffinity" title="torchdr.SelfTuningAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SelfTuningAffinity</span></code></a>([K, normalization_dim, ...])</p></td>
-<td><p>Computes the self-tuning <a href="#id15"><span class="problematic" id="id6">[22]_</span></a> Gaussian affinity matrix with sample-wise bandwidth <span class="math notranslate nohighlight">\(\mathbf{\sigma} \in \mathbb{R}^n\)</span>.</p></td>
+<td><p>Computes the self-tuning <a href="#id21"><span class="problematic" id="id9">[22]_</span></a> Gaussian affinity matrix with sample-wise bandwidth <span class="math notranslate nohighlight">\(\mathbf{\sigma} \in \mathbb{R}^n\)</span>.</p></td>
 </tr>
 </tbody>
 </table>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.EntropicAffinity.html#torchdr.EntropicAffinity" title="torchdr.EntropicAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EntropicAffinity</span></code></a>([perplexity, tol, ...])</p></td>
-<td><p>Solves the directed entropic affinity problem introduced in <a class="footnote-reference brackets" href="#id10" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p></td>
+<td><p>Solves the directed entropic affinity problem introduced in <a class="footnote-reference brackets" href="#id14" id="id10" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> and later used in TSNE <a class="footnote-reference brackets" href="#id15" id="id11" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.SinkhornAffinity.html#torchdr.SinkhornAffinity" title="torchdr.SinkhornAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SinkhornAffinity</span></code></a>([eps, init_dual, tol, ...])</p></td>
-<td><p>Computes the symmetric doubly stochastic affinity matrix <span class="math notranslate nohighlight">\(\mathbf{P}^{\mathrm{ds}}\)</span> with controlled global entropy using the symmetric Sinkhorn algorithm <a class="footnote-reference brackets" href="#id13" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a>.</p></td>
+<td><p>Computes the symmetric doubly stochastic affinity matrix <span class="math notranslate nohighlight">\(\mathbf{P}^{\mathrm{ds}}\)</span> with controlled global entropy using the symmetric Sinkhorn algorithm <a class="footnote-reference brackets" href="#id17" id="id12" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.SymmetricEntropicAffinity.html#torchdr.SymmetricEntropicAffinity" title="torchdr.SymmetricEntropicAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SymmetricEntropicAffinity</span></code></a>([perplexity, lr, ...])</p></td>
-<td><p>Computes the solution <span class="math notranslate nohighlight">\(\mathbf{P}^{\mathrm{se}}\)</span> to the symmetric entropic affinity problem (SEA) described in <a class="footnote-reference brackets" href="#id12" id="id9" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> with the dual ascent procedure.</p></td>
+<td><p>Computes the solution <span class="math notranslate nohighlight">\(\mathbf{P}^{\mathrm{se}}\)</span> to the symmetric entropic affinity problem (SEA) described in <a class="footnote-reference brackets" href="#id16" id="id13" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> with the dual ascent procedure.</p></td>
 </tr>
 </tbody>
 </table>
@@ -262,26 +270,27 @@
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
 <aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id10" role="doc-footnote">
+<aside class="footnote brackets" id="id14" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id2">1</a>,<a role="doc-backlink" href="#id7">2</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id2">1</a>,<a role="doc-backlink" href="#id10">2</a>)</span>
 <p>Geoffrey Hinton, Sam Roweis (2002). <a class="reference external" href="https://proceedings.neurips.cc/paper_files/paper/2002/file/6150ccc6069bea6b5716254057a194ef-Paper.pdf">Stochastic Neighbor Embedding</a>. Advances in Neural Information Processing Systems 15 (NeurIPS).</p>
 </aside>
-<aside class="footnote brackets" id="id11" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">2</a><span class="fn-bracket">]</span></span>
+<aside class="footnote brackets" id="id15" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id3">1</a>,<a role="doc-backlink" href="#id11">2</a>)</span>
 <p>Laurens van der Maaten, Geoffrey Hinton (2008). <a class="reference external" href="https://www.jmlr.org/papers/volume9/vandermaaten08a/vandermaaten08a.pdf?fbcl">Visualizing Data using t-SNE</a>. The Journal of Machine Learning Research 9.11 (JMLR).</p>
 </aside>
-<aside class="footnote brackets" id="id12" role="doc-footnote">
+<aside class="footnote brackets" id="id16" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id4">1</a>,<a role="doc-backlink" href="#id5">2</a>,<a role="doc-backlink" href="#id9">3</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id4">1</a>,<a role="doc-backlink" href="#id5">2</a>,<a role="doc-backlink" href="#id13">3</a>)</span>
 <p>Hugues Van Assel, Titouan Vayer, Rémi Flamary, Nicolas Courty (2023). <a class="reference external" href="https://proceedings.neurips.cc/paper_files/paper/2023/file/8b54ecd9823fff6d37e61ece8f87e534-Paper-Conference.pdf">SNEkhorn: Dimension Reduction with Symmetric Entropic Affinities</a>. Advances in Neural Information Processing Systems 36 (NeurIPS).</p>
 </aside>
-<aside class="footnote brackets" id="id13" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">5</a><span class="fn-bracket">]</span></span>
+<aside class="footnote brackets" id="id17" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id12">5</a><span class="fn-bracket">]</span></span>
 <p>Richard Sinkhorn, Paul Knopp (1967). <a class="reference external" href="https://msp.org/pjm/1967/21-2/pjm-v21-n2-p14-p.pdf">Concerning nonnegative matrices and doubly stochastic matrices</a>. Pacific Journal of Mathematics, 21(2), 343-348.</p>
 </aside>
-<aside class="footnote brackets" id="id14" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></span>
+<aside class="footnote brackets" id="id18" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">8</a><span class="fn-bracket">]</span></span>
 <p>Leland McInnes, John Healy, James Melville (2018). <a class="reference external" href="https://arxiv.org/abs/1802.03426">UMAP: Uniform manifold approximation and projection for dimension reduction</a>. arXiv preprint arXiv:1802.03426.</p>
 </aside>
 </aside>

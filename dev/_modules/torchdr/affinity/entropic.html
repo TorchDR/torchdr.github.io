@@ -239,7 +239,8 @@
 <a class="viewcode-back" href="../../../gen_modules/torchdr.EntropicAffinity.html#torchdr.EntropicAffinity">[docs]</a>
 <span class="k">class</span> <span class="nc">EntropicAffinity</span><span class="p">(</span><span class="n">SparseLogAffinity</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Solves the directed entropic affinity problem introduced in [1]_.</span>
+<span class="sd">    Solves the directed entropic affinity problem introduced in [1]_ and</span>
+<span class="sd">    later used in TSNE [2]_.</span>
 <span class="sd">    Corresponds to the matrix :math:`\mathbf{P}^{\mathrm{e}}` in [3]_,</span>
 <span class="sd">    solving the convex optimization problem</span>
 
@@ -274,10 +275,9 @@
 <span class="sd">    :math:`\mathbf{\varepsilon}^*` is computed by performing one dimensional searches</span>
 <span class="sd">    since rows of :math:`\mathbf{P}^{\mathrm{e}}` are independent subproblems.</span>
 
-<span class="sd">    .. note:: Symmetric versions are also available. For the affinity matrix of</span>
-<span class="sd">    t-SNE [2]_, use :class:`~torchdr.affinity.L2SymmetricEntropicAffinity`.</span>
-<span class="sd">    For the affinity matrix of SNEkhorn/t-SNEkhorn [3]_, use</span>
-<span class="sd">    :class:`~torchdr.affinity.SymmetricEntropicAffinity`.</span>
+<span class="sd">    .. note:: A symmetric version is also available at</span>
+<span class="sd">        :class:`~torchdr.affinity.SymmetricEntropicAffinity`. It is the affinity matrix</span>
+<span class="sd">        used in SNEkhorn/t-SNEkhorn [3]_.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>

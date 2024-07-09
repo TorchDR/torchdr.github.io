@@ -200,6 +200,7 @@
 
         <span class="k">if</span> <span class="n">optimizer</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">OPTIMIZERS</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[TorchDR] ERROR : Optimizer </span><span class="si">{</span><span class="n">optimizer</span><span class="si">}</span><span class="s2"> not supported.&quot;</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_kwargs</span> <span class="o">=</span> <span class="n">optimizer_kwargs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lr</span> <span class="o">=</span> <span class="n">lr</span>

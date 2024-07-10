@@ -150,7 +150,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">keops</span> <span class="o">=</span> <span class="n">keops</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">zero_diag</span> <span class="o">=</span> <span class="n">zero_diag</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_diagonal</span> <span class="o">=</span> <span class="mf">1e12</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">zero_diag</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_diag</span> <span class="o">=</span> <span class="mf">1e12</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">zero_diag</span> <span class="k">else</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="Affinity.fit">
 <a class="viewcode-back" href="../../../stubs/torchdr.Affinity.html#torchdr.Affinity.fit">[docs]</a>
@@ -225,7 +225,7 @@
             <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>
             <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span>
             <span class="n">keops</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">keops</span><span class="p">,</span>
-            <span class="n">add_diagonal</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">add_diagonal</span><span class="p">,</span>
+            <span class="n">add_diag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">add_diag</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">C</span>
 
@@ -287,7 +287,7 @@
 
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">symmetric_pairwise_distances</span><span class="p">(</span>
-                <span class="n">X</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span> <span class="n">keops</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">keops</span><span class="p">,</span> <span class="n">add_diagonal</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">add_diagonal</span>
+                <span class="n">X</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span> <span class="n">keops</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">keops</span><span class="p">,</span> <span class="n">add_diag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">add_diag</span>
             <span class="p">)</span></div>
 
 
@@ -650,7 +650,12 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">fit_transform</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes the log affinity matrix from input data using the `fit` method and</span>
 <span class="sd">        returns the resulting log affinity matrix.</span>
@@ -665,6 +670,9 @@
 <span class="sd">        log : bool, optional</span>
 <span class="sd">            If True, returns the log of the affinity matrix. Else, returns</span>
 <span class="sd">            the affinity matrix by exponentiating the log affinity matrix.</span>
+<span class="sd">        return_indices : bool, optional</span>
+<span class="sd">            If True, returns the indices of the non-zero elements in the affinity matrix</span>
+<span class="sd">            if sparsity is enabled. Default is False.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -672,8 +680,8 @@
 <span class="sd">            The computed log affinity matrix if `log` is True, otherwise the</span>
 <span class="sd">            exponentiated affinity matrix.</span>
 <span class="sd">        indices_ : torch.Tensor</span>
-<span class="sd">            The indices of the non-zero elements in the affinity matrix if sparsity is</span>
-<span class="sd">            enabled. Otherwise, returns None.</span>
+<span class="sd">            If return_indices is True, returns the indices of the non-zero elements</span>
+<span class="sd">            in the affinity matrix if sparsity is enabled. Otherwise, returns None.</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
@@ -683,16 +691,17 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;log_affinity_matrix_&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;indices_&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span>
+            <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;log_affinity_matrix_&quot;</span><span class="p">,</span> <span class="s2">&quot;indices_&quot;</span><span class="p">]</span>
+        <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span>
                 <span class="s2">&quot;[TorchDR] ERROR : log_affinity_matrix_ and indices_ should be &quot;</span>
                 <span class="s2">&quot;computed in the fit method of a SparseLogAffinity.&quot;</span>
             <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_affinity_matrix_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices_</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_affinity_matrix_</span><span class="o">.</span><span class="n">exp</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices_</span>
+        <span class="n">affinity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_affinity_matrix_</span> <span class="k">if</span> <span class="n">log</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_affinity_matrix_</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">affinity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices_</span><span class="p">)</span> <span class="k">if</span> <span class="n">return_indices</span> <span class="k">else</span> <span class="n">affinity</span>
 </pre></div>
 
            </div>

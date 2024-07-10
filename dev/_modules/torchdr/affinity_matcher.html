@@ -104,7 +104,13 @@
     <span class="n">handle_backend</span><span class="p">,</span>
     <span class="n">to_torch</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">torchdr.affinity</span> <span class="kn">import</span> <span class="n">Affinity</span>
+<span class="kn">from</span> <span class="nn">torchdr.affinity</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Affinity</span><span class="p">,</span>
+    <span class="n">LogAffinity</span><span class="p">,</span>
+    <span class="n">SparseLogAffinity</span><span class="p">,</span>
+    <span class="n">TransformableAffinity</span><span class="p">,</span>
+    <span class="n">TransformableLogAffinity</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">torchdr.spectral</span> <span class="kn">import</span> <span class="n">PCA</span>
 <span class="kn">from</span> <span class="nn">torchdr.base</span> <span class="kn">import</span> <span class="n">DRModule</span>
 <span class="kn">from</span> <span class="nn">torchdr.utils</span> <span class="kn">import</span> <span class="n">square_loss</span><span class="p">,</span> <span class="n">cross_entropy_loss</span>
@@ -298,7 +304,12 @@
             <span class="n">check_nonnegativity</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">PX_</span> <span class="o">=</span> <span class="n">X</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">PX_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="p">,</span> <span class="n">SparseLogAffinity</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">PX_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span>
+                    <span class="n">X</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">PX_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_embedding</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_params</span><span class="p">()</span>
@@ -329,7 +340,28 @@
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="nf">_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">Q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs_affinity_out</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span> <span class="o">==</span> <span class="s2">&quot;cross_entropy_loss&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="p">,</span> <span class="n">LogAffinity</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">kwargs_affinity_out</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">kwargs_loss</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;indices_&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="p">,</span> <span class="p">(</span><span class="n">TransformableAffinity</span><span class="p">,</span> <span class="n">TransformableLogAffinity</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;[TorchDR] ERROR : affinity_out must be a TransformableAffinity &quot;</span>
+                    <span class="s2">&quot;when affinity_in is sparse. Set sparsity = False in affinity_in.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">Q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs_affinity_out</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">Q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs_affinity_out</span>
+            <span class="p">)</span>
         <span class="n">loss</span> <span class="o">=</span> <span class="n">LOSS_DICT</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">PX_</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs_loss</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">loss</span>
 

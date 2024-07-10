@@ -148,7 +148,7 @@
 
 
 <span class="k">def</span> <span class="nf">symmetric_pairwise_distances</span><span class="p">(</span>
-    <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">add_diagonal</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">add_diag</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute pairwise distances matrix between points in a dataset.</span>
@@ -163,7 +163,7 @@
 <span class="sd">        Metric to use for computing distances. The default is &quot;sqeuclidean&quot;.</span>
 <span class="sd">    keops : bool, optional</span>
 <span class="sd">        If True, uses KeOps for computing the distances.</span>
-<span class="sd">    add_diagonal : float, optional</span>
+<span class="sd">    add_diag : float, optional</span>
 <span class="sd">        If not None, adds weight on the diagonal of the distance matrix.</span>
 
 <span class="sd">    Returns</span>
@@ -182,9 +182,9 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">C</span> <span class="o">=</span> <span class="n">_pairwise_distances_torch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">add_diagonal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># add mass on the diagonal</span>
+    <span class="k">if</span> <span class="n">add_diag</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># add mass on the diagonal</span>
         <span class="n">I</span> <span class="o">=</span> <span class="n">identity_matrix</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">keops</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-        <span class="n">C</span> <span class="o">+=</span> <span class="n">add_diagonal</span> <span class="o">*</span> <span class="n">I</span>
+        <span class="n">C</span> <span class="o">+=</span> <span class="n">add_diag</span> <span class="o">*</span> <span class="n">I</span>
 
     <span class="k">return</span> <span class="n">C</span>
 

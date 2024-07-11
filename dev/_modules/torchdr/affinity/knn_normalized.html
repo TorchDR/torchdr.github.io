@@ -94,7 +94,6 @@
 <span class="c1"># License: BSD 3-Clause License</span>
 
 <span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
 
 <span class="kn">from</span> <span class="nn">torchdr.utils</span> <span class="kn">import</span> <span class="n">logsumexp_red</span>
@@ -103,7 +102,6 @@
     <span class="n">kmin</span><span class="p">,</span>
     <span class="n">wrap_vectors</span><span class="p">,</span>
     <span class="n">batch_transpose</span><span class="p">,</span>
-    <span class="n">to_torch</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -187,39 +185,33 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">K</span> <span class="o">=</span> <span class="n">K</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">normalization_dim</span> <span class="o">=</span> <span class="n">normalization_dim</span>
 
-<div class="viewcode-block" id="SelfTuningAffinity.fit">
-<a class="viewcode-back" href="../../../gen_modules/torchdr.SelfTuningAffinity.html#torchdr.SelfTuningAffinity.fit">[docs]</a>
-    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_compute_log_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fits the local Gibbs affinity model to the provided data.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        X : torch.Tensor or np.ndarray</span>
+<span class="sd">        X : torch.Tensor</span>
 <span class="sd">            Input data.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        self : SelfTuningAffinity</span>
-<span class="sd">            The fitted local Gibbs affinity model.</span>
+<span class="sd">        log_affinity_matrix : torch.Tensor or pykeops.torch.LazyTensor</span>
+<span class="sd">            The computed affinity matrix in log domain.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data_</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-        <span class="n">C</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_</span><span class="p">)</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_matrix</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
         <span class="n">minK_values</span><span class="p">,</span> <span class="n">minK_indices</span> <span class="o">=</span> <span class="n">kmin</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sigma_</span> <span class="o">=</span> <span class="n">minK_values</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log_affinity_matrix_</span> <span class="o">=</span> <span class="n">_log_SelfTuning</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma_</span><span class="p">)</span>
+        <span class="n">log_affinity_matrix</span> <span class="o">=</span> <span class="n">_log_SelfTuning</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma_</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalization_dim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log_normalization_</span> <span class="o">=</span> <span class="n">logsumexp_red</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log_affinity_matrix_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalization_dim</span>
+                <span class="n">log_affinity_matrix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalization_dim</span>
             <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log_affinity_matrix_</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log_affinity_matrix_</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_normalization_</span>
-            <span class="p">)</span>
+            <span class="n">log_affinity_matrix</span> <span class="o">=</span> <span class="n">log_affinity_matrix</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_normalization_</span>
 
-        <span class="k">return</span> <span class="bp">self</span></div>
-</div>
+        <span class="k">return</span> <span class="n">log_affinity_matrix</span></div>
 
 </pre></div>
 

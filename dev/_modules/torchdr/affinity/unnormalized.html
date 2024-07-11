@@ -95,15 +95,12 @@
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">LazyTensorType</span>
 
-<span class="kn">from</span> <span class="nn">torchdr.affinity.base</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">TransformableAffinity</span><span class="p">,</span>
-    <span class="n">TransformableLogAffinity</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">torchdr.affinity.base</span> <span class="kn">import</span> <span class="n">UnnormalizedAffinity</span><span class="p">,</span> <span class="n">UnnormalizedLogAffinity</span>
 
 
 <div class="viewcode-block" id="GaussianAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.GaussianAffinity.html#torchdr.GaussianAffinity">[docs]</a>
-<span class="k">class</span> <span class="nc">GaussianAffinity</span><span class="p">(</span><span class="n">TransformableLogAffinity</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">GaussianAffinity</span><span class="p">(</span><span class="n">UnnormalizedLogAffinity</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the Gaussian affinity matrix :math:`\exp( - \mathbf{C} / \sigma)`</span>
 <span class="sd">    where :math:`\mathbf{C}` is the pairwise distance matrix and</span>
@@ -150,7 +147,7 @@
 
 <div class="viewcode-block" id="StudentAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.StudentAffinity.html#torchdr.StudentAffinity">[docs]</a>
-<span class="k">class</span> <span class="nc">StudentAffinity</span><span class="p">(</span><span class="n">TransformableLogAffinity</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">StudentAffinity</span><span class="p">(</span><span class="n">UnnormalizedLogAffinity</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the Student affinity matrix based on the Student-t distribution:</span>
 
@@ -204,7 +201,7 @@
 
 <div class="viewcode-block" id="ScalarProductAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.ScalarProductAffinity.html#torchdr.ScalarProductAffinity">[docs]</a>
-<span class="k">class</span> <span class="nc">ScalarProductAffinity</span><span class="p">(</span><span class="n">TransformableAffinity</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ScalarProductAffinity</span><span class="p">(</span><span class="n">UnnormalizedAffinity</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the scalar product affinity matrix :math:`\mathbf{X} \mathbf{X}^\top`</span>
 <span class="sd">    where :math:`\mathbf{X}` is the input data.</span>
@@ -221,7 +218,7 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;cuda&quot;</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
         <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>

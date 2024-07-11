@@ -113,14 +113,15 @@ In ``TorchDR``, we can easily implement it using
 parameter ``normalization_dim=1``.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 72-89
+.. GENERATED FROM PYTHON SOURCE LINES 72-90
 
 .. code-block:: Python
 
 
-    K = NormalizedGaussianAffinity(
+    aff = NormalizedGaussianAffinity(
         sigma=1, normalization_dim=1, keops=False, zero_diag=False
-    ).fit_transform(X)
+    )
+    K = aff(X)
 
     plt.figure(1, (6, 3))
 
@@ -146,14 +147,14 @@ parameter ``normalization_dim=1``.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 90-94
+.. GENERATED FROM PYTHON SOURCE LINES 91-95
 
 We can observe a remarkable **heterogeneity in the density of connections**.
 This occurs because it is less costly to create connections in high-density regions.
 As a consequence, points in sparse regions create very few connections with
 their neighbors.
 
-.. GENERATED FROM PYTHON SOURCE LINES 96-107
+.. GENERATED FROM PYTHON SOURCE LINES 97-108
 
 Entropic affinity (adaptive bandwidth)
 --------------------------------------
@@ -167,14 +168,15 @@ the ``perplexity`` parameter) regardless of the local density around it.
 In ``TorchDR``, this object is available here :
 :class:`torchdr.EntropicAffinity`.
 
-.. GENERATED FROM PYTHON SOURCE LINES 107-125
+.. GENERATED FROM PYTHON SOURCE LINES 108-127
 
 .. code-block:: Python
 
 
-    EA = EntropicAffinity(
+    aff_ea = EntropicAffinity(
         perplexity=5, keops=False, verbose=False, zero_diag=False, sparsity=False
-    ).fit_transform(X)
+    )
+    EA = aff_ea(X)
 
     plt.figure(1, (6, 3))
 
@@ -201,7 +203,7 @@ In ``TorchDR``, this object is available here :
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 126-131
+.. GENERATED FROM PYTHON SOURCE LINES 128-133
 
 We can now observe a **homogeneous density of connections** across clusters.
 Thus, the entropic affinity effectively filters out the various noise levels.
@@ -212,7 +214,7 @@ This affinity is an important component of the **TSNE** algorithm.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.292 seconds)
+   **Total running time of the script:** (0 minutes 2.652 seconds)
 
 
 .. _sphx_glr_download_auto_examples_affinities_demo_ea_adaptivity.py:

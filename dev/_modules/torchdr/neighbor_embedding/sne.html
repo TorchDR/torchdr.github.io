@@ -115,12 +115,12 @@
 <span class="sd">        Different values can result in significantly different results.</span>
 <span class="sd">    n_components : int, optional</span>
 <span class="sd">        Dimension of the embedded space (corresponds to the number of features of Z).</span>
-<span class="sd">    lr : float, optional</span>
-<span class="sd">        Learning rate for the algorithm.</span>
-<span class="sd">    optimizer : {&#39;SGD&#39;, &#39;Adam&#39;, &#39;NAdam&#39;}, optional</span>
-<span class="sd">        Which pytorch optimizer to use.</span>
-<span class="sd">    optimizer_kwargs : dict, optional</span>
-<span class="sd">        Arguments for the optimizer.</span>
+<span class="sd">    lr : float or &#39;auto&#39;, optional</span>
+<span class="sd">        Learning rate for the algorithm. By default &#39;auto&#39;.</span>
+<span class="sd">    optimizer : {&#39;SGD&#39;, &#39;Adam&#39;, &#39;NAdam&#39;, &#39;auto&#39;}, optional</span>
+<span class="sd">        Which pytorch optimizer to use. By default &#39;auto&#39;.</span>
+<span class="sd">    optimizer_kwargs : dict or &#39;auto&#39;, optional</span>
+<span class="sd">        Arguments for the optimizer. By default None.</span>
 <span class="sd">    scheduler : {&#39;constant&#39;, &#39;linear&#39;}, optional</span>
 <span class="sd">        Learning rate scheduler.</span>
 <span class="sd">    scheduler_kwargs : dict, optional</span>
@@ -170,9 +170,9 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">perplexity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
         <span class="n">n_components</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
-        <span class="n">lr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
-        <span class="n">optimizer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Adam&quot;</span><span class="p">,</span>
-        <span class="n">optimizer_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">lr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">optimizer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">optimizer_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">scheduler</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;constant&quot;</span><span class="p">,</span>
         <span class="n">scheduler_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">init</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pca&quot;</span><span class="p">,</span>

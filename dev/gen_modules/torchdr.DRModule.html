@@ -23,6 +23,8 @@
         <script src="../_static/documentation_options.js?v=8e37ee27"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script>window.MathJax = {"tex": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -123,7 +125,11 @@ Each children class should implement the fit method.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="torchdr.DRModule.fit">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/base.html#DRModule.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.DRModule.fit" title="Link to this definition"></a></dt>
-<dd><p>Projects input data X onto a low-dimensional space.</p>
+<dd><p>Fits the DR model to project the input data <span class="math notranslate nohighlight">\(\mathbf{X}\)</span> onto
+a low-dimensional space.</p>
+<p>This method must be overridden by subclasses. This base implementation
+only converts the input data <span class="math notranslate nohighlight">\(\mathbf{X}\)</span> to a torch tensor with
+the right device.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

@@ -122,6 +122,20 @@
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the log of the unnormalized directed entropic affinity matrix</span>
 <span class="sd">    with prescribed kernel bandwidth epsilon.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    C : torch.Tensor or pykeops.torch.LazyTensor of shape (n, n)</span>
+<span class="sd">        or shape (n_batch, batch_size, batch_size)</span>
+<span class="sd">        Pairwise distance matrix.</span>
+<span class="sd">    eps : torch.Tensor of shape (n) or (n_batch, batch_size)</span>
+<span class="sd">        Dual variable of the entropic constraint.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    log_P : torch.Tensor or pykeops.torch.LazyTensor of shape (n, n)</span>
+<span class="sd">        or shape (n_batch, batch_size, batch_size)</span>
+<span class="sd">        The log of the unnormalized affinity matrix.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="o">-</span><span class="n">C</span> <span class="o">/</span> <span class="n">eps</span>
 
@@ -131,6 +145,22 @@
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the log of the symmetric entropic affinity matrix</span>
 <span class="sd">    with given (dual) variables epsilon and mu.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    C : torch.Tensor or pykeops.torch.LazyTensor of shape (n, n)</span>
+<span class="sd">        or shape (n_batch, batch_size, batch_size)</span>
+<span class="sd">        Pairwise distance matrix.</span>
+<span class="sd">    eps : torch.Tensor of shape (n) or (n_batch, batch_size)</span>
+<span class="sd">        Dual variable of the entropic constraint.</span>
+<span class="sd">    mu : torch.Tensor of shape (n) or (n_batch, batch_size)</span>
+<span class="sd">        Dual variable of the normalization constraint.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    log_P : torch.Tensor or pykeops.torch.LazyTensor of shape (n, n)</span>
+<span class="sd">        or shape (n_batch, batch_size, batch_size)</span>
+<span class="sd">        The log of the unnormalized affinity matrix.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_eps</span> <span class="o">=</span> <span class="n">eps</span><span class="o">**</span><span class="mi">2</span> <span class="k">if</span> <span class="n">eps_square</span> <span class="k">else</span> <span class="n">eps</span>
     <span class="n">mu_t</span> <span class="o">=</span> <span class="n">batch_transpose</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span>
@@ -144,6 +174,20 @@
 <span class="sd">    Returns the log of the doubly stochastic normalization of log_K (in log domain)</span>
 <span class="sd">    given a scaling vector (dual variable) which can be computed via the</span>
 <span class="sd">    Sinkhorn iterations.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    log_K : torch.Tensor or pykeops.torch.LazyTensor of shape (n, n)</span>
+<span class="sd">        or shape (n_batch, batch_size, batch_size)</span>
+<span class="sd">        Log of the base kernel.</span>
+<span class="sd">    dual : torch.Tensor of shape (n) or (n_batch, batch_size)</span>
+<span class="sd">        Dual variable of the normalization constraint.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    log_P : torch.Tensor or pykeops.torch.LazyTensor of shape (n, n)</span>
+<span class="sd">        or shape (n_batch, batch_size, batch_size)</span>
+<span class="sd">        The log of the doubly stochastic normalization of log_K.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dual_t</span> <span class="o">=</span> <span class="n">batch_transpose</span><span class="p">(</span><span class="n">dual</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dual</span> <span class="o">+</span> <span class="n">dual_t</span> <span class="o">+</span> <span class="n">log_K</span>

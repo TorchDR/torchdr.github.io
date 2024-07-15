@@ -151,7 +151,12 @@
 <a class="viewcode-back" href="../../stubs/torchdr.base.DRModule.html#torchdr.DRModule.fit">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Projects input data X onto a low-dimensional space.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Fits the DR model to project the input data :math:`\mathbf{X}` onto</span>
+<span class="sd">        a low-dimensional space.</span>
+
+<span class="sd">        This method must be overridden by subclasses. This base implementation</span>
+<span class="sd">        only converts the input data :math:`\mathbf{X}` to a torch tensor with</span>
+<span class="sd">        the right device.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -167,8 +172,10 @@
 <span class="sd">            Fitted Estimator.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[TorchDR] Fitting DR model ...&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span></div>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[TorchDR] Fitting DR model </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> ...&quot;</span><span class="p">)</span>
+
+        <span class="n">X</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">X</span></div>
 </div>
 
 </pre></div>

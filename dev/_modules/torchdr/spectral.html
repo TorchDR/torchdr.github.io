@@ -88,7 +88,8 @@
 <span class="sd">Spectral methods for dimensionality reduction</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="c1"># Author: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
+<span class="c1"># Authors: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
+<span class="c1">#          Mathurin Massias</span>
 <span class="c1">#</span>
 <span class="c1"># License: BSD 3-Clause License</span>
 
@@ -96,23 +97,43 @@
 
 <span class="kn">from</span> <span class="nn">torchdr.base</span> <span class="kn">import</span> <span class="n">DRModule</span>
 <span class="kn">from</span> <span class="nn">torchdr.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">sum_red</span><span class="p">,</span>
     <span class="n">svd_flip</span><span class="p">,</span>
     <span class="n">handle_backend</span><span class="p">,</span>
+    <span class="n">center_kernel</span><span class="p">,</span>
+    <span class="n">check_nonnegativity_eigenvalues</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">torchdr.affinity</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Affinity</span><span class="p">,</span>
+    <span class="n">GaussianAffinity</span><span class="p">,</span>
+    <span class="n">UnnormalizedAffinity</span><span class="p">,</span>
+    <span class="n">UnnormalizedLogAffinity</span><span class="p">,</span>
 <span class="p">)</span>
 
 
 <div class="viewcode-block" id="PCA">
 <a class="viewcode-back" href="../../gen_modules/torchdr.PCA.html#torchdr.PCA">[docs]</a>
 <span class="k">class</span> <span class="nc">PCA</span><span class="p">(</span><span class="n">DRModule</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="n">n_components</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">n_components</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">random_state</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">n_components</span><span class="o">=</span><span class="n">n_components</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="PCA.fit">
 <a class="viewcode-back" href="../../gen_modules/torchdr.PCA.html#torchdr.PCA.fit">[docs]</a>
-    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_process_input</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">U</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span><span class="p">,</span> <span class="n">full_matrices</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">U</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">X</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span><span class="p">,</span> <span class="n">full_matrices</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">U</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="n">svd_flip</span><span class="p">(</span><span class="n">U</span><span class="p">,</span> <span class="n">V</span><span class="p">)</span>  <span class="c1"># flip eigenvectors&#39; sign to enforce deterministic output</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">components_</span> <span class="o">=</span> <span class="n">V</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">]</span>
         <span class="k">return</span> <span class="bp">self</span></div>
@@ -122,6 +143,105 @@
     <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">X</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span><span class="p">)</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">components_</span><span class="o">.</span><span class="n">T</span></div>
 
+
+
+<span class="c1"># inspired from sklearn.decomposition.KernelPCA</span>
+<span class="k">class</span> <span class="nc">KernelPCA</span><span class="p">(</span><span class="n">DRModule</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">affinity</span><span class="p">:</span> <span class="n">Affinity</span> <span class="o">=</span> <span class="n">GaussianAffinity</span><span class="p">(),</span>
+        <span class="n">n_components</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">random_state</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">nodiag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">n_components</span><span class="o">=</span><span class="n">n_components</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">keops</span><span class="o">=</span><span class="n">keops</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">affinity</span> <span class="o">=</span> <span class="n">affinity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">affinity</span><span class="o">.</span><span class="n">keops</span> <span class="o">=</span> <span class="n">keops</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">affinity</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">affinity</span><span class="o">.</span><span class="n">random_state</span> <span class="o">=</span> <span class="n">random_state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodiag</span> <span class="o">=</span> <span class="n">nodiag</span>
+
+        <span class="k">if</span> <span class="n">keops</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">&quot;[TorchDR] ERROR : KeOps is not (yet) supported for KernelPCA.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">X_fit_</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+        <span class="n">K</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">K</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">col_mean</span><span class="p">,</span> <span class="n">mean</span> <span class="o">=</span> <span class="n">center_kernel</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">return_all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">K_fit_rows_</span> <span class="o">=</span> <span class="n">col_mean</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">K_fit_all_</span> <span class="o">=</span> <span class="n">mean</span>
+
+        <span class="c1"># compute eigendecomposition</span>
+        <span class="n">eigvals</span><span class="p">,</span> <span class="n">eigvecs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">K</span><span class="p">)</span>
+
+        <span class="c1"># make sure that the eigenvalues are ok and fix numerical issues</span>
+        <span class="n">eigvals</span> <span class="o">=</span> <span class="n">check_nonnegativity_eigenvalues</span><span class="p">(</span><span class="n">eigvals</span><span class="p">)</span>
+
+        <span class="c1"># flip eigenvectors&#39; sign to enforce deterministic output</span>
+        <span class="n">eigvecs</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">svd_flip</span><span class="p">(</span><span class="n">eigvecs</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">eigvecs</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+        <span class="c1"># sort eigenvectors in descending order (torch eigvals are increasing)</span>
+        <span class="n">eigvals</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">eigvals</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,))</span>
+        <span class="n">eigvecs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">eigvecs</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,))</span>
+
+        <span class="c1"># remove eigenvectors with a zero eigenvalue (null space) if required</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodiag</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">eigvecs</span> <span class="o">=</span> <span class="n">eigvecs</span><span class="p">[:,</span> <span class="n">eigvals</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="n">eigvals</span> <span class="o">=</span> <span class="n">eigvals</span><span class="p">[</span><span class="n">eigvals</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">eigvecs</span> <span class="o">=</span> <span class="n">eigvecs</span><span class="p">[:,</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">eigenvectors_</span> <span class="o">=</span> <span class="n">eigvecs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eigenvalues_</span> <span class="o">=</span> <span class="n">eigvals</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="nd">@handle_backend</span>
+    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">affinity</span><span class="p">,</span> <span class="p">(</span><span class="n">UnnormalizedAffinity</span><span class="p">,</span> <span class="n">UnnormalizedLogAffinity</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="n">aff_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;KernelPCA.transform can only be used when `affinity` is &quot;</span>
+                <span class="s2">&quot;an UnnormalizedAffinity or UnnormalizedLogAffinity. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aff_name</span><span class="si">}</span><span class="s2"> is not. Use the fit_transform method instead.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">K</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">X_fit_</span><span class="p">)</span>
+        <span class="c1"># K = center_kernel(K)</span>
+        <span class="c1"># center à la sklearn: using fit data for rows and all, new data for col</span>
+        <span class="n">pred_cols</span> <span class="o">=</span> <span class="n">sum_red</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">K_fit_rows_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">K</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">K_fit_rows_</span>
+        <span class="n">K</span> <span class="o">-=</span> <span class="n">pred_cols</span>
+        <span class="n">K</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">K_fit_all_</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">K</span>
+            <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigenvectors_</span>
+            <span class="o">@</span> <span class="n">torch</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigenvalues_</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">])</span><span class="o">.</span><span class="n">sqrt</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="c1"># remove np.inf arising from division by 0 eigenvalues:</span>
+        <span class="n">zero_eigvals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigenvalues_</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">zero_eigvals</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="n">result</span><span class="p">[:,</span> <span class="n">zero_eigvals</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="nd">@handle_backend</span>
+    <span class="k">def</span> <span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigenvectors_</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigenvalues_</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">]</span><span class="o">.</span><span class="n">sqrt</span><span class="p">()</span>
 </pre></div>
 
            </div>

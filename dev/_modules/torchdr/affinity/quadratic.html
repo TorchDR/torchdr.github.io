@@ -110,6 +110,22 @@
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the quadratic doubly stochastic matrix P</span>
 <span class="sd">    from the dual variable f and cost matrix C.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    C : torch.Tensor or pykeops.torch.LazyTensor of shape (n, n)</span>
+<span class="sd">        or shape (n_batch, batch_size, batch_size)</span>
+<span class="sd">        Pairwise distance matrix.</span>
+<span class="sd">    dual : torch.Tensor of shape (n) or (n_batch, batch_size)</span>
+<span class="sd">        Dual variable of the normalization constraint.</span>
+<span class="sd">    eps : float</span>
+<span class="sd">        Dual variable of the quadratic constraint.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    P : torch.Tensor or pykeops.torch.LazyTensor of shape (n, n)</span>
+<span class="sd">        or shape (n_batch, batch_size, batch_size)</span>
+<span class="sd">        Quadratic doubly stochastic affinity matrix.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dual_t</span> <span class="o">=</span> <span class="n">batch_transpose</span><span class="p">(</span><span class="n">dual</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">dual</span> <span class="o">+</span> <span class="n">dual_t</span> <span class="o">-</span> <span class="n">C</span><span class="p">)</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">))</span> <span class="o">/</span> <span class="n">eps</span>

@@ -28,8 +28,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="SymmetricEntropicAffinity" href="torchdr.SymmetricEntropicAffinity.html" />
-    <link rel="prev" title="EntropicAffinity" href="torchdr.EntropicAffinity.html" /> 
+    <link rel="next" title="EntropicAffinity" href="torchdr.EntropicAffinity.html" />
+    <link rel="prev" title="NormalizedGaussianAffinity" href="torchdr.NormalizedGaussianAffinity.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -58,17 +58,18 @@
 <li class="toctree-l1"><a class="reference internal" href="../torchdr.quick_start.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../torchdr.user_guide.html">User Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../all.html">API and Modules</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../all.html#dr-modules-sklearn-compatible">DR Modules - <code class="docutils literal notranslate"><span class="pre">sklearn</span></code> Compatible</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../all.html#dimensionality-reduction-modules-sklearn-compatible">Dimensionality Reduction Modules - <code class="docutils literal notranslate"><span class="pre">sklearn</span></code> Compatible</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../all.html#affinity-modules">Affinity Modules</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="torchdr.GaussianAffinity.html">GaussianAffinity</a></li>
 <li class="toctree-l3"><a class="reference internal" href="torchdr.StudentAffinity.html">StudentAffinity</a></li>
 <li class="toctree-l3"><a class="reference internal" href="torchdr.ScalarProductAffinity.html">ScalarProductAffinity</a></li>
 <li class="toctree-l3"><a class="reference internal" href="torchdr.SelfTuningAffinity.html">SelfTuningAffinity</a></li>
-<li class="toctree-l3"><a class="reference internal" href="torchdr.EntropicAffinity.html">EntropicAffinity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torchdr.NormalizedGaussianAffinity.html">NormalizedGaussianAffinity</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">SinkhornAffinity</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#torchdr.SinkhornAffinity"><code class="docutils literal notranslate"><span class="pre">SinkhornAffinity</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="torchdr.EntropicAffinity.html">EntropicAffinity</a></li>
 <li class="toctree-l3"><a class="reference internal" href="torchdr.SymmetricEntropicAffinity.html">SymmetricEntropicAffinity</a></li>
 <li class="toctree-l3"><a class="reference internal" href="torchdr.DoublyStochasticQuadraticAffinity.html">DoublyStochasticQuadraticAffinity</a></li>
 <li class="toctree-l3"><a class="reference internal" href="torchdr.UMAPAffinityIn.html">UMAPAffinityIn</a></li>
@@ -117,23 +118,26 @@
 <dd><p>Bases: <a class="reference internal" href="../stubs/torchdr.LogAffinity.html#torchdr.LogAffinity" title="torchdr.affinity.base.LogAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">LogAffinity</span></code></a></p>
 <p>Computes the symmetric doubly stochastic affinity matrix
 <span class="math notranslate nohighlight">\(\mathbf{P}^{\mathrm{ds}}\)</span> with controlled global entropy using the
-symmetric Sinkhorn algorithm <a class="footnote-reference brackets" href="#id4" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a>.
-Consists in solving the following symmetric entropic optimal transport problem <a class="footnote-reference brackets" href="#id5" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a>:</p>
+symmetric Sinkhorn algorithm <a class="footnote-reference brackets" href="#id4" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a>.</p>
+<p>The algorithm computes the optimal dual variable
+<span class="math notranslate nohighlight">\(\mathbf{f}^\star \in \mathbb{R}^n\)</span> such that</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{P}^{\mathrm{ds}} \mathbf{1} = \mathbf{1} \quad \text{where} \quad \forall (i,j), \: P^{\mathrm{ds}}_{ij} = \exp(f^\star_i + f^\star_j - C_{ij} / \varepsilon) \:.\]</div>
+<p>where :</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\mathbf{C}\)</span>: symmetric pairwise distance matrix between the samples.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\varepsilon\)</span>: entropic regularization parameter.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathbf{1} := (1,...,1)^\top\)</span>: all-ones vector.</p></li>
+</ul>
+<p><span class="math notranslate nohighlight">\(\mathbf{f}^\star\)</span> is computed by performing dual ascent via the Sinkhorn fixed-point iteration (eq. 25 in <a class="footnote-reference brackets" href="#id6" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></a>).</p>
+<p><strong>Convex problem.</strong> Consists in solving the following symmetric entropic optimal transport problem <a class="footnote-reference brackets" href="#id5" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a>:</p>
 <div class="math notranslate nohighlight">
 \[\mathbf{P}^{\mathrm{ds}} \in \mathop{\arg\min}_{\mathbf{P} \in \mathcal{DS}} \: \langle \mathbf{C}, \mathbf{P} \rangle + \varepsilon \mathrm{H}(\mathbf{P})\]</div>
 <p>where :</p>
 <ul class="simple">
 <li><p><span class="math notranslate nohighlight">\(\mathcal{DS} := \left\{ \mathbf{P} \in \mathbb{R}_+^{n \times n}: \: \mathbf{P} = \mathbf{P}^\top \:,\: \mathbf{P} \mathbf{1} = \mathbf{1} \right\}\)</span>: set of symmetric doubly stochastic matrices.</p></li>
-<li><p><span class="math notranslate nohighlight">\(\mathbf{C}\)</span>: symmetric pairwise distance matrix between the samples.</p></li>
-<li><p><span class="math notranslate nohighlight">\(\varepsilon\)</span>: entropic regularization parameter.</p></li>
 <li><p><span class="math notranslate nohighlight">\(\mathrm{H}\)</span>: (global) Shannon entropy such that <span class="math notranslate nohighlight">\(\mathrm{H}(\mathbf{P}) := - \sum_{ij} P_{ij} (\log P_{ij} - 1)\)</span>.</p></li>
-<li><p><span class="math notranslate nohighlight">\(\mathbf{1} := (1,...,1)^\top\)</span>: all-ones vector.</p></li>
 </ul>
-<p>The algorithm computes the optimal dual variable
-<span class="math notranslate nohighlight">\(\mathbf{f}^\star \in \mathbb{R}^n\)</span> such that</p>
-<div class="math notranslate nohighlight">
-\[\mathbf{P}^{\mathrm{ds}} \mathbf{1} = \mathbf{1} \quad \text{where} \quad \forall (i,j), \: P^{\mathrm{ds}}_{ij} = \exp(f^\star_i + f^\star_j - C_{ij} / \varepsilon) \:.\]</div>
-<p><span class="math notranslate nohighlight">\(\mathbf{f}^\star\)</span> is computed by performing dual ascent via the Sinkhorn fixed-point iteration (equation in 25 in <a class="footnote-reference brackets" href="#id6" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></a>).</p>
 <p><strong>Bregman projection.</strong> Another way to write this problem is to consider the
 KL projection of the Gaussian kernel
 <span class="math notranslate nohighlight">\(\mathbf{K}_\varepsilon = \exp(- \mathbf{C} / \varepsilon)\)</span> onto the set
@@ -155,7 +159,7 @@ is the Kullback Leibler divergence between <span class="math notranslate nohighl
 <li><p><strong>zero_diag</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to set the diagonal of the distance matrix to 0.</p></li>
 <li><p><strong>device</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a><em>, </em><em>optional</em>) – Device to use for computation.</p></li>
 <li><p><strong>keops</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to use KeOps for computation.</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><em>bool</em></a><em>, </em><em>optional</em>) – Verbosity.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><em>bool</em></a><em>, </em><em>optional</em>) – Verbosity. Default is False.</p></li>
 <li><p><strong>with_grad</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><em>bool</em></a><em>, </em><em>optional</em><em> (</em><em>default=False</em><em>)</em>) – If True, the Sinkhorn iterations are done with gradient tracking.
 If False, torch.no_grad() is used for the iterations.</p></li>
 </ul>
@@ -170,13 +174,13 @@ Concerning nonnegative matrices and doubly stochastic matrices.
 Pacific Journal of Mathematics, 21(2), 343-348.</p>
 </aside>
 <aside class="footnote brackets" id="id5" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">6</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">6</a><span class="fn-bracket">]</span></span>
 <p>Marco Cuturi (2013).
 Sinkhorn Distances: Lightspeed Computation of Optimal Transport.
 Advances in Neural Information Processing Systems 26 (NeurIPS).</p>
 </aside>
 <aside class="footnote brackets" id="id6" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">7</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">7</a><span class="fn-bracket">]</span></span>
 <p>Jean Feydy, Thibault Séjourné, François-Xavier Vialard, Shun-ichi Amari,
 Alain Trouvé, Gabriel Peyré (2019).
 Interpolating between Optimal Transport and MMD using Sinkhorn Divergences.
@@ -192,8 +196,8 @@ International Conference on Artificial Intelligence and Statistics
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="torchdr.EntropicAffinity.html" class="btn btn-neutral float-left" title="EntropicAffinity" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="torchdr.SymmetricEntropicAffinity.html" class="btn btn-neutral float-right" title="SymmetricEntropicAffinity" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="torchdr.NormalizedGaussianAffinity.html" class="btn btn-neutral float-left" title="NormalizedGaussianAffinity" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="torchdr.EntropicAffinity.html" class="btn btn-neutral float-right" title="EntropicAffinity" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

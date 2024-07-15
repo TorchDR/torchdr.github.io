@@ -103,9 +103,21 @@
 <div class="viewcode-block" id="UMAP">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.UMAP.html#torchdr.UMAP">[docs]</a>
 <span class="k">class</span> <span class="nc">UMAP</span><span class="p">(</span><span class="n">SampledNeighborEmbedding</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implementation of the UMAP algorithm introduced in [8]_ and further studied</span>
 <span class="sd">    in [12]_.</span>
+
+<span class="sd">    It involves selecting a :class:`~torchdr.UMAPAffinityIn` as input</span>
+<span class="sd">    affinity :math:`\mathbf{P}` and a :class:`~torchdr.UMAPAffinityOut` as output</span>
+<span class="sd">    affinity :math:`\mathbf{Q}`.</span>
+
+<span class="sd">    The loss function is defined as:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        -\sum_{ij} P_{ij} \log Q_{ij} + \sum_{i,j \in N(i)} \log (1 - Q_{ij})</span>
+
+<span class="sd">    where :math:`N(i)` is the set of negatives samples for point :math:`i`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -146,7 +158,7 @@
 <span class="sd">    keops : bool, optional</span>
 <span class="sd">        Whether to use KeOps, by default False.</span>
 <span class="sd">    verbose : bool, optional</span>
-<span class="sd">        Verbosity, by default True.</span>
+<span class="sd">        Verbosity, by default False.</span>
 <span class="sd">    random_state : float, optional</span>
 <span class="sd">        Random seed for reproducibility, by default 0.</span>
 <span class="sd">    coeff_attraction : float, optional</span>
@@ -198,7 +210,7 @@
         <span class="n">tolog</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">coeff_attraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">coeff_repulsion</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>

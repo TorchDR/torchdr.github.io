@@ -104,8 +104,28 @@
 <div class="viewcode-block" id="TSNEkhorn">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.TSNEkhorn.html#torchdr.TSNEkhorn">[docs]</a>
 <span class="k">class</span> <span class="nc">TSNEkhorn</span><span class="p">(</span><span class="n">NeighborEmbedding</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implementation of the TSNEkhorn algorithm introduced in [3]_.</span>
+
+<span class="sd">    It involves selecting a :class:`~torchdr.SymmetricEntropicAffinity` as input</span>
+<span class="sd">    affinity :math:`\mathbf{P}` and a :class:`~torchdr.SinkhornAffinity` as output</span>
+<span class="sd">    affinity :math:`\mathbf{Q}`.</span>
+
+<span class="sd">    The loss function is defined as:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        -\sum_{ij} P_{ij} \log Q_{ij} + \sum_{ij} Q_{ij} \:.</span>
+
+<span class="sd">    The above loss is the gap objective for inverse symmetric optimal transport</span>
+<span class="sd">    described in this</span>
+<span class="sd">    `blog &lt;https://huguesva.github.io/blog/2024/inverseOT_mongegap/&gt;`_.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        The :class:`~torchdr.SymmetricEntropicAffinity` requires a careful choice of</span>
+<span class="sd">        learning rate (parameter :attr:`lr_affinity_in`). If it is too unstable, one</span>
+<span class="sd">        can resort to using :class:`~torchdr.EntropicAffinity` instead by setting</span>
+<span class="sd">        :attr:`symmetric_affinity` to ``False``.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -116,7 +136,7 @@
 <span class="sd">    n_components : int, optional</span>
 <span class="sd">        Dimension of the embedding space.</span>
 <span class="sd">    lr : float, optional</span>
-<span class="sd">        Learning rate for the algorithm, by default 1.0.</span>
+<span class="sd">        Learning rate for the algorithm, by default 1e0.</span>
 <span class="sd">    optimizer : {&#39;SGD&#39;, &#39;Adam&#39;, &#39;NAdam&#39;}, optional</span>
 <span class="sd">        Which pytorch optimizer to use, by default &#39;Adam&#39;.</span>
 <span class="sd">    optimizer_kwargs : dict, optional</span>
@@ -140,7 +160,7 @@
 <span class="sd">    keops : bool, optional</span>
 <span class="sd">        Whether to use KeOps, by default False.</span>
 <span class="sd">    verbose : bool, optional</span>
-<span class="sd">        Verbosity, by default True.</span>
+<span class="sd">        Verbosity, by default False.</span>
 <span class="sd">    random_state : float, optional</span>
 <span class="sd">        Random seed for reproducibility, by default 0.</span>
 <span class="sd">    coeff_attraction : float, optional</span>
@@ -168,7 +188,7 @@
 <span class="sd">        the gap objective. Default is False.</span>
 <span class="sd">    symmetric_affinity : bool, optional</span>
 <span class="sd">        Whether to use symmetric entropic affinity. If False, uses</span>
-<span class="sd">        entropic affinity. Default is False.</span>
+<span class="sd">        entropic affinity. Default is True.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -195,7 +215,7 @@
         <span class="n">tolog</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">coeff_attraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span>
         <span class="n">coeff_repulsion</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
@@ -207,7 +227,7 @@
         <span class="n">metric_in</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
         <span class="n">metric_out</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
         <span class="n">unrolling</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">symmetric_affinity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">symmetric_affinity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">metric_in</span> <span class="o">=</span> <span class="n">metric_in</span>

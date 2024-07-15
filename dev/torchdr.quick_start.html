@@ -97,15 +97,17 @@
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
 <p>To install TorchDR, run in the terminal:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>torchdr
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/torchdr/torchdr
 </pre></div>
 </div>
 </section>
 <section id="when-to-use-torchdr">
 <h2>When to use <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code><a class="headerlink" href="#when-to-use-torchdr" title="Link to this heading"></a></h2>
-<p>This package includes several DR solvers introduced in research papers, aiming to promote reproducible research and encourage new developments. A key feature of <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> is its modularity and extensibility.</p>
-<p>By maximizing code sharing across various methods, it ensures fair benchmarking that emphasizes core differences.</p>
-<p>However, due to these aspects, <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> may be slower for a given method compared to packages specialized for that specific method.</p>
+<ul class="simple">
+<li><p>For leveraging the power of <strong>GPU acceleration</strong> for faster computations. All the modules in <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> are designed to work seamlessly on the GPU by setting <code class="xref py py-attr docutils literal notranslate"><span class="pre">device</span></code> to <code class="docutils literal notranslate"><span class="pre">'cuda'</span></code>.</p></li>
+<li><p>For comparing different dimensionality reduction methods in a fair and reproducible way. <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> maximizes <strong>code sharing</strong> across various methods, ensuring a <strong>fair benchmarking</strong> that emphasizes core differences.</p></li>
+<li><p>For developing new dimensionality reduction approaches. <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> provides a <strong>modular and extensible framework</strong> that allows you to focus on the core ideas of your method, while the rest of the pipeline is taken care of.</p></li>
+</ul>
 <section id="examples-using-affinitymatcher">
 <h3>Examples using <code class="docutils literal notranslate"><span class="pre">AffinityMatcher</span></code>:<a class="headerlink" href="#examples-using-affinitymatcher" title="Link to this heading"></a></h3>
 <div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="We show how to compute a PCA embedding using the closed form and using the AffinityMatcher clas..."><img alt="" src="_images/sphx_glr_demo_pca_via_affinity_matcher_thumb.png" />

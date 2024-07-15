@@ -121,8 +121,17 @@
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the symmetric doubly stochastic affinity matrix with controlled</span>
 <span class="sd">    global :math:`\ell_2` norm.</span>
-<span class="sd">    Consists in solving the following symmetric quadratic optimal transport problem</span>
-<span class="sd">    [10]_:</span>
+
+<span class="sd">    The algorithm computes the optimal dual variable</span>
+<span class="sd">    :math:`\mathbf{f}^\star \in \mathbb{R}^n` such that</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \mathbf{P}^{\star} \mathbf{1} = \mathbf{1} \quad \text{where} \quad \forall (i,j), \: P^{\star}_{ij} = \left[f^\star_i + f^\star_j - C_{ij} / \varepsilon \right]_{+} \:.</span>
+
+<span class="sd">    :math:`\mathbf{f}^\star` is computed by performing dual ascent.</span>
+
+<span class="sd">    **Convex problem.** Consists in solving the following symmetric quadratic</span>
+<span class="sd">    optimal transport problem [10]_:</span>
 
 <span class="sd">    .. math::</span>
 <span class="sd">        \mathop{\arg\min}_{\mathbf{P} \in \mathcal{DS}} \: \langle \mathbf{C},</span>
@@ -135,14 +144,6 @@
 <span class="sd">    - :math:`\varepsilon`: quadratic regularization parameter.</span>
 <span class="sd">    - :math:`\mathbf{1} := (1,...,1)^\top`: all-ones vector.</span>
 
-<span class="sd">    The algorithm computes the optimal dual variable</span>
-<span class="sd">    :math:`\mathbf{f}^\star \in \mathbb{R}^n` such that</span>
-
-<span class="sd">    .. math::</span>
-<span class="sd">        \mathbf{P}^{\star} \mathbf{1} = \mathbf{1} \quad \text{where} \quad \forall (i,j), \: P^{\star}_{ij} = \left[f^\star_i + f^\star_j - C_{ij} / \varepsilon \right]_{+} \:.</span>
-
-<span class="sd">    :math:`\mathbf{f}^\star` is computed by performing dual ascent.</span>
-
 <span class="sd">    **Bregman projection.** Another way to write this problem is to consider the</span>
 <span class="sd">    :math:`\ell_2` projection of :math:`- \mathbf{C} / \varepsilon` onto the set of</span>
 <span class="sd">    doubly stochastic matrices :math:`\mathcal{DS}`, as follows:</span>
@@ -154,7 +155,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    eps : float, optional</span>
 <span class="sd">        Regularization parameter.</span>
-<span class="sd">    init_dual : tensor of shape (n_samples), optional</span>
+<span class="sd">    init_dual : torch.Tensor of shape (n_samples), optional</span>
 <span class="sd">        Initialization for the dual variable (default None).</span>
 <span class="sd">    tol : float, optional</span>
 <span class="sd">        Precision threshold at which the algorithm stops.</span>
@@ -177,7 +178,7 @@
 <span class="sd">    keops : bool, optional</span>
 <span class="sd">        Whether to use KeOps for computation.</span>
 <span class="sd">    verbose : bool, optional</span>
-<span class="sd">        Verbosity.</span>
+<span class="sd">        Verbosity. Default is False.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -201,7 +202,7 @@
         <span class="n">zero_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
         <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>

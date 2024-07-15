@@ -126,13 +126,17 @@
 <span class="k">class</span> <span class="nc">AffinityMatcher</span><span class="p">(</span><span class="n">DRModule</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Performs dimensionality reduction by matching two affinity matrices.</span>
-<span class="sd">    It amounts to solving the following optimization problem:</span>
+<span class="sd">    It amounts to solving a problem of the form:</span>
 
 <span class="sd">    .. math::</span>
 
-<span class="sd">        \min_{\mathbf{Z}} \: \sum_{ij} L( [\mathbf{A_X}]_{ij}, [\mathbf{A_Z}]_{ij}) \:.</span>
+<span class="sd">        \min_{\mathbf{Z}} \: \mathcal{L}( \mathbf{A_X}, \mathbf{A_Z})</span>
 
-<span class="sd">    Optimization of the embedding is perfomed using torch autodiff.</span>
+<span class="sd">    where :math:`\mathcal{L}` is a loss function, :math:`\mathbf{A_X}` is the</span>
+<span class="sd">    input affinity matrix and :math:`\mathbf{A_Z}` is the affinity matrix of the</span>
+<span class="sd">    embedding.</span>
+
+<span class="sd">    The embedding optimization is performed using a first-order optimization method, with gradients calculated through PyTorch&#39;s automatic differentiation.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -148,7 +152,7 @@
 <span class="sd">        Optimizer to use for the optimization. Default is &quot;Adam&quot;.</span>
 <span class="sd">    optimizer_kwargs : dict, optional</span>
 <span class="sd">        Additional keyword arguments for the optimizer.</span>
-<span class="sd">    lr : float or str, optional</span>
+<span class="sd">    lr : float or &#39;auto&#39;, optional</span>
 <span class="sd">        Learning rate for the optimizer. Default is 1e0.</span>
 <span class="sd">    scheduler : str, optional</span>
 <span class="sd">        Learning rate scheduler. Default is &quot;constant&quot;.</span>

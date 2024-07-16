@@ -92,9 +92,9 @@
 <p><a class="reference external" href="https://pytorch.org/get-started/locally/"><img alt="Pytorch" src="https://img.shields.io/badge/PyTorch_1.8+-ee4c2c?logo=pytorch&amp;logoColor=white" /></a> <a class="reference external" href="https://www.python.org/downloads/release/python-3100/"><img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-blue" /></a> <a class="reference external" href="https://github.com/psf/black"><img alt="Black" src="https://img.shields.io/badge/code%20style-black-000000.svg" /></a> <img alt="Test Status" src="https://github.com/torchdr/torchdr/actions/workflows/testing.yml/badge.svg" /> <a class="reference external" href="https://codecov.io/gh/torchdr/torchdr"><img alt="codecov" src="https://codecov.io/gh/torchdr/torchdr/branch/main/graph/badge.svg" /></a> <a class="reference external" href="https://opensource.org/licenses/BSD-3-Clause"><img alt="License" src="https://img.shields.io/badge/License-BSD_3--Clause-blue.svg" /></a></p>
 <p>Github repository: <a class="reference external" href="https://github.com/torchdr/torchdr/">https://github.com/torchdr/torchdr/</a>.</p>
 <p>Documentation: <a class="reference external" href="https://torchdr.github.io/dev/">https://torchdr.github.io/dev/</a>.</p>
-<p><code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> is an open-source <strong>dimensionality reduction (DR)</strong> library using <code class="docutils literal notranslate"><span class="pre">PyTorch</span></code>. Its goal is to accelerate the development of new DR methods by providing a common simplified framework.</p>
-<p>DR aims to construct a <strong>low-dimensional representation (or embedding)</strong> of an input dataset that best preserves its <strong>geometry encoded via a pairwise affinity matrix</strong> . To this end, DR methods <strong>optimize the embedding</strong> such that its <strong>associated pairwise affinity matches the input affinity</strong>. <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> provides a general framework for solving problems of this form. Defining a DR algorithm solely requires choosing or implementing an <code class="docutils literal notranslate"><span class="pre">Affinity</span></code> object for both input and embedding as well as an objective function.</p>
-<p>Benefits of <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> include:</p>
+<p>TorchDR is an open-source <strong>dimensionality reduction (DR)</strong> library using PyTorch. Its goal is to accelerate the development of new DR methods by providing a common simplified framework.</p>
+<p>DR aims to construct a <strong>low-dimensional representation (or embedding)</strong> of an input dataset that best preserves its <strong>geometry encoded via a pairwise affinity matrix</strong> . To this end, DR methods <strong>optimize the embedding</strong> such that its <strong>associated pairwise affinity matches the input affinity</strong>. TorchDR provides a general framework for solving problems of this form. Defining a DR algorithm solely requires choosing or implementing an <em>Affinity</em> object for both input and embedding as well as an objective function.</p>
+<p>Benefits of TorchDR include:</p>
 <table class="docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><strong>Modularity</strong></p></td>
@@ -104,16 +104,16 @@
 <td><p>Supports <strong>GPU acceleration</strong>, <strong>sparsity</strong> and <strong>batching</strong> strategies with <strong>contrastive learning</strong> techniques.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Memory efficiency</strong></p></td>
-<td><p>Relies on <code class="docutils literal notranslate"><span class="pre">KeOps</span></code> <a class="footnote-reference brackets" href="#id39" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>19<span class="fn-bracket">]</span></a> symbolic tensors to <strong>avoid memory overflows</strong>.</p></td>
+<td><p>Relies on <code class="docutils literal notranslate"><span class="pre">pykeops</span></code> <a class="footnote-reference brackets" href="#id39" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>19<span class="fn-bracket">]</span></a> symbolic tensors to <strong>avoid memory overflows</strong>.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Compatibility</strong></p></td>
-<td><p>Implemented methods are fully <strong>compatible</strong> with the <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code> <a class="footnote-reference brackets" href="#id41" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>21<span class="fn-bracket">]</span></a> API and <code class="docutils literal notranslate"><span class="pre">torch</span></code> <a class="footnote-reference brackets" href="#id40" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>20<span class="fn-bracket">]</span></a> ecosystem.</p></td>
+<td><p>Implemented methods are fully <strong>compatible</strong> with the <code class="docutils literal notranslate"><span class="pre">sklearn</span></code> <a class="footnote-reference brackets" href="#id41" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>21<span class="fn-bracket">]</span></a> API and <code class="docutils literal notranslate"><span class="pre">torch</span></code> <a class="footnote-reference brackets" href="#id40" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>20<span class="fn-bracket">]</span></a> ecosystem.</p></td>
 </tr>
 </tbody>
 </table>
 <section id="getting-started">
 <h2>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading"></a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> offers a <strong>user-friendly API similar to scikit-learn</strong> where dimensionality reduction modules can be called with the <code class="docutils literal notranslate"><span class="pre">fit_transform</span></code> method. It seamlessly accepts both NumPy arrays and PyTorch tensors as input, ensuring that the output matches the type and backend of the input.</p>
+<p>TorchDR offers a <strong>user-friendly API similar to scikit-learn</strong> where dimensionality reduction modules can be called with the <code class="docutils literal notranslate"><span class="pre">fit_transform</span></code> method. It seamlessly accepts both NumPy arrays and PyTorch tensors as input, ensuring that the output matches the type and backend of the input.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">fetch_openml</span>
 <span class="kn">from</span> <span class="nn">torchdr</span> <span class="kn">import</span> <span class="n">PCA</span><span class="p">,</span> <span class="n">TSNE</span>
 
@@ -123,7 +123,7 @@
 <span class="n">z</span> <span class="o">=</span> <span class="n">TSNE</span><span class="p">(</span><span class="n">perplexity</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> enables <strong>GPU acceleration without memory limitations</strong> thanks to the <code class="docutils literal notranslate"><span class="pre">KeOps</span></code> library. This can be easily enabled as follows:</p>
+<p>TorchDR enables <strong>GPU acceleration without memory limitations</strong> thanks to the KeOps library. This can be easily enabled as follows:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z_gpu</span> <span class="o">=</span> <span class="n">TSNE</span><span class="p">(</span><span class="n">perplexity</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="n">keops</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -132,7 +132,7 @@ Here is a comparison of various neighbor embedding methods on the MNIST digits d
 <a class="reference internal image-reference" href="https://github.com/torchdr/torchdr/raw/main/docs/source/figures/mnist_readme.png"><img alt="various neighbor embedding methods on MNIST" class="align-center" src="https://github.com/torchdr/torchdr/raw/main/docs/source/figures/mnist_readme.png" style="width: 800px;" /></a>
 <p>The code to generate this figure is available <a class="reference external" href="https://github.com/TorchDR/TorchDR/tree/main/examples/mnist/panorama_readme.py">here</a>.</p>
 <p><strong>Single cell example.</strong>
-Here is an example of single cell embeddings using <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code>, where the embeddings are colored by cell type and the number of cells is indicated in each title.</p>
+Here is an example of single cell embeddings using TorchDR, where the embeddings are colored by cell type and the number of cells is indicated in each title.</p>
 <a class="reference internal image-reference" href="https://github.com/torchdr/torchdr/raw/main/docs/source/figures/single_cell_readme.png"><img alt="single cell embeddings" class="align-center" src="https://github.com/torchdr/torchdr/raw/main/docs/source/figures/single_cell_readme.png" style="width: 700px;" /></a>
 <p>The code for this figure is <a class="reference external" href="https://github.com/TorchDR/TorchDR/tree/main/examples/single_cell/single_cell_readme.py">here</a>.</p>
 </section>
@@ -140,7 +140,7 @@ Here is an example of single cell embeddings using <code class="docutils literal
 <h2>Implemented Methods (so far)<a class="headerlink" href="#implemented-methods-so-far" title="Link to this heading"></a></h2>
 <section id="affinities">
 <h3>Affinities<a class="headerlink" href="#affinities" title="Link to this heading"></a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> features a <strong>wide range of affinities</strong> which can then be used as a building block for DR algorithms. It includes:</p>
+<p>TorchDR features a <strong>wide range of affinities</strong> which can then be used as a building block for DR algorithms. It includes:</p>
 <ul class="simple">
 <li><p>Usual affinities such that scalar product, Gaussian and Student kernels.</p></li>
 <li><p>Self-tuning affinities <a class="footnote-reference brackets" href="#id42" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>22<span class="fn-bracket">]</span></a>.</p></li>
@@ -150,8 +150,8 @@ Here is an example of single cell embeddings using <code class="docutils literal
 </section>
 <section id="dimensionality-reduction-algorithms">
 <h3>Dimensionality Reduction Algorithms<a class="headerlink" href="#dimensionality-reduction-algorithms" title="Link to this heading"></a></h3>
-<p><strong>Spectral.</strong> <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> provides <strong>spectral embeddings</strong> <a class="footnote-reference brackets" href="#id31" id="id14" role="doc-noteref"><span class="fn-bracket">[</span>11<span class="fn-bracket">]</span></a> calculated via eigenvalue decomposition of the affinities or their Laplacian.</p>
-<p><strong>Neighbor Embedding.</strong> <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> includes various <strong>neighbor embedding methods</strong> such as <em>SNE</em> <a class="footnote-reference brackets" href="#id21" id="id15" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, <em>t-SNE</em> <a class="footnote-reference brackets" href="#id22" id="id16" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>, <em>t-SNEkhorn</em> <a class="footnote-reference brackets" href="#id23" id="id17" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>, <em>UMAP</em> <a class="footnote-reference brackets" href="#id28" id="id18" role="doc-noteref"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></a>, <em>LargeVis</em> <a class="footnote-reference brackets" href="#id33" id="id19" role="doc-noteref"><span class="fn-bracket">[</span>13<span class="fn-bracket">]</span></a> and <em>InfoTSNE</em> <a class="footnote-reference brackets" href="#id35" id="id20" role="doc-noteref"><span class="fn-bracket">[</span>15<span class="fn-bracket">]</span></a>.</p>
+<p><strong>Spectral.</strong> TorchDR provides <strong>spectral embeddings</strong> <a class="footnote-reference brackets" href="#id31" id="id14" role="doc-noteref"><span class="fn-bracket">[</span>11<span class="fn-bracket">]</span></a> calculated via eigenvalue decomposition of the affinities or their Laplacian.</p>
+<p><strong>Neighbor Embedding.</strong> TorchDR includes various <strong>neighbor embedding methods</strong> such as <em>SNE</em> <a class="footnote-reference brackets" href="#id21" id="id15" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, <em>t-SNE</em> <a class="footnote-reference brackets" href="#id22" id="id16" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>, <em>t-SNEkhorn</em> <a class="footnote-reference brackets" href="#id23" id="id17" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>, <em>UMAP</em> <a class="footnote-reference brackets" href="#id28" id="id18" role="doc-noteref"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></a>, <em>LargeVis</em> <a class="footnote-reference brackets" href="#id33" id="id19" role="doc-noteref"><span class="fn-bracket">[</span>13<span class="fn-bracket">]</span></a> and <em>InfoTSNE</em> <a class="footnote-reference brackets" href="#id35" id="id20" role="doc-noteref"><span class="fn-bracket">[</span>15<span class="fn-bracket">]</span></a>.</p>
 </section>
 </section>
 <section id="installation">
@@ -168,7 +168,7 @@ Here is an example of single cell embeddings using <code class="docutils literal
 </section>
 <section id="citation">
 <h2>Citation<a class="headerlink" href="#citation" title="Link to this heading"></a></h2>
-<p>If you use <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> in your research, please cite the following reference:</p>
+<p>If you use TorchDR in your research, please cite the following reference:</p>
 <div class="highlight-apalike notranslate"><div class="highlight"><pre><span></span>Van Assel H., Courty N., Flamary R., Garivier A., Massias M., Vayer T., Vincent-Cuaz C. TorchDR URL: https://torchdr.github.io/
 </pre></div>
 </div>

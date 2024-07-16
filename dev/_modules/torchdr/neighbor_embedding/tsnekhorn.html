@@ -163,8 +163,9 @@
 <span class="sd">        Verbosity, by default False.</span>
 <span class="sd">    random_state : float, optional</span>
 <span class="sd">        Random seed for reproducibility, by default 0.</span>
-<span class="sd">    coeff_attraction : float, optional</span>
-<span class="sd">        Coefficient for the attraction term, by default 10.0 for early exaggeration.</span>
+<span class="sd">    early_exaggeration : float, optional</span>
+<span class="sd">        Coefficient for the attraction term during the early exaggeration phase.</span>
+<span class="sd">        By default 10.0 for early exaggeration.</span>
 <span class="sd">    coeff_repulsion : float, optional</span>
 <span class="sd">        Coefficient for the repulsion term, by default 1.0.</span>
 <span class="sd">    early_exaggeration_iter : int, optional</span>
@@ -217,7 +218,7 @@
         <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="n">coeff_attraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span>
+        <span class="n">early_exaggeration</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span>
         <span class="n">coeff_repulsion</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">early_exaggeration_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">250</span><span class="p">,</span>
         <span class="n">lr_affinity_in</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e0</span><span class="p">,</span>
@@ -291,7 +292,7 @@
             <span class="n">keops</span><span class="o">=</span><span class="n">keops</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
-            <span class="n">coeff_attraction</span><span class="o">=</span><span class="n">coeff_attraction</span><span class="p">,</span>
+            <span class="n">early_exaggeration</span><span class="o">=</span><span class="n">early_exaggeration</span><span class="p">,</span>
             <span class="n">coeff_repulsion</span><span class="o">=</span><span class="n">coeff_repulsion</span><span class="p">,</span>
             <span class="n">early_exaggeration_iter</span><span class="o">=</span><span class="n">early_exaggeration_iter</span><span class="p">,</span>
         <span class="p">)</span>
@@ -313,7 +314,7 @@
             <span class="n">repulsive_term</span> <span class="o">=</span> <span class="n">logsumexp_red</span><span class="p">(</span><span class="n">log_Q</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
 
         <span class="n">loss</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">coeff_attraction_</span> <span class="o">*</span> <span class="n">attractive_term</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_</span> <span class="o">*</span> <span class="n">attractive_term</span>
             <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">coeff_repulsion</span> <span class="o">*</span> <span class="n">repulsive_term</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">loss</span></div>

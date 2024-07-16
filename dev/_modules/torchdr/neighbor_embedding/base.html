@@ -116,11 +116,16 @@
 
 <span class="sd">    .. math::</span>
 
-<span class="sd">        \min_{\mathbf{Z}} \: -\sum_{ij} P_{ij} \log Q_{ij} + \gamma \mathcal{L}_{\mathrm{rep}}( \mathbf{Q})</span>
+<span class="sd">        \min_{\mathbf{Z}} \: - \lambda \sum_{ij} P_{ij} \log Q_{ij} + \gamma \mathcal{L}_{\mathrm{rep}}( \mathbf{Q})</span>
 
 <span class="sd">    where :math:`\mathbf{P}` is the input affinity matrix, :math:`\mathbf{Q}` is the</span>
-<span class="sd">    output affinity matrix, and :math:`\mathcal{L}_{\mathrm{rep}}` is the repulsive</span>
-<span class="sd">    term of the loss function.</span>
+<span class="sd">    output affinity matrix, :math:`\mathcal{L}_{\mathrm{rep}}` is the repulsive</span>
+<span class="sd">    term of the loss function, :math:`\lambda` is the :attr:`early_exaggeration`</span>
+<span class="sd">    parameter and :math:`\gamma` is the :attr:`coeff_repulsion` parameter.</span>
+
+<span class="sd">    Note that the early exaggeration coefficient :math:`\lambda` is set to</span>
+<span class="sd">    :math:`1` after the early exaggeration phase which duration is controlled by the</span>
+<span class="sd">    :attr:`early_exaggeration_iter` parameter.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -160,8 +165,9 @@
 <span class="sd">        Verbosity of the optimization process. Default is False.</span>
 <span class="sd">    random_state : float, optional</span>
 <span class="sd">        Random seed for reproducibility. Default is 0.</span>
-<span class="sd">    coeff_attraction : float, optional</span>
-<span class="sd">        Coefficient for the attraction term. Default is 1.0.</span>
+<span class="sd">    early_exaggeration : float, optional</span>
+<span class="sd">        Coefficient for the attraction term during the early exaggeration phase.</span>
+<span class="sd">        Default is 1.0.</span>
 <span class="sd">    coeff_repulsion : float, optional</span>
 <span class="sd">        Coefficient for the repulsion term. Default is 1.0.</span>
 <span class="sd">    early_exaggeration_iter : int, optional</span>
@@ -188,7 +194,7 @@
         <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="n">coeff_attraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">early_exaggeration</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">coeff_repulsion</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">early_exaggeration_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
@@ -215,7 +221,7 @@
             <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">coeff_attraction</span> <span class="o">=</span> <span class="n">coeff_attraction</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration</span> <span class="o">=</span> <span class="n">early_exaggeration</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">coeff_repulsion</span> <span class="o">=</span> <span class="n">coeff_repulsion</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_iter</span> <span class="o">=</span> <span class="n">early_exaggeration_iter</span>
 
@@ -225,13 +231,13 @@
         <span class="k">if</span> <span class="s2">&quot;min_grad_norm&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tol</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;min_grad_norm&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="s2">&quot;early_exaggeration&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">coeff_attraction</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;early_exaggeration&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;early_exaggeration&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">_additional_updates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span>  <span class="c1"># stop early exaggeration phase</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">coeff_attraction_</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">step</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_iter</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">step</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_iter</span>
         <span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">coeff_attraction_</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="c1"># reinitialize optim</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_set_learning_rate</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_set_optimizer</span><span class="p">()</span>
@@ -260,9 +266,9 @@
 
     <span class="k">def</span> <span class="nf">_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_n_neighbors</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">coeff_attraction_</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">coeff_attraction</span>
-        <span class="p">)</span>  <span class="c1"># coeff_attraction_ may change during the optimization</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration</span>
+        <span class="p">)</span>  <span class="c1"># early_exaggeration_ may change during the optimization</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
@@ -278,7 +284,7 @@
                         <span class="s2">&quot;rate, the optimizer should be &#39;SGD&#39;.&quot;</span>
                     <span class="p">)</span>
             <span class="c1"># from the sklearn TSNE implementation</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">lr_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">coeff_attraction_</span> <span class="o">/</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lr_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_</span> <span class="o">/</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">lr_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr</span>
 
@@ -286,7 +292,7 @@
         <span class="n">optimizer</span> <span class="o">=</span> <span class="s2">&quot;SGD&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span>
         <span class="c1"># from the sklearn TSNE implementation</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_kwargs</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">coeff_attraction_</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">optimizer_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;momentum&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">}</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">optimizer_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;momentum&quot;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">}</span>
@@ -310,11 +316,12 @@
 
 <span class="sd">    .. math::</span>
 
-<span class="sd">        \min_{\mathbf{Z}} \: -\sum_{ij} P_{ij} \log Q_{ij} + \gamma \mathcal{L}_{\mathrm{rep}}( \mathbf{Q})</span>
+<span class="sd">        \min_{\mathbf{Z}} \: - \lambda \sum_{ij} P_{ij} \log Q_{ij} + \gamma \mathcal{L}_{\mathrm{rep}}( \mathbf{Q})</span>
 
 <span class="sd">    where :math:`\mathbf{P}` is the input affinity matrix, :math:`\mathbf{Q}` is the</span>
-<span class="sd">    output affinity matrix, and :math:`\mathcal{L}_{\mathrm{rep}}` is the repulsive</span>
-<span class="sd">    term of the loss function.</span>
+<span class="sd">    output affinity matrix, :math:`\mathcal{L}_{\mathrm{rep}}` is the repulsive</span>
+<span class="sd">    term of the loss function, :math:`\lambda` is the :attr:`early_exaggeration`</span>
+<span class="sd">    parameter and :math:`\gamma` is the :attr:`coeff_repulsion` parameter.</span>
 
 <span class="sd">    **Fast attraction.** This class should be used when the input affinity matrix is a :class:`~torchdr.SparseLogAffinity` and the output affinity matrix is an :class:`~torchdr.UnnormalizedAffinity`. In such cases, the attractive term can be computed with linear complexity.</span>
 
@@ -356,8 +363,9 @@
 <span class="sd">        Verbosity of the optimization process. Default is False.</span>
 <span class="sd">    random_state : float, optional</span>
 <span class="sd">        Random seed for reproducibility. Default is 0.</span>
-<span class="sd">    coeff_attraction : float, optional</span>
-<span class="sd">        Coefficient for the attraction term. Default is 1.0.</span>
+<span class="sd">    early_exaggeration : float, optional</span>
+<span class="sd">        Coefficient for the attraction term during the early exaggeration phase.</span>
+<span class="sd">        Default is 1.0.</span>
 <span class="sd">    coeff_repulsion : float, optional</span>
 <span class="sd">        Coefficient for the repulsion term. Default is 1.0.</span>
 <span class="sd">    early_exaggeration_iter : int, optional</span>
@@ -384,7 +392,7 @@
         <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="n">coeff_attraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">early_exaggeration</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">coeff_repulsion</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">early_exaggeration_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
@@ -421,7 +429,7 @@
             <span class="n">keops</span><span class="o">=</span><span class="n">keops</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
-            <span class="n">coeff_attraction</span><span class="o">=</span><span class="n">coeff_attraction</span><span class="p">,</span>
+            <span class="n">early_exaggeration</span><span class="o">=</span><span class="n">early_exaggeration</span><span class="p">,</span>
             <span class="n">coeff_repulsion</span><span class="o">=</span><span class="n">coeff_repulsion</span><span class="p">,</span>
             <span class="n">early_exaggeration_iter</span><span class="o">=</span><span class="n">early_exaggeration_iter</span><span class="p">,</span>
         <span class="p">)</span>
@@ -441,7 +449,7 @@
 
     <span class="k">def</span> <span class="nf">_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">loss</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">coeff_attraction_</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attractive_loss</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attractive_loss</span><span class="p">()</span>
             <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">coeff_repulsion</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repulsive_loss</span><span class="p">()</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">loss</span></div>
@@ -459,11 +467,12 @@
 
 <span class="sd">    .. math::</span>
 
-<span class="sd">        \min_{\mathbf{Z}} \: -\sum_{ij} P_{ij} \log Q_{ij} + \gamma \mathcal{L}_{\mathrm{rep}}( \mathbf{Q})</span>
+<span class="sd">        \min_{\mathbf{Z}} \: - \lambda \sum_{ij} P_{ij} \log Q_{ij} + \gamma \mathcal{L}_{\mathrm{rep}}( \mathbf{Q})</span>
 
 <span class="sd">    where :math:`\mathbf{P}` is the input affinity matrix, :math:`\mathbf{Q}` is the</span>
-<span class="sd">    output affinity matrix, and :math:`\mathcal{L}_{\mathrm{rep}}` is the repulsive</span>
-<span class="sd">    term of the loss function.</span>
+<span class="sd">    output affinity matrix, :math:`\mathcal{L}_{\mathrm{rep}}` is the repulsive</span>
+<span class="sd">    term of the loss function, :math:`\lambda` is the :attr:`early_exaggeration`</span>
+<span class="sd">    parameter and :math:`\gamma` is the :attr:`coeff_repulsion` parameter.</span>
 
 <span class="sd">    **Fast attraction.** This class should be used when the input affinity matrix is a</span>
 <span class="sd">    :class:`~torchdr.SparseLogAffinity` and the output affinity matrix is an</span>
@@ -513,8 +522,9 @@
 <span class="sd">        Verbosity of the optimization process. Default is False.</span>
 <span class="sd">    random_state : float, optional</span>
 <span class="sd">        Random seed for reproducibility. Default is 0.</span>
-<span class="sd">    coeff_attraction : float, optional</span>
-<span class="sd">        Coefficient for the attraction term. Default is 1.0.</span>
+<span class="sd">    early_exaggeration : float, optional</span>
+<span class="sd">        Coefficient for the attraction term during the early exaggeration phase.</span>
+<span class="sd">        Default is 1.0.</span>
 <span class="sd">    coeff_repulsion : float, optional</span>
 <span class="sd">        Coefficient for the repulsion term. Default is 1.0.</span>
 <span class="sd">    early_exaggeration_iter : int, optional</span>
@@ -543,7 +553,7 @@
         <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="n">coeff_attraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">early_exaggeration</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">coeff_repulsion</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">early_exaggeration_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">n_negatives</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
@@ -570,7 +580,7 @@
             <span class="n">keops</span><span class="o">=</span><span class="n">keops</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
-            <span class="n">coeff_attraction</span><span class="o">=</span><span class="n">coeff_attraction</span><span class="p">,</span>
+            <span class="n">early_exaggeration</span><span class="o">=</span><span class="n">early_exaggeration</span><span class="p">,</span>
             <span class="n">coeff_repulsion</span><span class="o">=</span><span class="n">coeff_repulsion</span><span class="p">,</span>
             <span class="n">early_exaggeration_iter</span><span class="o">=</span><span class="n">early_exaggeration_iter</span><span class="p">,</span>
         <span class="p">)</span>

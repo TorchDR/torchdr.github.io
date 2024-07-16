@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GaussianAffinity &mdash; TorchDR 0.0.0-alpha documentation</title>
+  <title>MAGICAffinity &mdash; TorchDR 0.0.0-alpha documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
@@ -28,8 +28,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="StudentAffinity" href="torchdr.StudentAffinity.html" />
-    <link rel="prev" title="SampledNeighborEmbedding" href="torchdr.SampledNeighborEmbedding.html" /> 
+    <link rel="next" title="SinkhornAffinity" href="torchdr.SinkhornAffinity.html" />
+    <link rel="prev" title="SelfTuningAffinity" href="torchdr.SelfTuningAffinity.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -62,8 +62,8 @@
 <li class="toctree-l2 current"><a class="reference internal" href="../all.html#advanced-dimensionality-reduction-with-torchdr">Advanced Dimensionality Reduction with <code class="docutils literal notranslate"><span class="pre">torchdr</span></code></a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../all.html#base-classes">Base Classes</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../all.html#affinity-classes">Affinity Classes</a><ul class="current">
-<li class="toctree-l4 current"><a class="reference internal" href="../all.html#simple-affinities">Simple Affinities</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../all.html#affinities-normalized-by-knn-distances">Affinities Normalized by kNN Distances</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../all.html#simple-affinities">Simple Affinities</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../all.html#affinities-normalized-by-knn-distances">Affinities Normalized by kNN Distances</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../all.html#entropic-affinities">Entropic Affinities</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../all.html#quadratic-affinities">Quadratic Affinities</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../all.html#umap-affinities">UMAP Affinities</a></li>
@@ -95,9 +95,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../all.html">API and Modules</a></li>
-      <li class="breadcrumb-item active">GaussianAffinity</li>
+      <li class="breadcrumb-item active">MAGICAffinity</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/gen_modules/torchdr.GaussianAffinity.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/gen_modules/torchdr.MAGICAffinity.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -105,37 +105,58 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="gaussianaffinity">
-<h1>GaussianAffinity<a class="headerlink" href="#gaussianaffinity" title="Link to this heading"></a></h1>
+  <section id="magicaffinity">
+<h1>MAGICAffinity<a class="headerlink" href="#magicaffinity" title="Link to this heading"></a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="torchdr.GaussianAffinity">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchdr.</span></span><span class="sig-name descname"><span class="pre">GaussianAffinity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'sqeuclidean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zero_diag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keops</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/affinity/unnormalized.html#GaussianAffinity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.GaussianAffinity" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">UnnormalizedLogAffinity</span></code></p>
-<p>Computes the Gaussian affinity matrix <span class="math notranslate nohighlight">\(\exp( - \mathbf{C} / \sigma)\)</span>
-where <span class="math notranslate nohighlight">\(\mathbf{C}\)</span> is the pairwise distance matrix and
-<span class="math notranslate nohighlight">\(\sigma\)</span> is the bandwidth parameter.</p>
+<dt class="sig sig-object py" id="torchdr.MAGICAffinity">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchdr.</span></span><span class="sig-name descname"><span class="pre">MAGICAffinity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">K</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'sqeuclidean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zero_diag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.4/library/constants.html#None" title="(in Python v3.4)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keops</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/affinity/knn_normalized.html#MAGICAffinity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.MAGICAffinity" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../stubs/torchdr.Affinity.html#torchdr.Affinity" title="torchdr.affinity.base.Affinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Affinity</span></code></a></p>
+<p>Computes the MAGIC <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>23<span class="fn-bracket">]</span></a> affinity matrix.</p>
+<p>The construction is as follows. First, it computes a Gaussian
+kernel with sample-wise bandwidth <span class="math notranslate nohighlight">\(\mathbf{\sigma} \in \mathbb{R}^n\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[P_{ij} \leftarrow \exp \left( - \frac{C_{ij}}{\sigma_i} \right)\]</div>
+<p>In the above, <span class="math notranslate nohighlight">\(\mathbf{C}\)</span> is the pairwise distance matrix and
+<span class="math notranslate nohighlight">\(\sigma_i\)</span> is the distance from the K’th nearest neighbor of data point
+<span class="math notranslate nohighlight">\(\mathbf{x}_i\)</span>.</p>
+<p>Then it averages the affinity matrix with its transpose:</p>
+<div class="math notranslate nohighlight">
+\[P_{ij} \leftarrow \frac{P_{ij} + P_{ji}}{2} \:.\]</div>
+<p>Finally, it normalizes the affinity matrix along each row:</p>
+<div class="math notranslate nohighlight">
+\[P_{ij} \leftarrow \frac{P_{ij}}{\sum_{t} P_{it}} \:.\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sigma</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><em>float</em></a><em>, </em><em>optional</em>) – Bandwidth parameter.</p></li>
+<li><p><strong>K</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a><em>, </em><em>optional</em>) – K-th neirest neighbor .</p></li>
 <li><p><strong>metric</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a><em>, </em><em>optional</em>) – Metric to use for pairwise distances computation.</p></li>
 <li><p><strong>zero_diag</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to set the diagonal of the affinity matrix to zero.</p></li>
 <li><p><strong>device</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a><em>, </em><em>optional</em>) – Device to use for computations.</p></li>
 <li><p><strong>keops</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to use KeOps for computations.</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><em>bool</em></a><em>, </em><em>optional</em>) – Verbosity.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><em>bool</em></a><em>, </em><em>optional</em>) – Verbosity. Default is False.</p></li>
 </ul>
 </dd>
 </dl>
+<p class="rubric">References</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id2" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">23</a><span class="fn-bracket">]</span></span>
+<p>Van Dijk, D., Sharma, R., Nainys, J., Yim, K., Kathail, P., Carr, A.
+J., … &amp; Pe’er, D. (2018).
+Recovering Gene Interactions from Single-Cell Data Using Data Diffusion
+Cell, 174(3).</p>
+</aside>
+</aside>
 </dd></dl>
 
-<span class="target" id="sphx-glr-backref-torchdr-gaussianaffinity"></span></section>
+<span class="target" id="sphx-glr-backref-torchdr-magicaffinity"></span></section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="torchdr.SampledNeighborEmbedding.html" class="btn btn-neutral float-left" title="SampledNeighborEmbedding" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="torchdr.StudentAffinity.html" class="btn btn-neutral float-right" title="StudentAffinity" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="torchdr.SelfTuningAffinity.html" class="btn btn-neutral float-left" title="SelfTuningAffinity" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="torchdr.SinkhornAffinity.html" class="btn btn-neutral float-right" title="SinkhornAffinity" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

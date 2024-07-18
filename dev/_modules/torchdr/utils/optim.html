@@ -84,9 +84,7 @@
              
   <h1>Source code for torchdr.utils.optim</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Tools for optimization problems</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;Tools for optimization problems.&quot;&quot;&quot;</span>
 
 <span class="c1"># Author: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
 <span class="c1">#         Rémi Flamary &lt;remi.flamary@polytechnique.edu&gt;</span>
@@ -118,8 +116,9 @@
     <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">dtype</span><span class="o">=</span><span class="n">DTYPE</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Performs a batched binary search to find the root of an increasing function f.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Implement the binary search root finding method.</span>
+
+<span class="sd">    Perform a batched binary search to find the root of an increasing function f.</span>
 <span class="sd">    The domain of f is restricted to positive floats.</span>
 
 <span class="sd">    Parameters</span>
@@ -138,6 +137,8 @@
 <span class="sd">        precision threshold at which the algorithm stops.</span>
 <span class="sd">    verbose : bool, optional</span>
 <span class="sd">        if True, prints current bounds.</span>
+<span class="sd">    dtype : torch.dtype, optional</span>
+<span class="sd">        data type of the input.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -188,8 +189,9 @@
     <span class="n">dtype</span><span class="o">=</span><span class="n">DTYPE</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="n">DEVICE</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Performs a batched false position method to find the root</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Implement the false position root finding method.</span>
+
+<span class="sd">    Perform a batched false position method to find the root</span>
 <span class="sd">    of an increasing function f.</span>
 <span class="sd">    The domain of f is restricted to positive floats.</span>
 
@@ -211,6 +213,8 @@
 <span class="sd">        if True, prints current bounds.</span>
 <span class="sd">    dtype : torch.dtype, optional</span>
 <span class="sd">        data type of the input.</span>
+<span class="sd">    device : str, optional</span>
+<span class="sd">        device on which the computation is performed.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -257,8 +261,7 @@
 
 
 <span class="k">def</span> <span class="nf">init_bounds</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">begin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DTYPE</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">DEVICE</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the bounds of the root search.&quot;&quot;&quot;</span>
-
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize the bounds of the root search.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">begin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">begin</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>

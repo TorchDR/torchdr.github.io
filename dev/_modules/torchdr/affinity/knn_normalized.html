@@ -84,9 +84,7 @@
              
   <h1>Source code for torchdr.affinity.knn_normalized</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Affinity matrices with normalizations using nearest neighbor distances</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;Affinity matrices with normalizations using nearest neighbor distances.&quot;&quot;&quot;</span>
 
 <span class="c1"># Author: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
 <span class="c1">#         Cédric Vincent-Cuaz &lt;cedric.vincent-cuaz@inria.fr&gt;</span>
@@ -108,10 +106,10 @@
 
 <span class="nd">@wrap_vectors</span>
 <span class="k">def</span> <span class="nf">_log_SelfTuning</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns the self-tuning affinity matrix with sample-wise bandwidth</span>
-<span class="sd">    determined by the distance from a point to its K-th neirest neighbor</span>
-<span class="sd">    in log domain.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the self-tuning affinity matrix with sample-wise bandwidth.</span>
+
+<span class="sd">    The bandwidth is determined by the distance from a point</span>
+<span class="sd">    to its K-th neirest neighbor in log domain.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -130,10 +128,10 @@
 
 <span class="nd">@wrap_vectors</span>
 <span class="k">def</span> <span class="nf">_log_MAGIC</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns the MAGIC affinity matrix with sample-wise bandwidth</span>
-<span class="sd">    determined by the distance from a point to its K-th neirest neighbor</span>
-<span class="sd">    in log domain.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the MAGIC affinity matrix with sample-wise bandwidth.</span>
+
+<span class="sd">    The bandwidth is determined by the distance from a point</span>
+<span class="sd">    to its K-th neirest neighbor in log domain.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -152,9 +150,9 @@
 <div class="viewcode-block" id="SelfTuningAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.SelfTuningAffinity.html#torchdr.SelfTuningAffinity">[docs]</a>
 <span class="k">class</span> <span class="nc">SelfTuningAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes the self-tuning [22]_ Gaussian affinity matrix with</span>
-<span class="sd">    sample-wise bandwidth :math:`\mathbf{\sigma} \in \mathbb{R}^n`.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the self-tuning affinity introduced in [22]_.</span>
+
+<span class="sd">    The affinity has a sample-wise bandwidth :math:`\mathbf{\sigma} \in \mathbb{R}^n`.</span>
 
 <span class="sd">    .. math::</span>
 <span class="sd">        \exp \left( - \frac{C_{ij}}{\sigma_i \sigma_j} \right)</span>
@@ -208,8 +206,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">normalization_dim</span> <span class="o">=</span> <span class="n">normalization_dim</span>
 
     <span class="k">def</span> <span class="nf">_compute_log_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Fits the local Gibbs affinity model to the provided data.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Fit the self-tuning affinity model to the provided data.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -240,8 +237,7 @@
 <div class="viewcode-block" id="MAGICAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.MAGICAffinity.html#torchdr.MAGICAffinity">[docs]</a>
 <span class="k">class</span> <span class="nc">MAGICAffinity</span><span class="p">(</span><span class="n">Affinity</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes the MAGIC [23]_ affinity matrix.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the MAGIC affinity introduced in [23]_.</span>
 
 <span class="sd">    The construction is as follows. First, it computes a Gaussian</span>
 <span class="sd">    kernel with sample-wise bandwidth :math:`\mathbf{\sigma} \in \mathbb{R}^n`.</span>
@@ -306,8 +302,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">K</span> <span class="o">=</span> <span class="n">K</span>
 
     <span class="k">def</span> <span class="nf">_compute_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Fits the local Gibbs affinity model to the provided data.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Fit the MAGIC affinity model to the provided data.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>

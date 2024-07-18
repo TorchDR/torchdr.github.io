@@ -84,9 +84,7 @@
              
   <h1>Source code for torchdr.affinity.quadratic</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Affinity matrices with quadratic constraints</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;Affinity matrices with quadratic constraints.&quot;&quot;&quot;</span>
 
 <span class="c1"># Author: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
 <span class="c1">#</span>
@@ -107,9 +105,7 @@
 
 <span class="nd">@wrap_vectors</span>
 <span class="k">def</span> <span class="nf">_Pds</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">dual</span><span class="p">,</span> <span class="n">eps</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns the quadratic doubly stochastic matrix P</span>
-<span class="sd">    from the dual variable f and cost matrix C.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the quadratic doubly stochastic matrix from dual variable and cost.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -134,8 +130,9 @@
 <div class="viewcode-block" id="DoublyStochasticQuadraticAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.DoublyStochasticQuadraticAffinity.html#torchdr.DoublyStochasticQuadraticAffinity">[docs]</a>
 <span class="k">class</span> <span class="nc">DoublyStochasticQuadraticAffinity</span><span class="p">(</span><span class="n">Affinity</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes the symmetric doubly stochastic affinity matrix with controlled</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the symmetric doubly stochastic affinity.</span>
+
+<span class="sd">    Implement the doubly stochastic normalized matrix with controlled</span>
 <span class="sd">    global :math:`\ell_2` norm.</span>
 
 <span class="sd">    The algorithm computes the optimal dual variable</span>
@@ -237,7 +234,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tolog</span> <span class="o">=</span> <span class="n">tolog</span>
 
     <span class="k">def</span> <span class="nf">_compute_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Computes the quadratic doubly stochastic affinity matrix from input data X.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the quadratic doubly stochastic affinity matrix from input data X.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>

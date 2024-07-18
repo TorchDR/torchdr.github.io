@@ -84,9 +84,7 @@
              
   <h1>Source code for torchdr.affinity.unnormalized</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Common simple affinities</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;Common simple affinities.&quot;&quot;&quot;</span>
 
 <span class="c1"># Author: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
 <span class="c1">#</span>
@@ -101,8 +99,9 @@
 <div class="viewcode-block" id="GaussianAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.GaussianAffinity.html#torchdr.GaussianAffinity">[docs]</a>
 <span class="k">class</span> <span class="nc">GaussianAffinity</span><span class="p">(</span><span class="n">UnnormalizedLogAffinity</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes the Gaussian affinity matrix :math:`\exp( - \mathbf{C} / \sigma)`</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the Gaussian affinity matrix.</span>
+
+<span class="sd">    Its expression is as follows : :math:`\exp( - \mathbf{C} / \sigma)`</span>
 <span class="sd">    where :math:`\mathbf{C}` is the pairwise distance matrix and</span>
 <span class="sd">    :math:`\sigma` is the bandwidth parameter.</span>
 
@@ -148,8 +147,7 @@
 <div class="viewcode-block" id="StudentAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.StudentAffinity.html#torchdr.StudentAffinity">[docs]</a>
 <span class="k">class</span> <span class="nc">StudentAffinity</span><span class="p">(</span><span class="n">UnnormalizedLogAffinity</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes the Student affinity matrix based on the Student-t distribution.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the Student affinity matrix based on the Student-t distribution.</span>
 
 <span class="sd">    Its expression is given by:</span>
 
@@ -204,8 +202,9 @@
 <div class="viewcode-block" id="ScalarProductAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.ScalarProductAffinity.html#torchdr.ScalarProductAffinity">[docs]</a>
 <span class="k">class</span> <span class="nc">ScalarProductAffinity</span><span class="p">(</span><span class="n">UnnormalizedAffinity</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes the scalar product affinity matrix :math:`\mathbf{X} \mathbf{X}^\top`</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the scalar product affinity matrix.</span>
+
+<span class="sd">    Its expression is given by :math:`\mathbf{X} \mathbf{X}^\top`</span>
 <span class="sd">    where :math:`\mathbf{X}` is the input data.</span>
 
 <span class="sd">    Parameters</span>

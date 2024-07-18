@@ -84,9 +84,7 @@
              
   <h1>Source code for torchdr.base</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Base classes for DR methods</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;Base classes for DR methods.&quot;&quot;&quot;</span>
 
 <span class="c1"># Author: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
 <span class="c1">#</span>
@@ -101,8 +99,8 @@
 <div class="viewcode-block" id="DRModule">
 <a class="viewcode-back" href="../../stubs/torchdr.base.DRModule.html#torchdr.DRModule">[docs]</a>
 <span class="k">class</span> <span class="nc">DRModule</span><span class="p">(</span><span class="n">TransformerMixin</span><span class="p">,</span> <span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Base class for DR methods.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for DR methods.</span>
+
 <span class="sd">    Each children class should implement the fit method.</span>
 
 <span class="sd">    Parameters</span>
@@ -140,19 +138,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span> <span class="o">=</span> <span class="n">random_state</span>
 
-    <span class="k">def</span> <span class="nf">_process_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_backend_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_device_</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span>
-            <span class="n">X</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">return_backend_device</span><span class="o">=</span><span class="kc">True</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">n_features_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">return</span> <span class="bp">self</span>
-
 <div class="viewcode-block" id="DRModule.fit">
 <a class="viewcode-back" href="../../stubs/torchdr.base.DRModule.html#torchdr.DRModule.fit">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Fits the DR model to project the input data :math:`\mathbf{X}` onto</span>
-<span class="sd">        a low-dimensional space.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Fit the dimensionality reduction model.</span>
 
 <span class="sd">        This method must be overridden by subclasses. This base implementation</span>
 <span class="sd">        only converts the input data :math:`\mathbf{X}` to a torch tensor with</span>

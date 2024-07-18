@@ -23,8 +23,6 @@
         <script src="../../_static/documentation_options.js?v=8e37ee27"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script>window.MathJax = {"tex": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}}</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -112,10 +110,10 @@ simulated dataset with heteroscedastic noise.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="../../gen_modules/torchdr.NormalizedGaussianAffinity.html#torchdr.NormalizedGaussianAffinity" title="torchdr.NormalizedGaussianAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchdr.NormalizedGaussianAffinity</span></code></a>([sigma, ...])</p></td>
-<td><p>Computes the Gaussian affinity matrix <span class="math notranslate nohighlight">\(\exp( - \mathbf{C} / \sigma)\)</span> where <span class="math notranslate nohighlight">\(\mathbf{C}\)</span> is the pairwise distance matrix and <span class="math notranslate nohighlight">\(\sigma\)</span> is the bandwidth parameter.</p></td>
+<td><p>Compute the Gaussian affinity matrix which can be normalized along a dimension.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../../gen_modules/torchdr.EntropicAffinity.html#torchdr.EntropicAffinity" title="torchdr.EntropicAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchdr.EntropicAffinity</span></code></a>([perplexity, tol, ...])</p></td>
-<td><p>Solves the directed entropic affinity problem introduced in <a href="#id3"><span class="problematic" id="id1">[1]_</span></a> and later used in TSNE <a href="#id4"><span class="problematic" id="id2">[2]_</span></a>.</p></td>
+<td><p>Solve the directed entropic affinity problem introduced in <a href="#id2"><span class="problematic" id="id1">[1]_</span></a>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -220,7 +218,7 @@ the <code class="docutils literal notranslate"><span class="pre">perplexity</spa
 <img src="../../_images/sphx_glr_demo_ea_adaptivity_002.png" srcset="../../_images/sphx_glr_demo_ea_adaptivity_002.png" alt="Entropic Affinity Matrix, Entropic Affinity Graph" class = "sphx-glr-single-img"/><p>We can now observe a <strong>homogeneous density of connections</strong> across clusters.
 Thus, the entropic affinity effectively filters out the various noise levels.</p>
 <p>This affinity is an important component of the <strong>TSNE</strong> algorithm.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.927 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.858 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-affinities-demo-ea-adaptivity-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/17d429f11ca029172465ca0d7bb1879e/demo_ea_adaptivity.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">demo_ea_adaptivity.ipynb</span></code></a></p>

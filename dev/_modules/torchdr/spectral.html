@@ -84,9 +84,7 @@
              
   <h1>Source code for torchdr.spectral</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Spectral methods for dimensionality reduction</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;Spectral methods for dimensionality reduction.&quot;&quot;&quot;</span>
 
 <span class="c1"># Authors: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
 <span class="c1">#          Mathurin Massias</span>
@@ -94,6 +92,7 @@
 <span class="c1"># License: BSD 3-Clause License</span>
 
 <span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">from</span> <span class="nn">torchdr.base</span> <span class="kn">import</span> <span class="n">DRModule</span>
 <span class="kn">from</span> <span class="nn">torchdr.utils</span> <span class="kn">import</span> <span class="p">(</span>
@@ -114,6 +113,20 @@
 <div class="viewcode-block" id="PCA">
 <a class="viewcode-back" href="../../gen_modules/torchdr.PCA.html#torchdr.PCA">[docs]</a>
 <span class="k">class</span> <span class="nc">PCA</span><span class="p">(</span><span class="n">DRModule</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Principal Component Analysis module.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_components : int, default=2</span>
+<span class="sd">        Number of components to project the input data onto.</span>
+<span class="sd">    device : str, default=&quot;auto&quot;</span>
+<span class="sd">        Device on which the computations are performed.</span>
+<span class="sd">    verbose : bool, default=False</span>
+<span class="sd">        Whether to print information during the computations.</span>
+<span class="sd">    random_state : float, default=0</span>
+<span class="sd">        Random seed for reproducibility.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n_components</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
@@ -131,6 +144,18 @@
 <div class="viewcode-block" id="PCA.fit">
 <a class="viewcode-back" href="../../gen_modules/torchdr.PCA.html#torchdr.PCA.fit">[docs]</a>
     <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Fit the PCA model.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : torch.Tensor or np.ndarray of shape (n_samples, n_features)</span>
+<span class="sd">            Data on which to fit the PCA model.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self : PCA</span>
+<span class="sd">            The fitted PCA model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">X</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">U</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">X</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span><span class="p">,</span> <span class="n">full_matrices</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -139,9 +164,24 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 
+<div class="viewcode-block" id="PCA.transform">
+<a class="viewcode-back" href="../../gen_modules/torchdr.PCA.html#torchdr.PCA.transform">[docs]</a>
     <span class="nd">@handle_backend</span>
-    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Project the input data onto the PCA components.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : torch.Tensor or np.ndarray of shape (n_samples, n_features)</span>
+<span class="sd">            Data to project onto the PCA components.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        X_new : torch.Tensor or np.ndarray of shape (n_samples, n_components)</span>
+<span class="sd">            Projected data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">X</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span><span class="p">)</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">components_</span><span class="o">.</span><span class="n">T</span></div>
+</div>
 
 
 
@@ -149,6 +189,26 @@
 <div class="viewcode-block" id="KernelPCA">
 <a class="viewcode-back" href="../../gen_modules/torchdr.KernelPCA.html#torchdr.KernelPCA">[docs]</a>
 <span class="k">class</span> <span class="nc">KernelPCA</span><span class="p">(</span><span class="n">DRModule</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Kernel Principal Component Analysis module.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    affinity : Affinity, default=GaussianAffinity()</span>
+<span class="sd">        Affinity object to compute the kernel matrix.</span>
+<span class="sd">    n_components : int, default=2</span>
+<span class="sd">        Number of components to project the input data onto.</span>
+<span class="sd">    device : str, default=&quot;auto&quot;</span>
+<span class="sd">        Device on which the computations are performed.</span>
+<span class="sd">    keops : bool, default=False</span>
+<span class="sd">        Whether to use KeOps for computations.</span>
+<span class="sd">    verbose : bool, default=False</span>
+<span class="sd">        Whether to print information during the computations.</span>
+<span class="sd">    random_state : float, default=0</span>
+<span class="sd">        Random seed for reproducibility.</span>
+<span class="sd">    nodiag : bool, default=False</span>
+<span class="sd">        Whether to remove eigenvectors with a zero eigenvalue.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">affinity</span><span class="p">:</span> <span class="n">Affinity</span> <span class="o">=</span> <span class="n">GaussianAffinity</span><span class="p">(),</span>
@@ -180,7 +240,19 @@
 
 <div class="viewcode-block" id="KernelPCA.fit">
 <a class="viewcode-back" href="../../gen_modules/torchdr.KernelPCA.html#torchdr.KernelPCA.fit">[docs]</a>
-    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Fit the KernelPCA model.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : torch.Tensor or np.ndarray of shape (n_samples, n_features)</span>
+<span class="sd">            Data on which to fit the KernelPCA model.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self : KernelPCA</span>
+<span class="sd">            The fitted KernelPCA model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">X</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">X_fit_</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
         <span class="n">K</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
@@ -213,8 +285,22 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 
+<div class="viewcode-block" id="KernelPCA.transform">
+<a class="viewcode-back" href="../../gen_modules/torchdr.KernelPCA.html#torchdr.KernelPCA.transform">[docs]</a>
     <span class="nd">@handle_backend</span>
-    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Project the input data onto the KernelPCA components.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : torch.Tensor or np.ndarray of shape (n_samples, n_features)</span>
+<span class="sd">            Data to project onto the KernelPCA components.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        X_new : torch.Tensor or np.ndarray of shape (n_samples, n_components)</span>
+<span class="sd">            Projected data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">affinity</span><span class="p">,</span> <span class="p">(</span><span class="n">UnnormalizedAffinity</span><span class="p">,</span> <span class="n">UnnormalizedLogAffinity</span><span class="p">)</span>
         <span class="p">):</span>
@@ -243,10 +329,23 @@
         <span class="n">zero_eigvals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigenvalues_</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="n">zero_eigvals</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
             <span class="n">result</span><span class="p">[:,</span> <span class="n">zero_eigvals</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">return</span> <span class="n">result</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
 
     <span class="nd">@handle_backend</span>
-    <span class="k">def</span> <span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Fit the KernelPCA model and project the input data onto the components.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : torch.Tensor or np.ndarray of shape (n_samples, n_features)</span>
+<span class="sd">            Data on which to fit the KernelPCA model and project onto the components.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        X_new : torch.Tensor or np.ndarray of shape (n_samples, n_components)</span>
+<span class="sd">            Projected data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigenvectors_</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigenvalues_</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">]</span><span class="o">.</span><span class="n">sqrt</span><span class="p">()</span></div>
 </div>

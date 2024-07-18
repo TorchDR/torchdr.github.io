@@ -84,9 +84,7 @@
              
   <h1>Source code for torchdr.affinity.entropic</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Affinity matrices with entropic constraints</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;Affinity matrices with entropic constraints.&quot;&quot;&quot;</span>
 
 <span class="c1"># Author: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
 <span class="c1">#         Titouan Vayer &lt;titouan.vayer@inria.fr&gt;</span>
@@ -119,9 +117,7 @@
 
 <span class="nd">@wrap_vectors</span>
 <span class="k">def</span> <span class="nf">_log_Pe</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">eps</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns the log of the unnormalized directed entropic affinity matrix</span>
-<span class="sd">    with prescribed kernel bandwidth epsilon.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the log of the unnormalized directed entropic affinity.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -142,9 +138,7 @@
 
 <span class="nd">@wrap_vectors</span>
 <span class="k">def</span> <span class="nf">_log_Pse</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">eps_square</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns the log of the symmetric entropic affinity matrix</span>
-<span class="sd">    with given (dual) variables epsilon and mu.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the log of the symmetric entropic affinity matrix.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -155,6 +149,8 @@
 <span class="sd">        Dual variable of the entropic constraint.</span>
 <span class="sd">    mu : torch.Tensor of shape (n) or (n_batch, batch_size)</span>
 <span class="sd">        Dual variable of the normalization constraint.</span>
+<span class="sd">    eps_square : bool, optional</span>
+<span class="sd">        Whether to optimize on the square of the dual variables.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -170,10 +166,7 @@
 
 <span class="nd">@wrap_vectors</span>
 <span class="k">def</span> <span class="nf">_log_Pds</span><span class="p">(</span><span class="n">log_K</span><span class="p">,</span> <span class="n">dual</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns the log of the doubly stochastic normalization of log_K (in log domain)</span>
-<span class="sd">    given a scaling vector (dual variable) which can be computed via the</span>
-<span class="sd">    Sinkhorn iterations.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the log of the doubly stochastic normalization of log_K (in log domain).</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -194,8 +187,7 @@
 
 
 <span class="k">def</span> <span class="nf">_bounds_entropic_affinity</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">perplexity</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes the bounds derived in [4]_ for the entropic affinity root.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the bounds derived in [4]_ for the entropic affinity root.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -256,9 +248,7 @@
 
 
 <span class="k">def</span> <span class="nf">_check_perplexity</span><span class="p">(</span><span class="n">perplexity</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Checks the perplexity parameter and returns a valid value.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Check the perplexity parameter and return a valid value.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="s2">&quot;[TorchDR] ERROR Affinity: Input has less than one sample : &quot;</span>
@@ -282,9 +272,7 @@
 <div class="viewcode-block" id="EntropicAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.EntropicAffinity.html#torchdr.EntropicAffinity">[docs]</a>
 <span class="k">class</span> <span class="nc">EntropicAffinity</span><span class="p">(</span><span class="n">SparseLogAffinity</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Solves the directed entropic affinity problem introduced in [1]_ and</span>
-<span class="sd">    later used in TSNE [2]_.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Solve the directed entropic affinity problem introduced in [1]_.</span>
 
 <span class="sd">    The algorithm computes the optimal dual variable</span>
 <span class="sd">    :math:`\mathbf{\varepsilon}^* \in \mathbb{R}^n_{&gt;0}` such that</span>
@@ -401,9 +389,7 @@
             <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">_compute_sparse_log_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Solves the problem (EA) in [1]_ to compute the entropic affinity matrix</span>
-<span class="sd">        from the input data.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Solve the problem (EA) in [1]_ to compute the entropic affinity matrix.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -472,8 +458,9 @@
 <div class="viewcode-block" id="SymmetricEntropicAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.SymmetricEntropicAffinity.html#torchdr.SymmetricEntropicAffinity">[docs]</a>
 <span class="k">class</span> <span class="nc">SymmetricEntropicAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes the solution :math:`\mathbf{P}^{\mathrm{se}}` to the symmetric entropic</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the symmetric entropic affinity (SEA) introduced in [3]_.</span>
+
+<span class="sd">    Compute the solution :math:`\mathbf{P}^{\mathrm{se}}` to the symmetric entropic</span>
 <span class="sd">    affinity (SEA) problem described in [3]_.</span>
 
 <span class="sd">    The algorithm computes the optimal dual variables</span>
@@ -577,9 +564,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">eps_square</span> <span class="o">=</span> <span class="n">eps_square</span>
 
     <span class="k">def</span> <span class="nf">_compute_log_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Solves the problem (SEA) in [3]_ to compute the symmetric entropic affinity</span>
-<span class="sd">        matrix from input data X.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Solve the problem (SEA) in [3]_.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -736,10 +721,10 @@
 <div class="viewcode-block" id="SinkhornAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.SinkhornAffinity.html#torchdr.SinkhornAffinity">[docs]</a>
 <span class="k">class</span> <span class="nc">SinkhornAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes the symmetric doubly stochastic affinity matrix</span>
-<span class="sd">    :math:`\mathbf{P}^{\mathrm{ds}}` with controlled global entropy using the</span>
-<span class="sd">    symmetric Sinkhorn algorithm [5]_.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the symmetric doubly stochastic affinity matrix.</span>
+
+<span class="sd">    The algorithm computes the doubly stochastic matrix :math:`\mathbf{P}^{\mathrm{ds}}</span>
+<span class="sd">    with controlled global entropy using the symmetric Sinkhorn algorithm [5]_.</span>
 
 <span class="sd">    The algorithm computes the optimal dual variable</span>
 <span class="sd">    :math:`\mathbf{f}^\star \in \mathbb{R}^n` such that</span>
@@ -849,8 +834,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">with_grad</span> <span class="o">=</span> <span class="n">with_grad</span>
 
     <span class="k">def</span> <span class="nf">_compute_log_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">init_dual</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Computes the entropic doubly stochastic affinity matrix from input data X.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the entropic doubly stochastic affinity matrix.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -929,8 +913,9 @@
 <div class="viewcode-block" id="NormalizedGaussianAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.NormalizedGaussianAffinity.html#torchdr.NormalizedGaussianAffinity">[docs]</a>
 <span class="k">class</span> <span class="nc">NormalizedGaussianAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes the Gaussian affinity matrix :math:`\exp( - \mathbf{C} / \sigma)`</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the Gaussian affinity matrix which can be normalized along a dimension.</span>
+
+<span class="sd">    The algorthm computes :math:`\exp( - \mathbf{C} / \sigma)`</span>
 <span class="sd">    where :math:`\mathbf{C}` is the pairwise distance matrix and</span>
 <span class="sd">    :math:`\sigma` is the bandwidth parameter. The affinity can be normalized</span>
 <span class="sd">    according to the specified normalization dimension.</span>
@@ -974,8 +959,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">normalization_dim</span> <span class="o">=</span> <span class="n">normalization_dim</span>
 
     <span class="k">def</span> <span class="nf">_compute_log_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Fits the normalized Gaussian affinity model to the provided data.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Fit the normalized Gaussian affinity model to the provided data.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>

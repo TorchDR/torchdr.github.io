@@ -84,9 +84,7 @@
              
   <h1>Source code for torchdr.utils.geometry</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Ground metrics and distances</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;Ground metrics and distances.&quot;&quot;&quot;</span>
 
 <span class="c1"># Author: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
 <span class="c1">#</span>
@@ -108,8 +106,8 @@
     <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
     <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute pairwise distances matrix between points in two datasets.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute pairwise distances matrix between points in two datasets.</span>
+
 <span class="sd">    Returns the pairwise distance matrix as torch tensor or KeOps lazy tensor</span>
 <span class="sd">    (if keops is True).</span>
 
@@ -150,9 +148,9 @@
 <span class="k">def</span> <span class="nf">symmetric_pairwise_distances</span><span class="p">(</span>
     <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">add_diag</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute pairwise distances matrix between points in a dataset.</span>
-<span class="sd">    Returns the pairwise distance matrix as torch tensor or KeOps lazy tensor</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute pairwise distances matrix between points in a dataset.</span>
+
+<span class="sd">    Return the pairwise distance matrix as torch tensor or KeOps lazy tensor</span>
 <span class="sd">    (if keops is True). Supports batched input. The batch dimension should be the first.</span>
 
 <span class="sd">    Parameters</span>
@@ -171,7 +169,6 @@
 <span class="sd">    C : torch.Tensor or pykeops.torch.LazyTensor (if keops is True) of shape (n_samples, n_samples) or (n_batch, n_samples_batch, n_samples_batch)</span>
 <span class="sd">        Pairwise distances matrix.</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa E501</span>
-
     <span class="k">if</span> <span class="n">keops</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">pykeops</span><span class="p">:</span>  <span class="c1"># pykeops no installed</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="s2">&quot;pykeops is not installed. Please install it to use `keops=true`.&quot;</span>
@@ -192,9 +189,9 @@
 <span class="k">def</span> <span class="nf">_pairwise_distances_torch</span><span class="p">(</span>
     <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute pairwise distances matrix between points in two datasets.</span>
-<span class="sd">    Returns the pairwise distance matrix as a torch tensor.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute pairwise distances matrix between points in two datasets.</span>
+
+<span class="sd">    Return the pairwise distance matrix as a torch tensor.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -244,9 +241,9 @@
 <span class="k">def</span> <span class="nf">_pairwise_distances_keops</span><span class="p">(</span>
     <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute pairwise distances matrix between points in two datasets.</span>
-<span class="sd">    Returns the pairwise distance matrix as KeOps lazy tensor.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute pairwise distances matrix between points in two datasets.</span>
+
+<span class="sd">    Return the pairwise distance matrix as KeOps lazy tensor.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -290,9 +287,8 @@
     <span class="n">indices</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
     <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute pairwise distances matrix between points in a dataset for a subset</span>
-<span class="sd">    of pairs given by indices.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute pairwise distances for a subset of pairs given by indices.</span>
+
 <span class="sd">    The output distance matrix has shape (n, k) and its (i,j) element is the</span>
 <span class="sd">    distance between X[i] and Y[indices[i, j]].</span>
 
@@ -302,6 +298,8 @@
 <span class="sd">        Input dataset.</span>
 <span class="sd">    indices : torch.Tensor of shape (n, k)</span>
 <span class="sd">        Indices of the pairs for which to compute the distances.</span>
+<span class="sd">    metric : str, optional</span>
+<span class="sd">        Metric to use for computing distances. The default is &quot;sqeuclidean&quot;.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>

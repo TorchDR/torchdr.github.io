@@ -84,9 +84,7 @@
              
   <h1>Source code for torchdr.affinity.umap</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Affinity matrices used in UMAP.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;Affinity matrices used in UMAP.&quot;&quot;&quot;</span>
 
 <span class="c1"># Author: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
 <span class="c1">#</span>
@@ -109,15 +107,15 @@
 
 <span class="nd">@wrap_vectors</span>
 <span class="k">def</span> <span class="nf">_log_Pumap</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns the log of the input affinity matrix used in UMAP.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the log of the input affinity matrix used in UMAP.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="n">C</span> <span class="o">-</span> <span class="n">rho</span><span class="p">)</span> <span class="o">/</span> <span class="n">sigma</span>
 
 
 <span class="c1"># from umap/umap/umap_.py</span>
 <span class="k">def</span> <span class="nf">find_ab_params</span><span class="p">(</span><span class="n">spread</span><span class="p">,</span> <span class="n">min_dist</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fit a, b params for the differentiable curve used in lower</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fit a, b params as in UMAP.</span>
+
+<span class="sd">    Fit (a, b) for the differentiable curve used in lower</span>
 <span class="sd">    dimensional fuzzy simplicial complex construction. We want the</span>
 <span class="sd">    smooth curve (from a pre-defined family with simple gradient) that</span>
 <span class="sd">    best matches an offset exponential decay.</span>
@@ -135,9 +133,7 @@
 
 
 <span class="k">def</span> <span class="nf">_check_n_neighbors</span><span class="p">(</span><span class="n">n_neighbors</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Checks the n_neighbors parameter and returns a valid value.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Check the n_neighbors parameter and returns a valid value.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;[TorchDR] ERROR : Input has less than one sample : n_samples = </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">.&quot;</span>
@@ -159,8 +155,7 @@
 <div class="viewcode-block" id="UMAPAffinityIn">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.UMAPAffinityIn.html#torchdr.UMAPAffinityIn">[docs]</a>
 <span class="k">class</span> <span class="nc">UMAPAffinityIn</span><span class="p">(</span><span class="n">SparseLogAffinity</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes the input affinity used in UMAP [8]_.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the input affinity used in UMAP [8]_.</span>
 
 <span class="sd">    The algorithm computes via root search the variable</span>
 <span class="sd">    :math:`\mathbf{\sigma}^* \in \mathbb{R}^n_{&gt;0}` such that</span>
@@ -237,7 +232,7 @@
             <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">_compute_sparse_log_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Computes the input affinity matrix of UMAP from input data X.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the input affinity matrix of UMAP from input data X.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -293,8 +288,7 @@
 <div class="viewcode-block" id="UMAPAffinityOut">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.UMAPAffinityOut.html#torchdr.UMAPAffinityOut">[docs]</a>
 <span class="k">class</span> <span class="nc">UMAPAffinityOut</span><span class="p">(</span><span class="n">UnnormalizedAffinity</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes the affinity used in embedding space in UMAP [8]_.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the affinity used in embedding space in UMAP [8]_.</span>
 
 <span class="sd">    Its :math:`(i,j)` coefficient is as follows:</span>
 

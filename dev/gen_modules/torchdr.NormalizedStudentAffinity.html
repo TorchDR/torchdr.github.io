@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NormalizedGaussianAffinity &mdash; TorchDR 0.0.0-alpha documentation</title>
+  <title>NormalizedStudentAffinity &mdash; TorchDR 0.0.0-alpha documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
@@ -28,8 +28,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="NormalizedStudentAffinity" href="torchdr.NormalizedStudentAffinity.html" />
-    <link rel="prev" title="ScalarProductAffinity" href="torchdr.ScalarProductAffinity.html" /> 
+    <link rel="next" title="SelfTuningAffinity" href="torchdr.SelfTuningAffinity.html" />
+    <link rel="prev" title="NormalizedGaussianAffinity" href="torchdr.NormalizedGaussianAffinity.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -95,9 +95,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../all.html">API and Modules</a></li>
-      <li class="breadcrumb-item active">NormalizedGaussianAffinity</li>
+      <li class="breadcrumb-item active">NormalizedStudentAffinity</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/gen_modules/torchdr.NormalizedGaussianAffinity.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/gen_modules/torchdr.NormalizedStudentAffinity.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -105,21 +105,23 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="normalizedgaussianaffinity">
-<h1>NormalizedGaussianAffinity<a class="headerlink" href="#normalizedgaussianaffinity" title="Link to this heading"></a></h1>
+  <section id="normalizedstudentaffinity">
+<h1>NormalizedStudentAffinity<a class="headerlink" href="#normalizedstudentaffinity" title="Link to this heading"></a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="torchdr.NormalizedGaussianAffinity">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchdr.</span></span><span class="sig-name descname"><span class="pre">NormalizedGaussianAffinity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'sqeuclidean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zero_diag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keops</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalization_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(0,</span> <span class="pre">1)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/affinity/entropic.html#NormalizedGaussianAffinity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.NormalizedGaussianAffinity" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="torchdr.NormalizedStudentAffinity">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchdr.</span></span><span class="sig-name descname"><span class="pre">NormalizedStudentAffinity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">degrees_of_freedom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'sqeuclidean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zero_diag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keops</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalization_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(0,</span> <span class="pre">1)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/affinity/entropic.html#NormalizedStudentAffinity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.NormalizedStudentAffinity" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="../stubs/torchdr.LogAffinity.html#torchdr.LogAffinity" title="torchdr.affinity.base.LogAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">LogAffinity</span></code></a></p>
-<p>Compute the Gaussian affinity matrix which can be normalized along a dimension.</p>
-<p>The algorthm computes <span class="math notranslate nohighlight">\(\exp( - \mathbf{C} / \sigma)\)</span>
-where <span class="math notranslate nohighlight">\(\mathbf{C}\)</span> is the pairwise distance matrix and
-<span class="math notranslate nohighlight">\(\sigma\)</span> is the bandwidth parameter. The affinity can be normalized
+<p>Compute the Student affinity matrix which can be normalized along a dimension.</p>
+<p>Its expression is given by:</p>
+<div class="math notranslate nohighlight">
+\[\left(1 + \frac{\mathbf{C}}{\nu}\right)^{-\frac{\nu + 1}{2}}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\nu &gt; 0\)</span> is the degrees of freedom parameter.
+The affinity can be normalized
 according to the specified normalization dimension.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sigma</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><em>float</em></a><em>, </em><em>optional</em>) – Bandwidth parameter.</p></li>
+<li><p><strong>degrees_of_freedom</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a><em>, </em><em>optional</em>) – Degrees of freedom for the Student-t distribution.</p></li>
 <li><p><strong>metric</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a><em>, </em><em>optional</em>) – Metric to use for pairwise distances computation.</p></li>
 <li><p><strong>zero_diag</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to set the diagonal of the affinity matrix to zero.</p></li>
 <li><p><strong>device</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a><em>, </em><em>optional</em>) – Device to use for computations.</p></li>
@@ -131,23 +133,14 @@ according to the specified normalization dimension.</p>
 </dl>
 </dd></dl>
 
-<section id="examples-using-normalizedgaussianaffinity">
-<span id="sphx-glr-backref-torchdr-normalizedgaussianaffinity"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">NormalizedGaussianAffinity</span></code>:<a class="headerlink" href="#examples-using-normalizedgaussianaffinity" title="Link to this heading"></a></h2>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="We show the adaptivity property of entropic affinities on a toy simulated dataset with heterosc..."><img alt="" src="../_images/sphx_glr_demo_ea_adaptivity_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/affinities/demo_ea_adaptivity.html#sphx-glr-auto-examples-affinities-demo-ea-adaptivity-py"><span class="std std-ref">Entropic Affinities can adapt to varying noise levels</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Entropic Affinities can adapt to varying noise levels</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="We illustrate the basic usage of TorchDR with different Neighbor Embedding methods on the swiss..."><img alt="" src="../_images/sphx_glr_demo_ne_methods_affinity_matcher_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/basics/demo_ne_methods_affinity_matcher.html#sphx-glr-auto-examples-basics-demo-ne-methods-affinity-matcher-py"><span class="std std-ref">Comparison of different DR methods and the use of affinity matcher</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Comparison of different DR methods and the use of affinity matcher</div>
-</div></div></section>
-</section>
+<span class="target" id="sphx-glr-backref-torchdr-normalizedstudentaffinity"></span></section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="torchdr.ScalarProductAffinity.html" class="btn btn-neutral float-left" title="ScalarProductAffinity" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="torchdr.NormalizedStudentAffinity.html" class="btn btn-neutral float-right" title="NormalizedStudentAffinity" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="torchdr.NormalizedGaussianAffinity.html" class="btn btn-neutral float-left" title="NormalizedGaussianAffinity" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="torchdr.SelfTuningAffinity.html" class="btn btn-neutral float-right" title="SelfTuningAffinity" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

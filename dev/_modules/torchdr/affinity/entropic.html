@@ -913,11 +913,11 @@
 <div class="viewcode-block" id="NormalizedGaussianAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.NormalizedGaussianAffinity.html#torchdr.NormalizedGaussianAffinity">[docs]</a>
 <span class="k">class</span> <span class="nc">NormalizedGaussianAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Computes the Gaussian affinity matrix which can be normalized along a dimension.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the Gaussian affinity matrix which can be normalized along a dimension.</span>
 
 <span class="sd">    The algorthm computes :math:`\exp( - \mathbf{C} / \sigma)`</span>
-<span class="sd">    where : math: `\mathbf{C}` is the pairwise distance matrix and</span>
-<span class="sd">    : math: `\sigma` is the bandwidth parameter. The affinity can be normalized</span>
+<span class="sd">    where :math:`\mathbf{C}` is the pairwise distance matrix and</span>
+<span class="sd">    :math:`\sigma` is the bandwidth parameter. The affinity can be normalized</span>
 <span class="sd">    according to the specified normalization dimension.</span>
 
 <span class="sd">    Parameters</span>
@@ -990,18 +990,24 @@
 
 
 
+<div class="viewcode-block" id="NormalizedStudentAffinity">
+<a class="viewcode-back" href="../../../gen_modules/torchdr.NormalizedStudentAffinity.html#torchdr.NormalizedStudentAffinity">[docs]</a>
 <span class="k">class</span> <span class="nc">NormalizedStudentAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Computes the Student affinity matrix.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the Student affinity matrix which can be normalized along a dimension.</span>
 
-<span class="sd">    The formula is given by :math:`(1 + \mathbf{C} / \sigma) ^ {-1}`</span>
-<span class="sd">    where : math: `\mathbf{C}` is the pairwise distance matrix and</span>
-<span class="sd">    : math: `\sigma` is the bandwidth parameter. The affinity can be normalized</span>
+<span class="sd">    Its expression is given by:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \left(1 + \frac{\mathbf{C}}{\nu}\right)^{-\frac{\nu + 1}{2}}</span>
+
+<span class="sd">    where :math:`\nu &gt; 0` is the degrees of freedom parameter.</span>
+<span class="sd">    The affinity can be normalized</span>
 <span class="sd">    according to the specified normalization dimension.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    sigma : float, optional</span>
-<span class="sd">        Bandwidth parameter.</span>
+<span class="sd">    degrees_of_freedom : int, optional</span>
+<span class="sd">        Degrees of freedom for the Student-t distribution.</span>
 <span class="sd">    metric : str, optional</span>
 <span class="sd">        Metric to use for pairwise distances computation.</span>
 <span class="sd">    zero_diag : bool, optional</span>
@@ -1018,7 +1024,7 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">sigma</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">degrees_of_freedom</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
         <span class="n">zero_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
@@ -1033,7 +1039,7 @@
             <span class="n">keops</span><span class="o">=</span><span class="n">keops</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">degrees_of_freedom</span> <span class="o">=</span> <span class="n">degrees_of_freedom</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">normalization_dim</span> <span class="o">=</span> <span class="n">normalization_dim</span>
 
     <span class="k">def</span> <span class="nf">_compute_log_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
@@ -1052,7 +1058,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">C</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_matrix</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
-        <span class="n">log_affinity_matrix</span> <span class="o">=</span> <span class="o">-</span> <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">C</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span>
+        <span class="n">log_affinity_matrix</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="o">-</span><span class="mf">0.5</span>
+            <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">degrees_of_freedom</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="o">*</span> <span class="p">(</span><span class="n">C</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">degrees_of_freedom</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">log</span><span class="p">()</span>
+        <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalization_dim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log_normalization_</span> <span class="o">=</span> <span class="n">logsumexp_red</span><span class="p">(</span>
@@ -1064,7 +1074,8 @@
             <span class="n">n_samples_in</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">log_affinity_matrix</span> <span class="o">-=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">n_samples_in</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">log_affinity_matrix</span>
+        <span class="k">return</span> <span class="n">log_affinity_matrix</span></div>
+
 </pre></div>
 
            </div>

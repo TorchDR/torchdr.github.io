@@ -24,10 +24,14 @@ PCA via SVD and via AffinityMatcher
 We show how to compute a PCA embedding using the closed form
 and using the AffinityMatcher class. Both approaches lead to the same solution.
 
-.. GENERATED FROM PYTHON SOURCE LINES 9-16
+.. GENERATED FROM PYTHON SOURCE LINES 9-20
 
 .. code-block:: Python
 
+
+    # Author: Hugues Van Assel <vanasselhugues@gmail.com>
+    #
+    # License: BSD 3-Clause License
 
     import matplotlib.pyplot as plt
     from sklearn.datasets import load_digits
@@ -42,14 +46,14 @@ and using the AffinityMatcher class. Both approaches lead to the same solution.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 17-21
+.. GENERATED FROM PYTHON SOURCE LINES 21-25
 
 Load toy images
 ---------------
 
 First, let's load 5 classes of the digits dataset from sklearn.
 
-.. GENERATED FROM PYTHON SOURCE LINES 21-26
+.. GENERATED FROM PYTHON SOURCE LINES 25-30
 
 .. code-block:: Python
 
@@ -65,7 +69,7 @@ First, let's load 5 classes of the digits dataset from sklearn.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 27-33
+.. GENERATED FROM PYTHON SOURCE LINES 31-37
 
 PCA via SVD
 -----------
@@ -74,7 +78,7 @@ Let us perform PCA using the closed form solution given by the
 Singular Value Decomposition (SVD).
 In ``Torchdr``, it is available at :class:`torchdr.PCA`.
 
-.. GENERATED FROM PYTHON SOURCE LINES 33-42
+.. GENERATED FROM PYTHON SOURCE LINES 37-46
 
 .. code-block:: Python
 
@@ -96,16 +100,10 @@ In ``Torchdr``, it is available at :class:`torchdr.PCA`.
    :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-    [TorchDR] Fitting DR model PCA ...
 
 
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 43-52
+.. GENERATED FROM PYTHON SOURCE LINES 47-56
 
 PCA via AffinityMatcher
 -----------------------
@@ -117,7 +115,7 @@ as well as the scalar product affinity
 for both input data and embeddings,
 and the square loss as global objective.
 
-.. GENERATED FROM PYTHON SOURCE LINES 52-71
+.. GENERATED FROM PYTHON SOURCE LINES 56-75
 
 .. code-block:: Python
 
@@ -152,7 +150,7 @@ and the square loss as global objective.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 72-74
+.. GENERATED FROM PYTHON SOURCE LINES 76-78
 
 We can see that we obtain the same PCA embedding (up to a rotation) using
 both methods.
@@ -160,7 +158,7 @@ both methods.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 5.377 seconds)
+   **Total running time of the script:** (0 minutes 17.139 seconds)
 
 
 .. _sphx_glr_download_auto_examples_basics_demo_pca_via_affinity_matcher.py:

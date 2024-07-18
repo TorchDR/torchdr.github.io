@@ -66,7 +66,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="demo_tsne_swiss_roll.html">TSNE embedding of the swiss roll dataset</a></li>
-<li class="toctree-l3"><a class="reference internal" href="demo_ne_methods_affinity_matcher.html">Comparison of different DR methods and the use of affinity matcher</a></li>
+<li class="toctree-l3"><a class="reference internal" href="demo_ne_methods_affinity_matcher.html">Neighbor Embedding on genomics &amp; equivalent affinity matcher formulation</a></li>
 </ul>
 </li>
 </ul>
@@ -109,7 +109,11 @@ to download the full example code.</p>
 <span id="sphx-glr-auto-examples-basics-demo-pca-via-affinity-matcher-py"></span><h1>PCA via SVD and via AffinityMatcher<a class="headerlink" href="#pca-via-svd-and-via-affinitymatcher" title="Link to this heading"></a></h1>
 <p>We show how to compute a PCA embedding using the closed form
 and using the AffinityMatcher class. Both approaches lead to the same solution.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Author: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD 3-Clause License</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">load_digits</span>
 
 <span class="kn">from</span> <span class="nn">torchdr.spectral</span> <span class="kn">import</span> <a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">PCA</span></a>
@@ -138,10 +142,7 @@ In <code class="docutils literal notranslate"><span class="pre">Torchdr</span></
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_demo_pca_via_affinity_matcher_001.png" srcset="../../_images/sphx_glr_demo_pca_via_affinity_matcher_001.png" alt="PCA via SVD" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[TorchDR] Fitting DR model PCA ...
-</pre></div>
-</div>
-</section>
+<img src="../../_images/sphx_glr_demo_pca_via_affinity_matcher_001.png" srcset="../../_images/sphx_glr_demo_pca_via_affinity_matcher_001.png" alt="PCA via SVD" class = "sphx-glr-single-img"/></section>
 <section id="pca-via-affinitymatcher">
 <h2>PCA via AffinityMatcher<a class="headerlink" href="#pca-via-affinitymatcher" title="Link to this heading"></a></h2>
 <p>Now, let us perform PCA using the AffinityMatcher class
@@ -170,7 +171,7 @@ and the square loss as global objective.</p>
 </div>
 <img src="../../_images/sphx_glr_demo_pca_via_affinity_matcher_002.png" srcset="../../_images/sphx_glr_demo_pca_via_affinity_matcher_002.png" alt="PCA via AffinityMatcher" class = "sphx-glr-single-img"/><p>We can see that we obtain the same PCA embedding (up to a rotation) using
 both methods.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.377 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 17.139 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-basics-demo-pca-via-affinity-matcher-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/01119b09b904483a657e921d21bc15d1/demo_pca_via_affinity_matcher.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">demo_pca_via_affinity_matcher.ipynb</span></code></a></p>

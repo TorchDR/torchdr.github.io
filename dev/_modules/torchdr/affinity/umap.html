@@ -253,10 +253,11 @@
         <span class="n">n_neighbors</span> <span class="o">=</span> <span class="n">_check_n_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span><span class="p">,</span> <span class="n">n_samples_in</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sparsity</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span>
-                <span class="s2">&quot;[TorchDR] Affinity : sparsity mode enabled, computing &quot;</span>
-                <span class="s2">&quot;nearest neighbors.&quot;</span>
-            <span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="s2">&quot;[TorchDR] Affinity : sparsity mode enabled, computing &quot;</span>
+                    <span class="s2">&quot;nearest neighbors.&quot;</span>
+                <span class="p">)</span>
             <span class="c1"># when using sparsity, we construct a reduced distance matrix</span>
             <span class="c1"># of shape (n_samples, n_neighbors)</span>
             <span class="n">C_</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">kmin</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">n_neighbors</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>

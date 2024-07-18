@@ -106,18 +106,11 @@ to download the full example code.</p>
 <span id="sphx-glr-auto-examples-affinities-demo-ea-adaptivity-py"></span><h1>Entropic Affinities can adapt to varying noise levels<a class="headerlink" href="#entropic-affinities-can-adapt-to-varying-noise-levels" title="Link to this heading"></a></h1>
 <p>We show the adaptivity property of entropic affinities on a toy
 simulated dataset with heteroscedastic noise.</p>
-<p>We use the following modules from <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code>:</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="../../gen_modules/torchdr.NormalizedGaussianAffinity.html#torchdr.NormalizedGaussianAffinity" title="torchdr.NormalizedGaussianAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchdr.NormalizedGaussianAffinity</span></code></a>([sigma, ...])</p></td>
-<td><p>Compute the Gaussian affinity matrix which can be normalized along a dimension.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../../gen_modules/torchdr.EntropicAffinity.html#torchdr.EntropicAffinity" title="torchdr.EntropicAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchdr.EntropicAffinity</span></code></a>([perplexity, tol, ...])</p></td>
-<td><p>Solve the directed entropic affinity problem introduced in <a href="#id2"><span class="problematic" id="id1">[1]_</span></a>.</p></td>
-</tr>
-</tbody>
-</table>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Author: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD 3-Clause License</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">cm</span>
 
@@ -218,7 +211,7 @@ the <code class="docutils literal notranslate"><span class="pre">perplexity</spa
 <img src="../../_images/sphx_glr_demo_ea_adaptivity_002.png" srcset="../../_images/sphx_glr_demo_ea_adaptivity_002.png" alt="Entropic Affinity Matrix, Entropic Affinity Graph" class = "sphx-glr-single-img"/><p>We can now observe a <strong>homogeneous density of connections</strong> across clusters.
 Thus, the entropic affinity effectively filters out the various noise levels.</p>
 <p>This affinity is an important component of the <strong>TSNE</strong> algorithm.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.184 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.045 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-affinities-demo-ea-adaptivity-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/17d429f11ca029172465ca0d7bb1879e/demo_ea_adaptivity.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">demo_ea_adaptivity.ipynb</span></code></a></p>

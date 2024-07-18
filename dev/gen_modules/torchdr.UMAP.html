@@ -129,7 +129,7 @@ affinity <span class="math notranslate nohighlight">\(\mathbf{Q}\)</span>.</p>
 <li><p><strong>optimizer_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="(in Python v3.4)"><em>dict</em></a><em>, </em><em>optional</em>) – Arguments for the optimizer, by default None.</p></li>
 <li><p><strong>scheduler</strong> (<em>{'constant'</em><em>, </em><em>'linear'}</em><em>, </em><em>optional</em>) – Learning rate scheduler.</p></li>
 <li><p><strong>scheduler_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="(in Python v3.4)"><em>dict</em></a><em>, </em><em>optional</em>) – Arguments for the scheduler, by default None.</p></li>
-<li><p><strong>init</strong> (<em>{'random'</em><em>, </em><em>'pca'}</em><em> or </em><a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><em>torch.Tensor</em></a><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>output_dim</em><em>)</em><em>, </em><em>optional</em>) – Initialization for the embedding Z, default ‘pca’.</p></li>
+<li><p><strong>init</strong> (<em>{'normal'</em><em>, </em><em>'pca'}</em><em> or </em><a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><em>torch.Tensor</em></a><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>output_dim</em><em>)</em><em>, </em><em>optional</em>) – Initialization for the embedding Z, default ‘pca’.</p></li>
 <li><p><strong>init_scaling</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><em>float</em></a><em>, </em><em>optional</em>) – Scaling factor for the initialization, by default 1e-4.</p></li>
 <li><p><strong>tol</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><em>float</em></a><em>, </em><em>optional</em>) – Precision threshold at which the algorithm stops, by default 1e-7.</p></li>
 <li><p><strong>max_iter</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a><em>, </em><em>optional</em>) – Number of maximum iterations for the descent algorithm. by default 2000.</p></li>
@@ -167,7 +167,13 @@ Advances in Neural Information Processing Systems 34 (NeurIPS).</p>
 </aside>
 </dd></dl>
 
-<span class="target" id="sphx-glr-backref-torchdr-umap"></span></section>
+<section id="examples-using-umap">
+<span id="sphx-glr-backref-torchdr-umap"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">UMAP</span></code>:<a class="headerlink" href="#examples-using-umap" title="Link to this heading"></a></h2>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="We illustrate the basic usage of TorchDR with different DR methods on the swiss roll dataset."><img alt="" src="../_images/sphx_glr_demo_dr_methods_affinity_matcher_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/basics/demo_dr_methods_affinity_matcher.html#sphx-glr-auto-examples-basics-demo-dr-methods-affinity-matcher-py"><span class="std std-ref">Comparison of different DR methods and the use of affinity matcher</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Comparison of different DR methods and the use of affinity matcher</div>
+</div></div></section>
+</section>
 
 
            </div>

@@ -134,7 +134,7 @@
 <span class="sd">    input affinity matrix and :math:`\mathbf{A_Z}` is the affinity matrix of the</span>
 <span class="sd">    embedding.</span>
 
-<span class="sd">    The embedding optimization is performed using a first-order optimization method, with gradients calculated through PyTorch&#39;s automatic differentiation.</span>
+<span class="sd">    The embedding optimization is performed using a first-order optimization method, with gradients calculated via PyTorch&#39;s automatic differentiation.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -262,8 +262,9 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        X : torch.Tensor or np.ndarray</span>
-<span class="sd">            Input data of shape (n_samples, n_features).</span>
+<span class="sd">        X : torch.Tensor or np.ndarray of shape (n_samples, n_features)</span>
+<span class="sd">            or (n_samples, n_samples) if precomputed is True</span>
+<span class="sd">            Input data.</span>
 <span class="sd">        y : None</span>
 <span class="sd">            Ignored.</span>
 
@@ -283,8 +284,9 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        X : torch.Tensor or np.ndarray</span>
-<span class="sd">            Input data of shape (n_samples, n_features).</span>
+<span class="sd">        X : torch.Tensor or np.ndarray of shape (n_samples, n_features)</span>
+<span class="sd">            or (n_samples, n_samples) if precomputed is True</span>
+<span class="sd">            Input data.</span>
 <span class="sd">        y : None</span>
 <span class="sd">            Ignored.</span>
 
@@ -293,7 +295,7 @@
 <span class="sd">        self : AffinityMatcher</span>
 <span class="sd">            The fitted AffinityMatcher instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 

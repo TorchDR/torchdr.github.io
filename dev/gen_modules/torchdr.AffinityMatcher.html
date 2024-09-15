@@ -116,7 +116,7 @@
 <p>where <span class="math notranslate nohighlight">\(\mathcal{L}\)</span> is a loss function, <span class="math notranslate nohighlight">\(\mathbf{A_X}\)</span> is the
 input affinity matrix and <span class="math notranslate nohighlight">\(\mathbf{A_Z}\)</span> is the affinity matrix of the
 embedding.</p>
-<p>The embedding optimization is performed using a first-order optimization method, with gradients calculated through PyTorch’s automatic differentiation.</p>
+<p>The embedding optimization is performed using a first-order optimization method, with gradients calculated via PyTorch’s automatic differentiation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -148,7 +148,8 @@ embedding.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><em>torch.Tensor</em></a><em> or </em><em>np.ndarray</em>) – Input data of shape (n_samples, n_features).</p></li>
+<li><p><strong>X</strong> (<a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><em>torch.Tensor</em></a><em> or </em><em>np.ndarray</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – or (n_samples, n_samples) if precomputed is True
+Input data.</p></li>
 <li><p><strong>y</strong> (<em>None</em>) – Ignored.</p></li>
 </ul>
 </dd>
@@ -168,7 +169,8 @@ embedding.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><em>torch.Tensor</em></a><em> or </em><em>np.ndarray</em>) – Input data of shape (n_samples, n_features).</p></li>
+<li><p><strong>X</strong> (<a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><em>torch.Tensor</em></a><em> or </em><em>np.ndarray</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – or (n_samples, n_samples) if precomputed is True
+Input data.</p></li>
 <li><p><strong>y</strong> (<em>None</em>) – Ignored.</p></li>
 </ul>
 </dd>
@@ -191,7 +193,7 @@ embedding.</p>
 </div><div class="sphx-glr-thumbcontainer" tooltip="We show how to compute a TSNE embedding with TorchDR on the swiss roll dataset."><img alt="" src="../_images/sphx_glr_demo_tsne_swiss_roll_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/basics/demo_tsne_swiss_roll.html#sphx-glr-auto-examples-basics-demo-tsne-swiss-roll-py"><span class="std std-ref">TSNE embedding of the swiss roll dataset</span></a></p>
   <div class="sphx-glr-thumbnail-title">TSNE embedding of the swiss roll dataset</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="We illustrate the basic usage of TorchDR with different Neighbor Embedding methods on the SNARE-seq gene expression dataset with given cell types labels."><img alt="" src="../_images/sphx_glr_demo_ne_methods_affinity_matcher_thumb.png" />
+</div><div class="sphx-glr-thumbcontainer" tooltip="We illustrate the basic usage of TorchDR with different neighbor embedding methods on the SNARE-seq gene expression dataset with given cell type labels."><img alt="" src="../_images/sphx_glr_demo_ne_methods_affinity_matcher_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/basics/demo_ne_methods_affinity_matcher.html#sphx-glr-auto-examples-basics-demo-ne-methods-affinity-matcher-py"><span class="std std-ref">Neighbor Embedding on genomics &amp; equivalent affinity matcher formulation</span></a></p>
   <div class="sphx-glr-thumbnail-title">Neighbor Embedding on genomics & equivalent affinity matcher formulation</div>
 </div></div></section>

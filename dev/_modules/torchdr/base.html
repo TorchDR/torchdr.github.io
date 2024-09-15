@@ -91,14 +91,16 @@
 <span class="c1"># License: BSD 3-Clause License</span>
 
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
-<span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="kn">import</span> <span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">TransformerMixin</span>
+<span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="kn">import</span> <span class="n">BaseEstimator</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">from</span> <span class="nn">torchdr.utils</span> <span class="kn">import</span> <span class="n">to_torch</span><span class="p">,</span> <span class="n">pykeops</span>
 
 
 <div class="viewcode-block" id="DRModule">
 <a class="viewcode-back" href="../../stubs/torchdr.DRModule.html#torchdr.DRModule">[docs]</a>
-<span class="k">class</span> <span class="nc">DRModule</span><span class="p">(</span><span class="n">TransformerMixin</span><span class="p">,</span> <span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">DRModule</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for DR methods.</span>
 
 <span class="sd">    Each children class should implement the fit method.</span>
@@ -141,7 +143,7 @@
 <div class="viewcode-block" id="DRModule.fit">
 <a class="viewcode-back" href="../../stubs/torchdr.DRModule.html#torchdr.DRModule.fit">[docs]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Fit the dimensionality reduction model.</span>
 
 <span class="sd">        This method must be overridden by subclasses. This base implementation</span>
@@ -150,7 +152,7 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        X : array-like object of shape (n_samples, n_features)</span>
+<span class="sd">        X : torch.Tensor or np.ndarray of shape (n_samples, n_features)</span>
 <span class="sd">            or (n_samples, n_samples) if precomputed is True</span>
 <span class="sd">            Input data or input affinity matrix if it is precomputed.</span>
 <span class="sd">        y : None</span>
@@ -158,14 +160,37 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        self : object</span>
-<span class="sd">            Fitted Estimator.</span>
+<span class="sd">        X_torch : torch.Tensor</span>
+<span class="sd">            Input data as torch tensor</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[TorchDR] Fitting DR model </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> ...&quot;</span><span class="p">)</span>
 
-        <span class="n">X</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">X</span></div>
+        <span class="n">X_torch</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">X_torch</span></div>
+
+
+<div class="viewcode-block" id="DRModule.fit_transform">
+<a class="viewcode-back" href="../../stubs/torchdr.DRModule.html#torchdr.DRModule.fit_transform">[docs]</a>
+    <span class="k">def</span> <span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit the dimensionality reduction model and transform the input data.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : torch.Tensor or np.ndarray of shape (n_samples, n_features)</span>
+<span class="sd">            or (n_samples, n_samples) if precomputed is True</span>
+<span class="sd">            Input data or input affinity matrix if it is precomputed.</span>
+<span class="sd">        y : None</span>
+<span class="sd">            Ignored.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        NotImplementedError</span>
+<span class="sd">            This method should be overridden by subclasses.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;[TorchDR] ERROR : fit_transform method is not implemented.&quot;</span>
+        <span class="p">)</span></div>
 </div>
 
 </pre></div>

@@ -108,7 +108,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="torchdr.DRModule">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchdr.</span></span><span class="sig-name descname"><span class="pre">DRModule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_components</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keops</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/base.html#DRModule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.DRModule" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TransformerMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code>, <a class="reference external" href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="(in Python v3.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code>, <a class="reference external" href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="(in Python v3.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
 <p>Base class for DR methods.</p>
 <p>Each children class should implement the fit method.</p>
 <dl class="field-list simple">
@@ -124,7 +124,7 @@
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="torchdr.DRModule.fit">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/base.html#DRModule.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.DRModule.fit" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><span class="pre">Tensor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/base.html#DRModule.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.DRModule.fit" title="Link to this definition"></a></dt>
 <dd><p>Fit the dimensionality reduction model.</p>
 <p>This method must be overridden by subclasses. This base implementation
 only converts the input data <span class="math notranslate nohighlight">\(\mathbf{X}\)</span> to a torch tensor with
@@ -132,16 +132,34 @@ the right device.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>array-like object</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – or (n_samples, n_samples) if precomputed is True
+<li><p><strong>X</strong> (<a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><em>torch.Tensor</em></a><em> or </em><em>np.ndarray</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – or (n_samples, n_samples) if precomputed is True
 Input data or input affinity matrix if it is precomputed.</p></li>
 <li><p><strong>y</strong> (<em>None</em>) – Ignored.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>self</strong> – Fitted Estimator.</p>
+<dd class="field-even"><p><strong>X_torch</strong> – Input data as torch tensor</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#object" title="(in Python v3.4)">object</a></p>
+<dd class="field-odd"><p><a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchdr.DRModule.fit_transform">
+<span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><span class="pre">Tensor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/base.html#DRModule.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.DRModule.fit_transform" title="Link to this definition"></a></dt>
+<dd><p>Fit the dimensionality reduction model and transform the input data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><em>torch.Tensor</em></a><em> or </em><em>np.ndarray</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – or (n_samples, n_samples) if precomputed is True
+Input data or input affinity matrix if it is precomputed.</p></li>
+<li><p><strong>y</strong> (<em>None</em>) – Ignored.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.4/library/exceptions.html#NotImplementedError" title="(in Python v3.4)"><strong>NotImplementedError</strong></a> – This method should be overridden by subclasses.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -156,7 +174,7 @@ Input data or input affinity matrix if it is precomputed.</p></li>
 </div><div class="sphx-glr-thumbcontainer" tooltip="We show how to compute a TSNE embedding with TorchDR on the swiss roll dataset."><img alt="" src="../_images/sphx_glr_demo_tsne_swiss_roll_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/basics/demo_tsne_swiss_roll.html#sphx-glr-auto-examples-basics-demo-tsne-swiss-roll-py"><span class="std std-ref">TSNE embedding of the swiss roll dataset</span></a></p>
   <div class="sphx-glr-thumbnail-title">TSNE embedding of the swiss roll dataset</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="We illustrate the basic usage of TorchDR with different Neighbor Embedding methods on the SNARE-seq gene expression dataset with given cell types labels."><img alt="" src="../_images/sphx_glr_demo_ne_methods_affinity_matcher_thumb.png" />
+</div><div class="sphx-glr-thumbcontainer" tooltip="We illustrate the basic usage of TorchDR with different neighbor embedding methods on the SNARE-seq gene expression dataset with given cell type labels."><img alt="" src="../_images/sphx_glr_demo_ne_methods_affinity_matcher_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/basics/demo_ne_methods_affinity_matcher.html#sphx-glr-auto-examples-basics-demo-ne-methods-affinity-matcher-py"><span class="std std-ref">Neighbor Embedding on genomics &amp; equivalent affinity matcher formulation</span></a></p>
   <div class="sphx-glr-thumbnail-title">Neighbor Embedding on genomics & equivalent affinity matcher formulation</div>
 </div></div></section>

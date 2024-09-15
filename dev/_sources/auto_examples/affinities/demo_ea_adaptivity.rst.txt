@@ -54,7 +54,7 @@ simulated dataset with heteroscedastic noise.
 We generate three Gaussian clusters of points with different standard deviations
 (respectively std=1, 2 and 3).
 
-.. GENERATED FROM PYTHON SOURCE LINES 26-54
+.. GENERATED FROM PYTHON SOURCE LINES 26-55
 
 .. code-block:: Python
 
@@ -76,13 +76,14 @@ We generate three Gaussian clusters of points with different standard deviations
 
 
     def plot_affinity_graph(G):
+        m = G.max().item()
         for i in range(3 * n_cluster):
             for j in range(i):
                 plt.plot(
                     [X[i, 0], X[j, 0]],
                     [X[i, 1], X[j, 1]],
                     color="black",
-                    alpha=G[i, j].item(),
+                    alpha=G[i, j].item() / m,
                 )
 
 
@@ -93,7 +94,7 @@ We generate three Gaussian clusters of points with different standard deviations
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 55-67
+.. GENERATED FROM PYTHON SOURCE LINES 56-68
 
 Row-normalised Gaussian affinity with constant bandwidth
 --------------------------------------------------------
@@ -108,7 +109,7 @@ In ``TorchDR``, we can easily implement it using
 parameter ``normalization_dim=1``.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 67-85
+.. GENERATED FROM PYTHON SOURCE LINES 68-86
 
 .. code-block:: Python
 
@@ -142,14 +143,14 @@ parameter ``normalization_dim=1``.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 86-90
+.. GENERATED FROM PYTHON SOURCE LINES 87-91
 
 We can observe a remarkable **heterogeneity in the density of connections**.
 This occurs because it is less costly to create connections in high-density regions.
 As a consequence, points in sparse regions create very few connections with
 their neighbors.
 
-.. GENERATED FROM PYTHON SOURCE LINES 92-103
+.. GENERATED FROM PYTHON SOURCE LINES 93-104
 
 Entropic affinity (adaptive bandwidth)
 --------------------------------------
@@ -163,7 +164,7 @@ the ``perplexity`` parameter) regardless of the local density around it.
 In ``TorchDR``, this object is available here :
 :class:`torchdr.EntropicAffinity`.
 
-.. GENERATED FROM PYTHON SOURCE LINES 103-122
+.. GENERATED FROM PYTHON SOURCE LINES 104-123
 
 .. code-block:: Python
 
@@ -198,7 +199,7 @@ In ``TorchDR``, this object is available here :
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 123-128
+.. GENERATED FROM PYTHON SOURCE LINES 124-129
 
 We can now observe a **homogeneous density of connections** across clusters.
 Thus, the entropic affinity effectively filters out the various noise levels.
@@ -209,7 +210,7 @@ This affinity is an important component of the **TSNE** algorithm.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.995 seconds)
+   **Total running time of the script:** (0 minutes 2.923 seconds)
 
 
 .. _sphx_glr_download_auto_examples_affinities_demo_ea_adaptivity.py:

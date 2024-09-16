@@ -403,7 +403,9 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">lr_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr</span>
 
-    <span class="k">def</span> <span class="nf">_set_scheduler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_set_scheduler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_iter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">n_iter</span> <span class="o">=</span> <span class="n">n_iter</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;optimizer_&quot;</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;[TorchDR] ERROR : optimizer not set. &quot;</span>
@@ -413,6 +415,22 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="o">==</span> <span class="s2">&quot;constant&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">ConstantLR</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">total_iters</span><span class="o">=</span><span class="mi">0</span>
+            <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
+            <span class="n">linear_decay</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">epoch</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">epoch</span> <span class="o">/</span> <span class="n">n_iter</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">LambdaLR</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_</span><span class="p">,</span> <span class="n">lr_lambda</span><span class="o">=</span><span class="n">linear_decay</span>
+            <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="o">==</span> <span class="s2">&quot;cosine&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">CosineAnnealingLR</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_</span><span class="p">,</span> <span class="n">T_max</span><span class="o">=</span><span class="n">n_iter</span>
+            <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;[TorchDR] ERROR : scheduler </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="si">}</span><span class="s2"> not supported.&quot;</span>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_</span>

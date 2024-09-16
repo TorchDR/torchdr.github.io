@@ -152,7 +152,6 @@
 
     <span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">max_iter</span><span class="p">),</span> <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">verbose</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">pbar</span><span class="p">:</span>
-
         <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">fm</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
             <span class="k">break</span>
 
@@ -166,10 +165,8 @@
             <span class="n">mean_f</span> <span class="o">=</span> <span class="n">fm</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
             <span class="n">std_f</span> <span class="o">=</span> <span class="n">fm</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
             <span class="n">pbar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;|f| mean : </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">mean_f</span><span class="p">)</span><span class="si">:</span><span class="s2"> .2e</span><span class="si">}</span><span class="s2">, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;|f| std : </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">std_f</span><span class="p">)</span><span class="si">:</span><span class="s2"> .2e</span><span class="si">}</span><span class="s2">, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;begin mean : </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">begin</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">())</span><span class="si">:</span><span class="s2"> .2e</span><span class="si">}</span><span class="s2">, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;end mean : </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">end</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">())</span><span class="si">:</span><span class="s2"> .2e</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="s2">&quot;[TorchDR] Root search : &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;mean abs value = </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">mean_f</span><span class="p">)</span><span class="si">:</span><span class="s2"> .2e</span><span class="si">}</span><span class="s2"> (std = </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">std_f</span><span class="p">)</span><span class="si">:</span><span class="s2"> .2e</span><span class="si">}</span><span class="s2">) &quot;</span>
             <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">m</span></div>
@@ -234,7 +231,6 @@
 
     <span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">max_iter</span><span class="p">),</span> <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">verbose</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">pbar</span><span class="p">:</span>
-
         <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">fm</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
             <span class="k">break</span>
 
@@ -250,10 +246,8 @@
             <span class="n">mean_f</span> <span class="o">=</span> <span class="n">fm</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
             <span class="n">std_f</span> <span class="o">=</span> <span class="n">fm</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
             <span class="n">pbar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;|f| mean : </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">mean_f</span><span class="p">)</span><span class="si">:</span><span class="s2"> .2e</span><span class="si">}</span><span class="s2">, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;|f| std : </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">std_f</span><span class="p">)</span><span class="si">:</span><span class="s2"> .2e</span><span class="si">}</span><span class="s2">, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;begin mean : </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">begin</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">())</span><span class="si">:</span><span class="s2"> .2e</span><span class="si">}</span><span class="s2">, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;end mean : </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">end</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">())</span><span class="si">:</span><span class="s2"> .2e</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="s2">&quot;[TorchDR] Root search : &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;mean abs value = </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">mean_f</span><span class="p">)</span><span class="si">:</span><span class="s2"> .2e</span><span class="si">}</span><span class="s2"> (std = </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">std_f</span><span class="p">)</span><span class="si">:</span><span class="s2"> .2e</span><span class="si">}</span><span class="s2">) &quot;</span>
             <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">m</span></div>
@@ -302,8 +296,11 @@
         <span class="n">out_end</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">end</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span>
         <span class="n">eval_counter</span> <span class="o">+=</span> <span class="mi">1</span>
 
-    <span class="k">if</span> <span class="n">eval_counter</span> <span class="ow">and</span> <span class="n">verbose</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[TorchDR] </span><span class="si">{</span><span class="n">eval_counter</span><span class="si">}</span><span class="s2"> evaluations to set bounds of the root search.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">eval_counter</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;[TorchDR] </span><span class="si">{</span><span class="n">eval_counter</span><span class="si">}</span><span class="s2"> evaluation(s) to set the bounds &quot;</span>
+            <span class="s2">&quot;of the root search.&quot;</span>
+        <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">begin</span><span class="p">,</span> <span class="n">end</span>
 </pre></div>

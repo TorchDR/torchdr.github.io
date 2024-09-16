@@ -139,12 +139,12 @@
             <span class="sa">f</span><span class="s2">&quot;[TorchDR] ERROR : Input has less than one sample : n_samples = </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">.&quot;</span>
         <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">n_neighbors</span> <span class="o">&gt;=</span> <span class="n">n</span> <span class="ow">or</span> <span class="n">n_neighbors</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">n_neighbors</span> <span class="o">&gt;=</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">n_neighbors</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">new_value</span> <span class="o">=</span> <span class="n">n</span> <span class="o">//</span> <span class="mi">2</span>
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                 <span class="s2">&quot;[TorchDR] WARNING : The n_neighbors parameter must be greater than &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;1 and smaller than the number of samples (here n = </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">). &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;1 and smaller than the number of samples - 1 (here </span><span class="si">{</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="si">}</span><span class="s2">). &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;Got n_neighbors = </span><span class="si">{</span><span class="n">n_neighbors</span><span class="si">}</span><span class="s2">. Setting n_neighbors to </span><span class="si">{</span><span class="n">new_value</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">new_value</span>

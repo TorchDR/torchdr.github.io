@@ -414,15 +414,22 @@
         <span class="n">perplexity</span> <span class="o">=</span> <span class="n">_check_perplexity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span><span class="p">,</span> <span class="n">n_samples_in</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
         <span class="n">target_entropy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">perplexity</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
 
+        <span class="n">k</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">perplexity</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sparsity</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">&gt;=</span> <span class="n">n_samples_in</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span>
-                    <span class="s2">&quot;[TorchDR] Affinity : sparsity mode enabled, computing &quot;</span>
-                    <span class="s2">&quot;nearest neighbors.&quot;</span>
+                    <span class="s2">&quot;[TorchDR] WARNING Affinity: sparsity mode disabled &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;because perplexity is too large. 3 x perplexity = </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> &quot;</span>
+                    <span class="s2">&quot;&gt;= n_samples - 1.&quot;</span>
                 <span class="p">)</span>
-            <span class="c1"># when using sparsity, we construct a reduced distance matrix</span>
-            <span class="c1"># of shape (n_samples, k) where k is 3 * perplexity.</span>
-            <span class="n">C_</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">kmin</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">3</span> <span class="o">*</span> <span class="n">perplexity</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">C_</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">C</span><span class="p">,</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;[TorchDR] Affinity : sparsity mode enabled, computing </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> &quot;</span>
+                        <span class="s2">&quot;nearest neighbors.&quot;</span>
+                    <span class="p">)</span>
+                <span class="n">C_</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">kmin</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">C_</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">C</span><span class="p">,</span> <span class="kc">None</span>
 
@@ -597,7 +604,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">mu_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_samples_in</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">==</span> <span class="s2">&quot;LBFGS&quot;</span><span class="p">:</span>
-
             <span class="bp">self</span><span class="o">.</span><span class="n">eps_</span><span class="o">.</span><span class="n">requires_grad</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mu_</span><span class="o">.</span><span class="n">requires_grad</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -643,7 +649,6 @@
             <span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># other optimizers including SGD and Adam</span>
-
             <span class="n">optimizer</span> <span class="o">=</span> <span class="n">OPTIMIZERS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">]([</span><span class="bp">self</span><span class="o">.</span><span class="n">eps_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu_</span><span class="p">],</span> <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lr</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolog</span><span class="p">:</span>
@@ -879,7 +884,6 @@
         <span class="k">with</span> <span class="n">context_manager</span><span class="p">:</span>
             <span class="c1"># Sinkhorn iterations</span>
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">):</span>
-
                 <span class="c1"># well conditioned symmetric Sinkhorn iteration (Feydy et al. 2019)</span>
                 <span class="n">reduction</span> <span class="o">=</span> <span class="o">-</span><span class="n">sum_matrix_vector</span><span class="p">(</span><span class="n">log_K</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dual_</span><span class="p">)</span><span class="o">.</span><span class="n">logsumexp</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">dual_</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dual_</span> <span class="o">+</span> <span class="n">reduction</span><span class="p">)</span>

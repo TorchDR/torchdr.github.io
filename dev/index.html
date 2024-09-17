@@ -91,7 +91,7 @@
 <a class="reference internal image-reference" href="https://github.com/torchdr/torchdr/raw/main/docs/source/figures/torchdr_logo.png"><img alt="torchdr logo" class="align-center" src="https://github.com/torchdr/torchdr/raw/main/docs/source/figures/torchdr_logo.png" style="width: 800px;" /></a>
 <p><a class="reference external" href="https://pytorch.org/get-started/locally/"><img alt="Pytorch" src="https://img.shields.io/badge/PyTorch_1.8+-ee4c2c?logo=pytorch&amp;logoColor=white" /></a> <a class="reference external" href="https://www.python.org/downloads/release/python-3100/"><img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-blue" /></a> <a class="reference external" href="https://github.com/psf/black"><img alt="Black" src="https://img.shields.io/badge/code%20style-black-000000.svg" /></a> <img alt="Test Status" src="https://github.com/torchdr/torchdr/actions/workflows/testing.yml/badge.svg" /> <a class="reference external" href="https://codecov.io/gh/torchdr/torchdr"><img alt="codecov" src="https://codecov.io/gh/torchdr/torchdr/branch/main/graph/badge.svg" /></a> <a class="reference external" href="https://opensource.org/licenses/BSD-3-Clause"><img alt="License" src="https://img.shields.io/badge/License-BSD_3--Clause-blue.svg" /></a></p>
 <p>Github repository: <a class="reference external" href="https://github.com/torchdr/torchdr/">https://github.com/torchdr/torchdr/</a>.</p>
-<p>Documentation: <a class="reference external" href="https://torchdr.github.io/dev/">https://torchdr.github.io/dev/</a>.</p>
+<p>Documentation: <a class="reference external" href="https://torchdr.github.io/">https://torchdr.github.io/</a>.</p>
 <p>TorchDR is an open-source <strong>dimensionality reduction (DR)</strong> library using PyTorch. Its goal is to accelerate the development of new DR methods by providing a common simplified framework.</p>
 <p>DR aims to construct a <strong>low-dimensional representation (or embedding)</strong> of an input dataset that best preserves its <strong>geometry encoded via a pairwise affinity matrix</strong> . To this end, DR methods <strong>optimize the embedding</strong> such that its <strong>associated pairwise affinity matrix matches the input affinity</strong>. TorchDR provides a general framework for solving problems of this form. Defining a DR algorithm solely requires choosing or implementing an <em>Affinity</em> object for both input and embedding as well as an objective function.</p>
 <p>Benefits of TorchDR include:</p>
@@ -160,7 +160,11 @@ Here is an example of single cell embeddings using TorchDR, where the embeddings
 </section>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
-<p>The library is not yet available on PyPI. You can install it from the source code.</p>
+<p>You can install the toolbox through PyPI with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>torchdr
+</pre></div>
+</div>
+<p>To get the latest version, you can install it from the source code as follows:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/torchdr/torchdr
 </pre></div>
 </div>
@@ -173,7 +177,7 @@ Here is an example of single cell embeddings using TorchDR, where the embeddings
 <section id="citation">
 <h2>Citation<a class="headerlink" href="#citation" title="Link to this heading"></a></h2>
 <p>If you use TorchDR in your research, please cite the following reference:</p>
-<div class="highlight-apalike notranslate"><div class="highlight"><pre><span></span>Van Assel H., Courty N., Flamary R., Garivier A., Massias M., Vayer T.,Vincent-Cuaz C. TorchDR URL: https://torchdr.github.io/
+<div class="highlight-apalike notranslate"><div class="highlight"><pre><span></span>Van Assel H., Courty N., Flamary R., Garivier A., Massias M., Vayer T., Vincent-Cuaz C. TorchDR URL: https://torchdr.github.io/
 </pre></div>
 </div>
 <p>or in Bibtex format :</p>

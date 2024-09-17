@@ -57,7 +57,10 @@
 <li class="toctree-l1"><a class="reference internal" href="torchdr.user_guide.html">User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="all.html">API and Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">Gallery</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Releases</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Releases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#first-pre-release-0-1">First pre-release : 0.1</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="torchdr.contributing.html">How to Contribute</a></li>
 </ul>
 
@@ -85,8 +88,26 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-torchdr">
-<span id="releases"></span><span id="id1"></span><h1>Releases<a class="headerlink" href="#module-torchdr" title="Link to this heading"></a></h1>
+  <section id="releases">
+<h1>Releases<a class="headerlink" href="#releases" title="Link to this heading"></a></h1>
+<section id="first-pre-release-0-1">
+<h2>First pre-release : 0.1<a class="headerlink" href="#first-pre-release-0-1" title="Link to this heading"></a></h2>
+<p><em>17 Sep 2024</em></p>
+<p>It provides the following features:</p>
+<ul class="simple">
+<li><p>Multiple basic affinities, including scalar product, Gaussian, and Student kernels.</p></li>
+<li><p>Affinities based on k-NN normalizations such as Self-tuning affinities and MAGIC.</p></li>
+<li><p>Doubly stochastic affinities with entropic and quadratic projections.</p></li>
+<li><p>Adaptive affinities with entropy control (<em>entropic affinity</em>) and its symmetric version.</p></li>
+<li><p>Input and output affinities of UMAP.</p></li>
+<li><p>A template object <em>AffinityMatcher</em> to solve DR with gradient descent and any input and output affinities.</p></li>
+<li><p>Neighbor embedding methods like SNE, t-SNE, t-SNEkhorn, UMAP, LargeVis, and InfoTSNE.</p></li>
+<li><p>Template objects for neighbor embedding methods.</p></li>
+<li><p>Spectral embeddings via eigendecomposition of the input affinity matrix (when applicable).</p></li>
+<li><p>KeOps compatibility for all components, except spectral embeddings.</p></li>
+<li><p>Silhouette score.</p></li>
+</ul>
+</section>
 </section>
 
 

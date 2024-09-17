@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API and Modules &mdash; TorchDR 0.0.0-alpha documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=d2d258e8" />
+      <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+
+  
+    <link rel="shortcut icon" href="_static/logo.ico"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=8e37ee27"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script>window.MathJax = {"tex": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="PCA" href="gen_modules/torchdr.PCA.html" />
+    <link rel="prev" title="AffinityMatcher" href="stubs/torchdr.AffinityMatcher.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: white" >
+
+          
+          
+          <a href="index.html">
+            
+              <img src="_static/torchdr_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Torch Dimensionality Reduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.quick_start.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.user_guide.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API and Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dimensionality-reduction-sklearn-compatible-estimators">Dimensionality Reduction <code class="docutils literal notranslate"><span class="pre">sklearn</span></code> Compatible Estimators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#spectral-embedding">Spectral Embedding</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="gen_modules/torchdr.PCA.html">PCA</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gen_modules/torchdr.KernelPCA.html">KernelPCA</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#neighbor-embedding">Neighbor Embedding</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="gen_modules/torchdr.SNE.html">SNE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gen_modules/torchdr.TSNE.html">TSNE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gen_modules/torchdr.TSNEkhorn.html">TSNEkhorn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gen_modules/torchdr.InfoTSNE.html">InfoTSNE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gen_modules/torchdr.LargeVis.html">LargeVis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gen_modules/torchdr.UMAP.html">UMAP</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#advanced-dimensionality-reduction-with-torchdr">Advanced Dimensionality Reduction with TorchDR</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#base-classes">Base Classes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="gen_modules/torchdr.DRModule.html">DRModule</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gen_modules/torchdr.AffinityMatcher.html">AffinityMatcher</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#base-neighbor-embedding-modules">Base Neighbor Embedding Modules</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#affinity-classes">Affinity Classes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#simple-affinities">Simple Affinities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#affinities-normalized-by-knn-distances">Affinities Normalized by kNN Distances</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#entropic-affinities">Entropic Affinities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#quadratic-affinities">Quadratic Affinities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#umap-affinities">UMAP Affinities</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#utils">Utils</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="gen_modules/torchdr.pairwise_distances.html">pairwise_distances</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gen_modules/torchdr.binary_search.html">binary_search</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gen_modules/torchdr.false_position.html">false_position</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.releases.html">Releases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.contributing.html">How to Contribute</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: white" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">TorchDR</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">API and Modules</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/all.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-torchdr">
+<span id="id1"></span><span id="api-and-modules"></span><h1>API and Modules<a class="headerlink" href="#module-torchdr" title="Link to this heading"></a></h1>
+<section id="dimensionality-reduction-sklearn-compatible-estimators">
+<h2>Dimensionality Reduction <code class="docutils literal notranslate"><span class="pre">sklearn</span></code> Compatible Estimators<a class="headerlink" href="#dimensionality-reduction-sklearn-compatible-estimators" title="Link to this heading"></a></h2>
+<p>TorchDR provides a set of classes that are compatible with the <code class="docutils literal notranslate"><span class="pre">sklearn</span></code> API.
+For example, running <a class="reference internal" href="gen_modules/torchdr.TSNE.html#torchdr.TSNE" title="torchdr.TSNE"><code class="xref py py-class docutils literal notranslate"><span class="pre">TSNE</span></code></a> can be done in the exact same way as running
+<code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.manifold.TSNE</span></code> with the same parameters.
+Note that the TorchDR classes work seamlessly with both Numpy and PyTorch tensors.</p>
+<p>For all methods, TorchDR provides the ability to use GPU acceleration using
+<code class="docutils literal notranslate"><span class="pre">device='cuda'</span></code> as well as LazyTensor objects that allows to fit large scale models
+directly on the GPU memory without overflows using <code class="docutils literal notranslate"><span class="pre">keops=True</span></code>.</p>
+<p>TorchDR supports a variety of dimensionality reduction methods. They are presented in the following sections.</p>
+<section id="spectral-embedding">
+<h3>Spectral Embedding<a class="headerlink" href="#spectral-embedding" title="Link to this heading"></a></h3>
+<p>Those classes are used to perform classical spectral embedding from a
+<a class="reference internal" href="stubs/torchdr.Affinity.html#torchdr.Affinity" title="torchdr.Affinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.Affinity</span></code></a> object defined on the input data.
+They give the same output as using <a class="reference internal" href="stubs/torchdr.AffinityMatcher.html#torchdr.AffinityMatcher" title="torchdr.AffinityMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.AffinityMatcher</span></code></a> with this same
+<a class="reference internal" href="stubs/torchdr.Affinity.html#torchdr.Affinity" title="torchdr.Affinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.Affinity</span></code></a> in input space and a <a class="reference internal" href="gen_modules/torchdr.ScalarProductAffinity.html#torchdr.ScalarProductAffinity" title="torchdr.ScalarProductAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.ScalarProductAffinity</span></code></a> in
+the embedding space. However, <a class="reference internal" href="stubs/torchdr.AffinityMatcher.html#torchdr.AffinityMatcher" title="torchdr.AffinityMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.AffinityMatcher</span></code></a> relies on a
+gradient-based solver while the spectral embedding classes rely on the
+eigendecomposition of the affinity matrix.</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.PCA.html#torchdr.PCA" title="torchdr.PCA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PCA</span></code></a>([n_components, device, verbose, ...])</p></td>
+<td><p>Principal Component Analysis module.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.KernelPCA.html#torchdr.KernelPCA" title="torchdr.KernelPCA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">KernelPCA</span></code></a>(affinity, n_components, device, ...)</p></td>
+<td><p>Kernel Principal Component Analysis module.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="neighbor-embedding">
+<h3>Neighbor Embedding<a class="headerlink" href="#neighbor-embedding" title="Link to this heading"></a></h3>
+<p>TorchDR supports the following neighbor embedding methods.</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.SNE.html#torchdr.SNE" title="torchdr.SNE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SNE</span></code></a>([perplexity, n_components, lr, ...])</p></td>
+<td><p>Implementation of Stochastic Neighbor Embedding (SNE) introduced in <a class="footnote-reference brackets" href="#id15" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.TSNE.html#torchdr.TSNE" title="torchdr.TSNE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TSNE</span></code></a>([perplexity, n_components, lr, ...])</p></td>
+<td><p>Implementation of t-Stochastic Neighbor Embedding (t-SNE) introduced in <a class="footnote-reference brackets" href="#id16" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.TSNEkhorn.html#torchdr.TSNEkhorn" title="torchdr.TSNEkhorn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TSNEkhorn</span></code></a>([perplexity, n_components, lr, ...])</p></td>
+<td><p>Implementation of the TSNEkhorn algorithm introduced in <a class="footnote-reference brackets" href="#id17" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.InfoTSNE.html#torchdr.InfoTSNE" title="torchdr.InfoTSNE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InfoTSNE</span></code></a>([perplexity, n_components, lr, ...])</p></td>
+<td><p>Implementation of the InfoTSNE algorithm introduced in <a class="footnote-reference brackets" href="#id21" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>15<span class="fn-bracket">]</span></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.LargeVis.html#torchdr.LargeVis" title="torchdr.LargeVis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LargeVis</span></code></a>([perplexity, n_components, lr, ...])</p></td>
+<td><p>Implementation of the LargeVis algorithm introduced in <a class="footnote-reference brackets" href="#id20" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>13<span class="fn-bracket">]</span></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.UMAP.html#torchdr.UMAP" title="torchdr.UMAP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UMAP</span></code></a>([n_neighbors, n_components, min_dist, ...])</p></td>
+<td><p>Implementation of UMAP introduced in <a class="footnote-reference brackets" href="#id18" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></a> and further studied in <a class="footnote-reference brackets" href="#id19" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>12<span class="fn-bracket">]</span></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="advanced-dimensionality-reduction-with-torchdr">
+<h2>Advanced Dimensionality Reduction with TorchDR<a class="headerlink" href="#advanced-dimensionality-reduction-with-torchdr" title="Link to this heading"></a></h2>
+<p>TorchDR provides a set of generic classes that can be used to implement new
+dimensionality reduction methods. These classes provide a modular and extensible framework that allows you to focus on the core components of your method.</p>
+<section id="base-classes">
+<h3>Base Classes<a class="headerlink" href="#base-classes" title="Link to this heading"></a></h3>
+<p>The <a class="reference internal" href="stubs/torchdr.DRModule.html#torchdr.DRModule" title="torchdr.DRModule"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.DRModule</span></code></a> class is the base class for a dimensionality
+reduction estimator. It is the base class for all the DR classes in TorchDR.</p>
+<p><a class="reference internal" href="stubs/torchdr.AffinityMatcher.html#torchdr.AffinityMatcher" title="torchdr.AffinityMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.AffinityMatcher</span></code></a> is the base class for all the DR methods that
+use gradient-based optimization to minimize a loss function constructed from
+two affinities in input and embedding spaces.</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="stubs/torchdr.DRModule.html#torchdr.DRModule" title="torchdr.DRModule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DRModule</span></code></a>([n_components, device, keops, ...])</p></td>
+<td><p>Base class for DR methods.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="stubs/torchdr.AffinityMatcher.html#torchdr.AffinityMatcher" title="torchdr.AffinityMatcher"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AffinityMatcher</span></code></a>(affinity_in, affinity_out[, ...])</p></td>
+<td><p>Perform dimensionality reduction by matching two affinity matrices.</p></td>
+</tr>
+</tbody>
+</table>
+<section id="base-neighbor-embedding-modules">
+<h4>Base Neighbor Embedding Modules<a class="headerlink" href="#base-neighbor-embedding-modules" title="Link to this heading"></a></h4>
+<p>Neighbor embedding base modules inherit from the <a class="reference internal" href="stubs/torchdr.AffinityMatcher.html#torchdr.AffinityMatcher" title="torchdr.AffinityMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.AffinityMatcher</span></code></a>
+class and implement specific strategies that are common to all neighbor embedding
+methods such as early exaggeration.</p>
+<p>In particular, <a class="reference internal" href="gen_modules/torchdr.SparseNeighborEmbedding.html#torchdr.SparseNeighborEmbedding" title="torchdr.SparseNeighborEmbedding"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.SparseNeighborEmbedding</span></code></a> relies on the sparsity of the
+input affinity to compute the attractive term in linear time. <a class="reference internal" href="gen_modules/torchdr.SampledNeighborEmbedding.html#torchdr.SampledNeighborEmbedding" title="torchdr.SampledNeighborEmbedding"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.SampledNeighborEmbedding</span></code></a> inherits from this class and adds the possibility to
+approximate the repulsive term of the loss via negative samples.</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.NeighborEmbedding.html#torchdr.NeighborEmbedding" title="torchdr.NeighborEmbedding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NeighborEmbedding</span></code></a>(affinity_in, affinity_out)</p></td>
+<td><p>Solves the neighbor embedding problem.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.SparseNeighborEmbedding.html#torchdr.SparseNeighborEmbedding" title="torchdr.SparseNeighborEmbedding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SparseNeighborEmbedding</span></code></a>(affinity_in, ...[, ...])</p></td>
+<td><p>Solves the neighbor embedding problem with a sparse input affinity matrix.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.SampledNeighborEmbedding.html#torchdr.SampledNeighborEmbedding" title="torchdr.SampledNeighborEmbedding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SampledNeighborEmbedding</span></code></a>(affinity_in, ...[, ...])</p></td>
+<td><p>Solves the neighbor embedding problem with both sparsity and sampling.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="affinity-classes">
+<h3>Affinity Classes<a class="headerlink" href="#affinity-classes" title="Link to this heading"></a></h3>
+<p>The following classes are used to compute the affinities between the data points.
+Broadly speaking, they define a notion of similarity between samples.</p>
+<section id="simple-affinities">
+<h4>Simple Affinities<a class="headerlink" href="#simple-affinities" title="Link to this heading"></a></h4>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.GaussianAffinity.html#torchdr.GaussianAffinity" title="torchdr.GaussianAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GaussianAffinity</span></code></a>([sigma, metric, zero_diag, ...])</p></td>
+<td><p>Compute the Gaussian affinity matrix.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.StudentAffinity.html#torchdr.StudentAffinity" title="torchdr.StudentAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StudentAffinity</span></code></a>([degrees_of_freedom, ...])</p></td>
+<td><p>Compute the Student affinity matrix based on the Student-t distribution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.ScalarProductAffinity.html#torchdr.ScalarProductAffinity" title="torchdr.ScalarProductAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ScalarProductAffinity</span></code></a>([device, keops, verbose])</p></td>
+<td><p>Compute the scalar product affinity matrix.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.NormalizedGaussianAffinity.html#torchdr.NormalizedGaussianAffinity" title="torchdr.NormalizedGaussianAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NormalizedGaussianAffinity</span></code></a>([sigma, metric, ...])</p></td>
+<td><p>Compute the Gaussian affinity matrix which can be normalized along a dimension.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.NormalizedStudentAffinity.html#torchdr.NormalizedStudentAffinity" title="torchdr.NormalizedStudentAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NormalizedStudentAffinity</span></code></a>([...])</p></td>
+<td><p>Compute the Student affinity matrix which can be normalized along a dimension.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="affinities-normalized-by-knn-distances">
+<h4>Affinities Normalized by kNN Distances<a class="headerlink" href="#affinities-normalized-by-knn-distances" title="Link to this heading"></a></h4>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.SelfTuningAffinity.html#torchdr.SelfTuningAffinity" title="torchdr.SelfTuningAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SelfTuningAffinity</span></code></a>([K, normalization_dim, ...])</p></td>
+<td><p>Compute the self-tuning affinity introduced in <a class="footnote-reference brackets" href="#id22" id="id9" role="doc-noteref"><span class="fn-bracket">[</span>22<span class="fn-bracket">]</span></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.MAGICAffinity.html#torchdr.MAGICAffinity" title="torchdr.MAGICAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MAGICAffinity</span></code></a>([K, metric, zero_diag, ...])</p></td>
+<td><p>Compute the MAGIC affinity introduced in <a class="footnote-reference brackets" href="#id23" id="id10" role="doc-noteref"><span class="fn-bracket">[</span>23<span class="fn-bracket">]</span></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="entropic-affinities">
+<h4>Entropic Affinities<a class="headerlink" href="#entropic-affinities" title="Link to this heading"></a></h4>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.SinkhornAffinity.html#torchdr.SinkhornAffinity" title="torchdr.SinkhornAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SinkhornAffinity</span></code></a>([eps, tol, max_iter, ...])</p></td>
+<td><p>Compute the symmetric doubly stochastic affinity matrix.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.EntropicAffinity.html#torchdr.EntropicAffinity" title="torchdr.EntropicAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EntropicAffinity</span></code></a>([perplexity, tol, ...])</p></td>
+<td><p>Solve the directed entropic affinity problem introduced in <a class="footnote-reference brackets" href="#id15" id="id11" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.SymmetricEntropicAffinity.html#torchdr.SymmetricEntropicAffinity" title="torchdr.SymmetricEntropicAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SymmetricEntropicAffinity</span></code></a>([perplexity, lr, ...])</p></td>
+<td><p>Compute the symmetric entropic affinity (SEA) introduced in <a class="footnote-reference brackets" href="#id17" id="id12" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="quadratic-affinities">
+<h4>Quadratic Affinities<a class="headerlink" href="#quadratic-affinities" title="Link to this heading"></a></h4>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.DoublyStochasticQuadraticAffinity.html#torchdr.DoublyStochasticQuadraticAffinity" title="torchdr.DoublyStochasticQuadraticAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DoublyStochasticQuadraticAffinity</span></code></a>([eps, ...])</p></td>
+<td><p>Compute the symmetric doubly stochastic affinity.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="umap-affinities">
+<h4>UMAP Affinities<a class="headerlink" href="#umap-affinities" title="Link to this heading"></a></h4>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.UMAPAffinityIn.html#torchdr.UMAPAffinityIn" title="torchdr.UMAPAffinityIn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UMAPAffinityIn</span></code></a>([n_neighbors, tol, max_iter, ...])</p></td>
+<td><p>Compute the input affinity used in UMAP <a class="footnote-reference brackets" href="#id18" id="id13" role="doc-noteref"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.UMAPAffinityOut.html#torchdr.UMAPAffinityOut" title="torchdr.UMAPAffinityOut"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UMAPAffinityOut</span></code></a>([min_dist, spread, a, b, ...])</p></td>
+<td><p>Compute the affinity used in embedding space in UMAP <a class="footnote-reference brackets" href="#id18" id="id14" role="doc-noteref"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="utils">
+<h3>Utils<a class="headerlink" href="#utils" title="Link to this heading"></a></h3>
+<p>The following classes are used to perform various operations such as computing
+the pairwise distances between the data points as well as solving root search problems.</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.pairwise_distances.html#torchdr.pairwise_distances" title="torchdr.pairwise_distances"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pairwise_distances</span></code></a>(X[, Y, metric, keops])</p></td>
+<td><p>Compute pairwise distances matrix between points in two datasets.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.binary_search.html#torchdr.binary_search" title="torchdr.binary_search"><code class="xref py py-obj docutils literal notranslate"><span class="pre">binary_search</span></code></a>(f, n[, begin, end, max_iter, ...])</p></td>
+<td><p>Implement the binary search root finding method.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.false_position.html#torchdr.false_position" title="torchdr.false_position"><code class="xref py py-obj docutils literal notranslate"><span class="pre">false_position</span></code></a>(f, n[, begin, end, max_iter, ...])</p></td>
+<td><p>Implement the false position root finding method.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id15" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id2">1</a>,<a role="doc-backlink" href="#id11">2</a>)</span>
+<p>Geoffrey Hinton, Sam Roweis (2002). <a class="reference external" href="https://proceedings.neurips.cc/paper_files/paper/2002/file/6150ccc6069bea6b5716254057a194ef-Paper.pdf">Stochastic Neighbor Embedding</a>. Advances in Neural Information Processing Systems 15 (NeurIPS).</p>
+</aside>
+<aside class="footnote brackets" id="id16" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">2</a><span class="fn-bracket">]</span></span>
+<p>Laurens van der Maaten, Geoffrey Hinton (2008). <a class="reference external" href="https://www.jmlr.org/papers/volume9/vandermaaten08a/vandermaaten08a.pdf?fbcl">Visualizing Data using t-SNE</a>. The Journal of Machine Learning Research 9.11 (JMLR).</p>
+</aside>
+<aside class="footnote brackets" id="id17" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id4">1</a>,<a role="doc-backlink" href="#id12">2</a>)</span>
+<p>Hugues Van Assel, Titouan Vayer, Rémi Flamary, Nicolas Courty (2023). <a class="reference external" href="https://proceedings.neurips.cc/paper_files/paper/2023/file/8b54ecd9823fff6d37e61ece8f87e534-Paper-Conference.pdf">SNEkhorn: Dimension Reduction with Symmetric Entropic Affinities</a>. Advances in Neural Information Processing Systems 36 (NeurIPS).</p>
+</aside>
+<aside class="footnote brackets" id="id18" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id7">1</a>,<a role="doc-backlink" href="#id13">2</a>,<a role="doc-backlink" href="#id14">3</a>)</span>
+<p>Leland McInnes, John Healy, James Melville (2018). <a class="reference external" href="https://arxiv.org/abs/1802.03426">UMAP: Uniform manifold approximation and projection for dimension reduction</a>. arXiv preprint arXiv:1802.03426.</p>
+</aside>
+<aside class="footnote brackets" id="id19" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">12</a><span class="fn-bracket">]</span></span>
+<p>Sebastian Damrich, Fred Hamprecht (2021). <a class="reference external" href="https://proceedings.neurips.cc/paper/2021/file/2de5d16682c3c35007e4e92982f1a2ba-Paper.pdf">On UMAP’s True Loss Function</a>. Advances in Neural Information Processing Systems 34 (NeurIPS).</p>
+</aside>
+<aside class="footnote brackets" id="id20" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">13</a><span class="fn-bracket">]</span></span>
+<p>Tang, J., Liu, J., Zhang, M., &amp; Mei, Q. (2016). <a class="reference external" href="https://dl.acm.org/doi/pdf/10.1145/2872427.2883041?casa_token=9ybi1tW9opcAAAAA:yVfVBu47DYa5_cpmJnQZm4PPWaTdVJgRu2pIMqm3nvNrZV5wEsM9pde03fCWixTX0_AlT-E7D3QRZw">Visualizing Large-Scale and High-Dimensional Data</a>. In Proceedings of the 25th international conference on world wide web.</p>
+</aside>
+<aside class="footnote brackets" id="id21" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">15</a><span class="fn-bracket">]</span></span>
+<p>Sebastian Damrich, Jan Niklas Böhm, Fred Hamprecht, Dmitry Kobak (2023). <a class="reference external" href="https://openreview.net/pdf?id=B8a1FcY0vi">From t-SNE to UMAP with contrastive learning</a>. International Conference on Learning Representations (ICLR).</p>
+</aside>
+<aside class="footnote brackets" id="id22" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id9">22</a><span class="fn-bracket">]</span></span>
+<p>Max Zelnik-Manor, L., &amp; Perona, P. (2004). <a class="reference external" href="https://proceedings.neurips.cc/paper_files/paper/2004/file/40173ea48d9567f1f393b20c855bb40b-Paper.pdf">Self-Tuning Spectral Clustering</a>. Advances in Neural Information Processing Systems 17 (NeurIPS).</p>
+</aside>
+<aside class="footnote brackets" id="id23" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id10">23</a><span class="fn-bracket">]</span></span>
+<p>Van Dijk, D., Sharma, R., Nainys, J., Yim, K., Kathail, P., Carr, A. J., … &amp; Pe’er, D. (2018). <a class="reference external" href="https://www.cell.com/action/showPdf?pii=S0092-8674%2818%2930724-4">Recovering Gene Interactions from Single-Cell Data Using Data Diffusion</a>. Cell, 174(3).</p>
+</aside>
+</aside>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="stubs/torchdr.AffinityMatcher.html" class="btn btn-neutral float-left" title="AffinityMatcher" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gen_modules/torchdr.PCA.html" class="btn btn-neutral float-right" title="PCA" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, TorchDR team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

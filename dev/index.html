@@ -88,9 +88,7 @@
 <h1>Torch Dimensionality Reduction<a class="headerlink" href="#torch-dimensionality-reduction" title="Link to this heading"></a></h1>
 <a class="reference internal image-reference" href="https://github.com/torchdr/torchdr/raw/main/docs/source/figures/torchdr_logo.png"><img alt="torchdr logo" class="align-center" src="https://github.com/torchdr/torchdr/raw/main/docs/source/figures/torchdr_logo.png" style="width: 800px;" />
 </a>
-<p><a class="reference external" href="https://pytorch.org/get-started/locally/"><img alt="Pytorch" src="https://img.shields.io/badge/PyTorch_1.8+-ee4c2c?logo=pytorch&amp;logoColor=white" /></a> <a class="reference external" href="https://www.python.org/downloads/release/python-3100/"><img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-blue" /></a> <a class="reference external" href="https://github.com/psf/black"><img alt="Black" src="https://img.shields.io/badge/code%20style-black-000000.svg" /></a> <img alt="Test Status" src="https://github.com/torchdr/torchdr/actions/workflows/testing.yml/badge.svg" /> <a class="reference external" href="https://codecov.io/gh/torchdr/torchdr"><img alt="codecov" src="https://codecov.io/gh/torchdr/torchdr/branch/main/graph/badge.svg" /></a> <a class="reference external" href="https://opensource.org/licenses/BSD-3-Clause"><img alt="License" src="https://img.shields.io/badge/License-BSD_3--Clause-blue.svg" /></a></p>
-<p>Github repository: <a class="reference external" href="https://github.com/torchdr/torchdr/">https://github.com/torchdr/torchdr/</a>.</p>
-<p>Documentation: <a class="reference external" href="https://torchdr.github.io/">https://torchdr.github.io/</a>.</p>
+<p><a class="reference external" href="https://torchdr.github.io/"><img alt="Documentation" src="https://img.shields.io/badge/Documentation-blue.svg" /></a> <a class="reference external" href="https://github.com/TorchDR/TorchDR/releases/tag/0.1"><img alt="Version" src="https://img.shields.io/badge/version-0.1-blue.svg" /></a> <a class="reference external" href="https://opensource.org/licenses/BSD-3-Clause"><img alt="License" src="https://img.shields.io/badge/License-BSD_3--Clause-blue.svg" /></a> <a class="reference external" href="https://www.python.org/downloads/release/python-3100/"><img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-blue.svg" /></a> <a class="reference external" href="https://pytorch.org/get-started/locally/"><img alt="Pytorch" src="https://img.shields.io/badge/PyTorch-ee4c2c?logo=pytorch&amp;logoColor=white" /></a> <a class="reference external" href="https://github.com/psf/black"><img alt="Black" src="https://img.shields.io/badge/code%20style-black-000000.svg" /></a> <img alt="Test Status" src="https://github.com/torchdr/torchdr/actions/workflows/testing.yml/badge.svg" /> <a class="reference external" href="https://dl.circleci.com/status-badge/redirect/gh/TorchDR/TorchDR/tree/main"><img alt="CircleCI" src="https://dl.circleci.com/status-badge/img/gh/TorchDR/TorchDR/tree/main.svg?style=svg" /></a> <a class="reference external" href="https://codecov.io/gh/torchdr/torchdr"><img alt="codecov" src="https://codecov.io/gh/torchdr/torchdr/branch/main/graph/badge.svg" /></a></p>
 <p>TorchDR is an open-source <strong>dimensionality reduction (DR)</strong> library using PyTorch. Its goal is to accelerate the development of new DR methods by providing a common simplified framework.</p>
 <p>DR aims to construct a <strong>low-dimensional representation (or embedding)</strong> of an input dataset that best preserves its <strong>geometry encoded via a pairwise affinity matrix</strong> . To this end, DR methods <strong>optimize the embedding</strong> such that its <strong>associated pairwise affinity matrix matches the input affinity</strong>. TorchDR provides a general framework for solving problems of this form. Defining a DR algorithm solely requires choosing or implementing an <em>Affinity</em> object for both input and embedding as well as an objective function.</p>
 <p>Benefits of TorchDR include:</p>
@@ -146,17 +144,17 @@ Here is an example of single cell embeddings using TorchDR, where the embeddings
 <li><p>Usual affinities such that scalar product, Gaussian and Student kernels.</p></li>
 <li><p>Affinities based on k-NN normalizations such Self-tuning affinities <a class="reference internal" href="#z04" id="id5"><span>[Z04]</span></a> and MAGIC <a class="reference internal" href="#v18" id="id6"><span>[V18]</span></a>.</p></li>
 <li><p>Doubly stochastic affinities with entropic <a class="reference internal" href="#s67" id="id7"><span>[S67]</span></a> <a class="reference internal" href="#c13" id="id8"><span>[C13]</span></a> <a class="reference internal" href="#f19" id="id9"><span>[F19]</span></a> <a class="reference internal" href="#l21" id="id10"><span>[L21]</span></a> and quadratic <a class="reference internal" href="#z23" id="id11"><span>[Z23]</span></a> projections.</p></li>
-<li><p>Adaptive affinities with entropy control <a class="reference internal" href="#h02" id="id12"><span>[H02]</span></a> <a class="reference internal" href="#v13" id="id13"><span>[V13]</span></a> and its symmetric version <a href="#id23"><span class="problematic" id="id14">[3]_</span></a>.</p></li>
+<li><p>Adaptive affinities with entropy control <a class="reference internal" href="#h02" id="id12"><span>[H02]</span></a> <a class="reference internal" href="#v13" id="id13"><span>[V13]</span></a> and its symmetric version <a class="reference internal" href="#v23" id="id14"><span>[V23]</span></a>.</p></li>
 </ul>
 </section>
 <section id="dimensionality-reduction-algorithms">
 <h3>Dimensionality Reduction Algorithms<a class="headerlink" href="#dimensionality-reduction-algorithms" title="Link to this heading"></a></h3>
 <p><strong>Spectral.</strong> TorchDR provides <strong>spectral embeddings</strong> <a class="reference internal" href="#h04" id="id15"><span>[H04]</span></a> calculated via eigenvalue decomposition of the affinities or their Laplacian.</p>
-<p><strong>Neighbor Embedding.</strong> TorchDR includes various <strong>neighbor embedding methods</strong> such as <em>SNE</em> <a class="reference internal" href="#h02" id="id16"><span>[H02]</span></a>, <em>t-SNE</em> <a class="reference internal" href="#v08" id="id17"><span>[V08]</span></a>, <em>t-SNEkhorn</em> <a class="reference internal" href="#v23" id="id18"><span>[V23]</span></a>, <em>UMAP</em> <a class="reference internal" href="#m18" id="id19"><span>[M18]</span></a>, <em>LargeVis</em> <a class="reference internal" href="#t16" id="id20"><span>[T16]</span></a> and <em>InfoTSNE</em> <a class="reference internal" href="#d23" id="id21"><span>[D23]</span></a>.</p>
+<p><strong>Neighbor Embedding.</strong> TorchDR includes various <strong>neighbor embedding methods</strong> such as <em>SNE</em> <a class="reference internal" href="#h02" id="id16"><span>[H02]</span></a>, <em>t-SNE</em> <a class="reference internal" href="#v08" id="id17"><span>[V08]</span></a>, <em>t-SNEkhorn</em> <a class="reference internal" href="#v23" id="id18"><span>[V23]</span></a>, <em>UMAP</em> <a class="reference internal" href="#m18" id="id19"><span>[M18]</span></a> <a class="reference internal" href="#d21" id="id20"><span>[D21]</span></a>, <em>LargeVis</em> <a class="reference internal" href="#t16" id="id21"><span>[T16]</span></a> and <em>InfoTSNE</em> <a class="reference internal" href="#d23" id="id22"><span>[D23]</span></a>.</p>
 </section>
 <section id="evaluation-metric">
 <h3>Evaluation Metric<a class="headerlink" href="#evaluation-metric" title="Link to this heading"></a></h3>
-<p>TorchDR provides efficient GPU-compatible evaluation metrics : <em>Silhouette score</em> <a class="reference internal" href="#r87" id="id22"><span>[R87]</span></a>.</p>
+<p>TorchDR provides efficient GPU-compatible evaluation metrics : <em>Silhouette score</em> <a class="reference internal" href="#r87" id="id23"><span>[R87]</span></a>.</p>
 </section>
 </section>
 <section id="installation">
@@ -204,7 +202,8 @@ Here is an example of single cell embeddings using TorchDR, where the embeddings
 <p>Laurens van der Maaten, Geoffrey Hinton (2008). <a class="reference external" href="https://www.jmlr.org/papers/volume9/vandermaaten08a/vandermaaten08a.pdf?fbcl">Visualizing Data using t-SNE</a>. The Journal of Machine Learning Research 9.11 (JMLR).</p>
 </div>
 <div class="citation" id="v23" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id18">V23</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span>V23<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id14">1</a>,<a role="doc-backlink" href="#id18">2</a>)</span>
 <p>Hugues Van Assel, Titouan Vayer, Rémi Flamary, Nicolas Courty (2023). <a class="reference external" href="https://proceedings.neurips.cc/paper_files/paper/2023/file/8b54ecd9823fff6d37e61ece8f87e534-Paper-Conference.pdf">SNEkhorn: Dimension Reduction with Symmetric Entropic Affinities</a>. Advances in Neural Information Processing Systems 36 (NeurIPS).</p>
 </div>
 <div class="citation" id="v13" role="doc-biblioentry">
@@ -227,10 +226,6 @@ Here is an example of single cell embeddings using TorchDR, where the embeddings
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id19">M18</a><span class="fn-bracket">]</span></span>
 <p>Leland McInnes, John Healy, James Melville (2018). <a class="reference external" href="https://arxiv.org/abs/1802.03426">UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction</a>. arXiv preprint arXiv:1802.03426.</p>
 </div>
-<div class="citation" id="l19" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>L19<span class="fn-bracket">]</span></span>
-<p>Yao Lu, Jukka Corander, Zhirong Yang (2019). <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0167865518305099">Doubly Stochastic Neighbor Embedding on Spheres</a>. Pattern Recognition Letters 128 : 100-106.</p>
-</div>
 <div class="citation" id="z23" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id11">Z23</a><span class="fn-bracket">]</span></span>
 <p>Stephen Zhang, Gilles Mordant, Tetsuya Matsumoto, Geoffrey Schiebinger (2023). <a class="reference external" href="https://arxiv.org/abs/2307.09816">Manifold Learning with Sparse Regularised Optimal Transport</a>. arXiv preprint.</p>
@@ -240,28 +235,20 @@ Here is an example of single cell embeddings using TorchDR, where the embeddings
 <p>Ham, J., Lee, D. D., Mika, S., &amp; Schölkopf, B. (2004). <a class="reference external" href="https://icml.cc/Conferences/2004/proceedings/papers/296.pdf">A Kernel View of the Dimensionality Reduction of Manifolds</a>. In Proceedings of the twenty-first international conference on Machine learning (ICML).</p>
 </div>
 <div class="citation" id="d21" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>D21<span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id20">D21</a><span class="fn-bracket">]</span></span>
 <p>Sebastian Damrich, Fred Hamprecht (2021). <a class="reference external" href="https://proceedings.neurips.cc/paper/2021/file/2de5d16682c3c35007e4e92982f1a2ba-Paper.pdf">On UMAP’s True Loss Function</a>. Advances in Neural Information Processing Systems 34 (NeurIPS).</p>
 </div>
 <div class="citation" id="t16" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id20">T16</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id21">T16</a><span class="fn-bracket">]</span></span>
 <p>Tang, J., Liu, J., Zhang, M., &amp; Mei, Q. (2016). <a class="reference external" href="https://dl.acm.org/doi/pdf/10.1145/2872427.2883041?casa_token=9ybi1tW9opcAAAAA:yVfVBu47DYa5_cpmJnQZm4PPWaTdVJgRu2pIMqm3nvNrZV5wEsM9pde03fCWixTX0_AlT-E7D3QRZw">Visualizing Large-Scale and High-Dimensional Data</a>. In Proceedings of the 25th international conference on world wide web.</p>
 </div>
-<div class="citation" id="a20" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>A20<span class="fn-bracket">]</span></span>
-<p>Artemenkov, A., &amp; Panov, M. (2020). <a class="reference external" href="https://dl.acm.org/doi/pdf/10.1145/3366423.3380061?casa_token=J-quI6odZDMAAAAA:dEKrwbHIaiPX1xZQe2NA2q3-PahWc4PUP6WDtQVRocIa501T_LGgPixl03lVJF3j5SjutiBzhj9cpg">NCVis: Noise Contrastive Approach for Scalable Visualization</a>. In Proceedings of The Web Conference.</p>
-</div>
 <div class="citation" id="d23" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id21">D23</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id22">D23</a><span class="fn-bracket">]</span></span>
 <p>Sebastian Damrich, Jan Niklas Böhm, Fred Hamprecht, Dmitry Kobak (2023). <a class="reference external" href="https://openreview.net/pdf?id=B8a1FcY0vi">From t-SNE to UMAP with Contrastive Learning</a>. International Conference on Learning Representations (ICLR).</p>
 </div>
 <div class="citation" id="l21" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id10">L21</a><span class="fn-bracket">]</span></span>
 <p>Landa, B., Coifman, R. R., &amp; Kluger, Y. (2021). <a class="reference external" href="https://epubs.siam.org/doi/abs/10.1137/20M1342124?journalCode=sjmdaq">Doubly Stochastic Normalization of the Gaussian Kernel is Robust to Heteroskedastic Noise</a>. SIAM journal on mathematics of data science, 3(1), 388-413.</p>
-</div>
-<div class="citation" id="v22" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>V22<span class="fn-bracket">]</span></span>
-<p>Hugues Van Assel, Thibault Espinasse, Julien Chiquet, &amp; Franck Picard (2022). <a class="reference external" href="https://proceedings.neurips.cc/paper_files/paper/2022/file/45994782a61bb51cad5c2bae36834265-Paper-Conference.pdf">A Probabilistic Graph Coupling View of Dimension Reduction</a>. Advances in Neural Information Processing Systems 35 (NeurIPS).</p>
 </div>
 <div class="citation" id="c21" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">C21</a><span class="fn-bracket">]</span></span>
@@ -284,7 +271,7 @@ Here is an example of single cell embeddings using TorchDR, where the embeddings
 <p>Van Dijk, D., Sharma, R., Nainys, J., Yim, K., Kathail, P., Carr, A. J., … &amp; Pe’er, D. (2018). <a class="reference external" href="https://www.cell.com/action/showPdf?pii=S0092-8674%2818%2930724-4">Recovering Gene Interactions from Single-Cell Data Using Data Diffusion</a>. Cell, 174(3).</p>
 </div>
 <div class="citation" id="r87" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id22">R87</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id23">R87</a><span class="fn-bracket">]</span></span>
 <p>Rousseeuw, P. J. (1987). <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/0377042787901257">Silhouettes: a graphical aid to the interpretation and validation of cluster analysis</a>. Journal of computational and applied mathematics, 20, 53-65.</p>
 </div>
 </div>

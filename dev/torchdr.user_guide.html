@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
@@ -6,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>User Guide &mdash; TorchDR 0.0.0-alpha documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=d2d258e8" />
       <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
       <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
@@ -14,17 +16,13 @@
 
   
     <link rel="shortcut icon" href="_static/logo.ico"/>
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=8e37ee27"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script>window.MathJax = {"tex": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}}</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8e37ee27"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>window.MathJax = {"tex": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -151,7 +149,8 @@ Defining a DR algorithm solely requires providing an <a class="reference interna
 <h3>Avoiding memory overflows with KeOps symbolic (lazy) tensors<a class="headerlink" href="#avoiding-memory-overflows-with-keops-symbolic-lazy-tensors" title="Link to this heading"></a></h3>
 <p>Affinities incur a quadratic memory cost, which can be particularly problematic when dealing with large numbers of samples, especially when using GPUs.</p>
 <p>To prevent memory overflows, TorchDR relies on <code class="docutils literal notranslate"><span class="pre">pykeops</span></code> <a class="footnote-reference brackets" href="#id28" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>19<span class="fn-bracket">]</span></a> lazy tensors. These tensors are expressed as mathematical formulas, evaluated directly on the data samples. This symbolic representation allows computations to be performed without storing the entire matrix in memory, thereby effectively eliminating any memory limitation.</p>
-<a class="reference internal image-reference" href="_images/symbolic_matrix.svg"><img alt="_images/symbolic_matrix.svg" class="align-center" src="_images/symbolic_matrix.svg" style="width: 800px;" /></a>
+<a class="reference internal image-reference" href="_images/symbolic_matrix.svg"><img alt="_images/symbolic_matrix.svg" class="align-center" src="_images/symbolic_matrix.svg" style="width: 800px;" />
+</a>
 <p>The above figure is taken from <a class="reference external" href="https://github.com/getkeops/keops/blob/main/doc/_static/symbolic_matrix.svg">here</a>.</p>
 <p>Set <code class="xref py py-attr docutils literal notranslate"><span class="pre">keops=True</span></code> as input to any module to use symbolic tensors. For small datasets, setting <code class="xref py py-attr docutils literal notranslate"><span class="pre">keops=False</span></code> allows the computation of the full affinity matrix directly in memory.</p>
 </section>

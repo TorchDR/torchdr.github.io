@@ -54,6 +54,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../auto_examples/index.html">Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../torchdr.releases.html">Releases</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../torchdr.contributing.html">How to Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../torchdr.bibliography.html">Bibliography</a></li>
 </ul>
 
         </div>
@@ -586,7 +587,7 @@
             <span class="n">early_exaggeration_iter</span><span class="o">=</span><span class="n">early_exaggeration_iter</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_sample_negatives</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">discard_NNs</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_sample_negatives</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">discard_NNs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="c1"># Negatives are all other points except NNs (if discard_NNs) and point itself</span>
         <span class="n">n_possible_negatives</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># Exclude the self-index</span>
         <span class="n">discard_NNs_</span> <span class="o">=</span> <span class="n">discard_NNs</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>

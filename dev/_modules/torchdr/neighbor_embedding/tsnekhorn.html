@@ -54,6 +54,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../auto_examples/index.html">Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../torchdr.releases.html">Releases</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../torchdr.contributing.html">How to Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../torchdr.bibliography.html">Bibliography</a></li>
 </ul>
 
         </div>
@@ -100,7 +101,7 @@
 <div class="viewcode-block" id="TSNEkhorn">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.TSNEkhorn.html#torchdr.TSNEkhorn">[docs]</a>
 <span class="k">class</span> <span class="nc">TSNEkhorn</span><span class="p">(</span><span class="n">NeighborEmbedding</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Implementation of the TSNEkhorn algorithm introduced in [V23]_.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;TSNEkhorn algorithm introduced in :cite:`van2024snekhorn`.</span>
 
 <span class="sd">    It involves selecting a :class:`~torchdr.SymmetricEntropicAffinity` as input</span>
 <span class="sd">    affinity :math:`\mathbf{P}` and a :class:`~torchdr.SinkhornAffinity` as output</span>
@@ -185,13 +186,6 @@
 <span class="sd">    symmetric_affinity : bool, optional</span>
 <span class="sd">        Whether to use symmetric entropic affinity. If False, uses</span>
 <span class="sd">        entropic affinity. Default is True.</span>
-
-<span class="sd">    References</span>
-<span class="sd">    ----------</span>
-<span class="sd">    .. [V23] SNEkhorn: Dimension Reduction with Symmetric Entropic Affinities,</span>
-<span class="sd">        Hugues Van Assel, Titouan Vayer, Rémi Flamary, Nicolas Courty.</span>
-<span class="sd">        Advances in neural information processing systems 36 (NeurIPS).</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>

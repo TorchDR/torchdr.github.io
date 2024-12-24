@@ -149,7 +149,7 @@
 <div class="viewcode-block" id="SelfTuningAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.SelfTuningAffinity.html#torchdr.SelfTuningAffinity">[docs]</a>
 <span class="k">class</span> <span class="nc">SelfTuningAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the self-tuning affinity introduced in [Z04]_.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Self-tuning affinity introduced in :cite:`zelnik2004self`.</span>
 
 <span class="sd">    The affinity has a sample-wise bandwidth :math:`\mathbf{\sigma} \in \mathbb{R}^n`.</span>
 
@@ -176,12 +176,6 @@
 <span class="sd">        Whether to use KeOps for computations.</span>
 <span class="sd">    verbose : bool, optional</span>
 <span class="sd">        Verbosity. Default is False.</span>
-
-<span class="sd">    References</span>
-<span class="sd">    ----------</span>
-<span class="sd">    .. [Z04] Max Zelnik-Manor, L., &amp; Perona, P. (2004).</span>
-<span class="sd">            Self-tuning spectral clustering.</span>
-<span class="sd">            Advances in neural information processing systems (NeurIPS).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -236,7 +230,7 @@
 <div class="viewcode-block" id="MAGICAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.MAGICAffinity.html#torchdr.MAGICAffinity">[docs]</a>
 <span class="k">class</span> <span class="nc">MAGICAffinity</span><span class="p">(</span><span class="n">Affinity</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the MAGIC affinity introduced in [V18]_.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the MAGIC affinity introduced in :cite:`van2018recovering`.</span>
 
 <span class="sd">    The construction is as follows. First, it computes a Gaussian</span>
 <span class="sd">    kernel with sample-wise bandwidth :math:`\mathbf{\sigma} \in \mathbb{R}^n`.</span>
@@ -273,13 +267,6 @@
 <span class="sd">        Whether to use KeOps for computations.</span>
 <span class="sd">    verbose : bool, optional</span>
 <span class="sd">        Verbosity. Default is False.</span>
-
-<span class="sd">    References</span>
-<span class="sd">    ----------</span>
-<span class="sd">    .. [V18] Van Dijk, D., Sharma, R., Nainys, J., Yim, K., Kathail, P., Carr, A.</span>
-<span class="sd">            J., ... &amp; Pe’er, D. (2018).</span>
-<span class="sd">            Recovering Gene Interactions from Single-Cell Data Using Data Diffusion</span>
-<span class="sd">            Cell, 174(3).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>

@@ -87,11 +87,14 @@
 
 <span class="c1"># Authors: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
 <span class="c1">#          Mathurin Massias</span>
+<span class="c1">#          @sirluk</span>
 <span class="c1">#</span>
 <span class="c1"># License: BSD 3-Clause License</span>
 
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">from</span> <span class="nn">torchdr.base</span> <span class="kn">import</span> <span class="n">DRModule</span>
 <span class="kn">from</span> <span class="nn">torchdr.utils</span> <span class="kn">import</span> <span class="p">(</span>
@@ -125,6 +128,11 @@
 <span class="sd">        Whether to print information during the computations.</span>
 <span class="sd">    random_state : float, default=0</span>
 <span class="sd">        Random seed for reproducibility.</span>
+<span class="sd">    svd_driver : str, optional</span>
+<span class="sd">        Name of the cuSOLVER method to be used for torch.linalg.svd.</span>
+<span class="sd">        This keyword argument only works on CUDA inputs.</span>
+<span class="sd">        Available options are: None, gesvd, gesvdj and gesvda.</span>
+<span class="sd">        Defaults to None.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -133,6 +141,7 @@
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">svd_driver</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">n_components</span><span class="o">=</span><span class="n">n_components</span><span class="p">,</span>
@@ -140,6 +149,7 @@
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">svd_driver</span> <span class="o">=</span> <span class="n">svd_driver</span>
 
 <div class="viewcode-block" id="PCA.fit">
 <a class="viewcode-back" href="../../gen_modules/torchdr.PCA.html#torchdr.PCA.fit">[docs]</a>
@@ -158,7 +168,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">X</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">U</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">X</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span><span class="p">,</span> <span class="n">full_matrices</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">U</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span>
+            <span class="n">X</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span><span class="p">,</span> <span class="n">full_matrices</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">driver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">svd_driver</span>
+        <span class="p">)</span>
         <span class="n">U</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="n">svd_flip</span><span class="p">(</span><span class="n">U</span><span class="p">,</span> <span class="n">V</span><span class="p">)</span>  <span class="c1"># flip eigenvectors&#39; sign to enforce deterministic output</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">components_</span> <span class="o">=</span> <span class="n">V</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span> <span class="o">=</span> <span class="n">U</span><span class="p">[:,</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">]</span> <span class="o">@</span> <span class="n">S</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">]</span><span class="o">.</span><span class="n">diag</span><span class="p">()</span>
@@ -362,6 +374,356 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigenvectors_</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigenvalues_</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">]</span><span class="o">.</span><span class="n">sqrt</span><span class="p">()</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="IncrementalPCA">
+<a class="viewcode-back" href="../../gen_modules/torchdr.IncrementalPCA.html#torchdr.IncrementalPCA">[docs]</a>
+<span class="k">class</span> <span class="nc">IncrementalPCA</span><span class="p">(</span><span class="n">DRModule</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Incremental Principal Components Analysis (IPCA) leveraging PyTorch for GPU acceleration.</span>
+
+<span class="sd">    This class provides methods to fit the model on data incrementally in batches,</span>
+<span class="sd">    and to transform new data based on the principal components learned during the fitting process.</span>
+
+<span class="sd">    It is partially useful when the dataset to be decomposed is too large to fit in memory.</span>
+<span class="sd">    Adapted from `Scikit-learn Incremental PCA &lt;https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/decomposition/_incremental_pca.py&gt;`_.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_components : int, optional</span>
+<span class="sd">        Number of components to keep. If `None`, it&#39;s set to the minimum of the</span>
+<span class="sd">        number of samples and features. Defaults to None.</span>
+<span class="sd">    copy : bool</span>
+<span class="sd">        If False, input data will be overwritten. Defaults to True.</span>
+<span class="sd">    batch_size : int, optional</span>
+<span class="sd">        The number of samples to use for each batch. Only needed if self.fit is called.</span>
+<span class="sd">        If `None`, it&#39;s inferred from the data and set to `5 * n_features`.</span>
+<span class="sd">        Defaults to None.</span>
+<span class="sd">    svd_driver : str, optional</span>
+<span class="sd">        Name of the cuSOLVER method to be used for torch.linalg.svd.</span>
+<span class="sd">        This keyword argument only works on CUDA inputs.</span>
+<span class="sd">        Available options are: None, gesvd, gesvdj and gesvda.</span>
+<span class="sd">        Defaults to None.</span>
+<span class="sd">    lowrank : bool, optional</span>
+<span class="sd">        Whether to use torch.svd_lowrank instead of torch.linalg.svd which can be faster.</span>
+<span class="sd">        Defaults to False.</span>
+<span class="sd">    lowrank_q : int, optional</span>
+<span class="sd">        For an adequate approximation of n_components, this parameter defaults to</span>
+<span class="sd">        n_components * 2.</span>
+<span class="sd">    lowrank_niter : int, optional</span>
+<span class="sd">        Number of subspace iterations to conduct for torch.svd_lowrank.</span>
+<span class="sd">        Defaults to 4.</span>
+<span class="sd">    device : str, optional</span>
+<span class="sd">        Device on which the computations are performed. Defaults to &quot;auto&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">n_components</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">copy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">svd_driver</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">lowrank</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">lowrank_q</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">lowrank_niter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">random_state</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">n_components</span><span class="o">=</span><span class="n">n_components</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">copy</span> <span class="o">=</span> <span class="n">copy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_features_</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">lowrank</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">lowrank_q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="p">(</span>
+                    <span class="n">n_components</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="p">),</span> <span class="s2">&quot;n_components must be specified when using lowrank mode &quot;</span>
+                <span class="s2">&quot;with lowrank_q=None.&quot;</span>
+                <span class="n">lowrank_q</span> <span class="o">=</span> <span class="n">n_components</span> <span class="o">*</span> <span class="mi">2</span>
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="n">lowrank_q</span> <span class="o">&gt;=</span> <span class="n">n_components</span>
+            <span class="p">),</span> <span class="s2">&quot;lowrank_q must be greater than or equal to n_components.&quot;</span>
+
+            <span class="k">def</span> <span class="nf">svd_fn</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
+                <span class="n">U</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">svd_lowrank</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">lowrank_q</span><span class="p">,</span> <span class="n">niter</span><span class="o">=</span><span class="n">lowrank_niter</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">U</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">V</span><span class="o">.</span><span class="n">mH</span>  <span class="c1"># V is returned as a conjugate transpose</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_svd_fn</span> <span class="o">=</span> <span class="n">svd_fn</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_svd_fn</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">,</span> <span class="n">full_matrices</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">driver</span><span class="o">=</span><span class="n">svd_driver</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_validate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="n">valid_dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">:</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+
+        <span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="o">&gt;</span> <span class="n">n_features</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;n_components=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="si">}</span><span class="s2"> invalid for &quot;</span>
+                <span class="s2">&quot;n_features=</span><span class="si">{n_features}</span><span class="s2">, need more rows than columns &quot;</span>
+                <span class="s2">&quot;for IncrementalPCA processing.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="o">&gt;</span> <span class="n">n_samples</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;n_components=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="si">}</span><span class="s2"> must be less or equal &quot;</span>
+                <span class="s2">&quot;to the batch number of samples </span><span class="si">{n_samples}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_dtypes</span><span class="p">:</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">X</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_incremental_mean_and_var</span><span class="p">(</span>
+        <span class="n">X</span><span class="p">,</span> <span class="n">last_mean</span><span class="p">,</span> <span class="n">last_variance</span><span class="p">,</span> <span class="n">last_sample_count</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">last_mean</span><span class="p">,</span> <span class="n">last_variance</span><span class="p">,</span> <span class="n">last_sample_count</span>
+
+        <span class="k">if</span> <span class="n">last_sample_count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="n">last_mean</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="p">),</span> <span class="s2">&quot;last_mean should not be None if last_sample_count &gt; 0.&quot;</span>
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="n">last_variance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="p">),</span> <span class="s2">&quot;last_variance should not be None if last_sample_count &gt; 0.&quot;</span>
+
+        <span class="n">new_sample_count</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">updated_sample_count</span> <span class="o">=</span> <span class="n">last_sample_count</span> <span class="o">+</span> <span class="n">new_sample_count</span>
+
+        <span class="k">if</span> <span class="n">last_mean</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">last_sum</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">last_sum</span> <span class="o">=</span> <span class="n">last_mean</span> <span class="o">*</span> <span class="n">last_sample_count</span>
+
+        <span class="n">new_sum</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+        <span class="n">updated_mean</span> <span class="o">=</span> <span class="p">(</span><span class="n">last_sum</span> <span class="o">+</span> <span class="n">new_sum</span><span class="p">)</span> <span class="o">/</span> <span class="n">updated_sample_count</span>
+
+        <span class="n">T</span> <span class="o">=</span> <span class="n">new_sum</span> <span class="o">/</span> <span class="n">new_sample_count</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">X</span> <span class="o">-</span> <span class="n">T</span>
+        <span class="n">correction</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">square</span><span class="p">()</span>
+        <span class="n">temp</span><span class="o">.</span><span class="n">square_</span><span class="p">()</span>
+        <span class="n">new_unnormalized_variance</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">new_unnormalized_variance</span> <span class="o">-=</span> <span class="n">correction</span> <span class="o">/</span> <span class="n">new_sample_count</span>
+        <span class="k">if</span> <span class="n">last_variance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">updated_variance</span> <span class="o">=</span> <span class="n">new_unnormalized_variance</span> <span class="o">/</span> <span class="n">updated_sample_count</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">last_unnormalized_variance</span> <span class="o">=</span> <span class="n">last_variance</span> <span class="o">*</span> <span class="n">last_sample_count</span>
+            <span class="n">last_over_new_count</span> <span class="o">=</span> <span class="n">last_sample_count</span> <span class="o">/</span> <span class="n">new_sample_count</span>
+            <span class="n">updated_unnormalized_variance</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">last_unnormalized_variance</span>
+                <span class="o">+</span> <span class="n">new_unnormalized_variance</span>
+                <span class="o">+</span> <span class="n">last_over_new_count</span>
+                <span class="o">/</span> <span class="n">updated_sample_count</span>
+                <span class="o">*</span> <span class="p">(</span><span class="n">last_sum</span> <span class="o">/</span> <span class="n">last_over_new_count</span> <span class="o">-</span> <span class="n">new_sum</span><span class="p">)</span><span class="o">.</span><span class="n">square</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="n">updated_variance</span> <span class="o">=</span> <span class="n">updated_unnormalized_variance</span> <span class="o">/</span> <span class="n">updated_sample_count</span>
+
+        <span class="k">return</span> <span class="n">updated_mean</span><span class="p">,</span> <span class="n">updated_variance</span><span class="p">,</span> <span class="n">updated_sample_count</span>
+
+<div class="viewcode-block" id="IncrementalPCA.fit">
+<a class="viewcode-back" href="../../gen_modules/torchdr.IncrementalPCA.html#torchdr.IncrementalPCA.fit">[docs]</a>
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">check_input</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit the model with data `X` using minibatches of size `batch_size`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : torch.Tensor or np.ndarray</span>
+<span class="sd">            The input data tensor with shape (n_samples, n_features).</span>
+<span class="sd">        check_input : bool, optional</span>
+<span class="sd">            If True, validates the input. Defaults to True.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        IncrementalPCA:</span>
+<span class="sd">            The fitted IPCA model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">check_input</span><span class="p">:</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_data</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">n_features</span>
+
+        <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gen_batches</span><span class="p">(</span>
+            <span class="n">n_samples</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">min_batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="ow">or</span> <span class="mi">0</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">batch</span><span class="p">],</span> <span class="n">check_input</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="IncrementalPCA.partial_fit">
+<a class="viewcode-back" href="../../gen_modules/torchdr.IncrementalPCA.html#torchdr.IncrementalPCA.partial_fit">[docs]</a>
+    <span class="k">def</span> <span class="nf">partial_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">check_input</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit incrementally the model with batch data `X`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : torch.Tensor</span>
+<span class="sd">            The batch input data tensor with shape (n_samples, n_features).</span>
+<span class="sd">        check_input : bool, optional</span>
+<span class="sd">            If True, validates the input. Defaults to True.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        IncrementalPCA:</span>
+<span class="sd">            The updated IPCA model after processing the batch.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">first_pass</span> <span class="o">=</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;components_&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">check_input</span><span class="p">:</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_data</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="c1"># Initialize attributes to avoid errors during the first call to partial_fit</span>
+        <span class="k">if</span> <span class="n">first_pass</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">var_</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_seen_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_features_</span> <span class="o">=</span> <span class="n">n_features</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">n_features</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_features_</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Number of features of the new batch does not match &quot;</span>
+                <span class="s2">&quot;the number of features of the first batch.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">col_mean</span><span class="p">,</span> <span class="n">col_var</span><span class="p">,</span> <span class="n">n_total_samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_incremental_mean_and_var</span><span class="p">(</span>
+            <span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">var_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_seen_</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">first_pass</span><span class="p">:</span>
+            <span class="n">X</span> <span class="o">-=</span> <span class="n">col_mean</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">col_batch_mean</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">X</span> <span class="o">-=</span> <span class="n">col_batch_mean</span>
+            <span class="n">mean_correction_factor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_seen_</span> <span class="o">/</span> <span class="n">n_total_samples</span><span class="p">)</span> <span class="o">*</span> <span class="n">n_samples</span>
+            <span class="p">)</span>
+            <span class="n">mean_correction</span> <span class="o">=</span> <span class="n">mean_correction_factor</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mean_</span> <span class="o">-</span> <span class="n">col_batch_mean</span><span class="p">)</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">singular_values_</span><span class="o">.</span><span class="n">view</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">components_</span><span class="p">,</span>
+                    <span class="n">X</span><span class="p">,</span>
+                    <span class="n">mean_correction</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">U</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">Vt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_svd_fn</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">U</span><span class="p">,</span> <span class="n">Vt</span> <span class="o">=</span> <span class="n">svd_flip</span><span class="p">(</span><span class="n">U</span><span class="p">,</span> <span class="n">Vt</span><span class="p">,</span> <span class="n">u_based_decision</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">explained_variance</span> <span class="o">=</span> <span class="n">S</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">n_total_samples</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">explained_variance_ratio</span> <span class="o">=</span> <span class="n">S</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">col_var</span> <span class="o">*</span> <span class="n">n_total_samples</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_seen_</span> <span class="o">=</span> <span class="n">n_total_samples</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">components_</span> <span class="o">=</span> <span class="n">Vt</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">singular_values_</span> <span class="o">=</span> <span class="n">S</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span> <span class="o">=</span> <span class="n">col_mean</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">var_</span> <span class="o">=</span> <span class="n">col_var</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">explained_variance_</span> <span class="o">=</span> <span class="n">explained_variance</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">explained_variance_ratio_</span> <span class="o">=</span> <span class="n">explained_variance_ratio</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">noise_variance_</span> <span class="o">=</span> <span class="n">explained_variance</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="p">:]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">noise_variance_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="IncrementalPCA.transform">
+<a class="viewcode-back" href="../../gen_modules/torchdr.IncrementalPCA.html#torchdr.IncrementalPCA.transform">[docs]</a>
+    <span class="nd">@handle_backend</span>
+    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply dimensionality reduction to `X`.</span>
+
+<span class="sd">        The input data `X` is projected on the first principal components</span>
+<span class="sd">        previously extracted from a training set.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : torch.Tensor or np.ndarray</span>
+<span class="sd">            New data tensor with shape (n_samples, n_features) to be transformed.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        torch.Tensor:</span>
+<span class="sd">            Transformed data tensor with shape (n_samples, n_components).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">X</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span>
+        <span class="k">return</span> <span class="n">X</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">components_</span><span class="o">.</span><span class="n">T</span></div>
+
+
+<div class="viewcode-block" id="IncrementalPCA.fit_transform">
+<a class="viewcode-back" href="../../gen_modules/torchdr.IncrementalPCA.html#torchdr.IncrementalPCA.fit_transform">[docs]</a>
+    <span class="k">def</span> <span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Fit the model with data `X` and apply the dimensionality reduction.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : torch.Tensor or np.ndarray of shape (n_samples, n_features)</span>
+<span class="sd">            Data on which to fit the PCA model and project onto the components.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        X_new : torch.Tensor or np.ndarray of shape (n_samples, n_components)</span>
+<span class="sd">            Projected data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="IncrementalPCA.gen_batches">
+<a class="viewcode-back" href="../../gen_modules/torchdr.IncrementalPCA.html#torchdr.IncrementalPCA.gen_batches">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">gen_batches</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">min_batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate slices containing `batch_size` elements from 0 to `n`.</span>
+
+<span class="sd">        The last slice may contain less than `batch_size` elements, when</span>
+<span class="sd">        `batch_size` does not divide `n`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n : int</span>
+<span class="sd">            Size of the sequence.</span>
+<span class="sd">        batch_size : int</span>
+<span class="sd">            Number of elements in each batch.</span>
+<span class="sd">        min_batch_size : int, optional</span>
+<span class="sd">            Minimum number of elements in each batch. Defaults to 0.</span>
+
+<span class="sd">        Yields</span>
+<span class="sd">        ------</span>
+<span class="sd">        slice:</span>
+<span class="sd">            A slice of `batch_size` elements.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">n</span> <span class="o">//</span> <span class="n">batch_size</span><span class="p">)):</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">batch_size</span>
+            <span class="k">if</span> <span class="n">end</span> <span class="o">+</span> <span class="n">min_batch_size</span> <span class="o">&gt;</span> <span class="n">n</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">yield</span> <span class="nb">slice</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">end</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="nb">slice</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

@@ -103,8 +103,17 @@ check the following points:</p>
 <li><p>All public methods should have informative docstrings.</p></li>
 <li><p>The automatic tests pass on your local machine. This can be done by running <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pytest</span> <span class="pre">torchdr/tests</span></code> in the root directory of the repository after making the desired changes.</p></li>
 <li><p>If your pull request addresses an issue, please use the pull request title to describe the issue and mention the issue number in the pull request description. This will make sure a link back to the original issue is created.</p></li>
-<li><p>The documentation is updated if necessary. You can edit the documentation using any text editor and then generate the HTML output by typing <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">html</span></code> from the <code class="docutils literal notranslate"><span class="pre">docs/</span></code> directory. Alternatively, make can be used to quickly generate the documentation without the example gallery with <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">html-noplot</span></code>. The resulting HTML files will be placed in <code class="docutils literal notranslate"><span class="pre">docs/build/html/</span></code> and are viewable in a web browser.</p></li>
+<li><p>The documentation is updated if necessary. You can edit the documentation using any text editor and then generate the HTML output by typing <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">html</span></code> from the <code class="docutils literal notranslate"><span class="pre">docs/</span></code> directory. The resulting HTML files will be placed in <code class="docutils literal notranslate"><span class="pre">docs/build/html/</span></code> and are viewable in a web browser.</p></li>
 </ul>
+<p>When creating a pull request (PR), use the appropriate prefix to indicate its status:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[MRG]</span></code> <strong>(Ready for Merge)</strong>: Use this prefix if your contribution is complete and ready for a detailed review. A core maintainer will review your code and approve it for merging if it meets the required standards.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[WIP]</span></code> <strong>(Work in Progress)</strong>: Use this prefix for an incomplete contribution where further work is planned before seeking a full review. Consider including a <a class="reference external" href="https://github.com/blog/1375-task-lists-in-gfm-issues-pulls-comments">task list</a> in your PR description to outline planned work or track progress. Change the prefix to <cite>[MRG]</cite> once the PR is mature and ready for detailed review.</p></li>
+</ul>
+<p>A <cite>[WIP]</cite> PR can serve multiple purposes:
+1- Indicate that you are actively working on something to prevent duplicated efforts by others.
+2- Request early feedback on functionality, design, or API.
+3- Seek collaborators to assist with development.</p>
 <p>If you are not familiar with the GitHub contribution workflow, you can also open
 an issue on the <a class="reference external" href="https://github.com/torchdr/torchdr/issues">issue tracker</a>.
 We will then try to address the issue as soon as possible.</p>

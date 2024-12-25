@@ -82,17 +82,17 @@
            <div itemprop="articleBody">
              
   <h1>Source code for torchdr.utils.geometry</h1><div class="highlight"><pre>
-<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="sd">&quot;&quot;&quot;Ground metrics and distances.&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;Ground metrics and distances.&quot;&quot;&quot;</span>
 
 <span class="c1"># Author: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
 <span class="c1">#</span>
 <span class="c1"># License: BSD 3-Clause License</span>
 
 <span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">.keops</span> <span class="kn">import</span> <span class="n">LazyTensor</span><span class="p">,</span> <span class="n">pykeops</span>
 
 <span class="kn">from</span> <span class="nn">torchdr.utils.utils</span> <span class="kn">import</span> <span class="n">identity_matrix</span>
+
+<span class="kn">from</span> <span class="nn">.keops</span> <span class="kn">import</span> <span class="n">LazyTensor</span><span class="p">,</span> <span class="n">pykeops</span>
 
 <span class="n">LIST_METRICS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;euclidean&quot;</span><span class="p">,</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span> <span class="s2">&quot;manhattan&quot;</span><span class="p">,</span> <span class="s2">&quot;angular&quot;</span><span class="p">,</span> <span class="s2">&quot;hyperbolic&quot;</span><span class="p">]</span>
 

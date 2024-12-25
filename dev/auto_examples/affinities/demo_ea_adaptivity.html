@@ -109,14 +109,11 @@ simulated dataset with heteroscedastic noise.</p>
 <span class="c1">#</span>
 <span class="c1"># License: BSD 3-Clause License</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">cm</span>
 
-<span class="kn">from</span> <span class="nn">torchdr</span> <span class="kn">import</span> <span class="p">(</span>
-    <a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">NormalizedGaussianAffinity</span></a><span class="p">,</span>
-    <a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">EntropicAffinity</span></a><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">torchdr</span> <span class="kn">import</span> <a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">EntropicAffinity</span></a><span class="p">,</span> <a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">NormalizedGaussianAffinity</span></a>
 </pre></div>
 </div>
 <p>We generate three Gaussian clusters of points with different standard deviations
@@ -185,7 +182,7 @@ their neighbors.</p>
 <h2>Entropic affinity (adaptive bandwidth)<a class="headerlink" href="#entropic-affinity-adaptive-bandwidth" title="Link to this heading"></a></h2>
 <p>To remedy this issue, we can use an <strong>entropic affinity</strong>. The entropic affinity
 employs an <strong>adaptive bandwidth</strong> that depends on the local density of points.
-By controling the entropy of each row of the affinity matrix, it ensures that
+By controlling the entropy of each row of the affinity matrix, it ensures that
 <strong>each point has the same number of effective neighbors</strong> (given by
 the <code class="docutils literal notranslate"><span class="pre">perplexity</span></code> parameter) regardless of the local density around it.</p>
 <p>In <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code>, this object is available here :
@@ -211,7 +208,7 @@ the <code class="docutils literal notranslate"><span class="pre">perplexity</spa
 <img src="../../_images/sphx_glr_demo_ea_adaptivity_002.png" srcset="../../_images/sphx_glr_demo_ea_adaptivity_002.png" alt="Entropic Affinity Matrix, Entropic Affinity Graph" class = "sphx-glr-single-img"/><p>We can now observe a <strong>homogeneous density of connections</strong> across clusters.
 Thus, the entropic affinity effectively filters out the various noise levels.</p>
 <p>This affinity is an important component of the <strong>TSNE</strong> algorithm.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.235 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.973 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-affinities-demo-ea-adaptivity-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/17d429f11ca029172465ca0d7bb1879e/demo_ea_adaptivity.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">demo_ea_adaptivity.ipynb</span></code></a></p>

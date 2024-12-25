@@ -24,7 +24,7 @@ Entropic Affinities can adapt to varying noise levels
 We show the adaptivity property of entropic affinities on a toy
 simulated dataset with heteroscedastic noise.
 
-.. GENERATED FROM PYTHON SOURCE LINES 9-23
+.. GENERATED FROM PYTHON SOURCE LINES 9-20
 
 .. code-block:: Python
 
@@ -33,14 +33,11 @@ simulated dataset with heteroscedastic noise.
     #
     # License: BSD 3-Clause License
 
-    import torch
     import matplotlib.pyplot as plt
+    import torch
     from matplotlib import cm
 
-    from torchdr import (
-        NormalizedGaussianAffinity,
-        EntropicAffinity,
-    )
+    from torchdr import EntropicAffinity, NormalizedGaussianAffinity
 
 
 
@@ -49,12 +46,12 @@ simulated dataset with heteroscedastic noise.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 24-26
+.. GENERATED FROM PYTHON SOURCE LINES 21-23
 
 We generate three Gaussian clusters of points with different standard deviations
 (respectively std=1, 2 and 3).
 
-.. GENERATED FROM PYTHON SOURCE LINES 26-55
+.. GENERATED FROM PYTHON SOURCE LINES 23-52
 
 .. code-block:: Python
 
@@ -94,7 +91,7 @@ We generate three Gaussian clusters of points with different standard deviations
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 56-68
+.. GENERATED FROM PYTHON SOURCE LINES 53-65
 
 Row-normalised Gaussian affinity with constant bandwidth
 --------------------------------------------------------
@@ -109,7 +106,7 @@ In ``TorchDR``, we can easily implement it using
 parameter ``normalization_dim=1``.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 68-86
+.. GENERATED FROM PYTHON SOURCE LINES 65-83
 
 .. code-block:: Python
 
@@ -143,28 +140,28 @@ parameter ``normalization_dim=1``.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 87-91
+.. GENERATED FROM PYTHON SOURCE LINES 84-88
 
 We can observe a remarkable **heterogeneity in the density of connections**.
 This occurs because it is less costly to create connections in high-density regions.
 As a consequence, points in sparse regions create very few connections with
 their neighbors.
 
-.. GENERATED FROM PYTHON SOURCE LINES 93-104
+.. GENERATED FROM PYTHON SOURCE LINES 90-101
 
 Entropic affinity (adaptive bandwidth)
 --------------------------------------
 
 To remedy this issue, we can use an **entropic affinity**. The entropic affinity
 employs an **adaptive bandwidth** that depends on the local density of points.
-By controling the entropy of each row of the affinity matrix, it ensures that
+By controlling the entropy of each row of the affinity matrix, it ensures that
 **each point has the same number of effective neighbors** (given by
 the ``perplexity`` parameter) regardless of the local density around it.
 
 In ``TorchDR``, this object is available here :
 :class:`torchdr.EntropicAffinity`.
 
-.. GENERATED FROM PYTHON SOURCE LINES 104-123
+.. GENERATED FROM PYTHON SOURCE LINES 101-120
 
 .. code-block:: Python
 
@@ -199,7 +196,7 @@ In ``TorchDR``, this object is available here :
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 124-129
+.. GENERATED FROM PYTHON SOURCE LINES 121-126
 
 We can now observe a **homogeneous density of connections** across clusters.
 Thus, the entropic affinity effectively filters out the various noise levels.
@@ -210,7 +207,7 @@ This affinity is an important component of the **TSNE** algorithm.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.235 seconds)
+   **Total running time of the script:** (0 minutes 2.973 seconds)
 
 
 .. _sphx_glr_download_auto_examples_affinities_demo_ea_adaptivity.py:

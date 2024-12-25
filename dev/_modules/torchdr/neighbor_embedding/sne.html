@@ -82,18 +82,14 @@
            <div itemprop="articleBody">
              
   <h1>Source code for torchdr.neighbor_embedding.sne</h1><div class="highlight"><pre>
-<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="sd">&quot;&quot;&quot;Stochastic Neighbor embedding (SNE) algorithm.&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;Stochastic Neighbor embedding (SNE) algorithm.&quot;&quot;&quot;</span>
 
 <span class="c1"># Author: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
 <span class="c1">#</span>
 <span class="c1"># License: BSD 3-Clause License</span>
 
+<span class="kn">from</span> <span class="nn">torchdr.affinity</span> <span class="kn">import</span> <span class="n">EntropicAffinity</span><span class="p">,</span> <span class="n">GaussianAffinity</span>
 <span class="kn">from</span> <span class="nn">torchdr.neighbor_embedding.base</span> <span class="kn">import</span> <span class="n">SparseNeighborEmbedding</span>
-<span class="kn">from</span> <span class="nn">torchdr.affinity</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">EntropicAffinity</span><span class="p">,</span>
-    <span class="n">GaussianAffinity</span><span class="p">,</span>
-<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">torchdr.utils</span> <span class="kn">import</span> <span class="n">logsumexp_red</span>
 
 

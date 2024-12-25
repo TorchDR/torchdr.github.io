@@ -82,35 +82,36 @@
            <div itemprop="articleBody">
              
   <h1>Source code for torchdr.affinity_matcher</h1><div class="highlight"><pre>
-<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="sd">&quot;&quot;&quot;Affinity matcher base classes.&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;Affinity matcher base classes.&quot;&quot;&quot;</span>
 
 <span class="c1"># Author: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
 <span class="c1">#         Titouan Vayer &lt;titouan.vayer@inria.fr&gt;</span>
 <span class="c1">#</span>
 <span class="c1"># License: BSD 3-Clause License</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 
-<span class="kn">from</span> <span class="nn">torchdr.utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">OPTIMIZERS</span><span class="p">,</span>
-    <span class="n">check_nonnegativity</span><span class="p">,</span>
-    <span class="n">check_NaNs</span><span class="p">,</span>
-    <span class="n">handle_backend</span><span class="p">,</span>
-    <span class="n">to_torch</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
 <span class="kn">from</span> <span class="nn">torchdr.affinity</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Affinity</span><span class="p">,</span>
     <span class="n">LogAffinity</span><span class="p">,</span>
     <span class="n">SparseLogAffinity</span><span class="p">,</span>
     <span class="n">UnnormalizedAffinity</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">torchdr.spectral</span> <span class="kn">import</span> <span class="n">PCA</span>
 <span class="kn">from</span> <span class="nn">torchdr.base</span> <span class="kn">import</span> <span class="n">DRModule</span>
-<span class="kn">from</span> <span class="nn">torchdr.utils</span> <span class="kn">import</span> <span class="n">square_loss</span><span class="p">,</span> <span class="n">cross_entropy_loss</span>
+<span class="kn">from</span> <span class="nn">torchdr.spectral</span> <span class="kn">import</span> <span class="n">PCA</span>
+<span class="kn">from</span> <span class="nn">torchdr.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">OPTIMIZERS</span><span class="p">,</span>
+    <span class="n">check_NaNs</span><span class="p">,</span>
+    <span class="n">check_nonnegativity</span><span class="p">,</span>
+    <span class="n">cross_entropy_loss</span><span class="p">,</span>
+    <span class="n">handle_backend</span><span class="p">,</span>
+    <span class="n">square_loss</span><span class="p">,</span>
+    <span class="n">to_torch</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="n">LOSS_DICT</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;square_loss&quot;</span><span class="p">:</span> <span class="n">square_loss</span><span class="p">,</span>
@@ -271,7 +272,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        embedding_ : torch.Tensor</span>
 <span class="sd">            The embedding of the input data.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>  <span class="c1"># noqa: RST306</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span></div>
 

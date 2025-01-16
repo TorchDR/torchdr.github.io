@@ -29,7 +29,7 @@
   <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
@@ -464,23 +464,23 @@
 <span class="c1">#</span>
 <span class="c1"># License: BSD 3-Clause License</span>
 
-<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
-<span class="kn">from</span> <span class="nn">torchdr.affinity</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Affinity</span><span class="p">,</span>
     <span class="n">SparseLogAffinity</span><span class="p">,</span>
     <span class="n">UnnormalizedAffinity</span><span class="p">,</span>
     <span class="n">UnnormalizedLogAffinity</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">torchdr.affinity_matcher</span> <span class="kn">import</span> <span class="n">AffinityMatcher</span>
-<span class="kn">from</span> <span class="nn">torchdr.utils</span> <span class="kn">import</span> <span class="n">OPTIMIZERS</span><span class="p">,</span> <span class="n">cross_entropy_loss</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity_matcher</span><span class="w"> </span><span class="kn">import</span> <span class="n">AffinityMatcher</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">OPTIMIZERS</span><span class="p">,</span> <span class="n">cross_entropy_loss</span>
 
 
 <div class="viewcode-block" id="NeighborEmbedding">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.NeighborEmbedding.html#torchdr.NeighborEmbedding">[docs]</a>
-<span class="k">class</span> <span class="nc">NeighborEmbedding</span><span class="p">(</span><span class="n">AffinityMatcher</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NeighborEmbedding</span><span class="p">(</span><span class="n">AffinityMatcher</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Solves the neighbor embedding problem.</span>
 
 <span class="sd">    It amounts to solving:</span>
@@ -545,7 +545,7 @@
 <span class="sd">        Number of iterations for early exaggeration. Default is None.</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">affinity_in</span><span class="p">:</span> <span class="n">Affinity</span><span class="p">,</span>
         <span class="n">affinity_out</span><span class="p">:</span> <span class="n">Affinity</span><span class="p">,</span>
@@ -603,7 +603,7 @@
         <span class="k">if</span> <span class="s2">&quot;early_exaggeration&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;early_exaggeration&quot;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">_additional_updates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_additional_updates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span>  <span class="c1"># stop early exaggeration phase</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">step</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_iter</span>
         <span class="p">):</span>
@@ -615,7 +615,7 @@
 
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="k">def</span> <span class="nf">_check_n_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_n_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
         <span class="n">param_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;perplexity&quot;</span><span class="p">,</span> <span class="s2">&quot;n_neighbors&quot;</span><span class="p">]</span>
 
         <span class="k">for</span> <span class="n">param_name</span> <span class="ow">in</span> <span class="n">param_list</span><span class="p">:</span>
@@ -626,7 +626,7 @@
                         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                             <span class="s2">&quot;[TorchDR] WARNING : Number of samples is smaller than &quot;</span>
                             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">param_name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> &lt;= </span><span class="si">{</span><span class="n">param_value</span><span class="si">}</span><span class="s2">), setting &quot;</span>
-                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">param_name</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">n</span><span class="o">//</span><span class="mi">2</span><span class="si">}</span><span class="s2"> (which corresponds to n//2).&quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">param_name</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">n</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="mi">2</span><span class="si">}</span><span class="s2"> (which corresponds to n//2).&quot;</span>
                         <span class="p">)</span>
                     <span class="n">new_value</span> <span class="o">=</span> <span class="n">n</span> <span class="o">//</span> <span class="mi">2</span>
                     <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_name</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
@@ -634,7 +634,7 @@
 
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="k">def</span> <span class="nf">_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_n_neighbors</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration</span>
@@ -642,10 +642,10 @@
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;[TorchDR] ERROR : _loss method must be implemented.&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_set_learning_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_learning_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="s2">&quot;SGD&quot;</span><span class="p">]:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
@@ -658,7 +658,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">lr_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr</span>
 
-    <span class="k">def</span> <span class="nf">_set_optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">optimizer</span> <span class="o">=</span> <span class="s2">&quot;SGD&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span>
         <span class="c1"># from the sklearn TSNE implementation</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_kwargs</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
@@ -677,7 +677,7 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_</span>
 
-    <span class="k">def</span> <span class="nf">_set_scheduler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_scheduler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">n_iter</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_iter</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -688,7 +688,7 @@
 
 <div class="viewcode-block" id="SparseNeighborEmbedding">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.SparseNeighborEmbedding.html#torchdr.SparseNeighborEmbedding">[docs]</a>
-<span class="k">class</span> <span class="nc">SparseNeighborEmbedding</span><span class="p">(</span><span class="n">NeighborEmbedding</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SparseNeighborEmbedding</span><span class="p">(</span><span class="n">NeighborEmbedding</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Solves the neighbor embedding problem with a sparse input affinity matrix.</span>
 
 <span class="sd">    It amounts to solving:</span>
@@ -751,7 +751,7 @@
 <span class="sd">        Number of iterations for early exaggeration. Default is None.</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">affinity_in</span><span class="p">:</span> <span class="n">Affinity</span><span class="p">,</span>
         <span class="n">affinity_out</span><span class="p">:</span> <span class="n">Affinity</span><span class="p">,</span>
@@ -813,7 +813,7 @@
             <span class="n">early_exaggeration_iter</span><span class="o">=</span><span class="n">early_exaggeration_iter</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_attractive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_attractive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="p">,</span> <span class="n">UnnormalizedLogAffinity</span><span class="p">):</span>
             <span class="n">log_Q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span>
@@ -823,12 +823,12 @@
             <span class="n">Q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">cross_entropy_loss</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PX_</span><span class="p">,</span> <span class="n">Q</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_repulsive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repulsive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;[TorchDR] ERROR : _repulsive_loss method must be implemented.&quot;</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">loss</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attractive_loss</span><span class="p">()</span>
             <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">coeff_repulsion</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repulsive_loss</span><span class="p">()</span>
@@ -839,7 +839,7 @@
 
 <div class="viewcode-block" id="SampledNeighborEmbedding">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.SampledNeighborEmbedding.html#torchdr.SampledNeighborEmbedding">[docs]</a>
-<span class="k">class</span> <span class="nc">SampledNeighborEmbedding</span><span class="p">(</span><span class="n">SparseNeighborEmbedding</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SampledNeighborEmbedding</span><span class="p">(</span><span class="n">SparseNeighborEmbedding</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Solves the neighbor embedding problem with both sparsity and sampling.</span>
 
 <span class="sd">    It amounts to solving:</span>
@@ -912,7 +912,7 @@
 <span class="sd">        Number of negative samples for the repulsive loss.</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">affinity_in</span><span class="p">:</span> <span class="n">Affinity</span><span class="p">,</span>
         <span class="n">affinity_out</span><span class="p">:</span> <span class="n">Affinity</span><span class="p">,</span>
@@ -963,7 +963,7 @@
             <span class="n">early_exaggeration_iter</span><span class="o">=</span><span class="n">early_exaggeration_iter</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_sample_negatives</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">discard_NNs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sample_negatives</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">discard_NNs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="c1"># Negatives are all other points except NNs (if discard_NNs) and point itself</span>
         <span class="n">n_possible_negatives</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># Exclude the self-index</span>
         <span class="n">discard_NNs_</span> <span class="o">=</span> <span class="n">discard_NNs</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>

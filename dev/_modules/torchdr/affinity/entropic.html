@@ -29,7 +29,7 @@
   <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
@@ -466,17 +466,17 @@
 <span class="c1">#</span>
 <span class="c1"># License: BSD 3-Clause License</span>
 
-<span class="kn">import</span> <span class="nn">contextlib</span>
-<span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
 
-<span class="kn">from</span> <span class="nn">torchdr.affinity.base</span> <span class="kn">import</span> <span class="n">LogAffinity</span><span class="p">,</span> <span class="n">SparseLogAffinity</span>
-<span class="kn">from</span> <span class="nn">torchdr.utils</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogAffinity</span><span class="p">,</span> <span class="n">SparseLogAffinity</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">OPTIMIZERS</span><span class="p">,</span>
     <span class="n">batch_transpose</span><span class="p">,</span>
     <span class="n">check_NaNs</span><span class="p">,</span>
@@ -491,7 +491,7 @@
 
 
 <span class="nd">@wrap_vectors</span>
-<span class="k">def</span> <span class="nf">_log_Pe</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">eps</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_log_Pe</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">eps</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the log of the unnormalized directed entropic affinity.</span>
 
 <span class="sd">    Parameters</span>
@@ -512,7 +512,7 @@
 
 
 <span class="nd">@wrap_vectors</span>
-<span class="k">def</span> <span class="nf">_log_Pse</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">eps_square</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_log_Pse</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">eps_square</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the log of the symmetric entropic affinity matrix.</span>
 
 <span class="sd">    Parameters</span>
@@ -540,7 +540,7 @@
 
 
 <span class="nd">@wrap_vectors</span>
-<span class="k">def</span> <span class="nf">_log_Pds</span><span class="p">(</span><span class="n">log_K</span><span class="p">,</span> <span class="n">dual</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_log_Pds</span><span class="p">(</span><span class="n">log_K</span><span class="p">,</span> <span class="n">dual</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the log of the doubly stochastic normalization of log_K (in log domain).</span>
 
 <span class="sd">    Parameters</span>
@@ -561,7 +561,7 @@
     <span class="k">return</span> <span class="n">dual</span> <span class="o">+</span> <span class="n">dual_t</span> <span class="o">+</span> <span class="n">log_K</span>
 
 
-<span class="k">def</span> <span class="nf">_bounds_entropic_affinity</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">perplexity</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_bounds_entropic_affinity</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">perplexity</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the entropic affinity bounds derived in :cite:`vladymyrov2013entropic`.</span>
 
 <span class="sd">    Parameters</span>
@@ -583,7 +583,7 @@
     <span class="n">N</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="c1"># solve a unique 1D root finding problem</span>
-    <span class="k">def</span> <span class="nf">find_p1</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_p1</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">N</span><span class="p">),</span> <span class="n">perplexity</span><span class="p">]))</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
             <span class="n">N</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x</span><span class="p">))</span>
         <span class="p">)</span>
@@ -616,7 +616,7 @@
     <span class="k">return</span> <span class="n">begin</span><span class="p">,</span> <span class="n">end</span>
 
 
-<span class="k">def</span> <span class="nf">_check_perplexity</span><span class="p">(</span><span class="n">perplexity</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_perplexity</span><span class="p">(</span><span class="n">perplexity</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Check the perplexity parameter and return a valid value.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -640,7 +640,7 @@
 
 <div class="viewcode-block" id="EntropicAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.EntropicAffinity.html#torchdr.EntropicAffinity">[docs]</a>
-<span class="k">class</span> <span class="nc">EntropicAffinity</span><span class="p">(</span><span class="n">SparseLogAffinity</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EntropicAffinity</span><span class="p">(</span><span class="n">SparseLogAffinity</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Solve the directed entropic affinity problem introduced in :cite:`hinton2002stochastic`.</span>
 
 <span class="sd">    The algorithm computes the optimal dual variable</span>
@@ -707,7 +707,7 @@
 <span class="sd">        Verbosity. Default is False.</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">perplexity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
         <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
@@ -732,7 +732,7 @@
             <span class="n">sparsity</span><span class="o">=</span><span class="n">sparsity</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_sparsity_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sparsity_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
@@ -744,7 +744,7 @@
                 <span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">_compute_sparse_log_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_sparse_log_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Solve the entropic affinity problem by :cite:`hinton2002stochastic`.</span>
 
 <span class="sd">        Parameters</span>
@@ -788,7 +788,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">C_</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">C</span><span class="p">,</span> <span class="kc">None</span>
 
-        <span class="k">def</span> <span class="nf">entropy_gap</span><span class="p">(</span><span class="n">eps</span><span class="p">):</span>  <span class="c1"># function to find the root of</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">entropy_gap</span><span class="p">(</span><span class="n">eps</span><span class="p">):</span>  <span class="c1"># function to find the root of</span>
             <span class="n">log_P</span> <span class="o">=</span> <span class="n">_log_Pe</span><span class="p">(</span><span class="n">C_</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span>
             <span class="n">log_P_normalized</span> <span class="o">=</span> <span class="n">log_P</span> <span class="o">-</span> <span class="n">logsumexp_red</span><span class="p">(</span><span class="n">log_P</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">entropy</span><span class="p">(</span><span class="n">log_P_normalized</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-</span> <span class="n">target_entropy</span>
@@ -820,7 +820,7 @@
 
 <div class="viewcode-block" id="SymmetricEntropicAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.SymmetricEntropicAffinity.html#torchdr.SymmetricEntropicAffinity">[docs]</a>
-<span class="k">class</span> <span class="nc">SymmetricEntropicAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SymmetricEntropicAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the symmetric entropic affinity (SEA) introduced in :cite:`van2024snekhorn`.</span>
 
 <span class="sd">    Compute the solution :math:`\mathbf{P}^{\mathrm{se}}` to the symmetric entropic</span>
@@ -891,7 +891,7 @@
 <span class="sd">        Verbosity. Default is False.</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">perplexity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
         <span class="n">lr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-1</span><span class="p">,</span>
@@ -921,7 +921,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tolog</span> <span class="o">=</span> <span class="n">tolog</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">eps_square</span> <span class="o">=</span> <span class="n">eps_square</span>
 
-    <span class="k">def</span> <span class="nf">_compute_log_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_log_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Solve the problem (SEA) in :cite:`van2024snekhorn`.</span>
 
 <span class="sd">        Parameters</span>
@@ -965,7 +965,7 @@
                 <span class="n">line_search_fn</span><span class="o">=</span><span class="s2">&quot;strong_wolfe&quot;</span><span class="p">,</span>
             <span class="p">)</span>
 
-            <span class="k">def</span> <span class="nf">closure</span><span class="p">():</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">closure</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">is_grad_enabled</span><span class="p">():</span>
                     <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
                 <span class="n">_eps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps_</span><span class="o">**</span><span class="mi">2</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps_square</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps_</span>
@@ -1054,8 +1054,7 @@
                     <span class="p">):</span>
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
                             <span class="nb">print</span><span class="p">(</span>
-                                <span class="s2">&quot;[TorchDR] Affinity : convergence reached &quot;</span>
-                                <span class="sa">f</span><span class="s2">&quot;at iter </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">.&quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;[TorchDR] Affinity : convergence reached at iter </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">.&quot;</span>
                             <span class="p">)</span>
                         <span class="k">break</span>
 
@@ -1076,7 +1075,7 @@
 
 <div class="viewcode-block" id="SinkhornAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.SinkhornAffinity.html#torchdr.SinkhornAffinity">[docs]</a>
-<span class="k">class</span> <span class="nc">SinkhornAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SinkhornAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the symmetric doubly stochastic affinity matrix.</span>
 
 <span class="sd">    The algorithm computes the doubly stochastic matrix :math:`\mathbf{P}^{\mathrm{ds}}`</span>
@@ -1145,7 +1144,7 @@
 <span class="sd">        If False, torch.no_grad() is used for the iterations.</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">eps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-5</span><span class="p">,</span>
@@ -1173,7 +1172,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tolog</span> <span class="o">=</span> <span class="n">tolog</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">with_grad</span> <span class="o">=</span> <span class="n">with_grad</span>
 
-    <span class="k">def</span> <span class="nf">_compute_log_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">init_dual</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_log_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">init_dual</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the entropic doubly stochastic affinity matrix.</span>
 
 <span class="sd">        Parameters</span>
@@ -1251,7 +1250,7 @@
 
 <div class="viewcode-block" id="NormalizedGaussianAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.NormalizedGaussianAffinity.html#torchdr.NormalizedGaussianAffinity">[docs]</a>
-<span class="k">class</span> <span class="nc">NormalizedGaussianAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NormalizedGaussianAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the Gaussian affinity matrix which can be normalized along a dimension.</span>
 
 <span class="sd">    The algorithm computes :math:`\exp( - \mathbf{C} / \sigma)`</span>
@@ -1277,7 +1276,7 @@
 <span class="sd">        Dimension along which to normalize the affinity matrix. Default is (0, 1)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">sigma</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
@@ -1297,7 +1296,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">normalization_dim</span> <span class="o">=</span> <span class="n">normalization_dim</span>
 
-    <span class="k">def</span> <span class="nf">_compute_log_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_log_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Fit the normalized Gaussian affinity model to the provided data.</span>
 
 <span class="sd">        Parameters</span>
@@ -1331,7 +1330,7 @@
 
 <div class="viewcode-block" id="NormalizedStudentAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.NormalizedStudentAffinity.html#torchdr.NormalizedStudentAffinity">[docs]</a>
-<span class="k">class</span> <span class="nc">NormalizedStudentAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NormalizedStudentAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the Student affinity matrix which can be normalized along a dimension.</span>
 
 <span class="sd">    Its expression is given by:</span>
@@ -1361,7 +1360,7 @@
 <span class="sd">        Dimension along which to normalize the affinity matrix. Default is (0, 1)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">degrees_of_freedom</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
@@ -1381,7 +1380,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">degrees_of_freedom</span> <span class="o">=</span> <span class="n">degrees_of_freedom</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">normalization_dim</span> <span class="o">=</span> <span class="n">normalization_dim</span>
 
-    <span class="k">def</span> <span class="nf">_compute_log_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_log_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Fits the normalized Student affinity model to the provided data.</span>
 
 <span class="sd">        Parameters</span>

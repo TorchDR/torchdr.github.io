@@ -29,7 +29,7 @@
   <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
@@ -465,16 +465,16 @@
 <span class="c1">#</span>
 <span class="c1"># License: BSD 3-Clause License</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
-<span class="kn">from</span> <span class="nn">torchdr.affinity.base</span> <span class="kn">import</span> <span class="n">Affinity</span><span class="p">,</span> <span class="n">LogAffinity</span>
-<span class="kn">from</span> <span class="nn">torchdr.utils</span> <span class="kn">import</span> <span class="n">batch_transpose</span><span class="p">,</span> <span class="n">kmin</span><span class="p">,</span> <span class="n">logsumexp_red</span><span class="p">,</span> <span class="n">sum_red</span><span class="p">,</span> <span class="n">wrap_vectors</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Affinity</span><span class="p">,</span> <span class="n">LogAffinity</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">batch_transpose</span><span class="p">,</span> <span class="n">kmin</span><span class="p">,</span> <span class="n">logsumexp_red</span><span class="p">,</span> <span class="n">sum_red</span><span class="p">,</span> <span class="n">wrap_vectors</span>
 
 
 <span class="nd">@wrap_vectors</span>
-<span class="k">def</span> <span class="nf">_log_SelfTuning</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_log_SelfTuning</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the self-tuning affinity matrix with sample-wise bandwidth.</span>
 
 <span class="sd">    The bandwidth is determined by the distance from a point</span>
@@ -496,7 +496,7 @@
 
 
 <span class="nd">@wrap_vectors</span>
-<span class="k">def</span> <span class="nf">_log_MAGIC</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_log_MAGIC</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the MAGIC affinity matrix with sample-wise bandwidth.</span>
 
 <span class="sd">    The bandwidth is determined by the distance from a point</span>
@@ -518,7 +518,7 @@
 
 <div class="viewcode-block" id="SelfTuningAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.SelfTuningAffinity.html#torchdr.SelfTuningAffinity">[docs]</a>
-<span class="k">class</span> <span class="nc">SelfTuningAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SelfTuningAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Self-tuning affinity introduced in :cite:`zelnik2004self`.</span>
 
 <span class="sd">    The affinity has a sample-wise bandwidth :math:`\mathbf{\sigma} \in \mathbb{R}^n`.</span>
@@ -548,7 +548,7 @@
 <span class="sd">        Verbosity. Default is False.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">K</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span>
         <span class="n">normalization_dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
@@ -568,7 +568,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">K</span> <span class="o">=</span> <span class="n">K</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">normalization_dim</span> <span class="o">=</span> <span class="n">normalization_dim</span>
 
-    <span class="k">def</span> <span class="nf">_compute_log_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_log_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Fit the self-tuning affinity model to the provided data.</span>
 
 <span class="sd">        Parameters</span>
@@ -599,7 +599,7 @@
 
 <div class="viewcode-block" id="MAGICAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.MAGICAffinity.html#torchdr.MAGICAffinity">[docs]</a>
-<span class="k">class</span> <span class="nc">MAGICAffinity</span><span class="p">(</span><span class="n">Affinity</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MAGICAffinity</span><span class="p">(</span><span class="n">Affinity</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the MAGIC affinity introduced in :cite:`van2018recovering`.</span>
 
 <span class="sd">    The construction is as follows. First, it computes a Gaussian</span>
@@ -639,7 +639,7 @@
 <span class="sd">        Verbosity. Default is False.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">K</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span>
         <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
@@ -657,7 +657,7 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">K</span> <span class="o">=</span> <span class="n">K</span>
 
-    <span class="k">def</span> <span class="nf">_compute_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Fit the MAGIC affinity model to the provided data.</span>
 
 <span class="sd">        Parameters</span>

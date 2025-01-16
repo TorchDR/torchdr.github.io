@@ -29,7 +29,7 @@
   <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
@@ -464,18 +464,18 @@
 <span class="c1">#</span>
 <span class="c1"># License: BSD 3-Clause License</span>
 
-<span class="kn">from</span> <span class="nn">torchdr.affinity</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">EntropicAffinity</span><span class="p">,</span>
     <span class="n">SinkhornAffinity</span><span class="p">,</span>
     <span class="n">SymmetricEntropicAffinity</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">torchdr.neighbor_embedding.base</span> <span class="kn">import</span> <span class="n">NeighborEmbedding</span>
-<span class="kn">from</span> <span class="nn">torchdr.utils</span> <span class="kn">import</span> <span class="n">cross_entropy_loss</span><span class="p">,</span> <span class="n">logsumexp_red</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.neighbor_embedding.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">NeighborEmbedding</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">cross_entropy_loss</span><span class="p">,</span> <span class="n">logsumexp_red</span>
 
 
 <div class="viewcode-block" id="TSNEkhorn">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.TSNEkhorn.html#torchdr.TSNEkhorn">[docs]</a>
-<span class="k">class</span> <span class="nc">TSNEkhorn</span><span class="p">(</span><span class="n">NeighborEmbedding</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TSNEkhorn</span><span class="p">(</span><span class="n">NeighborEmbedding</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;TSNEkhorn algorithm introduced in :cite:`van2024snekhorn`.</span>
 
 <span class="sd">    It involves selecting a :class:`~torchdr.SymmetricEntropicAffinity` as input</span>
@@ -563,7 +563,7 @@
 <span class="sd">        entropic affinity. Default is True.</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">perplexity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
         <span class="n">n_components</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
@@ -659,7 +659,7 @@
             <span class="n">early_exaggeration_iter</span><span class="o">=</span><span class="n">early_exaggeration_iter</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;dual_sinkhorn_&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dual_sinkhorn_</span> <span class="o">=</span> <span class="kc">None</span>
 

@@ -29,7 +29,7 @@
   <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
@@ -464,14 +464,14 @@
 <span class="c1">#</span>
 <span class="c1"># License: BSD 3-Clause License</span>
 
-<span class="kn">from</span> <span class="nn">torchdr.affinity</span> <span class="kn">import</span> <span class="n">EntropicAffinity</span><span class="p">,</span> <span class="n">StudentAffinity</span>
-<span class="kn">from</span> <span class="nn">torchdr.neighbor_embedding.base</span> <span class="kn">import</span> <span class="n">SampledNeighborEmbedding</span>
-<span class="kn">from</span> <span class="nn">torchdr.utils</span> <span class="kn">import</span> <span class="n">cross_entropy_loss</span><span class="p">,</span> <span class="n">sum_output</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity</span><span class="w"> </span><span class="kn">import</span> <span class="n">EntropicAffinity</span><span class="p">,</span> <span class="n">StudentAffinity</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.neighbor_embedding.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">SampledNeighborEmbedding</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">cross_entropy_loss</span><span class="p">,</span> <span class="n">sum_output</span>
 
 
 <div class="viewcode-block" id="LargeVis">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.LargeVis.html#torchdr.LargeVis">[docs]</a>
-<span class="k">class</span> <span class="nc">LargeVis</span><span class="p">(</span><span class="n">SampledNeighborEmbedding</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LargeVis</span><span class="p">(</span><span class="n">SampledNeighborEmbedding</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;LargeVis algorithm introduced in :cite:`tang2016visualizing`.</span>
 
 <span class="sd">    It involves selecting a :class:`~torchdr.EntropicAffinity` as input</span>
@@ -541,7 +541,7 @@
 <span class="sd">        Number of negative samples for the repulsive loss.</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">perplexity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
         <span class="n">n_components</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
@@ -615,13 +615,13 @@
         <span class="p">)</span>
 
     <span class="nd">@sum_output</span>
-    <span class="k">def</span> <span class="nf">_repulsive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repulsive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_negatives</span><span class="p">()</span>
         <span class="n">Q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">)</span>
         <span class="n">Q</span> <span class="o">=</span> <span class="n">Q</span> <span class="o">/</span> <span class="p">(</span><span class="n">Q</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">Q</span><span class="p">)</span><span class="o">.</span><span class="n">log</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span>
 
-    <span class="k">def</span> <span class="nf">_attractive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_attractive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">Q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span><span class="p">)</span>
         <span class="n">Q</span> <span class="o">=</span> <span class="n">Q</span> <span class="o">/</span> <span class="p">(</span><span class="n">Q</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">cross_entropy_loss</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PX_</span><span class="p">,</span> <span class="n">Q</span><span class="p">)</span></div>

@@ -141,13 +141,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../torchdr.quick_start.html">
-    Quick Start Guide
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../torchdr.user_guide.html">
     User Guide
   </a>
@@ -160,6 +153,20 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+    Gallery
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../torchdr.releases.html">
+    Releases
+  </a>
+</li>
+
             <li class="nav-item dropdown">
                 <button class="btn dropdown-toggle nav-item" type="button"
                 data-bs-toggle="dropdown" aria-expanded="false"
@@ -168,20 +175,6 @@
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../../../auto_examples/index.html">
-    Gallery
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../../../torchdr.releases.html">
-    Releases
-  </a>
-</li>
-
-
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="../../../torchdr.contributing.html">
     Contributing
@@ -300,13 +293,6 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../index.html">
     Torch Dimensionality Reduction
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../torchdr.quick_start.html">
-    Quick Start Guide
   </a>
 </li>
 
@@ -474,7 +460,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">UMAP</span><span class="p">(</span><span class="n">SampledNeighborEmbedding</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;UMAP introduced in :cite:`mcinnes2018umap` and further studied in :cite:`damrich2021umap`.</span>
 
-<span class="sd">    It involves selecting a :class:`~torchdr.UMAPAffinityIn` as input</span>
+<span class="sd">    It uses a :class:`~torchdr.UMAPAffinityIn` as input</span>
 <span class="sd">    affinity :math:`\mathbf{P}` and a :class:`~torchdr.UMAPAffinityOut` as output</span>
 <span class="sd">    affinity :math:`\mathbf{Q}`.</span>
 
@@ -482,9 +468,9 @@
 
 <span class="sd">    .. math::</span>
 
-<span class="sd">        -\sum_{ij} P_{ij} \log Q_{ij} + \sum_{i,j \in N(i)} \log (1 - Q_{ij})</span>
+<span class="sd">        -\sum_{ij} P_{ij} \log Q_{ij} + \sum_{i,j \in \mathrm{Neg}(i)} \log (1 - Q_{ij})</span>
 
-<span class="sd">    where :math:`N(i)` is the set of negatives samples for point :math:`i`.</span>
+<span class="sd">    where :math:`\mathrm{Neg}(i)` is the set of negatives samples for point :math:`i`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -528,11 +514,9 @@
 <span class="sd">        Verbosity, by default False.</span>
 <span class="sd">    random_state : float, optional</span>
 <span class="sd">        Random seed for reproducibility, by default 0.</span>
-<span class="sd">    early_exaggeration : float, optional</span>
+<span class="sd">    early_exaggeration_coeff : float, optional</span>
 <span class="sd">        Coefficient for the attraction term during the early exaggeration phase.</span>
 <span class="sd">        By default 1.0.</span>
-<span class="sd">    coeff_repulsion : float, optional</span>
-<span class="sd">        Coefficient for the repulsion term, by default 1.0.</span>
 <span class="sd">    early_exaggeration_iter : int, optional</span>
 <span class="sd">        Number of iterations for early exaggeration, by default 250.</span>
 <span class="sd">    tol_affinity : float, optional</span>
@@ -569,8 +553,7 @@
         <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="n">early_exaggeration</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
-        <span class="n">coeff_repulsion</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">early_exaggeration_coeff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">early_exaggeration_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">tol_affinity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
         <span class="n">max_iter_affinity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
@@ -626,8 +609,7 @@
             <span class="n">keops</span><span class="o">=</span><span class="n">keops</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
-            <span class="n">early_exaggeration</span><span class="o">=</span><span class="n">early_exaggeration</span><span class="p">,</span>
-            <span class="n">coeff_repulsion</span><span class="o">=</span><span class="n">coeff_repulsion</span><span class="p">,</span>
+            <span class="n">early_exaggeration_coeff</span><span class="o">=</span><span class="n">early_exaggeration_coeff</span><span class="p">,</span>
             <span class="n">early_exaggeration_iter</span><span class="o">=</span><span class="n">early_exaggeration_iter</span><span class="p">,</span>
             <span class="n">n_negatives</span><span class="o">=</span><span class="n">n_negatives</span><span class="p">,</span>
         <span class="p">)</span>

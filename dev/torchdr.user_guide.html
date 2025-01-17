@@ -53,7 +53,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Affinity" href="stubs/torchdr.Affinity.html" />
-    <link rel="prev" title="Quick Start Guide" href="torchdr.quick_start.html" />
+    <link rel="prev" title="Torch Dimensionality Reduction" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -145,13 +145,6 @@
 </li>
 
 
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="torchdr.quick_start.html">
-    Quick Start Guide
-  </a>
-</li>
-
-
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="#">
     User Guide
@@ -165,6 +158,20 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="auto_examples/index.html">
+    Gallery
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="torchdr.releases.html">
+    Releases
+  </a>
+</li>
+
             <li class="nav-item dropdown">
                 <button class="btn dropdown-toggle nav-item" type="button"
                 data-bs-toggle="dropdown" aria-expanded="false"
@@ -173,20 +180,6 @@
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="auto_examples/index.html">
-    Gallery
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="torchdr.releases.html">
-    Releases
-  </a>
-</li>
-
-
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="torchdr.contributing.html">
     Contributing
@@ -307,13 +300,6 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="index.html">
     Torch Dimensionality Reduction
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="torchdr.quick_start.html">
-    Quick Start Guide
   </a>
 </li>
 
@@ -496,11 +482,11 @@
 <h2><a class="toc-backref" href="#id9" role="doc-backlink">Overview</a><a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
 <section id="general-formulation-of-dimensionality-reduction">
 <h3>General Formulation of Dimensionality Reduction<a class="headerlink" href="#general-formulation-of-dimensionality-reduction" title="Link to this heading">#</a></h3>
-<p>DR aims to construct a low-dimensional representation (or embedding) <span class="math notranslate nohighlight">\(\mathbf{Z} = (\mathbf{z}_1, ..., \mathbf{z}_n)^\top\)</span> of an input dataset <span class="math notranslate nohighlight">\(\mathbf{X} = (\mathbf{x}_1, ..., \mathbf{x}_n)^\top\)</span> that best preserves its geometry, encoded via a pairwise affinity matrix <span class="math notranslate nohighlight">\(\mathbf{A_X}\)</span>. To this end, DR methods optimize <span class="math notranslate nohighlight">\(\mathbf{Z}\)</span> such that a pairwise affinity matrix in the embedding space (denoted <span class="math notranslate nohighlight">\(\mathbf{A_Z}\)</span>) matches <span class="math notranslate nohighlight">\(\mathbf{A_X}\)</span>. This general problem is as follows</p>
+<p>DR aims to construct a low-dimensional representation (or embedding) <span class="math notranslate nohighlight">\(\mathbf{Z} = (\mathbf{z}_1, ..., \mathbf{z}_n)^\top\)</span> of an input dataset <span class="math notranslate nohighlight">\(\mathbf{X} = (\mathbf{x}_1, ..., \mathbf{x}_n)^\top\)</span> that best preserves its geometry, encoded via a pairwise affinity matrix <span class="math notranslate nohighlight">\(\mathbf{P}\)</span>. To this end, DR methods optimize <span class="math notranslate nohighlight">\(\mathbf{Z}\)</span> such that a pairwise affinity matrix in the embedding space (denoted <span class="math notranslate nohighlight">\(\mathbf{Q}\)</span>) matches <span class="math notranslate nohighlight">\(\mathbf{P}\)</span>. This general problem is as follows</p>
 <div class="math notranslate nohighlight">
-\[\min_{\mathbf{Z}} \: \mathcal{L}( \mathbf{A_X}, \mathbf{A_Z}) \quad \text{(DR)}\]</div>
+\[\min_{\mathbf{Z}} \: \mathcal{L}( \mathbf{P}, \mathbf{Q}) \quad \text{(DR)}\]</div>
 <p>where <span class="math notranslate nohighlight">\(\mathcal{L}\)</span> is typically the <span class="math notranslate nohighlight">\(\ell_2\)</span> or cross-entropy loss.
-Each DR method is thus characterized by a triplet <span class="math notranslate nohighlight">\((\mathcal{L}, \mathbf{A_X}, \mathbf{A_Z})\)</span>.</p>
+Each DR method is thus characterized by a triplet <span class="math notranslate nohighlight">\((\mathcal{L}, \mathbf{P}, \mathbf{Q})\)</span>.</p>
 <p>TorchDR is structured around the above formulation <span class="math notranslate nohighlight">\(\text{(DR)}\)</span>.
 Defining a DR algorithm solely requires providing an <a class="reference internal" href="stubs/torchdr.Affinity.html#torchdr.Affinity" title="torchdr.Affinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Affinity</span></code></a> object for both input and embedding as well as a loss function <span class="math notranslate nohighlight">\(\mathcal{L}\)</span>.</p>
 <p>All modules follow the <code class="docutils literal notranslate"><span class="pre">sklearn</span></code> <span id="id2">[<a class="reference internal" href="torchdr.bibliography.html#id18" title="Fabian Pedregosa, Gaël Varoquaux, Alexandre Gramfort, Vincent Michel, Bertrand Thirion, Olivier Grisel, Mathieu Blondel, Peter Prettenhofer, Ron Weiss, Vincent Dubourg, and others. Scikit-learn: machine learning in python. the Journal of machine Learning research, 12:2825–2830, 2011.">Pedregosa <em>et al.</em>, 2011</a>]</span> API and can be used in <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html">sklearn pipelines</a>.</p>
@@ -643,70 +629,70 @@ It is available at <a class="reference internal" href="gen_modules/torchdr.Doubl
 <p>In what follows we briefly present two families of DR algorithms: neighbor embedding methods and spectral methods.</p>
 <section id="spectral-methods">
 <span id="spectral-section"></span><h3>Spectral methods<a class="headerlink" href="#spectral-methods" title="Link to this heading">#</a></h3>
-<p>Spectral methods correspond to choosing the scalar product affinity <span class="math notranslate nohighlight">\([\mathbf{A_X}]_{ij} = \langle \mathbf{z}_i, \mathbf{z}_j \rangle\)</span> for the embeddings and the <span class="math notranslate nohighlight">\(\ell_2\)</span> loss.</p>
+<p>Spectral methods correspond to choosing the scalar product affinity <span class="math notranslate nohighlight">\(P_{ij} = \langle \mathbf{z}_i, \mathbf{z}_j \rangle\)</span> for the embeddings and the <span class="math notranslate nohighlight">\(\ell_2\)</span> loss.</p>
 <div class="math notranslate nohighlight">
-\[\min_{\mathbf{Z}} \: \sum_{ij} ( [\mathbf{A_X}]_{ij} - \langle \mathbf{z}_i, \mathbf{z}_j \rangle )^{2}\]</div>
-<p>When <span class="math notranslate nohighlight">\(\mathbf{A_X}\)</span> is positive semi-definite, this problem is commonly known as kernel Principal Component Analysis <span id="id8">[<a class="reference internal" href="torchdr.bibliography.html#id11" title="Jihun Ham, Daniel D Lee, Sebastian Mika, and Bernhard Schölkopf. A kernel view of the dimensionality reduction of manifolds. In Proceedings of the twenty-first international conference on Machine learning, 47. 2004.">Ham <em>et al.</em>, 2004</a>]</span> and an optimal solution is given by</p>
+\[\min_{\mathbf{Z}} \: \sum_{ij} ( P_{ij} - \langle \mathbf{z}_i, \mathbf{z}_j \rangle )^{2}\]</div>
+<p>When <span class="math notranslate nohighlight">\(\mathbf{P}\)</span> is positive semi-definite, this problem is commonly known as kernel Principal Component Analysis <span id="id8">[<a class="reference internal" href="torchdr.bibliography.html#id11" title="Jihun Ham, Daniel D Lee, Sebastian Mika, and Bernhard Schölkopf. A kernel view of the dimensionality reduction of manifolds. In Proceedings of the twenty-first international conference on Machine learning, 47. 2004.">Ham <em>et al.</em>, 2004</a>]</span> and an optimal solution is given by</p>
 <div class="math notranslate nohighlight">
 \[\mathbf{Z}^{\star} = (\sqrt{\lambda_1} \mathbf{v}_1, ..., \sqrt{\lambda_d} \mathbf{v}_d)^\top\]</div>
-<p>where <span class="math notranslate nohighlight">\(\lambda_1, ..., \lambda_d\)</span> are the largest eigenvalues of the centered kernel matrix <span class="math notranslate nohighlight">\(\mathbf{A_X}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{v}_1, ..., \mathbf{v}_d\)</span> are the corresponding eigenvectors.</p>
+<p>where <span class="math notranslate nohighlight">\(\lambda_1, ..., \lambda_d\)</span> are the largest eigenvalues of the centered kernel matrix <span class="math notranslate nohighlight">\(\mathbf{P}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{v}_1, ..., \mathbf{v}_d\)</span> are the corresponding eigenvectors.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>PCA (available at <a class="reference internal" href="gen_modules/torchdr.PCA.html#torchdr.PCA" title="torchdr.PCA"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.PCA</span></code></a>) corresponds to choosing <span class="math notranslate nohighlight">\([\mathbf{A_X}]_{ij} = \langle \mathbf{x}_i, \mathbf{x}_j \rangle\)</span>.</p>
+<p>PCA (available at <a class="reference internal" href="gen_modules/torchdr.PCA.html#torchdr.PCA" title="torchdr.PCA"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.PCA</span></code></a>) corresponds to choosing <span class="math notranslate nohighlight">\(P_{ij} = \langle \mathbf{x}_i, \mathbf{x}_j \rangle\)</span>.</p>
 </div>
 </section>
 <section id="neighbor-embedding">
 <span id="neighbor-embedding-section"></span><h3>Neighbor Embedding<a class="headerlink" href="#neighbor-embedding" title="Link to this heading">#</a></h3>
 <p>TorchDR aims to implement most popular <strong>neighbor embedding (NE)</strong> algorithms.
-In these methods, <span class="math notranslate nohighlight">\(\mathbf{A_X}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{A_Z}\)</span> can be viewed as <strong>soft neighborhood graphs</strong>, hence the term <em>neighbor embedding</em>.</p>
+In these methods, <span class="math notranslate nohighlight">\(\mathbf{P}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{Q}\)</span> can be viewed as <strong>soft neighborhood graphs</strong>, hence the term <em>neighbor embedding</em>.</p>
 <p>NE objectives share a common structure: they aim to <strong>minimize</strong> the <strong>weighted sum</strong> of an <strong>attractive term</strong> and a <strong>repulsive term</strong>. Interestingly, the <strong>attractive term</strong> is often the <strong>cross-entropy</strong> between the input and output affinities. Additionally, the <strong>repulsive term</strong> is typically a <strong>function of the output affinities only</strong>. Thus, the NE problem can be formulated as the following minimization problem:</p>
 <div class="math notranslate nohighlight">
-\[\min_{\mathbf{Z}} \: - \sum_{ij} [\mathbf{A_X}]_{ij} \log [\mathbf{A_Z}]_{ij} + \gamma \mathcal{L}_{\mathrm{rep}}(\mathbf{A_Z}) \:.\]</div>
-<p>In the above, <span class="math notranslate nohighlight">\(\mathcal{L}_{\mathrm{rep}}(\mathbf{A_Z})\)</span> represents the repulsive part of the loss function while <span class="math notranslate nohighlight">\(\gamma\)</span> is a hyperparameter that controls the balance between attraction and repulsion. The latter is called <code class="xref py py-attr docutils literal notranslate"><span class="pre">coeff_repulsion</span></code> in TorchDR.</p>
+\[\min_{\mathbf{Z}} \: - \lambda \sum_{ij} P_{ij} \log Q_{ij} + \mathcal{L}_{\mathrm{rep}}(\mathbf{Q}) \:.\]</div>
+<p>In the above, <span class="math notranslate nohighlight">\(\mathcal{L}_{\mathrm{rep}}(\mathbf{Q})\)</span> represents the repulsive part of the loss function while <span class="math notranslate nohighlight">\(\lambda\)</span> is a hyperparameter that controls the balance between attraction and repulsion. The latter is called <code class="xref py py-attr docutils literal notranslate"><span class="pre">early_exaggeration_coeff</span></code> in TorchDR because it is often set to a value larger than one at the beginning of the optimization.</p>
 <p>Many NE methods can be represented within this framework. The following table summarizes the ones implemented in TorchDR, detailing their respective repulsive loss function, as well as their input and output affinities.</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p><strong>Method</strong></p></th>
 <th class="head"><p><strong>Repulsive term</strong> <span class="math notranslate nohighlight">\(\mathcal{L}_{\mathrm{rep}}\)</span></p></th>
-<th class="head"><p><strong>Affinity input</strong> <span class="math notranslate nohighlight">\(\mathbf{A_X}\)</span></p></th>
-<th class="head"><p><strong>Affinity output</strong> <span class="math notranslate nohighlight">\(\mathbf{A_Z}\)</span></p></th>
+<th class="head"><p><strong>Affinity input</strong> <span class="math notranslate nohighlight">\(\mathbf{P}\)</span></p></th>
+<th class="head"><p><strong>Affinity output</strong> <span class="math notranslate nohighlight">\(\mathbf{Q}\)</span></p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.SNE.html#torchdr.SNE" title="torchdr.SNE"><code class="xref py py-class docutils literal notranslate"><span class="pre">SNE</span></code></a></p></td>
-<td><p><span class="math notranslate nohighlight">\(\sum_{i} \log(\sum_j [\mathbf{A_Z}]_{ij})\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\sum_{i} \log(\sum_j Q_{ij})\)</span></p></td>
 <td><p><a class="reference internal" href="gen_modules/torchdr.EntropicAffinity.html#torchdr.EntropicAffinity" title="torchdr.EntropicAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">EntropicAffinity</span></code></a></p></td>
 <td><p><a class="reference internal" href="gen_modules/torchdr.GaussianAffinity.html#torchdr.GaussianAffinity" title="torchdr.GaussianAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">GaussianAffinity</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.TSNE.html#torchdr.TSNE" title="torchdr.TSNE"><code class="xref py py-class docutils literal notranslate"><span class="pre">TSNE</span></code></a></p></td>
-<td><p><span class="math notranslate nohighlight">\(\log(\sum_{ij} [\mathbf{A_Z}]_{ij})\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\log(\sum_{ij} Q_{ij})\)</span></p></td>
 <td><p><a class="reference internal" href="gen_modules/torchdr.EntropicAffinity.html#torchdr.EntropicAffinity" title="torchdr.EntropicAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">EntropicAffinity</span></code></a></p></td>
 <td><p><a class="reference internal" href="gen_modules/torchdr.StudentAffinity.html#torchdr.StudentAffinity" title="torchdr.StudentAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StudentAffinity</span></code></a></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.TSNEkhorn.html#torchdr.TSNEkhorn" title="torchdr.TSNEkhorn"><code class="xref py py-class docutils literal notranslate"><span class="pre">TSNEkhorn</span></code></a></p></td>
-<td><p><span class="math notranslate nohighlight">\(\sum_{ij} [\mathbf{A_Z}]_{ij}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\sum_{ij} Q_{ij}\)</span></p></td>
 <td><p><a class="reference internal" href="gen_modules/torchdr.SymmetricEntropicAffinity.html#torchdr.SymmetricEntropicAffinity" title="torchdr.SymmetricEntropicAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">SymmetricEntropicAffinity</span></code></a></p></td>
 <td><p><a class="reference internal" href="gen_modules/torchdr.SinkhornAffinity.html#torchdr.SinkhornAffinity" title="torchdr.SinkhornAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">SinkhornAffinity(base_kernel=&quot;student&quot;)</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.InfoTSNE.html#torchdr.InfoTSNE" title="torchdr.InfoTSNE"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoTSNE</span></code></a></p></td>
-<td><p><span class="math notranslate nohighlight">\(\sum_i \log(\sum_{j \in N(i)} [\mathbf{A_Z}]_{ij})\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\sum_i \log(\sum_{j \in \mathrm{Neg}(i)} Q_{ij})\)</span></p></td>
 <td><p><a class="reference internal" href="gen_modules/torchdr.EntropicAffinity.html#torchdr.EntropicAffinity" title="torchdr.EntropicAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">EntropicAffinity</span></code></a></p></td>
 <td><p><a class="reference internal" href="gen_modules/torchdr.StudentAffinity.html#torchdr.StudentAffinity" title="torchdr.StudentAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StudentAffinity</span></code></a></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.UMAP.html#torchdr.UMAP" title="torchdr.UMAP"><code class="xref py py-class docutils literal notranslate"><span class="pre">UMAP</span></code></a></p></td>
-<td><p><span class="math notranslate nohighlight">\(- \sum_{i, j \in N(i)} \log (1 - [\mathbf{A_Z}]_{ij})\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(- \sum_{i, j \in \mathrm{Neg}(i)} \log (1 - Q_{ij})\)</span></p></td>
 <td><p><a class="reference internal" href="gen_modules/torchdr.UMAPAffinityIn.html#torchdr.UMAPAffinityIn" title="torchdr.UMAPAffinityIn"><code class="xref py py-class docutils literal notranslate"><span class="pre">UMAPAffinityIn</span></code></a></p></td>
 <td><p><a class="reference internal" href="gen_modules/torchdr.UMAPAffinityOut.html#torchdr.UMAPAffinityOut" title="torchdr.UMAPAffinityOut"><code class="xref py py-class docutils literal notranslate"><span class="pre">UMAPAffinityOut</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.LargeVis.html#torchdr.LargeVis" title="torchdr.LargeVis"><code class="xref py py-class docutils literal notranslate"><span class="pre">LargeVis</span></code></a></p></td>
-<td><p><span class="math notranslate nohighlight">\(- \sum_{i, j \in N(i)} \log (1 - [\mathbf{A_Z}]_{ij})\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(- \sum_{i, j \in \mathrm{Neg}(i)} \log (1 - Q_{ij})\)</span></p></td>
 <td><p><a class="reference internal" href="gen_modules/torchdr.EntropicAffinity.html#torchdr.EntropicAffinity" title="torchdr.EntropicAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">EntropicAffinity</span></code></a></p></td>
 <td><p><a class="reference internal" href="gen_modules/torchdr.StudentAffinity.html#torchdr.StudentAffinity" title="torchdr.StudentAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StudentAffinity</span></code></a></p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>In the above table, <span class="math notranslate nohighlight">\(N(i)\)</span> denotes the set of negative samples
+<p>In the above table, <span class="math notranslate nohighlight">\(\mathrm{Neg}(i)\)</span> denotes the set of negative samples
 for point <span class="math notranslate nohighlight">\(i\)</span>. They are usually sampled uniformly at random from the dataset.</p>
 </section>
 </section>
@@ -723,12 +709,12 @@ for point <span class="math notranslate nohighlight">\(i\)</span>. They are usua
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="torchdr.quick_start.html"
+       href="index.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Quick Start Guide</p>
+        <p class="prev-next-title">Torch Dimensionality Reduction</p>
       </div>
     </a>
     <a class="right-next"

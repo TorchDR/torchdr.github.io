@@ -144,13 +144,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../torchdr.quick_start.html">
-    Quick Start Guide
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../torchdr.user_guide.html">
     User Guide
   </a>
@@ -163,6 +156,20 @@
   </a>
 </li>
 
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Gallery
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../torchdr.releases.html">
+    Releases
+  </a>
+</li>
+
             <li class="nav-item dropdown">
                 <button class="btn dropdown-toggle nav-item" type="button"
                 data-bs-toggle="dropdown" aria-expanded="false"
@@ -171,20 +178,6 @@
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
-<li class=" current active">
-  <a class="nav-link dropdown-item nav-internal" href="../index.html">
-    Gallery
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../../torchdr.releases.html">
-    Releases
-  </a>
-</li>
-
-
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="../../torchdr.contributing.html">
     Contributing
@@ -305,13 +298,6 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../index.html">
     Torch Dimensionality Reduction
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../torchdr.quick_start.html">
-    Quick Start Guide
   </a>
 </li>
 
@@ -537,11 +523,11 @@ on the SNARE-seq gene expression dataset with given cell type labels.</p>
     <span class="s2">&quot;lr&quot;</span><span class="p">:</span> <span class="mf">1e0</span><span class="p">,</span>
 <span class="p">}</span>
 
-<span class="n">sne</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">SNE</span></a><span class="p">(</span><span class="n">early_exaggeration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><a href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">params</span></a><span class="p">)</span>
+<span class="n">sne</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">SNE</span></a><span class="p">(</span><span class="n">early_exaggeration_coeff</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><a href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">params</span></a><span class="p">)</span>
 
-<span class="n">umap</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">UMAP</span></a><span class="p">(</span><span class="n">early_exaggeration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><a href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">params</span></a><span class="p">)</span>
+<span class="n">umap</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">UMAP</span></a><span class="p">(</span><span class="n">early_exaggeration_coeff</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><a href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">params</span></a><span class="p">)</span>
 
-<span class="n">tsne</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">TSNE</span></a><span class="p">(</span><span class="n">early_exaggeration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><a href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">params</span></a><span class="p">)</span>
+<span class="n">tsne</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">TSNE</span></a><span class="p">(</span><span class="n">early_exaggeration_coeff</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><a href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">params</span></a><span class="p">)</span>
 
 <a href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">all_methods</span></a> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;TSNE&quot;</span><span class="p">:</span> <span class="n">tsne</span><span class="p">,</span>
@@ -618,7 +604,7 @@ using <a class="reference internal" href="../../stubs/torchdr.AffinityMatcher.ht
 In TorchDR, it is therefore recommended to use the specific class associated
 with the desired algorithm when available.</p>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 20.221 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 3.866 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-basics-demo-ne-methods-affinity-matcher-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/286dcc8a82b9a5553a5d809cc0f6fa61/demo_ne_methods_affinity_matcher.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">demo_ne_methods_affinity_matcher.ipynb</span></code></a></p>

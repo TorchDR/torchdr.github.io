@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.neighbor_embedding.largevis &#8212; TorchDR 0.1 documentation</title>
+    <title>torchdr.neighbor_embedding.infotsne &#8212; TorchDR 0.1 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
     <script src="../../../_static/documentation_options.js?v=2709fde1"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchdr/neighbor_embedding/largevis';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchdr/neighbor_embedding/infotsne';</script>
     <script src="../../../_static/pypi-icon.js?v=3850e9a1"></script>
     <link rel="icon" href="../../../_static/logo.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -426,7 +426,7 @@
     
     <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">torchdr.neighbor_embedding.largevis</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">torchdr.neighbor_embedding.infotsne</span></li>
   </ul>
 </nav>
 </div>
@@ -443,8 +443,8 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <h1>Source code for torchdr.neighbor_embedding.largevis</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;LargeVis algorithm.&quot;&quot;&quot;</span>
+  <h1>Source code for torchdr.neighbor_embedding.infotsne</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Info Noise-constrastive TSNE algorithm.&quot;&quot;&quot;</span>
 
 <span class="c1"># Author: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
 <span class="c1">#</span>
@@ -452,23 +452,23 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity</span><span class="w"> </span><span class="kn">import</span> <span class="n">EntropicAffinity</span><span class="p">,</span> <span class="n">StudentAffinity</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.neighbor_embedding.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">SampledNeighborEmbedding</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">cross_entropy_loss</span><span class="p">,</span> <span class="n">sum_output</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logsumexp_red</span>
 
 
-<div class="viewcode-block" id="LargeVis">
-<a class="viewcode-back" href="../../../gen_modules/torchdr.LargeVis.html#torchdr.LargeVis">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">LargeVis</span><span class="p">(</span><span class="n">SampledNeighborEmbedding</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;LargeVis algorithm introduced in :cite:`tang2016visualizing`.</span>
+<div class="viewcode-block" id="InfoTSNE">
+<a class="viewcode-back" href="../../../gen_modules/torchdr.InfoTSNE.html#torchdr.InfoTSNE">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">InfoTSNE</span><span class="p">(</span><span class="n">SampledNeighborEmbedding</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;InfoTSNE algorithm introduced in :cite:`damrich2022t`.</span>
 
 <span class="sd">    It uses a :class:`~torchdr.EntropicAffinity` as input</span>
-<span class="sd">    affinity :math:`\mathbf{P}` and a :class:`~torchdr.StudentAffinity` as output</span>
+<span class="sd">    affinity :math:`\mathbf{P}` and a :class:`~torchdr.GaussianAffinity` as output</span>
 <span class="sd">    affinity :math:`\mathbf{Q}`.</span>
 
 <span class="sd">    The loss function is defined as:</span>
 
 <span class="sd">    .. math::</span>
 
-<span class="sd">        -\sum_{ij} P_{ij} \log Q_{ij} + \sum_{i,j \in \mathrm{Neg}(i)} \log (1 - Q_{ij})</span>
+<span class="sd">        -\sum_{ij} P_{ij} \log Q_{ij} + \sum_i \log \Big( \sum_{j \in \mathrm{Neg}(i)} Q_{ij} \Big)</span>
 
 <span class="sd">    where :math:`\mathrm{Neg}(i)` is the set of negatives samples for point :math:`i`.</span>
 
@@ -482,14 +482,12 @@
 <span class="sd">        Dimension of the embedding space.</span>
 <span class="sd">    lr : float or &#39;auto&#39;, optional</span>
 <span class="sd">        Learning rate for the algorithm, by default &#39;auto&#39;.</span>
-<span class="sd">    optimizer : {&#39;SGD&#39;, &#39;Adam&#39;, &#39;NAdam&#39;, &#39;auto}, optional</span>
+<span class="sd">    optimizer : {&#39;SGD&#39;, &#39;Adam&#39;, &#39;NAdam&#39;, &#39;auto&#39;}, optional</span>
 <span class="sd">        Which pytorch optimizer to use, by default &#39;auto&#39;.</span>
-<span class="sd">    optimizer_kwargs : dict or &#39;auto, optional</span>
+<span class="sd">    optimizer_kwargs : dict or &#39;auto&#39;, optional</span>
 <span class="sd">        Arguments for the optimizer, by default &#39;auto&#39;.</span>
 <span class="sd">    scheduler : {&#39;constant&#39;, &#39;linear&#39;}, optional</span>
 <span class="sd">        Learning rate scheduler.</span>
-<span class="sd">    scheduler_kwargs : dict, optional</span>
-<span class="sd">        Arguments for the scheduler, by default None.</span>
 <span class="sd">    init : {&#39;normal&#39;, &#39;pca&#39;} or torch.Tensor of shape (n_samples, output_dim), optional</span>
 <span class="sd">        Initialization for the embedding Z, default &#39;pca&#39;.</span>
 <span class="sd">    init_scaling : float, optional</span>
@@ -497,7 +495,7 @@
 <span class="sd">    tol : float, optional</span>
 <span class="sd">        Precision threshold at which the algorithm stops, by default 1e-7.</span>
 <span class="sd">    max_iter : int, optional</span>
-<span class="sd">        Number of maximum iterations for the descent algorithm, by default 3000.</span>
+<span class="sd">        Number of maximum iterations for the descent algorithm, by default 2000.</span>
 <span class="sd">    tolog : bool, optional</span>
 <span class="sd">        Whether to store intermediate results in a dictionary, by default False.</span>
 <span class="sd">    device : str, optional</span>
@@ -522,7 +520,7 @@
 <span class="sd">    metric_out : {&#39;sqeuclidean&#39;, &#39;manhattan&#39;}, optional</span>
 <span class="sd">        Metric to use for the output affinity, by default &#39;sqeuclidean&#39;.</span>
 <span class="sd">    n_negatives : int, optional</span>
-<span class="sd">        Number of negative samples for the repulsive loss.</span>
+<span class="sd">        Number of negative samples for the noise-contrastive loss, by default 5.</span>
 <span class="sd">    sparsity : bool, optional</span>
 <span class="sd">        Whether to use sparsity mode for the input affinity. Default is True.</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
@@ -535,11 +533,10 @@
         <span class="n">optimizer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
         <span class="n">optimizer_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
         <span class="n">scheduler</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;constant&quot;</span><span class="p">,</span>
-        <span class="n">scheduler_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">init</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pca&quot;</span><span class="p">,</span>
         <span class="n">init_scaling</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-4</span><span class="p">,</span>
         <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-7</span><span class="p">,</span>
-        <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3000</span><span class="p">,</span>
+        <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2000</span><span class="p">,</span>
         <span class="n">tolog</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">keops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -551,7 +548,7 @@
         <span class="n">max_iter_affinity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
         <span class="n">metric_in</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
         <span class="n">metric_out</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
-        <span class="n">n_negatives</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">n_negatives</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
         <span class="n">sparsity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metric_in</span> <span class="o">=</span> <span class="n">metric_in</span>
@@ -574,7 +571,7 @@
         <span class="n">affinity_out</span> <span class="o">=</span> <span class="n">StudentAffinity</span><span class="p">(</span>
             <span class="n">metric</span><span class="o">=</span><span class="n">metric_out</span><span class="p">,</span>
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
-            <span class="n">keops</span><span class="o">=</span><span class="n">keops</span><span class="p">,</span>
+            <span class="n">keops</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -588,7 +585,6 @@
             <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span>
             <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span>
             <span class="n">scheduler</span><span class="o">=</span><span class="n">scheduler</span><span class="p">,</span>
-            <span class="n">scheduler_kwargs</span><span class="o">=</span><span class="n">scheduler_kwargs</span><span class="p">,</span>
             <span class="n">init</span><span class="o">=</span><span class="n">init</span><span class="p">,</span>
             <span class="n">init_scaling</span><span class="o">=</span><span class="n">init_scaling</span><span class="p">,</span>
             <span class="n">tolog</span><span class="o">=</span><span class="n">tolog</span><span class="p">,</span>
@@ -601,17 +597,10 @@
             <span class="n">n_negatives</span><span class="o">=</span><span class="n">n_negatives</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="nd">@sum_output</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_repulsive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_negatives</span><span class="p">()</span>
-        <span class="n">Q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">)</span>
-        <span class="n">Q</span> <span class="o">=</span> <span class="n">Q</span> <span class="o">/</span> <span class="p">(</span><span class="n">Q</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">Q</span><span class="p">)</span><span class="o">.</span><span class="n">log</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_attractive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">Q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span><span class="p">)</span>
-        <span class="n">Q</span> <span class="o">=</span> <span class="n">Q</span> <span class="o">/</span> <span class="p">(</span><span class="n">Q</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">cross_entropy_loss</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PX_</span><span class="p">,</span> <span class="n">Q</span><span class="p">)</span></div>
+        <span class="n">log_Q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">logsumexp_red</span><span class="p">(</span><span class="n">log_Q</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span></div>
 
 </pre></div>
 

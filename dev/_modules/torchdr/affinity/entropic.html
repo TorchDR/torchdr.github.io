@@ -611,13 +611,13 @@
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">perplexity</span> <span class="o">&gt;=</span> <span class="n">n</span> <span class="ow">or</span> <span class="n">perplexity</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">new_value</span> <span class="o">=</span> <span class="n">n</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">new_value</span> <span class="o">=</span> <span class="mi">50</span>
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                 <span class="s2">&quot;[TorchDR] WARNING Affinity: The perplexity parameter must be &quot;</span>
                 <span class="s2">&quot;greater than 1 and smaller than the number of samples &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;(here n = </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">). Got perplexity = </span><span class="si">{</span><span class="n">perplexity</span><span class="si">}</span><span class="s2">. &quot;</span>
-                <span class="s2">&quot;Setting perplexity to </span><span class="si">{new_value}</span><span class="s2">.&quot;</span>
+                <span class="s2">&quot;Setting perplexity to </span><span class="si">{50}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">new_value</span>
     <span class="k">else</span><span class="p">:</span>
@@ -678,9 +678,10 @@
 <span class="sd">        Precision threshold at which the root finding algorithm stops.</span>
 <span class="sd">    max_iter : int, optional</span>
 <span class="sd">        Number of maximum iterations for the root finding algorithm.</span>
-<span class="sd">    sparsity: bool or &#39;auto&#39;, optional</span>
+<span class="sd">    sparsity: bool, optional</span>
 <span class="sd">        If True, keeps only the 3 * perplexity smallest element on each row of</span>
 <span class="sd">        the ground cost matrix. Recommended if perplexity is not too big.</span>
+<span class="sd">        Default is True.</span>
 <span class="sd">    metric : str, optional</span>
 <span class="sd">        Metric to use for computing distances (default &quot;sqeuclidean&quot;).</span>
 <span class="sd">    zero_diag : bool, optional</span>
@@ -698,7 +699,7 @@
         <span class="n">perplexity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
         <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
         <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
-        <span class="n">sparsity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">sparsity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="s2">&quot;True&quot;</span><span class="p">,</span>
         <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
         <span class="n">zero_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
@@ -717,18 +718,6 @@
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="n">sparsity</span><span class="o">=</span><span class="n">sparsity</span><span class="p">,</span>
         <span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_sparsity_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                    <span class="s2">&quot;[TorchDR] WARNING Affinity: perplexity is large &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span><span class="si">}</span><span class="s2">) thus we turn off sparsity for &quot;</span>
-                    <span class="s2">&quot;the EntropicAffinity. &quot;</span>
-                <span class="p">)</span>
-            <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_sparse_log_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Solve the entropic affinity problem by :cite:`hinton2002stochastic`.</span>
@@ -756,21 +745,16 @@
         <span class="n">target_entropy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">perplexity</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
 
         <span class="n">k</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">perplexity</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sparsity</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">k</span> <span class="o">&gt;=</span> <span class="n">n_samples_in</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparsity</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span>
-                    <span class="s2">&quot;[TorchDR] WARNING Affinity: sparsity mode disabled &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;because perplexity is too large. 3 x perplexity = </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> &quot;</span>
-                    <span class="s2">&quot;&gt;= n_samples - 1.&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;[TorchDR] Affinity : sparsity mode enabled, computing </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> &quot;</span>
+                    <span class="s2">&quot;nearest neighbors. If this step is too slow, consider &quot;</span>
+                    <span class="s2">&quot;reducing the dimensionality of the data or disabling sparsity.&quot;</span>
                 <span class="p">)</span>
-                <span class="n">C_</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">C</span><span class="p">,</span> <span class="kc">None</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;[TorchDR] Affinity : sparsity mode enabled, computing </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> &quot;</span>
-                        <span class="s2">&quot;nearest neighbors.&quot;</span>
-                    <span class="p">)</span>
-                <span class="n">C_</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">kmin</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># when using sparsity, we construct a reduced distance matrix</span>
+            <span class="c1"># of shape (n_samples, k)</span>
+            <span class="n">C_</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">kmin</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">C_</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">C</span><span class="p">,</span> <span class="kc">None</span>
 

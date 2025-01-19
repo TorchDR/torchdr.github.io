@@ -545,6 +545,7 @@
         <span class="n">max_iter_affinity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
         <span class="n">metric_in</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
         <span class="n">metric_out</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
+        <span class="n">sparsity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metric_in</span> <span class="o">=</span> <span class="n">metric_in</span>
@@ -552,6 +553,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span> <span class="o">=</span> <span class="n">perplexity</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_iter_affinity</span> <span class="o">=</span> <span class="n">max_iter_affinity</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tol_affinity</span> <span class="o">=</span> <span class="n">tol_affinity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparsity</span> <span class="o">=</span> <span class="n">sparsity</span>
 
         <span class="n">affinity_in</span> <span class="o">=</span> <span class="n">EntropicAffinity</span><span class="p">(</span>
             <span class="n">perplexity</span><span class="o">=</span><span class="n">perplexity</span><span class="p">,</span>
@@ -561,6 +563,7 @@
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
             <span class="n">keops</span><span class="o">=</span><span class="n">keops</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="n">sparsity</span><span class="o">=</span><span class="n">sparsity</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">affinity_out</span> <span class="o">=</span> <span class="n">StudentAffinity</span><span class="p">(</span>
             <span class="n">metric</span><span class="o">=</span><span class="n">metric_out</span><span class="p">,</span>

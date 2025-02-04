@@ -583,7 +583,7 @@ use gradient-based optimization to minimize a loss function constructed from
 two affinities in input and embedding spaces.</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="stubs/torchdr.DRModule.html#torchdr.DRModule" title="torchdr.DRModule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DRModule</span></code></a>([n_components, device, keops, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="stubs/torchdr.DRModule.html#torchdr.DRModule" title="torchdr.DRModule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DRModule</span></code></a>([n_components, device, backend, ...])</p></td>
 <td><p>Base class for DR methods.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="stubs/torchdr.AffinityMatcher.html#torchdr.AffinityMatcher" title="torchdr.AffinityMatcher"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AffinityMatcher</span></code></a>(affinity_in, affinity_out[, ...])</p></td>
@@ -630,7 +630,7 @@ Broadly speaking, they define a notion of similarity between samples.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.StudentAffinity.html#torchdr.StudentAffinity" title="torchdr.StudentAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StudentAffinity</span></code></a>([degrees_of_freedom, ...])</p></td>
 <td><p>Compute the Student affinity matrix based on the Student-t distribution.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.ScalarProductAffinity.html#torchdr.ScalarProductAffinity" title="torchdr.ScalarProductAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ScalarProductAffinity</span></code></a>([device, keops, verbose])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.ScalarProductAffinity.html#torchdr.ScalarProductAffinity" title="torchdr.ScalarProductAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ScalarProductAffinity</span></code></a>([device, backend, verbose])</p></td>
 <td><p>Compute the scalar product affinity matrix.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.NormalizedGaussianAffinity.html#torchdr.NormalizedGaussianAffinity" title="torchdr.NormalizedGaussianAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NormalizedGaussianAffinity</span></code></a>([sigma, metric, ...])</p></td>
@@ -706,7 +706,7 @@ Broadly speaking, they define a notion of similarity between samples.</p>
 the pairwise distances between the data points as well as solving root search problems.</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.pairwise_distances.html#torchdr.pairwise_distances" title="torchdr.pairwise_distances"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pairwise_distances</span></code></a>(X[, Y, metric, keops])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.pairwise_distances.html#torchdr.pairwise_distances" title="torchdr.pairwise_distances"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pairwise_distances</span></code></a>(X[, Y, metric, backend, k])</p></td>
 <td><p>Compute pairwise distances matrix between points in two datasets.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.binary_search.html#torchdr.binary_search" title="torchdr.binary_search"><code class="xref py py-obj docutils literal notranslate"><span class="pre">binary_search</span></code></a>(f, n[, begin, end, max_iter, ...])</p></td>

@@ -461,25 +461,34 @@
 <span class="n">z</span> <span class="o">=</span> <span class="n">TSNE</span><span class="p">(</span><span class="n">perplexity</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> enables <strong>GPU acceleration without memory limitations</strong> thanks to the KeOps library. This can be easily enabled as follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z_gpu</span> <span class="o">=</span> <span class="n">TSNE</span><span class="p">(</span><span class="n">perplexity</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;keops&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_</span><span class="p">)</span>
+<p><code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> is fully <strong>GPU compatible</strong>, allowing a <strong>significant speed up</strong> when a GPU is available. To allow computations on the gpu, simply set <code class="docutils literal notranslate"><span class="pre">device=&quot;cuda&quot;</span></code> as in the following example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z_gpu</span> <span class="o">=</span> <span class="n">TSNE</span><span class="p">(</span><span class="n">perplexity</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_</span><span class="p">)</span>
 </pre></div>
 </div>
+</section>
+<section id="backends">
+<h2>Backends<a class="headerlink" href="#backends" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">backend</span></code> keyword specifies which tool to use for handling kNN computations and memory-efficient symbolic computations.</p>
+<ul class="simple">
+<li><p>To perform symbolic tensor computations on the GPU without memory limitations, you can leverage the <a class="reference external" href="https://www.kernel-operations.io/keops/index.html">KeOps Library</a>. This library also allows computing kNN graphs. To enable KeOps, set <code class="docutils literal notranslate"><span class="pre">backend=&quot;keops&quot;</span></code>.</p></li>
+<li><p>Alternatively, you can use <code class="docutils literal notranslate"><span class="pre">backend=&quot;faiss&quot;</span></code> to rely on <a class="reference external" href="https://github.com/facebookresearch/faiss">Faiss</a> for fast kNN computations.</p></li>
+<li><p>Finally, setting <code class="docutils literal notranslate"><span class="pre">backend=None</span></code> will use raw PyTorch for all computations.</p></li>
+</ul>
 </section>
 <section id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">#</a></h2>
 <p>See the <a class="reference external" href="https://github.com/TorchDR/TorchDR/tree/main/examples/">examples</a> folder for all examples.</p>
 <p><strong>MNIST.</strong> (<a class="reference external" href="https://github.com/TorchDR/TorchDR/tree/main/examples/images/panorama_readme.py">Code</a>)
 A comparison of various neighbor embedding methods on the MNIST digits dataset.</p>
-<a class="reference internal image-reference" href="docs/source/figures/mnist_readme.png"><img alt="various neighbor embedding methods on MNIST" class="align-center" src="docs/source/figures/mnist_readme.png" style="width: 800px;" />
+<a class="reference internal image-reference" href="https://github.com/torchdr/torchdr/raw/main/docs/source/figures/mnist_readme.png"><img alt="various neighbor embedding methods on MNIST" class="align-center" src="https://github.com/torchdr/torchdr/raw/main/docs/source/figures/mnist_readme.png" style="width: 800px;" />
 </a>
 <p><strong>Single-cell genomics.</strong> (<a class="reference external" href="https://github.com/TorchDR/TorchDR/tree/main/examples/single_cell/single_cell_readme.py">Code</a>)
 Visualizing cells using <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code>. Embeddings are colored by cell type.</p>
-<a class="reference internal image-reference" href="docs/source/figures/single_cell_readme.png"><img alt="single cell embeddings" class="align-center" src="docs/source/figures/single_cell_readme.png" style="width: 700px;" />
+<a class="reference internal image-reference" href="https://github.com/torchdr/torchdr/raw/main/docs/source/figures/single_cell_readme.png"><img alt="single cell embeddings" class="align-center" src="https://github.com/torchdr/torchdr/raw/main/docs/source/figures/single_cell_readme.png" style="width: 700px;" />
 </a>
 <p><strong>CIFAR100.</strong> (<a class="reference external" href="https://github.com/TorchDR/TorchDR/tree/main/examples/images/cifar100.py">Code</a>)
 Visualizing the CIFAR100 dataset using DINO features and TSNE.</p>
-<a class="reference internal image-reference" href="docs/source/figures/cifar100_tsne.png"><img alt="TSNE on CIFAR100 DINO features" class="align-center" src="docs/source/figures/cifar100_tsne.png" style="width: 1024px;" />
+<a class="reference internal image-reference" href="https://github.com/torchdr/torchdr/raw/main/docs/source/figures/cifar100_tsne.png"><img alt="TSNE on CIFAR100 DINO features" class="align-center" src="https://github.com/torchdr/torchdr/raw/main/docs/source/figures/cifar100_tsne.png" style="width: 1024px;" />
 </a>
 </section>
 <section id="implemented-features-to-date">
@@ -563,6 +572,7 @@ Visualizing the CIFAR100 dataset using DINO features and TSNE.</p>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-started">Getting Started</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#backends">Backends</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples">Examples</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implemented-features-to-date">Implemented Features (to date)</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#affinities">Affinities</a></li>

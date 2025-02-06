@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>PCA via SVD and via AffinityMatcher &#8212; TorchDR 0.1 documentation</title>
+    <title>Incremental PCA on GPU &#8212; TorchDR 0.1 documentation</title>
   
   
   
@@ -45,13 +45,13 @@
     <script src="../../_static/documentation_options.js?v=2709fde1"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/basics/demo_pca_via_affinity_matcher';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/basics/incremental_pca';</script>
     <script src="../../_static/pypi-icon.js?v=3850e9a1"></script>
     <link rel="icon" href="../../_static/logo.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="TSNE embedding of the swiss roll dataset" href="demo_tsne_swiss_roll.html" />
-    <link rel="prev" title="Entropic Affinities can adapt to varying noise levels" href="../affinities/demo_ea_adaptivity.html" />
+    <link rel="next" title="Neighbor Embedding on genomics &amp; equivalent affinity matcher formulation" href="demo_ne_methods_affinity_matcher.html" />
+    <link rel="prev" title="TSNE embedding of the swiss roll dataset" href="demo_tsne_swiss_roll.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -402,9 +402,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../affinities/demo_ea_adaptivity.html">Entropic Affinities can adapt to varying noise levels</a></li>
 </ul>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">PCA via SVD and via AffinityMatcher</a></li>
+<li class="toctree-l1"><a class="reference internal" href="demo_pca_via_affinity_matcher.html">PCA via SVD and via AffinityMatcher</a></li>
 <li class="toctree-l1"><a class="reference internal" href="demo_tsne_swiss_roll.html">TSNE embedding of the swiss roll dataset</a></li>
-<li class="toctree-l1"><a class="reference internal" href="incremental_pca.html">Incremental PCA on GPU</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Incremental PCA on GPU</a></li>
 <li class="toctree-l1"><a class="reference internal" href="demo_ne_methods_affinity_matcher.html">Neighbor Embedding on genomics &amp; equivalent affinity matcher formulation</a></li>
 </ul>
 </div>
@@ -449,7 +449,7 @@
     
     <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Gallery</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">PCA via SVD and via AffinityMatcher</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Incremental PCA on GPU</span></li>
   </ul>
 </nav>
 </div>
@@ -468,89 +468,92 @@
                   
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p><a class="reference internal" href="#sphx-glr-download-auto-examples-basics-demo-pca-via-affinity-matcher-py"><span class="std std-ref">Go to the end</span></a>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-basics-incremental-pca-py"><span class="std std-ref">Go to the end</span></a>
 to download the full example code.</p>
 </div>
-<section class="sphx-glr-example-title" id="pca-via-svd-and-via-affinitymatcher">
-<span id="sphx-glr-auto-examples-basics-demo-pca-via-affinity-matcher-py"></span><h1>PCA via SVD and via AffinityMatcher<a class="headerlink" href="#pca-via-svd-and-via-affinitymatcher" title="Link to this heading">#</a></h1>
-<p>We show how to compute a PCA embedding using the closed form
-and using the AffinityMatcher class. Both approaches lead to the same solution.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Author: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
-<span class="c1">#</span>
-<span class="c1"># License: BSD 3-Clause License</span>
+<section class="sphx-glr-example-title" id="incremental-pca-on-gpu">
+<span id="sphx-glr-auto-examples-basics-incremental-pca-py"></span><h1>Incremental PCA on GPU<a class="headerlink" href="#incremental-pca-on-gpu" title="Link to this heading">#</a></h1>
+<p>This example demonstrates how to use the <cite>IncrementalPCA</cite> class on GPU.
+We compare the memory usage and time taken to fit the model with the regular
+<cite>PCA</cite> class on GPU.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">gc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_digits</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr</span><span class="w"> </span><span class="kn">import</span> <span class="n">IncrementalPCA</span><span class="p">,</span> <span class="n">PCA</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">AffinityMatcher</span></a><span class="p">,</span> <a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">ScalarProductAffinity</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.spectral</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">PCA</span></a>
-</pre></div>
-</div>
-<section id="load-toy-images">
-<h2>Load toy images<a class="headerlink" href="#load-toy-images" title="Link to this heading">#</a></h2>
-<p>First, let’s load 5 classes of the digits dataset from sklearn.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">digits</span> <span class="o">=</span> <span class="n">load_digits</span><span class="p">(</span><span class="n">n_class</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">digits</span><span class="o">.</span><span class="n">data</span></a>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a> <span class="o">-</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="pca-via-svd">
-<h2>PCA via SVD<a class="headerlink" href="#pca-via-svd" title="Link to this heading">#</a></h2>
-<p>Let us perform PCA using the closed form solution given by the
-Singular Value Decomposition (SVD).
-In <code class="docutils literal notranslate"><span class="pre">Torchdr</span></code>, it is available at <a class="reference internal" href="../../gen_modules/torchdr.PCA.html#torchdr.PCA" title="torchdr.PCA"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.PCA</span></code></a>.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Z_svd</span></a> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">PCA</span></a><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">)</span>
+<span class="c1"># Choose the GPU device if available.</span>
+<span class="n">device</span> <span class="o">=</span> <a href="http://pytorch.org/docs/2.0/tensor_attributes.html#torch.device" title="torch.device" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">torch</span><span class="o">.</span><span class="n">device</span></a><span class="p">(</span><span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <a href="http://pytorch.org/docs/2.0/generated/torch.cuda.is_available.html#torch.cuda.is_available" title="torch.cuda.is_available" class="sphx-glr-backref-module-torch-cuda sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span></a><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="s2">&quot;cuda&quot;</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;This example requires a CUDA-capable GPU.&quot;</span><span class="p">)</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><a href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Z_svd</span></a><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <a href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="torch.Tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Z_svd</span></a><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">digits</span><span class="o">.</span><span class="n">target</span></a><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;PCA via SVD&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-<img src="../../_images/sphx_glr_demo_pca_via_affinity_matcher_001.png" srcset="../../_images/sphx_glr_demo_pca_via_affinity_matcher_001.png" alt="PCA via SVD" class = "sphx-glr-single-img"/></section>
-<section id="pca-via-affinitymatcher">
-<h2>PCA via AffinityMatcher<a class="headerlink" href="#pca-via-affinitymatcher" title="Link to this heading">#</a></h2>
-<p>Now, let us perform PCA using the AffinityMatcher class
-<a class="reference internal" href="../../stubs/torchdr.AffinityMatcher.html#torchdr.AffinityMatcher" title="torchdr.AffinityMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.AffinityMatcher</span></code></a>
-as well as the scalar product affinity
-<a class="reference internal" href="../../gen_modules/torchdr.ScalarProductAffinity.html#torchdr.ScalarProductAffinity" title="torchdr.ScalarProductAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.ScalarProductAffinity</span></code></a>
-for both input data and embeddings,
-and the square loss as global objective.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">AffinityMatcher</span></a><span class="p">(</span>
-    <span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-    <span class="n">affinity_in</span><span class="o">=</span><a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">ScalarProductAffinity</span></a><span class="p">(),</span>
-    <span class="n">affinity_out</span><span class="o">=</span><a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">ScalarProductAffinity</span></a><span class="p">(),</span>
-    <span class="n">loss_fn</span><span class="o">=</span><span class="s2">&quot;square_loss&quot;</span><span class="p">,</span>
-    <span class="n">init</span><span class="o">=</span><span class="s2">&quot;normal&quot;</span><span class="p">,</span>
-    <span class="n">lr</span><span class="o">=</span><span class="mf">1e1</span><span class="p">,</span>
-    <span class="n">max_iter</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
-    <span class="n">backend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="c1"># Generate a large random dataset on CPU.</span>
+<span class="n">n_samples</span> <span class="o">=</span> <span class="mi">100_000</span>
+<span class="n">n_features</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="n">X</span> <span class="o">=</span> <a href="http://pytorch.org/docs/2.0/generated/torch.randn.html#torch.randn" title="torch.randn" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">randn</span></a><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span><span class="p">)</span>  <span class="c1"># Stored on CPU</span>
+
+<span class="c1"># --------------------------</span>
+<span class="c1"># Incremental PCA on GPU</span>
+<span class="c1"># --------------------------</span>
+<span class="c1"># IncrementalPCA is designed so that only each batch is moved to the GPU.</span>
+<span class="c1"># Set n_components=50 and choose an appropriate batch_size.</span>
+<span class="n">ipca</span> <span class="o">=</span> <span class="n">IncrementalPCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+
+<span class="c1"># Reset GPU memory stats before fitting.</span>
+<a href="http://pytorch.org/docs/2.0/generated/torch.cuda.reset_peak_memory_stats.html#torch.cuda.reset_peak_memory_stats" title="torch.cuda.reset_peak_memory_stats" class="sphx-glr-backref-module-torch-cuda sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">reset_peak_memory_stats</span></a><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+<span class="n">start</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
+<span class="n">ipca</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">check_input</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ipca_time</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+
+<span class="c1"># Get the peak GPU memory allocated (in bytes).</span>
+<span class="n">ipca_peak_mem</span> <span class="o">=</span> <a href="http://pytorch.org/docs/2.0/generated/torch.cuda.max_memory_allocated.html#torch.cuda.max_memory_allocated" title="torch.cuda.max_memory_allocated" class="sphx-glr-backref-module-torch-cuda sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">max_memory_allocated</span></a><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;Incremental PCA on GPU:</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="sa">f</span><span class="s2">&quot;  Time: </span><span class="si">{</span><span class="n">ipca_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> sec, &quot;</span>
+    <span class="sa">f</span><span class="s2">&quot;Peak GPU memory: </span><span class="si">{</span><span class="n">ipca_peak_mem</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> MB&quot;</span>
 <span class="p">)</span>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Z_am</span></a> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">)</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Z_am</span></a><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Z_am</span></a><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">digits</span><span class="o">.</span><span class="n">target</span></a><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;PCA via AffinityMatcher&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="c1"># Clean up and free GPU memory.</span>
+<span class="k">del</span> <span class="n">ipca</span>
+<a href="http://pytorch.org/docs/2.0/generated/torch.cuda.empty_cache.html#torch.cuda.empty_cache" title="torch.cuda.empty_cache" class="sphx-glr-backref-module-torch-cuda sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">empty_cache</span></a><span class="p">()</span>
+<a href="https://docs.python.org/3.4/library/gc.html#gc.collect" title="gc.collect" class="sphx-glr-backref-module-gc sphx-glr-backref-type-py-function"><span class="n">gc</span><span class="o">.</span><span class="n">collect</span></a><span class="p">()</span>
+
+<span class="c1"># --------------------------</span>
+<span class="c1"># Regular PCA on GPU</span>
+<span class="c1"># --------------------------</span>
+<span class="c1"># Regular PCA (from torchdr) will typically move the full dataset to GPU.</span>
+<span class="n">pca</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+
+<span class="c1"># Reset GPU memory stats before fitting.</span>
+<a href="http://pytorch.org/docs/2.0/generated/torch.cuda.reset_peak_memory_stats.html#torch.cuda.reset_peak_memory_stats" title="torch.cuda.reset_peak_memory_stats" class="sphx-glr-backref-module-torch-cuda sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">reset_peak_memory_stats</span></a><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+<span class="n">start</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
+<span class="c1"># Here we assume that pca.fit will move the full dataset to the GPU.</span>
+<span class="n">pca</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">pca_time</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+
+<span class="c1"># Get the peak GPU memory allocated (in bytes).</span>
+<span class="n">pca_peak_mem</span> <span class="o">=</span> <a href="http://pytorch.org/docs/2.0/generated/torch.cuda.max_memory_allocated.html#torch.cuda.max_memory_allocated" title="torch.cuda.max_memory_allocated" class="sphx-glr-backref-module-torch-cuda sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">max_memory_allocated</span></a><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Regular PCA on GPU:</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="sa">f</span><span class="s2">&quot;  Time: </span><span class="si">{</span><span class="n">pca_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> sec, &quot;</span>
+    <span class="sa">f</span><span class="s2">&quot;Peak GPU memory: </span><span class="si">{</span><span class="n">pca_peak_mem</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> MB&quot;</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_demo_pca_via_affinity_matcher_002.png" srcset="../../_images/sphx_glr_demo_pca_via_affinity_matcher_002.png" alt="PCA via AffinityMatcher" class = "sphx-glr-single-img"/><p>We can see that we obtain the same PCA embedding (up to a rotation) using
-both methods.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.413 seconds)</p>
-<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-basics-demo-pca-via-affinity-matcher-py">
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-basics-incremental-pca-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/01119b09b904483a657e921d21bc15d1/demo_pca_via_affinity_matcher.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">demo_pca_via_affinity_matcher.ipynb</span></code></a></p>
+<p><a class="reference download internal" download="" href="../../_downloads/17f41c694ab4716f2a7d9cbc3889257a/incremental_pca.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">incremental_pca.ipynb</span></code></a></p>
 </div>
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/3782b8d6c3b9610739919e42de4d08a1/demo_pca_via_affinity_matcher.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">demo_pca_via_affinity_matcher.py</span></code></a></p>
+<p><a class="reference download internal" download="" href="../../_downloads/a0a88a17e44fa2598fbae2a6d03080db/incremental_pca.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">incremental_pca.py</span></code></a></p>
 </div>
 <div class="sphx-glr-download sphx-glr-download-zip docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/9c98a10e6c0743947672bcab8d552167/demo_pca_via_affinity_matcher.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">demo_pca_via_affinity_matcher.zip</span></code></a></p>
+<p><a class="reference download internal" download="" href="../../_downloads/5a80026dfc614758763d75565378941a/incremental_pca.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">incremental_pca.zip</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</section>
 </section>
 
 
@@ -564,20 +567,20 @@ both methods.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../affinities/demo_ea_adaptivity.html"
+       href="demo_tsne_swiss_roll.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Entropic Affinities can adapt to varying noise levels</p>
+        <p class="prev-next-title">TSNE embedding of the swiss roll dataset</p>
       </div>
     </a>
     <a class="right-next"
-       href="demo_tsne_swiss_roll.html"
+       href="demo_ne_methods_affinity_matcher.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">TSNE embedding of the swiss roll dataset</p>
+        <p class="prev-next-title">Neighbor Embedding on genomics &amp; equivalent affinity matcher formulation</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -593,24 +596,10 @@ both methods.</p>
 
 
   <div class="sidebar-secondary-item">
-<div
-    id="pst-page-navigation-heading-2"
-    class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-toy-images">Load toy images</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pca-via-svd">PCA via SVD</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pca-via-affinitymatcher">PCA via AffinityMatcher</a></li>
-</ul>
-  </nav></div>
-
-  <div class="sidebar-secondary-item">
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../../_sources/auto_examples/basics/demo_pca_via_affinity_matcher.rst.txt"
+      <li><a href="../../_sources/auto_examples/basics/incremental_pca.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div></div>

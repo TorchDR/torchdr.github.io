@@ -536,10 +536,8 @@
 <span class="sd">        Learning rate for the optimizer.</span>
 <span class="sd">    base_kernel : {&quot;gaussian&quot;, &quot;student&quot;}, optional</span>
 <span class="sd">        Which base kernel to normalize as doubly stochastic.</span>
-<span class="sd">    tolog : bool, optional</span>
-<span class="sd">        Whether to store intermediate result in a dictionary.</span>
 <span class="sd">    metric : str, optional</span>
-<span class="sd">    Metric to use for computing distances (default &quot;sqeuclidean&quot;).</span>
+<span class="sd">        Metric to use for computing distances (default &quot;sqeuclidean&quot;).</span>
 <span class="sd">    zero_diag : bool, optional</span>
 <span class="sd">        Whether to set the diagonal elements of the affinity matrix to 0.</span>
 <span class="sd">    device : str, optional</span>
@@ -560,7 +558,6 @@
         <span class="n">optimizer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Adam&quot;</span><span class="p">,</span>
         <span class="n">lr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e0</span><span class="p">,</span>
         <span class="n">base_kernel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gaussian&quot;</span><span class="p">,</span>
-        <span class="n">tolog</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
         <span class="n">zero_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
@@ -581,7 +578,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lr</span> <span class="o">=</span> <span class="n">lr</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">base_kernel</span> <span class="o">=</span> <span class="n">base_kernel</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tolog</span> <span class="o">=</span> <span class="n">tolog</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the quadratic doubly stochastic affinity matrix from input data X.</span>
@@ -615,8 +611,6 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_dual</span> <span class="ow">is</span> <span class="kc">None</span>
             <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_dual</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolog</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">[</span><span class="s2">&quot;dual&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dual_</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()]</span>
 
         <span class="n">optimizer</span> <span class="o">=</span> <span class="n">OPTIMIZERS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">]([</span><span class="bp">self</span><span class="o">.</span><span class="n">dual_</span><span class="p">],</span> <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lr</span><span class="p">)</span>
 
@@ -637,9 +631,6 @@
                     <span class="s2">&quot;consider decreasing the learning rate.&quot;</span>
                 <span class="p">),</span>
             <span class="p">)</span>
-
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolog</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">[</span><span class="s2">&quot;dual&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dual_</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">())</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
                 <span class="n">pbar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span>

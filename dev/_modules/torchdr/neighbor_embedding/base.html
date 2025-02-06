@@ -504,7 +504,7 @@
 <span class="sd">        Learning rate scheduler. Default is &quot;constant&quot;.</span>
 <span class="sd">    scheduler_kwargs : dict, optional</span>
 <span class="sd">        Additional keyword arguments for the scheduler.</span>
-<span class="sd">    tol : float, optional</span>
+<span class="sd">    min_grad_norm : float, optional</span>
 <span class="sd">        Tolerance for stopping criterion. Default is 1e-7.</span>
 <span class="sd">    max_iter : int, optional</span>
 <span class="sd">        Maximum number of iterations. Default is 2000.</span>
@@ -512,8 +512,6 @@
 <span class="sd">        Initialization method for the embedding. Default is &quot;pca&quot;.</span>
 <span class="sd">    init_scaling : float, optional</span>
 <span class="sd">        Scaling factor for the initial embedding. Default is 1e-4.</span>
-<span class="sd">    tolog : bool, optional</span>
-<span class="sd">        If True, logs the optimization process. Default is False.</span>
 <span class="sd">    device : str, optional</span>
 <span class="sd">        Device to use for computations. Default is &quot;auto&quot;.</span>
 <span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None}, optional</span>
@@ -541,11 +539,10 @@
         <span class="n">optimizer_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">scheduler</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;constant&quot;</span><span class="p">,</span>
         <span class="n">scheduler_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-7</span><span class="p">,</span>
+        <span class="n">min_grad_norm</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-7</span><span class="p">,</span>
         <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2000</span><span class="p">,</span>
         <span class="n">init</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pca&quot;</span><span class="p">,</span>
         <span class="n">init_scaling</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-4</span><span class="p">,</span>
-        <span class="n">tolog</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
         <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -564,11 +561,10 @@
             <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span>
             <span class="n">scheduler</span><span class="o">=</span><span class="n">scheduler</span><span class="p">,</span>
             <span class="n">scheduler_kwargs</span><span class="o">=</span><span class="n">scheduler_kwargs</span><span class="p">,</span>
-            <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span>
+            <span class="n">min_grad_norm</span><span class="o">=</span><span class="n">min_grad_norm</span><span class="p">,</span>
             <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span>
             <span class="n">init</span><span class="o">=</span><span class="n">init</span><span class="p">,</span>
             <span class="n">init_scaling</span><span class="o">=</span><span class="n">init_scaling</span><span class="p">,</span>
-            <span class="n">tolog</span><span class="o">=</span><span class="n">tolog</span><span class="p">,</span>
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
             <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
@@ -582,7 +578,7 @@
         <span class="k">if</span> <span class="s2">&quot;learning_rate&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">lr</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;learning_rate&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="s2">&quot;min_grad_norm&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">tol</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;min_grad_norm&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">min_grad_norm</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;min_grad_norm&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="s2">&quot;early_exaggeration&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;early_exaggeration&quot;</span><span class="p">]</span>
 
@@ -707,7 +703,7 @@
 <span class="sd">        Learning rate scheduler. Default is &quot;constant&quot;.</span>
 <span class="sd">    scheduler_kwargs : dict, optional</span>
 <span class="sd">        Additional keyword arguments for the scheduler.</span>
-<span class="sd">    tol : float, optional</span>
+<span class="sd">    min_grad_norm : float, optional</span>
 <span class="sd">        Tolerance for stopping criterion. Default is 1e-7.</span>
 <span class="sd">    max_iter : int, optional</span>
 <span class="sd">        Maximum number of iterations. Default is 2000.</span>
@@ -715,8 +711,6 @@
 <span class="sd">        Initialization method for the embedding. Default is &quot;pca&quot;.</span>
 <span class="sd">    init_scaling : float, optional</span>
 <span class="sd">        Scaling factor for the initial embedding. Default is 1e-4.</span>
-<span class="sd">    tolog : bool, optional</span>
-<span class="sd">        If True, logs the optimization process. Default is False.</span>
 <span class="sd">    device : str, optional</span>
 <span class="sd">        Device to use for computations. Default is &quot;auto&quot;.</span>
 <span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None}, optional</span>
@@ -744,11 +738,10 @@
         <span class="n">optimizer_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">scheduler</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;constant&quot;</span><span class="p">,</span>
         <span class="n">scheduler_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-7</span><span class="p">,</span>
+        <span class="n">min_grad_norm</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-7</span><span class="p">,</span>
         <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2000</span><span class="p">,</span>
         <span class="n">init</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pca&quot;</span><span class="p">,</span>
         <span class="n">init_scaling</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-4</span><span class="p">,</span>
-        <span class="n">tolog</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
         <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -780,11 +773,10 @@
             <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span>
             <span class="n">scheduler</span><span class="o">=</span><span class="n">scheduler</span><span class="p">,</span>
             <span class="n">scheduler_kwargs</span><span class="o">=</span><span class="n">scheduler_kwargs</span><span class="p">,</span>
-            <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span>
+            <span class="n">min_grad_norm</span><span class="o">=</span><span class="n">min_grad_norm</span><span class="p">,</span>
             <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span>
             <span class="n">init</span><span class="o">=</span><span class="n">init</span><span class="p">,</span>
             <span class="n">init_scaling</span><span class="o">=</span><span class="n">init_scaling</span><span class="p">,</span>
-            <span class="n">tolog</span><span class="o">=</span><span class="n">tolog</span><span class="p">,</span>
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
             <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
@@ -863,7 +855,7 @@
 <span class="sd">        Learning rate scheduler. Default is &quot;constant&quot;.</span>
 <span class="sd">    scheduler_kwargs : dict, optional</span>
 <span class="sd">        Additional keyword arguments for the scheduler.</span>
-<span class="sd">    tol : float, optional</span>
+<span class="sd">    min_grad_norm : float, optional</span>
 <span class="sd">        Tolerance for stopping criterion. Default is 1e-7.</span>
 <span class="sd">    max_iter : int, optional</span>
 <span class="sd">        Maximum number of iterations. Default is 2000.</span>
@@ -871,8 +863,6 @@
 <span class="sd">        Initialization method for the embedding. Default is &quot;pca&quot;.</span>
 <span class="sd">    init_scaling : float, optional</span>
 <span class="sd">        Scaling factor for the initial embedding. Default is 1e-4.</span>
-<span class="sd">    tolog : bool, optional</span>
-<span class="sd">        If True, logs the optimization process. Default is False.</span>
 <span class="sd">    device : str, optional</span>
 <span class="sd">        Device to use for computations. Default is &quot;auto&quot;.</span>
 <span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None}, optional</span>
@@ -902,11 +892,10 @@
         <span class="n">lr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="mf">1e0</span><span class="p">,</span>
         <span class="n">scheduler</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;constant&quot;</span><span class="p">,</span>
         <span class="n">scheduler_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-7</span><span class="p">,</span>
+        <span class="n">min_grad_norm</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-7</span><span class="p">,</span>
         <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2000</span><span class="p">,</span>
         <span class="n">init</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pca&quot;</span><span class="p">,</span>
         <span class="n">init_scaling</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-4</span><span class="p">,</span>
-        <span class="n">tolog</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
         <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -927,11 +916,10 @@
             <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span>
             <span class="n">scheduler</span><span class="o">=</span><span class="n">scheduler</span><span class="p">,</span>
             <span class="n">scheduler_kwargs</span><span class="o">=</span><span class="n">scheduler_kwargs</span><span class="p">,</span>
-            <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span>
+            <span class="n">min_grad_norm</span><span class="o">=</span><span class="n">min_grad_norm</span><span class="p">,</span>
             <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span>
             <span class="n">init</span><span class="o">=</span><span class="n">init</span><span class="p">,</span>
             <span class="n">init_scaling</span><span class="o">=</span><span class="n">init_scaling</span><span class="p">,</span>
-            <span class="n">tolog</span><span class="o">=</span><span class="n">tolog</span><span class="p">,</span>
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
             <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>

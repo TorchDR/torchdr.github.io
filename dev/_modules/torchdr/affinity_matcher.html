@@ -518,7 +518,7 @@
 <span class="sd">        Learning rate scheduler. Default is &quot;constant&quot;.</span>
 <span class="sd">    scheduler_kwargs : dict, optional</span>
 <span class="sd">        Additional keyword arguments for the scheduler.</span>
-<span class="sd">    tol : float, optional</span>
+<span class="sd">    min_grad_norm : float, optional</span>
 <span class="sd">        Tolerance for stopping criterion. Default is 1e-7.</span>
 <span class="sd">    max_iter : int, optional</span>
 <span class="sd">        Maximum number of iterations. Default is 1000.</span>
@@ -526,8 +526,6 @@
 <span class="sd">        Initialization method for the embedding. Default is &quot;pca&quot;.</span>
 <span class="sd">    init_scaling : float, optional</span>
 <span class="sd">        Scaling factor for the initial embedding. Default is 1e-4.</span>
-<span class="sd">    tolog : bool, optional</span>
-<span class="sd">        If True, logs the optimization process. Default is False.</span>
 <span class="sd">    device : str, optional</span>
 <span class="sd">        Device to use for computations. Default is &quot;auto&quot;.</span>
 <span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None}, optional</span>
@@ -537,6 +535,8 @@
 <span class="sd">        Verbosity of the optimization process. Default is False.</span>
 <span class="sd">    random_state : float, optional</span>
 <span class="sd">        Random seed for reproducibility. Default is None.</span>
+<span class="sd">    n_iter_check : int, optional</span>
+<span class="sd">        Number of iterations between two checks for convergence. Default is 50.</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -552,15 +552,15 @@
         <span class="n">lr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="mf">1e0</span><span class="p">,</span>
         <span class="n">scheduler</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;constant&quot;</span><span class="p">,</span>
         <span class="n">scheduler_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-7</span><span class="p">,</span>
+        <span class="n">min_grad_norm</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-7</span><span class="p">,</span>
         <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
         <span class="n">init</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="s2">&quot;pca&quot;</span><span class="p">,</span>
         <span class="n">init_scaling</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-4</span><span class="p">,</span>
-        <span class="n">tolog</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
         <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">n_iter_check</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">n_components</span><span class="o">=</span><span class="n">n_components</span><span class="p">,</span>
@@ -576,7 +576,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_kwargs</span> <span class="o">=</span> <span class="n">optimizer_kwargs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lr</span> <span class="o">=</span> <span class="n">lr</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tol</span> <span class="o">=</span> <span class="n">tol</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_grad_norm</span> <span class="o">=</span> <span class="n">min_grad_norm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_check</span> <span class="o">=</span> <span class="n">n_iter_check</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">=</span> <span class="n">max_iter</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="o">=</span> <span class="n">scheduler</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_kwargs</span> <span class="o">=</span> <span class="n">scheduler_kwargs</span>
@@ -590,9 +592,6 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="o">=</span> <span class="n">init</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_scaling</span> <span class="o">=</span> <span class="n">init_scaling</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">tolog</span> <span class="o">=</span> <span class="n">tolog</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
 
         <span class="c1"># --- check affinity_out ---</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">affinity_out</span><span class="p">,</span> <span class="n">Affinity</span><span class="p">):</span>
@@ -693,14 +692,16 @@
             <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loss</span><span class="p">()</span>
             <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
 
-            <span class="n">grad_norm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">grad_norm</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">tol</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;[TorchDR] Convergence reached at iter </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> with grad norm: &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">grad_norm</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">.&quot;</span>
-                    <span class="p">)</span>
-                <span class="k">break</span>
+            <span class="n">check_convergence</span> <span class="o">=</span> <span class="n">k</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_check</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">check_convergence</span><span class="p">:</span>
+                <span class="n">grad_norm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">grad_norm</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_grad_norm</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;[TorchDR] Convergence reached at iter </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> with grad norm: &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">grad_norm</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">.&quot;</span>
+                        <span class="p">)</span>
+                    <span class="k">break</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
@@ -711,7 +712,7 @@
                 <span class="sa">f</span><span class="s2">&quot;at iter </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span>
             <span class="p">)</span>
 
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="ow">and</span> <span class="n">check_convergence</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">pbar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;[TorchDR] DR Loss : </span><span class="si">{</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> | &quot;</span>
                     <span class="sa">f</span><span class="s2">&quot;Grad norm : </span><span class="si">{</span><span class="n">grad_norm</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> &quot;</span>

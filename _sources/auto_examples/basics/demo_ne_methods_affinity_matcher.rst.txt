@@ -24,7 +24,7 @@ Neighbor Embedding on genomics & equivalent affinity matcher formulation
 We illustrate the basic usage of TorchDR with different neighbor embedding methods
 on the SNARE-seq gene expression dataset with given cell type labels.
 
-.. GENERATED FROM PYTHON SOURCE LINES 9-15
+.. GENERATED FROM PYTHON SOURCE LINES 9-17
 
 .. code-block:: Python
 
@@ -34,6 +34,7 @@ on the SNARE-seq gene expression dataset with given cell type labels.
     #
     # License: BSD 3-Clause License
 
+    import urllib.request
 
 
 
@@ -41,23 +42,22 @@ on the SNARE-seq gene expression dataset with given cell type labels.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 16-30
+
+.. GENERATED FROM PYTHON SOURCE LINES 18-30
 
 .. code-block:: Python
 
     import matplotlib.pyplot as plt
+    import numpy as np
 
     from torchdr import (
-        AffinityMatcher,
         SNE,
-        UMAP,
         TSNE,
+        UMAP,
+        AffinityMatcher,
         EntropicAffinity,
         NormalizedGaussianAffinity,
     )
-    import numpy as np
-    import urllib.request
-
 
 
 
@@ -116,11 +116,11 @@ Run neighbor embedding methods
         "lr": 1e0,
     }
 
-    sne = SNE(early_exaggeration=1, **params)
+    sne = SNE(early_exaggeration_coeff=1, **params)
 
-    umap = UMAP(early_exaggeration=1, **params)
+    umap = UMAP(early_exaggeration_coeff=1, **params)
 
-    tsne = TSNE(early_exaggeration=1, **params)
+    tsne = TSNE(early_exaggeration_coeff=1, **params)
 
     all_methods = {
         "TSNE": tsne,
@@ -129,7 +129,7 @@ Run neighbor embedding methods
     }
 
     for method_name, method in all_methods.items():
-        print("--- Computing {} ---".format(method_name))
+        print(f"--- Computing {method_name} ---")
         method.fit(X)
 
 
@@ -163,7 +163,7 @@ Plot the different embeddings
         ax = fig.add_subplot(1, 3, i + 1)
         emb = method.embedding_.detach().numpy()  # get the embedding
         ax.scatter(emb[:, 0], emb[:, 1], c=Y, s=10)
-        ax.set_title("{0}".format(method_name), fontsize=24)
+        ax.set_title(f"{method_name}", fontsize=24)
         ax.set_xticks([])
         ax.set_yticks([])
     plt.tight_layout()
@@ -216,7 +216,7 @@ a :class:`torchdr.EntropicAffinity` with a
         ax = fig.add_subplot(1, 2, i + 1)
         emb = method.embedding_.detach().numpy()  # get the embedding
         ax.scatter(emb[:, 0], emb[:, 1], c=Y, s=10)
-        ax.set_title("{0}".format(method_name), fontsize=15)
+        ax.set_title(f"{method_name}", fontsize=15)
         ax.set_xticks([])
         ax.set_yticks([])
     plt.tight_layout()
@@ -249,7 +249,7 @@ On the efficiency of using the torchdr API rather than AffinityMatcher directly
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (1 minutes 35.595 seconds)
+   **Total running time of the script:** (1 minutes 2.554 seconds)
 
 
 .. _sphx_glr_download_auto_examples_basics_demo_ne_methods_affinity_matcher.py:

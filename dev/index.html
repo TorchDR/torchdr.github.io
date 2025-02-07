@@ -480,7 +480,7 @@
 </section>
 <section id="benchmarks">
 <h2>Benchmarks<a class="headerlink" href="#benchmarks" title="Link to this heading">#</a></h2>
-<p>Relying on <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> enables an order-of-magnitude improvement in both runtime and memory performance. <a class="reference external" href="https://github.com/TorchDR/TorchDR/blob/main/benchmarks/benchmark_umap.py">See the code</a>. Stay tuned for additional benchmarks.</p>
+<p>Relying on <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> enables an order-of-magnitude improvement in both runtime and memory performance compared to CPU-based implementations. <a class="reference external" href="https://github.com/TorchDR/TorchDR/blob/main/benchmarks/benchmark_umap.py">See the code</a>. Stay tuned for additional benchmarks.</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p>Dataset</p></th>
@@ -493,25 +493,25 @@
 <tbody>
 <tr class="row-even"><td><p>Macosko</p></td>
 <td><p>44,808</p></td>
-<td><p>Classic UMAP</p></td>
+<td><p>Classic UMAP (CPU)</p></td>
 <td><p>61.3</p></td>
 <td><p>410.9</p></td>
 </tr>
 <tr class="row-odd"><td><p></p></td>
 <td><p></p></td>
-<td><p>TorchDR UMAP</p></td>
+<td><p>TorchDR UMAP (GPU)</p></td>
 <td><p><strong>7.7</strong></p></td>
 <td><p><strong>100.4</strong></p></td>
 </tr>
 <tr class="row-even"><td><p>10x Mouse Zheng</p></td>
 <td><p>1,306,127</p></td>
-<td><p>Classic UMAP</p></td>
+<td><p>Classic UMAP (CPU)</p></td>
 <td><p>1910.4</p></td>
 <td><p>11278.1</p></td>
 </tr>
 <tr class="row-odd"><td><p></p></td>
 <td><p></p></td>
-<td><p>TorchDR UMAP</p></td>
+<td><p>TorchDR UMAP (GPU)</p></td>
 <td><p><strong>184.4</strong></p></td>
 <td><p><strong>2699.7</strong></p></td>
 </tr>
@@ -528,9 +528,9 @@ A comparison of various neighbor embedding methods on the MNIST digits dataset.<
   <img src="https://github.com/torchdr/torchdr/raw/main/docs/source/figures/mnist_readme.png" width="800" alt="various neighbor embedding methods on MNIST">
 </p>
 <p><strong>Single-cell genomics.</strong> (<a class="reference external" href="https://github.com/TorchDR/TorchDR/tree/main/examples/single_cell/single_cell_readme.py">Code</a>)
-Visualizing cells using <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code>. Embeddings are colored by cell type.</p>
+Visualizing cells using <code class="docutils literal notranslate"><span class="pre">LargeVis</span></code> from <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code>.</p>
 <p align="center">
-  <img src="https://github.com/torchdr/torchdr/raw/main/docs/source/figures/single_cell_readme.png" width="700" alt="single cell embeddings">
+  <img src="https://github.com/torchdr/torchdr/raw/main/docs/source/figures/single_cell.gif" width="700" alt="single cell embeddings">
 </p>
 <p><strong>CIFAR100.</strong> (<a class="reference external" href="https://github.com/TorchDR/TorchDR/tree/main/examples/images/cifar100.py">Code</a>)
 Visualizing the CIFAR100 dataset using DINO features and TSNE.</p>

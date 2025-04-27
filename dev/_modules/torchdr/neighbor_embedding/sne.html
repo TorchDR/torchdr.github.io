@@ -450,7 +450,8 @@
 <span class="c1">#</span>
 <span class="c1"># License: BSD 3-Clause License</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Type</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity</span><span class="w"> </span><span class="kn">import</span> <span class="n">EntropicAffinity</span><span class="p">,</span> <span class="n">GaussianAffinity</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.neighbor_embedding.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">SparseNeighborEmbedding</span>
@@ -482,12 +483,15 @@
 <span class="sd">        Dimension of the embedded space (corresponds to the number of features of Z).</span>
 <span class="sd">    lr : float or &#39;auto&#39;, optional</span>
 <span class="sd">        Learning rate for the algorithm. By default &#39;auto&#39;.</span>
-<span class="sd">    optimizer : {&#39;SGD&#39;, &#39;Adam&#39;, &#39;NAdam&#39;, &#39;auto&#39;}, optional</span>
-<span class="sd">        Which pytorch optimizer to use. By default &#39;auto&#39;.</span>
+<span class="sd">    optimizer : str or torch.optim.Optimizer, optional</span>
+<span class="sd">        Name of an optimizer from torch.optim or an optimizer class.</span>
+<span class="sd">        Default is &quot;SGD&quot;. For best results, we recommend using &quot;SGD&quot; with &#39;auto&#39; learning rate.</span>
 <span class="sd">    optimizer_kwargs : dict or &#39;auto&#39;, optional</span>
-<span class="sd">        Arguments for the optimizer. By default &#39;auto&#39;.</span>
-<span class="sd">    scheduler : {&#39;constant&#39;, &#39;linear&#39;}, optional</span>
-<span class="sd">        Learning rate scheduler.</span>
+<span class="sd">        Additional keyword arguments for the optimizer. Default is &#39;auto&#39;,</span>
+<span class="sd">        which sets appropriate momentum values for SGD based on early exaggeration phase.</span>
+<span class="sd">    scheduler : str or torch.optim.lr_scheduler.LRScheduler, optional</span>
+<span class="sd">        Name of a scheduler from torch.optim.lr_scheduler or a scheduler class.</span>
+<span class="sd">        Default is None (no scheduler).</span>
 <span class="sd">    scheduler_kwargs : dict, optional</span>
 <span class="sd">        Arguments for the scheduler.</span>
 <span class="sd">    init : {&#39;normal&#39;, &#39;pca&#39;} or torch.Tensor of shape (n_samples, output_dim), optional</span>
@@ -527,9 +531,11 @@
         <span class="n">perplexity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
         <span class="n">n_components</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
         <span class="n">lr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-        <span class="n">optimizer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">optimizer</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;SGD&quot;</span><span class="p">,</span>
         <span class="n">optimizer_kwargs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-        <span class="n">scheduler</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;constant&quot;</span><span class="p">,</span>
+        <span class="n">scheduler</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+            <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">LRScheduler</span><span class="p">]]</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">scheduler_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">init</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pca&quot;</span><span class="p">,</span>
         <span class="n">init_scaling</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-4</span><span class="p">,</span>

@@ -463,7 +463,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogAffinity</span><span class="p">,</span> <span class="n">SparseLogAffinity</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">OPTIMIZERS</span><span class="p">,</span>
     <span class="n">batch_transpose</span><span class="p">,</span>
     <span class="n">check_NaNs</span><span class="p">,</span>
     <span class="n">entropy</span><span class="p">,</span>
@@ -844,7 +843,7 @@
 <span class="sd">        Precision threshold at which the algorithm stops, by default 1e-5.</span>
 <span class="sd">    max_iter : int, optional</span>
 <span class="sd">        Number of maximum iterations for the algorithm, by default 500.</span>
-<span class="sd">    optimizer : {&#39;SGD&#39;, &#39;Adam&#39;, &#39;NAdam&#39;, &#39;LBFGS}, optional</span>
+<span class="sd">    optimizer : str , optional</span>
 <span class="sd">        Which pytorch optimizer to use (default &#39;Adam&#39;).</span>
 <span class="sd">    metric : str, optional</span>
 <span class="sd">        Metric to use for computing distances, by default &quot;sqeuclidean&quot;.</span>
@@ -960,8 +959,9 @@
                 <span class="n">C</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu_</span><span class="p">,</span> <span class="n">eps_square</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eps_square</span>
             <span class="p">)</span>
 
-        <span class="k">else</span><span class="p">:</span>  <span class="c1"># other optimizers including SGD and Adam</span>
-            <span class="n">optimizer</span> <span class="o">=</span> <span class="n">OPTIMIZERS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">]([</span><span class="bp">self</span><span class="o">.</span><span class="n">eps_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu_</span><span class="p">],</span> <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lr</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">optimizer_class</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">)</span>
+            <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optimizer_class</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">eps_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu_</span><span class="p">],</span> <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lr</span><span class="p">)</span>
 
             <span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">),</span> <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">pbar</span><span class="p">:</span>

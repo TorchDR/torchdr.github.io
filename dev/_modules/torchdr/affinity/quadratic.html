@@ -457,7 +457,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity</span><span class="w"> </span><span class="kn">import</span> <span class="n">Affinity</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">OPTIMIZERS</span><span class="p">,</span> <span class="n">batch_transpose</span><span class="p">,</span> <span class="n">check_NaNs</span><span class="p">,</span> <span class="n">wrap_vectors</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">batch_transpose</span><span class="p">,</span> <span class="n">check_NaNs</span><span class="p">,</span> <span class="n">wrap_vectors</span>
 
 
 <span class="nd">@wrap_vectors</span>
@@ -531,8 +531,8 @@
 <span class="sd">        Precision threshold at which the algorithm stops.</span>
 <span class="sd">    max_iter : int, optional</span>
 <span class="sd">        Number of maximum iterations for the algorithm.</span>
-<span class="sd">    optimizer : {&quot;Adam&quot;, &quot;SGD&quot;, &quot;NAdam&quot;}, optional</span>
-<span class="sd">        Optimizer to use for the dual ascent.</span>
+<span class="sd">    optimizer : str, optional</span>
+<span class="sd">        Optimizer to use for the dual ascent (default &#39;Adam&#39;).</span>
 <span class="sd">    lr : float, optional</span>
 <span class="sd">        Learning rate for the optimizer.</span>
 <span class="sd">    base_kernel : {&quot;gaussian&quot;, &quot;student&quot;}, optional</span>
@@ -613,7 +613,8 @@
             <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_dual</span>
         <span class="p">)</span>
 
-        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">OPTIMIZERS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">]([</span><span class="bp">self</span><span class="o">.</span><span class="n">dual_</span><span class="p">],</span> <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lr</span><span class="p">)</span>
+        <span class="n">optimizer_class</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">)</span>
+        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optimizer_class</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">dual_</span><span class="p">],</span> <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lr</span><span class="p">)</span>
 
         <span class="c1"># Dual ascent iterations</span>
         <span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">),</span> <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>

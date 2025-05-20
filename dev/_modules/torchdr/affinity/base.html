@@ -462,6 +462,7 @@
     <span class="n">pairwise_distances</span><span class="p">,</span>
     <span class="n">symmetric_pairwise_distances_indices</span><span class="p">,</span>
     <span class="n">to_torch</span><span class="p">,</span>
+    <span class="n">bool_arg</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -496,11 +497,10 @@
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metric</span> <span class="o">=</span> <span class="n">metric</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">zero_diag</span> <span class="o">=</span> <span class="n">zero_diag</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zero_diag</span> <span class="o">=</span> <span class="n">bool_arg</span><span class="p">(</span><span class="n">zero_diag</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">=</span> <span class="n">backend</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">zero_diag</span> <span class="o">=</span> <span class="n">zero_diag</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">bool_arg</span><span class="p">(</span><span class="n">verbose</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the affinity matrix from the input data.</span>
@@ -694,7 +694,7 @@
             <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sparsity</span> <span class="o">=</span> <span class="n">sparsity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparsity</span> <span class="o">=</span> <span class="n">bool_arg</span><span class="p">(</span><span class="n">sparsity</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>

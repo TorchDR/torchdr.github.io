@@ -459,7 +459,7 @@
     <span class="n">SymmetricEntropicAffinity</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.neighbor_embedding.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">NeighborEmbedding</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">cross_entropy_loss</span><span class="p">,</span> <span class="n">logsumexp_red</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">cross_entropy_loss</span><span class="p">,</span> <span class="n">logsumexp_red</span><span class="p">,</span> <span class="n">bool_arg</span>
 
 
 <div class="viewcode-block" id="TSNEkhorn">
@@ -586,11 +586,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">metric_out</span> <span class="o">=</span> <span class="n">metric_out</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span> <span class="o">=</span> <span class="n">perplexity</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lr_affinity_in</span> <span class="o">=</span> <span class="n">lr_affinity_in</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">eps_square_affinity_in</span> <span class="o">=</span> <span class="n">eps_square_affinity_in</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eps_square_affinity_in</span> <span class="o">=</span> <span class="n">bool_arg</span><span class="p">(</span><span class="n">eps_square_affinity_in</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_iter_affinity_in</span> <span class="o">=</span> <span class="n">max_iter_affinity_in</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tol_affinity_in</span> <span class="o">=</span> <span class="n">tol_affinity_in</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">unrolling</span> <span class="o">=</span> <span class="n">unrolling</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">symmetric_affinity</span> <span class="o">=</span> <span class="n">symmetric_affinity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unrolling</span> <span class="o">=</span> <span class="n">bool_arg</span><span class="p">(</span><span class="n">unrolling</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">symmetric_affinity</span> <span class="o">=</span> <span class="n">bool_arg</span><span class="p">(</span><span class="n">symmetric_affinity</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">symmetric_affinity</span><span class="p">:</span>
             <span class="n">affinity_in</span> <span class="o">=</span> <span class="n">SymmetricEntropicAffinity</span><span class="p">(</span>

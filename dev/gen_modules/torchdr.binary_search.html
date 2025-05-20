@@ -525,19 +525,19 @@ The domain of f is restricted to positive floats.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>f</strong> (function <span class="math notranslate nohighlight">\(\mathbb{R}_{&gt;0} \to \mathbb{R}\)</span>) – batched 1d increasing function which root should be computed.</p></li>
 <li><p><strong>n</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) – size of the input of f.</p></li>
-<li><p><strong>begin</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><em>float</em></a><em> or </em><a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><em>torch.Tensor</em></a><em> of </em><em>shape</em><em> (</em><em>n</em><em>)</em><em>, </em><em>optional</em>) – initial lower bound of the root.</p></li>
-<li><p><strong>end</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><em>float</em></a><em> or </em><a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)"><em>torch.Tensor</em></a><em> of </em><em>shape</em><em> (</em><em>n</em><em>)</em><em>, </em><em>optional</em>) – initial upper bound of the root.</p></li>
+<li><p><strong>begin</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><em>float</em></a><em> or </em><em>torch.Tensor</em><em> of </em><em>shape</em><em> (</em><em>n</em><em>)</em><em>, </em><em>optional</em>) – initial lower bound of the root.</p></li>
+<li><p><strong>end</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><em>float</em></a><em> or </em><em>torch.Tensor</em><em> of </em><em>shape</em><em> (</em><em>n</em><em>)</em><em>, </em><em>optional</em>) – initial upper bound of the root.</p></li>
 <li><p><strong>max_iter</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a><em>, </em><em>optional</em>) – maximum iterations of search.</p></li>
 <li><p><strong>tol</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><em>float</em></a><em>, </em><em>optional</em>) – precision threshold at which the algorithm stops.</p></li>
 <li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><em>bool</em></a><em>, </em><em>optional</em>) – if True, prints current bounds.</p></li>
-<li><p><strong>dtype</strong> (<a class="reference external" href="http://pytorch.org/docs/2.0/tensor_attributes.html#torch.dtype" title="(in PyTorch v2.0)"><em>torch.dtype</em></a><em>, </em><em>optional</em>) – data type of the input.</p></li>
+<li><p><strong>dtype</strong> (<em>torch.dtype</em><em>, </em><em>optional</em>) – data type of the input.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>m</strong> – root of f.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="http://pytorch.org/docs/2.0/tensors.html#torch.Tensor" title="(in PyTorch v2.0)">torch.Tensor</a> of shape (n)</p>
+<dd class="field-odd"><p>torch.Tensor of shape (n)</p>
 </dd>
 </dl>
 </dd></dl>

@@ -447,6 +447,7 @@
 <span></span><span class="sd">&quot;&quot;&quot;Common simple affinities.&quot;&quot;&quot;</span>
 
 <span class="c1"># Author: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
+<span class="c1">#         Nicolas Courty &lt;ncourty@irisa.fr&gt;</span>
 <span class="c1">#</span>
 <span class="c1"># License: BSD 3-Clause License</span>
 
@@ -560,6 +561,54 @@
             <span class="o">*</span> <span class="p">(</span><span class="n">C</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">degrees_of_freedom</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">log</span><span class="p">()</span>
         <span class="p">)</span></div>
 
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CauchyAffinity</span><span class="p">(</span><span class="n">UnnormalizedLogAffinity</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Computes the Cauchy affinity matrix based on the Cauchy distribution.</span>
+
+<span class="sd">    Its expression is given by:</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \frac{1}{\pi \gamma} \left[\frac{\gamma^2}{\mathbf{C}+\gamma^2}\right]</span>
+
+<span class="sd">    where :math:`\gamma &gt; 0` is a scale parameter.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gamma : float, optional</span>
+<span class="sd">        Scale parameter for the Cauchy distribution.</span>
+<span class="sd">    metric : str, optional</span>
+<span class="sd">        Metric to use for pairwise distances computation.</span>
+<span class="sd">    zero_diag : bool, optional</span>
+<span class="sd">        Whether to set the diagonal of the affinity matrix to zero.</span>
+<span class="sd">    device : str, optional</span>
+<span class="sd">        Device to use for computations.</span>
+<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None}, optional</span>
+<span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
+<span class="sd">        Default is None.</span>
+<span class="sd">    verbose : bool, optional</span>
+<span class="sd">        Verbosity.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqhyperbolic&quot;</span><span class="p">,</span>
+        <span class="n">zero_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
+            <span class="n">zero_diag</span><span class="o">=</span><span class="n">zero_diag</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="n">gamma</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_log_affinity_formula</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">C</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">LazyTensorType</span><span class="p">]):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">/</span> <span class="p">(</span><span class="n">C</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">log</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="ScalarProductAffinity">

@@ -441,83 +441,62 @@
 <a class="reference internal" href="#"><span class="xref myst"><img alt="Test Status" src="https://github.com/torchdr/torchdr/actions/workflows/testing.yml/badge.svg" /></span></a>
 <a class="reference external" href="https://dl.circleci.com/status-badge/redirect/gh/TorchDR/TorchDR/tree/main"><img alt="CircleCI" src="https://dl.circleci.com/status-badge/img/gh/TorchDR/TorchDR/tree/main.svg?style=svg" /></a>
 <a class="reference external" href="https://codecov.io/gh/torchdr/torchdr"><img alt="codecov" src="https://codecov.io/gh/torchdr/torchdr/branch/main/graph/badge.svg" /></a></p>
-<p>TorchDR is an open-source <strong>dimensionality reduction (DR)</strong> library using PyTorch. Its goal is to provide <strong>fast GPU-compatible</strong> implementations of DR algorithms, as well as to accelerate the development of new DR methods by providing a <strong>common simplified framework</strong>.</p>
-<p>DR aims to construct a <strong>low-dimensional representation (or embedding)</strong> of an input dataset that best preserves its <strong>geometry encoded via a pairwise affinity matrix</strong>. To this end, DR methods <strong>optimize the embedding</strong> such that its <strong>associated pairwise affinity matrix matches the input affinity</strong>. TorchDR provides a general framework for solving problems of this form. Defining a DR algorithm solely requires choosing or implementing an <em>Affinity</em> object for both input and embedding as well as an objective function.</p>
+<p><code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> is an open-source <strong>dimensionality reduction (DR)</strong> library using PyTorch. It provides <strong>GPU-accelerated</strong> implementations of popular DR algorithms in a single unified framework.</p>
+<p>DR aims to construct a <strong>low-dimensional representation (or embedding)</strong> of an input dataset that best preserves its <strong>geometry encoded via a pairwise affinity matrix</strong>. To this end, DR methods <strong>optimize the embedding</strong> such that its <strong>associated pairwise affinity matrix matches the input affinity</strong>. <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> provides a general framework for solving problems of this form. Defining a DR algorithm solely requires choosing or implementing an <em>Affinity</em> object for both input and embedding as well as an objective function.</p>
 <section id="benefits-of-torchdr">
 <h2>Benefits of TorchDR<a class="headerlink" href="#benefits-of-torchdr" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p><strong>Speed</strong>: supports <strong>GPU acceleration</strong>, leverages <strong>sparsity</strong> and <strong>sampling</strong> strategies with <strong>contrastive learning</strong> techniques.</p></li>
+<li><p><strong>Speed</strong>: supports <strong>GPU acceleration</strong>, leverages <strong>sparsity</strong> and <strong>contrastive learning</strong> / <strong>negative sampling</strong> techniques.</p></li>
 <li><p><strong>Modularity</strong>: all of it is written in <strong>Python</strong> in a <strong>highly modular</strong> way, making it easy to create or transform components.</p></li>
 <li><p><strong>Memory efficiency</strong>: relies on <strong>sparsity</strong> and/or <strong>symbolic tensors</strong> to <strong>avoid memory overflows</strong>.</p></li>
-<li><p><strong>Compatibility</strong>: implemented methods are fully <strong>compatible</strong> with the sklearn API and torch ecosystem.</p></li>
+<li><p><strong>Compatibility</strong>: implemented methods are fully <strong>compatible</strong> with the <code class="docutils literal notranslate"><span class="pre">sklearn</span></code> and <code class="docutils literal notranslate"><span class="pre">torch</span></code> ecosystems.</p></li>
 </ul>
 </section>
 <section id="getting-started">
 <h2>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> offers a <strong>user-friendly API similar to scikit-learn</strong> where dimensionality reduction modules can be called with the <code class="docutils literal notranslate"><span class="pre">fit_transform</span></code> method. It seamlessly accepts both NumPy arrays and PyTorch tensors as input, ensuring that the output matches the type and backend of the input.</p>
+<p><code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> offers a <strong>user-friendly API similar to scikit-learn</strong> where dimensionality reduction modules can be called with the <code class="docutils literal notranslate"><span class="pre">fit_transform</span></code> method. It seamlessly accepts both <code class="docutils literal notranslate"><span class="pre">NumPy</span></code> arrays and <code class="docutils literal notranslate"><span class="pre">PyTorch</span></code> tensors as input, ensuring that the output matches the type and backend of the input.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">fetch_openml</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr</span><span class="w"> </span><span class="kn">import</span> <span class="n">PCA</span><span class="p">,</span> <span class="n">TSNE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr</span><span class="w"> </span><span class="kn">import</span> <span class="n">PCA</span><span class="p">,</span> <span class="n">UMAP</span>
 
 <span class="n">x</span> <span class="o">=</span> <span class="n">fetch_openml</span><span class="p">(</span><span class="s2">&quot;mnist_784&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span>
 
 <span class="n">x_</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="n">z</span> <span class="o">=</span> <span class="n">TSNE</span><span class="p">(</span><span class="n">perplexity</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_</span><span class="p">)</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">UMAP</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> is fully <strong>GPU compatible</strong>, enabling <strong>significant speed-ups</strong> when a GPU is available. To run computations on the GPU, simply set <code class="docutils literal notranslate"><span class="pre">device=&quot;cuda&quot;</span></code> as shown in the example below:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z_gpu</span> <span class="o">=</span> <span class="n">TSNE</span><span class="p">(</span><span class="n">perplexity</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z_gpu</span> <span class="o">=</span> <span class="n">UMAP</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">30</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
-<section id="backends">
-<h2>Backends<a class="headerlink" href="#backends" title="Link to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">backend</span></code> keyword specifies which tool to use for handling kNN computations and memory-efficient symbolic computations.</p>
+<section id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">#</a></h2>
+<section id="neighbor-embedding">
+<h3>Neighbor Embedding<a class="headerlink" href="#neighbor-embedding" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> provides a suite of <strong>neighbor embedding</strong> methods.</p>
+<p><strong>Linear-time (Contrastive Learning).</strong> State-of-the-art speed on large datasets: <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.UMAP.html"><code class="docutils literal notranslate"><span class="pre">UMAP</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.LargeVis.html"><code class="docutils literal notranslate"><span class="pre">LargeVis</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.InfoTSNE.html"><code class="docutils literal notranslate"><span class="pre">InfoTSNE</span></code></a>.</p>
+<p><strong>Quadratic-time (Exact Repulsion).</strong> Compute the full pairwise repulsion: <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.SNE.html"><code class="docutils literal notranslate"><span class="pre">SNE</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.TSNE.html"><code class="docutils literal notranslate"><span class="pre">TSNE</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.TSNEkhorn.html"><code class="docutils literal notranslate"><span class="pre">TSNEkhorn</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.COSNE.html"><code class="docutils literal notranslate"><span class="pre">COSNE</span></code></a>.</p>
+<blockquote>
+<div><p><em>Remark.</em> For quadratic-time algorithms, <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> provides exact implementations that scale linearly in memory using <code class="docutils literal notranslate"><span class="pre">backend=keops</span></code>.
+For <code class="docutils literal notranslate"><span class="pre">TSNE</span></code> specifically, one can also explore fast approximations, such as <code class="docutils literal notranslate"><span class="pre">FIt-SNE</span></code> implemented in <a class="reference external" href="https://github.com/CannyLab/tsne-cuda">tsne-cuda</a>, which bypass full pairwise repulsion.</p>
+</div></blockquote>
+</section>
+<section id="spectral-embedding">
+<h3>Spectral Embedding<a class="headerlink" href="#spectral-embedding" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> provides <strong>spectral embeddings</strong> calculated via eigenvalue decomposition:</p>
 <ul class="simple">
-<li><p>To perform symbolic tensor computations on the GPU without memory limitations, you can leverage the <a class="reference external" href="https://www.kernel-operations.io/keops/index.html">KeOps Library</a>. This library also allows computing kNN graphs. To enable KeOps, set <code class="docutils literal notranslate"><span class="pre">backend=&quot;keops&quot;</span></code>.</p></li>
-<li><p>Alternatively, you can use <code class="docutils literal notranslate"><span class="pre">backend=&quot;faiss&quot;</span></code> to rely on <a class="reference external" href="https://github.com/facebookresearch/faiss">Faiss</a> for fast kNN computations.</p></li>
-<li><p>Finally, setting <code class="docutils literal notranslate"><span class="pre">backend=None</span></code> will use raw PyTorch for all computations.</p></li>
+<li><p><a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.PCA.html"><code class="docutils literal notranslate"><span class="pre">PCA</span></code></a></p></li>
+<li><p><a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.IncrementalPCA.html"><code class="docutils literal notranslate"><span class="pre">IncrementalPCA</span></code></a> to handle massive datasets</p></li>
+<li><p><a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.KernelPCA.html"><code class="docutils literal notranslate"><span class="pre">KernelPCA</span></code></a> to leverage any <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> <em>Affinity</em> (see the <a class="reference internal" href="#affinities"><span class="xref myst">Affinities</span></a> subsection below)</p></li>
 </ul>
+</section>
 </section>
 <section id="benchmarks">
 <h2>Benchmarks<a class="headerlink" href="#benchmarks" title="Link to this heading">#</a></h2>
-<p>Relying on <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> enables an order-of-magnitude improvement in both runtime and memory performance compared to CPU-based implementations. <a class="reference external" href="https://github.com/TorchDR/TorchDR/blob/main/benchmarks/benchmark_umap_single_cell.py">See the code</a>. Stay tuned for additional benchmarks.</p>
-<div class="pst-scrollable-table-container"><table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Dataset</p></th>
-<th class="head"><p>Samples</p></th>
-<th class="head"><p>Method</p></th>
-<th class="head"><p>Runtime (sec)</p></th>
-<th class="head"><p>Memory (MB)</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>Macosko</p></td>
-<td><p>44,808</p></td>
-<td><p>Classic UMAP (CPU)</p></td>
-<td><p>61.3</p></td>
-<td><p>410.9</p></td>
-</tr>
-<tr class="row-odd"><td><p></p></td>
-<td><p></p></td>
-<td><p>TorchDR UMAP (GPU)</p></td>
-<td><p><strong>7.7</strong></p></td>
-<td><p><strong>100.4</strong></p></td>
-</tr>
-<tr class="row-even"><td><p>10x Mouse Zheng</p></td>
-<td><p>1,306,127</p></td>
-<td><p>Classic UMAP (CPU)</p></td>
-<td><p>1910.4</p></td>
-<td><p>11278.1</p></td>
-</tr>
-<tr class="row-odd"><td><p></p></td>
-<td><p></p></td>
-<td><p>TorchDR UMAP (GPU)</p></td>
-<td><p><strong>184.4</strong></p></td>
-<td><p><strong>2699.7</strong></p></td>
-</tr>
-</tbody>
-</table>
-</div>
+<p>Relying on <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> enables an <strong>orders-of-magnitude improvement in runtime performance</strong> compared to CPU-based implementations. <a class="reference external" href="https://github.com/TorchDR/TorchDR/blob/main/benchmarks/benchmark_umap_single_cell.py">See the code</a>.</p>
+<p align="center">
+  <img src="https://github.com/torchdr/torchdr/raw/main/docs/source/figures/umap_benchmark_single_cell.png" width="1024" alt="UMAP benchmark on single cell data">
+</p>
 </section>
 <section id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">#</a></h2>
@@ -527,19 +506,20 @@ A comparison of various neighbor embedding methods on the MNIST digits dataset.<
 <p align="center">
   <img src="https://github.com/torchdr/torchdr/raw/main/docs/source/figures/mnist_readme.png" width="800" alt="various neighbor embedding methods on MNIST">
 </p>
-<p><strong>Single-cell genomics.</strong> (<a class="reference external" href="https://github.com/TorchDR/TorchDR/tree/main/examples/single_cell/single_cell_readme.py">Code</a>)
-Visualizing cells using <code class="docutils literal notranslate"><span class="pre">LargeVis</span></code> from <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code>.</p>
+<!-- **Single-cell genomics.** ([Code](https://github.com/TorchDR/TorchDR/tree/main/examples/single_cell/single_cell_readme.py))
+Visualizing cells using `LargeVis` from `TorchDR`.
+
 <p align="center">
   <img src="https://github.com/torchdr/torchdr/raw/main/docs/source/figures/single_cell.gif" width="700" alt="single cell embeddings">
-</p>
+</p> -->
 <p><strong>CIFAR100.</strong> (<a class="reference external" href="https://github.com/TorchDR/TorchDR/tree/main/examples/images/cifar100.py">Code</a>)
-Visualizing the CIFAR100 dataset using DINO features and TSNE.</p>
+Visualizing the CIFAR100 dataset using DINO features and <code class="docutils literal notranslate"><span class="pre">TSNE</span></code>.</p>
 <p align="center">
   <img src="https://github.com/torchdr/torchdr/raw/main/docs/source/figures/cifar100_tsne.png" width="1024" alt="TSNE on CIFAR100 DINO features">
 </p>
 </section>
-<section id="implemented-features-to-date">
-<h2>Implemented Features (to date)<a class="headerlink" href="#implemented-features-to-date" title="Link to this heading">#</a></h2>
+<section id="advanced-features">
+<h2>Advanced Features<a class="headerlink" href="#advanced-features" title="Link to this heading">#</a></h2>
 <section id="affinities">
 <h3>Affinities<a class="headerlink" href="#affinities" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> features a <strong>wide range of affinities</strong> which can then be used as a building block for DR algorithms. It includes:</p>
@@ -550,14 +530,18 @@ Visualizing the CIFAR100 dataset using DINO features and TSNE.</p>
 <li><p>Adaptive affinities with entropy control: <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.EntropicAffinity.html"><code class="docutils literal notranslate"><span class="pre">EntropicAffinity</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.SymmetricEntropicAffinity.html"><code class="docutils literal notranslate"><span class="pre">SymmetricEntropicAffinity</span></code></a>.</p></li>
 </ul>
 </section>
-<section id="dimensionality-reduction-algorithms">
-<h3>Dimensionality Reduction Algorithms<a class="headerlink" href="#dimensionality-reduction-algorithms" title="Link to this heading">#</a></h3>
-<p><strong>Spectral.</strong> <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> provides <strong>spectral embeddings</strong> calculated via eigenvalue decomposition of the affinities or their Laplacian: <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.PCA.html"><code class="docutils literal notranslate"><span class="pre">PCA</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.KernelPCA.html"><code class="docutils literal notranslate"><span class="pre">KernelPCA</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.IncrementalPCA.html"><code class="docutils literal notranslate"><span class="pre">IncrementalPCA</span></code></a>.</p>
-<p><strong>Neighbor Embedding.</strong> <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> includes various <strong>neighbor embedding methods</strong>: <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.SNE.html"><code class="docutils literal notranslate"><span class="pre">SNE</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.TSNE.html"><code class="docutils literal notranslate"><span class="pre">TSNE</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.COSNE.html"><code class="docutils literal notranslate"><span class="pre">COSNE</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.TSNEkhorn.html"><code class="docutils literal notranslate"><span class="pre">TSNEkhorn</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.UMAP.html"><code class="docutils literal notranslate"><span class="pre">UMAP</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.LargeVis.html"><code class="docutils literal notranslate"><span class="pre">LargeVis</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.InfoTSNE.html"><code class="docutils literal notranslate"><span class="pre">InfoTSNE</span></code></a>.</p>
-</section>
 <section id="evaluation-metric">
 <h3>Evaluation Metric<a class="headerlink" href="#evaluation-metric" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> provides efficient GPU-compatible evaluation metrics: <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.silhouette_score.html"><code class="docutils literal notranslate"><span class="pre">silhouette_score</span></code></a>.</p>
+</section>
+<section id="backends">
+<h3>Backends<a class="headerlink" href="#backends" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">backend</span></code> keyword specifies which tool to use for handling kNN computations and memory-efficient symbolic computations.</p>
+<ul class="simple">
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">backend=&quot;faiss&quot;</span></code> to rely on <a class="reference external" href="https://github.com/facebookresearch/faiss">Faiss</a> for fast kNN computations.</p></li>
+<li><p>To perform exact symbolic tensor computations on the GPU without memory limitations, you can leverage the <a class="reference external" href="https://www.kernel-operations.io/keops/index.html">KeOps</a> library. This library also allows computing kNN graphs. To enable KeOps, set <code class="docutils literal notranslate"><span class="pre">backend=&quot;keops&quot;</span></code>.</p></li>
+<li><p>Finally, setting <code class="docutils literal notranslate"><span class="pre">backend=None</span></code> will use raw PyTorch for all computations.</p></li>
+</ul>
 </section>
 </section>
 <section id="installation">
@@ -617,13 +601,17 @@ Visualizing the CIFAR100 dataset using DINO features and TSNE.</p>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#benefits-of-torchdr">Benefits of TorchDR</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-started">Getting Started</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#backends">Backends</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#neighbor-embedding">Neighbor Embedding</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spectral-embedding">Spectral Embedding</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#benchmarks">Benchmarks</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples">Examples</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implemented-features-to-date">Implemented Features (to date)</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-features">Advanced Features</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#affinities">Affinities</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dimensionality-reduction-algorithms">Dimensionality Reduction Algorithms</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation-metric">Evaluation Metric</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#backends">Backends</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>

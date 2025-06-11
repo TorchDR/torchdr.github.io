@@ -472,6 +472,7 @@
     <span class="n">sum_red</span><span class="p">,</span>
     <span class="n">svd_flip</span><span class="p">,</span>
     <span class="n">to_torch</span><span class="p">,</span>
+    <span class="n">seed_everything</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
@@ -575,6 +576,7 @@
 <span class="sd">        X_new : torch.Tensor or np.ndarray of shape (n_samples, n_components)</span>
 <span class="sd">            Projected data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">seed_everything</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span></div>
 </div>

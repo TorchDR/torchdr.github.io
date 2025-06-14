@@ -474,7 +474,7 @@
 
 <span class="sd">    .. math::</span>
 
-<span class="sd">        \min_{\mathbf{Z}} \: - \lambda \sum_{ij} P_{ij} \log Q_{ij} + \mathcal{L}_{\mathrm{rep}}( \mathbf{Q})</span>
+<span class="sd">        \min_{\mathbf{Z}} \: - \lambda \sum_{ij} P_{ij} \log Q_{ij} + \mathcal{L}_{\mathrm{rep}}(\mathbf{Q})</span>
 
 <span class="sd">    where :math:`\mathbf{P}` is the input affinity matrix, :math:`\mathbf{Q}` is the</span>
 <span class="sd">    output affinity matrix, :math:`\mathcal{L}_{\mathrm{rep}}` is the repulsive</span>
@@ -530,8 +530,8 @@
 <span class="sd">        Default is 1.0.</span>
 <span class="sd">    early_exaggeration_iter : int, optional</span>
 <span class="sd">        Number of iterations for early exaggeration. Default is None.</span>
-<span class="sd">    learning_rate : float, optional</span>
-<span class="sd">        Alias for lr parameter for sklearn API compatibility.</span>
+<span class="sd">    check_interval : int, optional</span>
+<span class="sd">        Number of iterations between two checks for convergence. Default is 50.</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -557,8 +557,24 @@
         <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">early_exaggeration_coeff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">early_exaggeration_iter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">check_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_iter</span> <span class="o">=</span> <span class="n">early_exaggeration_iter</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_iter</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_iter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff</span> <span class="o">=</span> <span class="n">early_exaggeration_coeff</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># improve consistency with the sklearn API</span>
+        <span class="k">if</span> <span class="s2">&quot;learning_rate&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lr</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;learning_rate&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;min_grad_norm&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">min_grad_norm</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;min_grad_norm&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;early_exaggeration&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;early_exaggeration&quot;</span><span class="p">]</span>
+
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">affinity_in</span><span class="o">=</span><span class="n">affinity_in</span><span class="p">,</span>
             <span class="n">affinity_out</span><span class="o">=</span><span class="n">affinity_out</span><span class="p">,</span>
@@ -577,20 +593,10 @@
             <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+            <span class="n">check_interval</span><span class="o">=</span><span class="n">check_interval</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff</span> <span class="o">=</span> <span class="n">early_exaggeration_coeff</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_iter</span> <span class="o">=</span> <span class="n">early_exaggeration_iter</span>
-
-        <span class="c1"># improve consistency with the sklearn API</span>
-        <span class="k">if</span> <span class="s2">&quot;learning_rate&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">lr</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;learning_rate&quot;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="s2">&quot;min_grad_norm&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">min_grad_norm</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;min_grad_norm&quot;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="s2">&quot;early_exaggeration&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;early_exaggeration&quot;</span><span class="p">]</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_additional_updates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_after_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span>  <span class="c1"># stop early exaggeration phase</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff_</span> <span class="o">&gt;</span> <span class="mi">1</span>
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_iter</span>
@@ -610,15 +616,10 @@
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_name</span><span class="p">):</span>
                 <span class="n">param_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_name</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="n">param_value</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-                        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                            <span class="s2">&quot;[TorchDR] WARNING : Number of samples is smaller than &quot;</span>
-                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">param_name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> &lt;= </span><span class="si">{</span><span class="n">param_value</span><span class="si">}</span><span class="s2">), setting &quot;</span>
-                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">param_name</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">n</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="mi">2</span><span class="si">}</span><span class="s2"> (which corresponds to n//2).&quot;</span>
-                        <span class="p">)</span>
-                    <span class="n">new_value</span> <span class="o">=</span> <span class="n">n</span> <span class="o">//</span> <span class="mi">2</span>
-                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_name</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
-                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;[TorchDR] ERROR : Number of samples is smaller than </span><span class="si">{</span><span class="n">param_name</span><span class="si">}</span><span class="s2"> &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> &lt;= </span><span class="si">{</span><span class="n">param_value</span><span class="si">}</span><span class="s2">).&quot;</span>
+                    <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span>
 
@@ -647,7 +648,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">lr_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_set_optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># Special case for &#39;auto&#39; - convert to &#39;SGD&#39;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="c1"># Get optimizer directly from torch.optim</span>
             <span class="k">try</span><span class="p">:</span>
@@ -665,12 +665,15 @@
             <span class="c1"># Assume it&#39;s already an optimizer class</span>
             <span class="n">optimizer_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span>
 
-        <span class="c1"># Handle &#39;auto&#39; for optimizer_kwargs</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_kwargs</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">==</span> <span class="s2">&quot;SGD&quot;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff_</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">optimizer_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;momentum&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">}</span>
+        <span class="c1"># If &#39;auto&#39; and SGD, set momentum based on early exaggeration phase</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_kwargs</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">==</span> <span class="s2">&quot;SGD&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff_</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">optimizer_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;momentum&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">}</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">optimizer_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;momentum&quot;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">}</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">optimizer_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;momentum&quot;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">}</span>
+                <span class="n">optimizer_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">optimizer_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
 
@@ -749,6 +752,8 @@
 <span class="sd">        Default is 1.0.</span>
 <span class="sd">    early_exaggeration_iter : int, optional</span>
 <span class="sd">        Number of iterations for early exaggeration. Default is None.</span>
+<span class="sd">    check_interval : int, optional</span>
+<span class="sd">        Number of iterations between two checks for convergence. Default is 50.</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -774,6 +779,7 @@
         <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">early_exaggeration_coeff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">early_exaggeration_iter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">check_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="c1"># check affinity affinity_in</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">affinity_in</span><span class="p">,</span> <span class="n">SparseLogAffinity</span><span class="p">):</span>
@@ -809,6 +815,7 @@
             <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
             <span class="n">early_exaggeration_coeff</span><span class="o">=</span><span class="n">early_exaggeration_coeff</span><span class="p">,</span>
             <span class="n">early_exaggeration_iter</span><span class="o">=</span><span class="n">early_exaggeration_iter</span><span class="p">,</span>
+            <span class="n">check_interval</span><span class="o">=</span><span class="n">check_interval</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_attractive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -908,6 +915,8 @@
 <span class="sd">        Number of iterations for early exaggeration. Default is None.</span>
 <span class="sd">    n_negatives : int, optional</span>
 <span class="sd">        Number of negative samples for the repulsive loss.</span>
+<span class="sd">    check_interval : int, optional</span>
+<span class="sd">        Number of iterations between two checks for convergence. Default is 50.</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -934,6 +943,7 @@
         <span class="n">early_exaggeration_coeff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">early_exaggeration_iter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">n_negatives</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">check_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span> <span class="o">=</span> <span class="n">n_negatives</span>
 
@@ -957,53 +967,43 @@
             <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
             <span class="n">early_exaggeration_coeff</span><span class="o">=</span><span class="n">early_exaggeration_coeff</span><span class="p">,</span>
             <span class="n">early_exaggeration_iter</span><span class="o">=</span><span class="n">early_exaggeration_iter</span><span class="p">,</span>
+            <span class="n">check_interval</span><span class="o">=</span><span class="n">check_interval</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_sample_negatives</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">discard_NNs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="c1"># Negatives are all other points except NNs (if discard_NNs) and point itself</span>
-        <span class="n">n_possible_negatives</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># Exclude the self-index</span>
-        <span class="n">discard_NNs_</span> <span class="o">=</span> <span class="n">discard_NNs</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">discard_NNs_</span><span class="p">:</span>
-            <span class="n">n_possible_negatives</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># Exclude the NNs</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;n_negatives_&quot;</span><span class="p">):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span> <span class="o">&gt;</span> <span class="n">n_possible_negatives</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-                    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                        <span class="s2">&quot;[TorchDR] WARNING: n_negatives is too large. &quot;</span>
-                        <span class="s2">&quot;Setting n_negatives to the difference between the number of &quot;</span>
-                        <span class="s2">&quot;samples and the number of neighbors.&quot;</span>
-                    <span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives_</span> <span class="o">=</span> <span class="n">n_possible_negatives</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span>
-
         <span class="n">device</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span><span class="p">,</span> <span class="s2">&quot;device&quot;</span><span class="p">,</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
-        <span class="n">indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
+
+        <span class="n">self_idxs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">discard_NNs</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">exclude</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">self_idxs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">exclude</span> <span class="o">=</span> <span class="n">self_idxs</span>
+
+        <span class="n">k</span> <span class="o">=</span> <span class="n">exclude</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">n_possible</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">-</span> <span class="n">k</span>
+        <span class="k">if</span> <span class="n">n_possible</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;[TorchDR] ERROR : No possible negatives (n=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="si">}</span><span class="s2">, k_excluded=</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">).&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span> <span class="o">&gt;</span> <span class="n">n_possible</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;[TorchDR] ERROR : requested </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span><span class="si">}</span><span class="s2"> negatives but &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;only </span><span class="si">{</span><span class="n">n_possible</span><span class="si">}</span><span class="s2"> available.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">negatives</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
             <span class="mi">1</span><span class="p">,</span>
-            <span class="n">n_possible_negatives</span><span class="p">,</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives_</span><span class="p">),</span>
+            <span class="n">n_possible</span><span class="p">,</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span><span class="p">),</span>
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="n">exclude_indices</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
-        <span class="p">)</span>  <span class="c1"># Self indices</span>
-        <span class="k">if</span> <span class="n">discard_NNs_</span><span class="p">:</span>
-            <span class="n">exclude_indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
-                <span class="p">(</span>
-                    <span class="n">exclude_indices</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span><span class="p">,</span>
-                <span class="p">),</span>  <span class="c1"># Concatenate self and NNs</span>
-                <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-            <span class="p">)</span>
-
-        <span class="c1"># Adjusts sampled indices to take into account excluded indices</span>
-        <span class="n">exclude_indices</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">adjustments</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">exclude_indices</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">indices</span> <span class="o">+=</span> <span class="n">adjustments</span>
-
-        <span class="k">return</span> <span class="n">indices</span></div>
+        <span class="n">exclude</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">exclude</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># Sort exclude rows so searchsorted works</span>
+        <span class="n">shifts</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">exclude</span><span class="p">,</span> <span class="n">negatives</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">negatives</span> <span class="o">+=</span> <span class="n">shifts</span>
+        <span class="k">return</span> <span class="n">negatives</span></div>
 
 </pre></div>
 

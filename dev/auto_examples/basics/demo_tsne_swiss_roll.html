@@ -515,10 +515,6 @@ to download the full example code.</p>
 <a href="https://docs.python.org/3.4/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X_embedded</span></a> <span class="o">=</span> <span class="n">tsne</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Random state is None
-Random state is None
-</pre></div>
-</div>
 </section>
 <section id="plot-the-tsne-embedding">
 <h2>Plot the TSNE embedding<a class="headerlink" href="#plot-the-tsne-embedding" title="Link to this heading">#</a></h2>
@@ -551,19 +547,12 @@ Random state is None
     <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Perplexity = </span><span class="si">{</span><a href="https://docs.python.org/3.4/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">perplexity</span></a><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_demo_tsne_swiss_roll_003.png" srcset="../../_images/sphx_glr_demo_tsne_swiss_roll_003.png" alt="Perplexity = 2, Perplexity = 5, Perplexity = 10, Perplexity = 20" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Random state is None
-Random state is None
-Random state is None
-Random state is None
-Random state is None
-</pre></div>
-</div>
-<p>We can observe that the perplexity parameter significantly influences the embedding.
+<img src="../../_images/sphx_glr_demo_tsne_swiss_roll_003.png" srcset="../../_images/sphx_glr_demo_tsne_swiss_roll_003.png" alt="Perplexity = 2, Perplexity = 5, Perplexity = 10, Perplexity = 20" class = "sphx-glr-single-img"/><p>We can observe that the perplexity parameter significantly influences the embedding.
 When the perplexity is too low, the embedding captures only short-range dependencies
 and fails to capture the manifold’s geometry. Conversely, when the perplexity is too
 high, points that are distant on the manifold but close in the ambient space are
 mistakenly considered neighbors.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 38.046 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 6.299 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-basics-demo-tsne-swiss-roll-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/d07a5a618e87545c420604821fa60541/demo_tsne_swiss_roll.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">demo_tsne_swiss_roll.ipynb</span></code></a></p>

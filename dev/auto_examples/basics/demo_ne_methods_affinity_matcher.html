@@ -523,11 +523,12 @@ on the SNARE-seq gene expression dataset with given cell type labels.</p>
     <span class="s2">&quot;optimizer_kwargs&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
     <span class="s2">&quot;max_iter&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
     <span class="s2">&quot;lr&quot;</span><span class="p">:</span> <span class="mf">1e0</span><span class="p">,</span>
+    <span class="s2">&quot;backend&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">sne</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">SNE</span></a><span class="p">(</span><span class="n">early_exaggeration_coeff</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><a href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">params</span></a><span class="p">)</span>
 
-<span class="n">umap</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">UMAP</span></a><span class="p">(</span><span class="n">early_exaggeration_coeff</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><a href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">params</span></a><span class="p">)</span>
+<span class="n">umap</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">UMAP</span></a><span class="p">(</span><span class="o">**</span><a href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">params</span></a><span class="p">)</span>
 
 <span class="n">tsne</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">TSNE</span></a><span class="p">(</span><span class="n">early_exaggeration_coeff</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><a href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">params</span></a><span class="p">)</span>
 
@@ -543,14 +544,8 @@ on the SNARE-seq gene expression dataset with given cell type labels.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>--- Computing TSNE ---
-Random state is None
-Random state is None
 --- Computing SNE ---
-Random state is None
-Random state is None
 --- Computing UMAP ---
-Random state is None
-Random state is None
 </pre></div>
 </div>
 </section>
@@ -601,11 +596,7 @@ a <a class="reference internal" href="../../gen_modules/torchdr.EntropicAffinity
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_demo_ne_methods_affinity_matcher_002.png" srcset="../../_images/sphx_glr_demo_ne_methods_affinity_matcher_002.png" alt="SNE, SNE (with affinity matcher)" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Random state is None
-Random state is None
-</pre></div>
-</div>
-</section>
+<img src="../../_images/sphx_glr_demo_ne_methods_affinity_matcher_002.png" srcset="../../_images/sphx_glr_demo_ne_methods_affinity_matcher_002.png" alt="SNE, SNE (with affinity matcher)" class = "sphx-glr-single-img"/></section>
 <section id="on-the-efficiency-of-using-the-torchdr-api-rather-than-affinitymatcher-directly">
 <h2>On the efficiency of using the torchdr API rather than AffinityMatcher directly<a class="headerlink" href="#on-the-efficiency-of-using-the-torchdr-api-rather-than-affinitymatcher-directly" title="Link to this heading">#</a></h2>
 <div class="admonition note">
@@ -616,7 +607,7 @@ using <a class="reference internal" href="../../stubs/torchdr.AffinityMatcher.ht
 In TorchDR, it is therefore recommended to use the specific class associated
 with the desired algorithm when available.</p>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 24.050 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 12.996 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-basics-demo-ne-methods-affinity-matcher-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/286dcc8a82b9a5553a5d809cc0f6fa61/demo_ne_methods_affinity_matcher.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">demo_ne_methods_affinity_matcher.ipynb</span></code></a></p>

@@ -472,6 +472,7 @@
     <span class="n">logsumexp_red</span><span class="p">,</span>
     <span class="n">sum_matrix_vector</span><span class="p">,</span>
     <span class="n">wrap_vectors</span><span class="p">,</span>
+    <span class="n">check_neighbor_param</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -601,28 +602,6 @@
     <span class="k">return</span> <span class="n">begin</span><span class="p">,</span> <span class="n">end</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_check_perplexity</span><span class="p">(</span><span class="n">perplexity</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Check the perplexity parameter and return a valid value.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;[TorchDR] ERROR Affinity: Input has less than one sample : &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;n_samples = </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">.&quot;</span>
-        <span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">perplexity</span> <span class="o">&gt;=</span> <span class="n">n</span> <span class="ow">or</span> <span class="n">perplexity</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">new_value</span> <span class="o">=</span> <span class="mi">50</span>
-        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;[TorchDR] WARNING Affinity: The perplexity parameter must be &quot;</span>
-                <span class="s2">&quot;greater than 1 and smaller than the number of samples &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;(here n = </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">). Got perplexity = </span><span class="si">{</span><span class="n">perplexity</span><span class="si">}</span><span class="s2">. &quot;</span>
-                <span class="s2">&quot;Setting perplexity to </span><span class="si">{50}</span><span class="s2">.&quot;</span>
-            <span class="p">)</span>
-        <span class="k">return</span> <span class="n">new_value</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">perplexity</span>
-
-
 <div class="viewcode-block" id="EntropicAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.EntropicAffinity.html#torchdr.EntropicAffinity">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">EntropicAffinity</span><span class="p">(</span><span class="n">SparseLogAffinity</span><span class="p">):</span>
@@ -632,7 +611,7 @@
 <span class="sd">    :math:`\mathbf{\varepsilon}^* \in \mathbb{R}^n_{&gt;0}` such that</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        \forall i, \: \mathrm{h}(\mathbf{P}^{\mathrm{e}}_{i:}) = \log (\xi) + 1 \quad \text{where} \quad \forall (i,j), \: P^{\mathrm{e}}_{ij} = \frac{\exp(- C_{ij} / \varepsilon_i^\star)}{\sum_{\ell} \exp(- C_{i\ell} / \varepsilon_i^\star)}   \:.</span>
+<span class="sd">        \forall (i,j), \: P^{\mathrm{e}}_{ij} = \frac{\exp(- C_{ij} / \varepsilon_i^\star)}{\sum_{\ell} \exp(- C_{i\ell} / \varepsilon_i^\star)} \quad \text{where} \quad \forall i, \: \mathrm{h}(\mathbf{P}^{\mathrm{e}}_{i:}) = \log (\xi) + 1 \:.</span>
 
 <span class="sd">    where :</span>
 
@@ -739,7 +718,7 @@
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[TorchDR] Affinity : computing the Entropic Affinity matrix.&quot;</span><span class="p">)</span>
 
         <span class="n">n_samples_in</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">perplexity</span> <span class="o">=</span> <span class="n">_check_perplexity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span><span class="p">,</span> <span class="n">n_samples_in</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="n">perplexity</span> <span class="o">=</span> <span class="n">check_neighbor_param</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span><span class="p">,</span> <span class="n">n_samples_in</span><span class="p">)</span>
         <span class="n">target_entropy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">perplexity</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
 
         <span class="n">k</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">perplexity</span>
@@ -747,9 +726,9 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;[TorchDR] Affinity : sparsity mode enabled, computing </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> &quot;</span>
-                    <span class="s2">&quot;nearest neighbors. If this step is too slow, consider &quot;</span>
-                    <span class="s2">&quot;reducing the dimensionality of the data or disabling sparsity.&quot;</span>
+                    <span class="s2">&quot;nearest neighbors.&quot;</span>
                 <span class="p">)</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="n">check_neighbor_param</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">n_samples_in</span><span class="p">)</span>
             <span class="c1"># when using sparsity, we construct a reduced distance matrix</span>
             <span class="c1"># of shape (n_samples, k)</span>
             <span class="n">C_</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_matrix</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
@@ -909,7 +888,7 @@
         <span class="n">C</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_matrix</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
         <span class="n">n_samples_in</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">perplexity</span> <span class="o">=</span> <span class="n">_check_perplexity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span><span class="p">,</span> <span class="n">n_samples_in</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="n">perplexity</span> <span class="o">=</span> <span class="n">check_neighbor_param</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span><span class="p">,</span> <span class="n">n_samples_in</span><span class="p">)</span>
         <span class="n">target_entropy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">perplexity</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
 
         <span class="n">one</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_samples_in</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>

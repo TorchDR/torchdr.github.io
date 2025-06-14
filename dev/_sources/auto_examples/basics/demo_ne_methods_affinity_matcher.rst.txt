@@ -104,7 +104,7 @@ Load the SNARE-seq dataset (gene expression) with cell type labels
 Run neighbor embedding methods
 -------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 53-77
+.. GENERATED FROM PYTHON SOURCE LINES 53-78
 
 .. code-block:: Python
 
@@ -114,11 +114,12 @@ Run neighbor embedding methods
         "optimizer_kwargs": None,
         "max_iter": 100,
         "lr": 1e0,
+        "backend": None,
     }
 
     sne = SNE(early_exaggeration_coeff=1, **params)
 
-    umap = UMAP(early_exaggeration_coeff=1, **params)
+    umap = UMAP(**params)
 
     tsne = TSNE(early_exaggeration_coeff=1, **params)
 
@@ -141,24 +142,18 @@ Run neighbor embedding methods
  .. code-block:: none
 
     --- Computing TSNE ---
-    Random state is None
-    Random state is None
     --- Computing SNE ---
-    Random state is None
-    Random state is None
     --- Computing UMAP ---
-    Random state is None
-    Random state is None
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 78-80
+.. GENERATED FROM PYTHON SOURCE LINES 79-81
 
 Plot the different embeddings
 -----------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 80-92
+.. GENERATED FROM PYTHON SOURCE LINES 81-93
 
 .. code-block:: Python
 
@@ -186,7 +181,7 @@ Plot the different embeddings
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 93-104
+.. GENERATED FROM PYTHON SOURCE LINES 94-105
 
 Using AffinityMatcher
 -----------------------------
@@ -200,7 +195,7 @@ we can match, via the cross entropy loss,
 a :class:`torchdr.EntropicAffinity` with a
 :class:`torchdr.NormalizedGaussianAffinity`.
 
-.. GENERATED FROM PYTHON SOURCE LINES 104-127
+.. GENERATED FROM PYTHON SOURCE LINES 105-128
 
 .. code-block:: Python
 
@@ -236,17 +231,10 @@ a :class:`torchdr.EntropicAffinity` with a
    :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-    Random state is None
-    Random state is None
 
 
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 128-138
+.. GENERATED FROM PYTHON SOURCE LINES 129-139
 
 On the efficiency of using the torchdr API rather than AffinityMatcher directly
 -------------------------------------------------------------------------------
@@ -262,7 +250,7 @@ On the efficiency of using the torchdr API rather than AffinityMatcher directly
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (1 minutes 24.050 seconds)
+   **Total running time of the script:** (1 minutes 12.996 seconds)
 
 
 .. _sphx_glr_download_auto_examples_basics_demo_ne_methods_affinity_matcher.py:

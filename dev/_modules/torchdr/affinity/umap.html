@@ -451,7 +451,6 @@
 <span class="c1"># License: BSD 3-Clause License</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -459,7 +458,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">curve_fit</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">SparseLogAffinity</span><span class="p">,</span> <span class="n">UnnormalizedLogAffinity</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">binary_search</span><span class="p">,</span> <span class="n">kmin</span><span class="p">,</span> <span class="n">wrap_vectors</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">binary_search</span><span class="p">,</span> <span class="n">kmin</span><span class="p">,</span> <span class="n">wrap_vectors</span><span class="p">,</span> <span class="n">check_neighbor_param</span>
 
 
 <span class="nd">@wrap_vectors</span>
@@ -489,26 +488,6 @@
     <span class="k">return</span> <span class="n">params</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_check_n_neighbors</span><span class="p">(</span><span class="n">n_neighbors</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Check the n_neighbors parameter and returns a valid value.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;[TorchDR] ERROR : Input has less than one sample : n_samples = </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">.&quot;</span>
-        <span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">n_neighbors</span> <span class="o">&gt;=</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">n_neighbors</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">new_value</span> <span class="o">=</span> <span class="n">n</span> <span class="o">//</span> <span class="mi">2</span>
-        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;[TorchDR] WARNING : The n_neighbors parameter must be greater than &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;1 and smaller than the number of samples - 1 (here </span><span class="si">{</span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">). &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;Got n_neighbors = </span><span class="si">{</span><span class="n">n_neighbors</span><span class="si">}</span><span class="s2">. Setting n_neighbors to </span><span class="si">{</span><span class="n">new_value</span><span class="si">}</span><span class="s2">.&quot;</span>
-            <span class="p">)</span>
-        <span class="k">return</span> <span class="n">new_value</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">n_neighbors</span>
-
-
 <div class="viewcode-block" id="UMAPAffinityIn">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.UMAPAffinityIn.html#torchdr.UMAPAffinityIn">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">UMAPAffinityIn</span><span class="p">(</span><span class="n">SparseLogAffinity</span><span class="p">):</span>
@@ -518,7 +497,7 @@
 <span class="sd">    :math:`\mathbf{\sigma}^* \in \mathbb{R}^n_{&gt;0}` such that</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        \forall i, \: \sum_j P_{ij} = \log (\mathrm{n_neighbors}) \quad \text{where} \quad \forall (i,j), \: P_{ij} = \exp(- (C_{ij} - \rho_i) / \sigma^\star_i)</span>
+<span class="sd">        \forall (i,j), \: P_{ij} = \exp(- (C_{ij} - \rho_i) / \sigma^\star_i) \quad \text{where} \quad \forall i, \: \sum_j P_{ij} = \log (\mathrm{n_neighbors})</span>
 
 <span class="sd">    and :math:`\rho_i = \min_j C_{ij}`.</span>
 
@@ -548,7 +527,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">n_neighbors</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>  <span class="c1"># analog of the perplexity parameter of SNE / TSNE</span>
+        <span class="n">n_neighbors</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
         <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-5</span><span class="p">,</span>
         <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
         <span class="n">sparsity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -581,22 +560,20 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        self : UMAPAffinityData</span>
+<span class="sd">        self : UMAPAffinityIn</span>
 <span class="sd">            The fitted instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[TorchDR] Affinity : computing the input affinity matrix of UMAP.&quot;</span><span class="p">)</span>
 
         <span class="n">n_samples_in</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">n_neighbors</span> <span class="o">=</span> <span class="n">_check_n_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span><span class="p">,</span> <span class="n">n_samples_in</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="n">n_neighbors</span> <span class="o">=</span> <span class="n">check_neighbor_param</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span><span class="p">,</span> <span class="n">n_samples_in</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparsity</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span>
                     <span class="s2">&quot;[TorchDR] Affinity : sparsity mode enabled, computing &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n_neighbors</span><span class="si">}</span><span class="s2"> nearest neighbors. If this step is too slow, &quot;</span>
-                    <span class="s2">&quot;consider reducing the dimensionality of the data using PCA &quot;</span>
-                    <span class="s2">&quot;or disabling sparsity.&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n_neighbors</span><span class="si">}</span><span class="s2"> nearest neighbors.&quot;</span>
                 <span class="p">)</span>
             <span class="c1"># when using sparsity, we construct a reduced distance matrix</span>
             <span class="c1"># of shape (n_samples, n_neighbors)</span>

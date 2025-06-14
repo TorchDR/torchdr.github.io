@@ -406,12 +406,14 @@
 <li class="toctree-l1"><a class="reference internal" href="torchdr.IncrementalPCA.html">IncrementalPCA</a></li>
 </ul>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="torchdr.UMAP.html">UMAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.LargeVis.html">LargeVis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.PACMAP.html">PACMAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.InfoTSNE.html">InfoTSNE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchdr.SNE.html">SNE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchdr.TSNE.html">TSNE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchdr.TSNEkhorn.html">TSNEkhorn</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torchdr.InfoTSNE.html">InfoTSNE</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torchdr.LargeVis.html">LargeVis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torchdr.UMAP.html">UMAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.COSNE.html">COSNE</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="torchdr.DRModule.html">DRModule</a></li>
@@ -438,10 +440,8 @@
 <li class="toctree-l1"><a class="reference internal" href="torchdr.EntropicAffinity.html">EntropicAffinity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchdr.SymmetricEntropicAffinity.html">SymmetricEntropicAffinity</a></li>
 </ul>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="torchdr.DoublyStochasticQuadraticAffinity.html">DoublyStochasticQuadraticAffinity</a></li>
-</ul>
 <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="torchdr.DoublyStochasticQuadraticAffinity.html">DoublyStochasticQuadraticAffinity</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">UMAPAffinityIn</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchdr.UMAPAffinityOut.html">UMAPAffinityOut</a></li>
 </ul>
@@ -522,7 +522,7 @@
 <p>The algorithm computes via root search the variable
 <span class="math notranslate nohighlight">\(\mathbf{\sigma}^* \in \mathbb{R}^n_{&gt;0}\)</span> such that</p>
 <div class="math notranslate nohighlight">
-\[\forall i, \: \sum_j P_{ij} = \log (\mathrm{n_neighbors}) \quad \text{where} \quad \forall (i,j), \: P_{ij} = \exp(- (C_{ij} - \rho_i) / \sigma^\star_i)\]</div>
+\[\forall (i,j), \: P_{ij} = \exp(- (C_{ij} - \rho_i) / \sigma^\star_i) \quad \text{where} \quad \forall i, \: \sum_j P_{ij} = \log (\mathrm{n_neighbors})\]</div>
 <p>and <span class="math notranslate nohighlight">\(\rho_i = \min_j C_{ij}\)</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

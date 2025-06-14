@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.neighbor_embedding.tsnekhorn &#8212; TorchDR 0.2 documentation</title>
+    <title>torchdr.neighbor_embedding.pacmap &#8212; TorchDR 0.2 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
     <script src="../../../_static/documentation_options.js?v=10f1778b"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchdr/neighbor_embedding/tsnekhorn';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchdr/neighbor_embedding/pacmap';</script>
     <script src="../../../_static/pypi-icon.js?v=3850e9a1"></script>
     <link rel="icon" href="../../../_static/logo.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -426,7 +426,7 @@
     
     <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">torchdr.neighbor_embedding.tsnekhorn</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">torchdr.neighbor_embedding.pacmap</span></li>
   </ul>
 </nav>
 </div>
@@ -443,65 +443,47 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <h1>Source code for torchdr.neighbor_embedding.tsnekhorn</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;SNEkhorn algorithm (inverse OT DR).&quot;&quot;&quot;</span>
+  <h1>Source code for torchdr.neighbor_embedding.pacmap</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;PACMAP algorithm.&quot;&quot;&quot;</span>
 
 <span class="c1"># Author: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
 <span class="c1">#</span>
 <span class="c1"># License: BSD 3-Clause License</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Type</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">EntropicAffinity</span><span class="p">,</span>
-    <span class="n">SinkhornAffinity</span><span class="p">,</span>
-    <span class="n">SymmetricEntropicAffinity</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.neighbor_embedding.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">NeighborEmbedding</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">cross_entropy_loss</span><span class="p">,</span> <span class="n">logsumexp_red</span><span class="p">,</span> <span class="n">bool_arg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.neighbor_embedding.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">SampledNeighborEmbedding</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Type</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity</span><span class="w"> </span><span class="kn">import</span> <span class="n">NegativeCostAffinity</span><span class="p">,</span> <span class="n">PACMAPAffinity</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">kmax</span><span class="p">,</span> <span class="n">sum_red</span>
 
 
-<div class="viewcode-block" id="TSNEkhorn">
-<a class="viewcode-back" href="../../../gen_modules/torchdr.TSNEkhorn.html#torchdr.TSNEkhorn">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">TSNEkhorn</span><span class="p">(</span><span class="n">NeighborEmbedding</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;TSNEkhorn algorithm introduced in :cite:`van2024snekhorn`.</span>
+<div class="viewcode-block" id="PACMAP">
+<a class="viewcode-back" href="../../../gen_modules/torchdr.PACMAP.html#torchdr.PACMAP">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PACMAP</span><span class="p">(</span><span class="n">SampledNeighborEmbedding</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;PACMAP algorithm introduced in :cite:`wang2021understanding`.</span>
 
-<span class="sd">    It uses a :class:`~torchdr.SymmetricEntropicAffinity` as input</span>
-<span class="sd">    affinity :math:`\mathbf{P}` and a :class:`~torchdr.SinkhornAffinity` as output</span>
-<span class="sd">    affinity :math:`\mathbf{Q}`.</span>
-
+<span class="sd">    It uses a :class:`~torchdr.PACMAPAffinity` as input affinity.</span>
 <span class="sd">    The loss function is defined as:</span>
 
 <span class="sd">    .. math::</span>
 
-<span class="sd">        -\sum_{ij} P_{ij} \log Q_{ij} + \sum_{ij} Q_{ij} \:.</span>
+<span class="sd">        w_{\mathrm{NB}} \sum_{i, j \in \mathrm{NB}(i)} \frac{d_{ij}}{10 + d_{ij}} + w_{\mathrm{MN}} \sum_{i,j \in \mathrm{MN}(i)} \frac{d_{ij}}{10^4 + d_{ij}} + w_{\mathrm{FP}} \sum_{i,j \in \mathrm{FP}(i)} \frac{1}{1 + d_{ij}}</span>
 
-<span class="sd">    The above loss is the gap objective for inverse symmetric optimal transport</span>
-<span class="sd">    described in this</span>
-<span class="sd">    `blog &lt;https://huguesva.github.io/blog/2024/inverseOT_mongegap/&gt;`_.</span>
-
-<span class="sd">    .. note::</span>
-<span class="sd">        The :class:`~torchdr.SymmetricEntropicAffinity` requires a careful choice of</span>
-<span class="sd">        learning rate (parameter :attr:`lr_affinity_in`). If it is too unstable, one</span>
-<span class="sd">        can resort to using :class:`~torchdr.EntropicAffinity` instead by setting</span>
-<span class="sd">        :attr:`symmetric_affinity` to ``False``.</span>
+<span class="sd">    where :math:`\mathrm{NB}(i)`, :math:`\mathrm{MN}(i)` and :math:`\mathrm{FP}(i)` are the nearest neighbors, mid-near neighbors and far neighbors of point :math:`i` respectively (more details in :cite:`wang2021understanding`).</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    perplexity : float</span>
-<span class="sd">        Number of &#39;effective&#39; nearest neighbors.</span>
-<span class="sd">        Consider selecting a value between 2 and the number of samples.</span>
-<span class="sd">        Different values can result in significantly different results.</span>
+<span class="sd">    n_neighbors : int, optional</span>
+<span class="sd">        Number of nearest neighbors.</span>
 <span class="sd">    n_components : int, optional</span>
 <span class="sd">        Dimension of the embedding space.</span>
 <span class="sd">    lr : float or &#39;auto&#39;, optional</span>
-<span class="sd">        Learning rate for the algorithm. By default &#39;auto&#39;.</span>
+<span class="sd">        Learning rate for the algorithm, by default &#39;auto&#39;.</span>
 <span class="sd">    optimizer : str or torch.optim.Optimizer, optional</span>
 <span class="sd">        Name of an optimizer from torch.optim or an optimizer class.</span>
-<span class="sd">        Default is &quot;SGD&quot;.</span>
+<span class="sd">        Default is &quot;Adam&quot;.</span>
 <span class="sd">    optimizer_kwargs : dict or &#39;auto&#39;, optional</span>
-<span class="sd">        Additional keyword arguments for the optimizer. Default is &#39;auto&#39;,</span>
+<span class="sd">        Additional keyword arguments for the optimizer. Default is None,</span>
 <span class="sd">        which sets appropriate momentum values for SGD based on early exaggeration phase.</span>
 <span class="sd">    scheduler : str or torch.optim.lr_scheduler.LRScheduler, optional</span>
 <span class="sd">        Name of a scheduler from torch.optim.lr_scheduler or a scheduler class.</span>
@@ -513,119 +495,87 @@
 <span class="sd">    init_scaling : float, optional</span>
 <span class="sd">        Scaling factor for the initialization, by default 1e-4.</span>
 <span class="sd">    min_grad_norm : float, optional</span>
-<span class="sd">        Precision threshold at which the algorithm stops, by default 1e-4.</span>
+<span class="sd">        Precision threshold at which the algorithm stops, by default 1e-7.</span>
 <span class="sd">    max_iter : int, optional</span>
-<span class="sd">        Number of maximum iterations for the descent algorithm, by default 2000.</span>
+<span class="sd">        Number of maximum iterations for the descent algorithm, by default 450.</span>
 <span class="sd">    device : str, optional</span>
 <span class="sd">        Device to use, by default &quot;auto&quot;.</span>
 <span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None}, optional</span>
 <span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
-<span class="sd">        Default is None.</span>
+<span class="sd">        Default is &quot;faiss&quot;.</span>
 <span class="sd">    verbose : bool, optional</span>
 <span class="sd">        Verbosity, by default False.</span>
 <span class="sd">    random_state : float, optional</span>
 <span class="sd">        Random seed for reproducibility, by default None.</span>
-<span class="sd">    early_exaggeration_coeff : float, optional</span>
-<span class="sd">        Coefficient for the attraction term during the early exaggeration phase.</span>
-<span class="sd">        By default 10.0 for early exaggeration.</span>
-<span class="sd">    early_exaggeration_iter : int, optional</span>
-<span class="sd">        Number of iterations for early exaggeration, by default 250.</span>
-<span class="sd">    lr_affinity_in : float, optional</span>
-<span class="sd">        Learning rate used to update dual variables for the symmetric entropic</span>
-<span class="sd">        affinity computation.</span>
-<span class="sd">    eps_square_affinity_in : bool, optional</span>
-<span class="sd">        When computing the symmetric entropic affinity, whether to optimize</span>
-<span class="sd">        on the square of the dual variables. May be more stable in practice.</span>
-<span class="sd">    tol_affinity_in : float, optional</span>
-<span class="sd">        Precision threshold for the symmetric entropic affinity computation.</span>
-<span class="sd">    max_iter_affinity_in : int, optional</span>
-<span class="sd">        Number of maximum iterations for the symmetric entropic affinity computation.</span>
+<span class="sd">    tol_affinity : float, optional</span>
+<span class="sd">        Precision threshold for the entropic affinity root search.</span>
+<span class="sd">    max_iter_affinity : int, optional</span>
+<span class="sd">        Number of maximum iterations for the entropic affinity root search.</span>
 <span class="sd">    metric_in : {&#39;sqeuclidean&#39;, &#39;manhattan&#39;}, optional</span>
 <span class="sd">        Metric to use for the input affinity, by default &#39;sqeuclidean&#39;.</span>
 <span class="sd">    metric_out : {&#39;sqeuclidean&#39;, &#39;manhattan&#39;}, optional</span>
 <span class="sd">        Metric to use for the output affinity, by default &#39;sqeuclidean&#39;.</span>
-<span class="sd">    unrolling : bool, optional</span>
-<span class="sd">        Whether to use unrolling for solving inverse OT. If False, uses</span>
-<span class="sd">        the gap objective. Default is False.</span>
-<span class="sd">    symmetric_affinity : bool, optional</span>
-<span class="sd">        Whether to use symmetric entropic affinity. If False, uses</span>
-<span class="sd">        entropic affinity. Default is True.</span>
+<span class="sd">    MN_ratio : float, optional</span>
+<span class="sd">        Ratio of mid-near pairs to nearest neighbor pairs, by default 0.5.</span>
+<span class="sd">    FP_ratio : float, optional</span>
+<span class="sd">        Ratio of far pairs to nearest neighbor pairs, by default 2.</span>
 <span class="sd">    check_interval : int, optional</span>
-<span class="sd">        Interval for checking the convergence of the algorithm, by default 50.</span>
+<span class="sd">        Interval for checking convergence, by default 50.</span>
+<span class="sd">    iter_per_phase : int, optional</span>
+<span class="sd">        Number of iterations for each phase of the algorithm, by default 100.</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">perplexity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+        <span class="n">n_neighbors</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
         <span class="n">n_components</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
         <span class="n">lr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-        <span class="n">optimizer</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;SGD&quot;</span><span class="p">,</span>
-        <span class="n">optimizer_kwargs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">optimizer</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;Adam&quot;</span><span class="p">,</span>
+        <span class="n">optimizer_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">scheduler</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
             <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">LRScheduler</span><span class="p">]]</span>
         <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">scheduler_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">init</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pca&quot;</span><span class="p">,</span>
         <span class="n">init_scaling</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-4</span><span class="p">,</span>
-        <span class="n">min_grad_norm</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-4</span><span class="p">,</span>
-        <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2000</span><span class="p">,</span>
+        <span class="n">min_grad_norm</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-7</span><span class="p">,</span>
+        <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">450</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;faiss&quot;</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">early_exaggeration_coeff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span>
-        <span class="n">early_exaggeration_iter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">250</span><span class="p">,</span>
-        <span class="n">lr_affinity_in</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-1</span><span class="p">,</span>
-        <span class="n">eps_square_affinity_in</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">tol_affinity_in</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
-        <span class="n">max_iter_affinity_in</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="n">tol_affinity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
+        <span class="n">max_iter_affinity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
         <span class="n">metric_in</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
         <span class="n">metric_out</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
-        <span class="n">unrolling</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">symmetric_affinity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">MN_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="n">FP_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
         <span class="n">check_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
+        <span class="n">iter_per_phase</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
     <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span> <span class="o">=</span> <span class="n">n_neighbors</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metric_in</span> <span class="o">=</span> <span class="n">metric_in</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metric_out</span> <span class="o">=</span> <span class="n">metric_out</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span> <span class="o">=</span> <span class="n">perplexity</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lr_affinity_in</span> <span class="o">=</span> <span class="n">lr_affinity_in</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">eps_square_affinity_in</span> <span class="o">=</span> <span class="n">bool_arg</span><span class="p">(</span><span class="n">eps_square_affinity_in</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">max_iter_affinity_in</span> <span class="o">=</span> <span class="n">max_iter_affinity_in</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tol_affinity_in</span> <span class="o">=</span> <span class="n">tol_affinity_in</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">unrolling</span> <span class="o">=</span> <span class="n">bool_arg</span><span class="p">(</span><span class="n">unrolling</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">symmetric_affinity</span> <span class="o">=</span> <span class="n">bool_arg</span><span class="p">(</span><span class="n">symmetric_affinity</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_iter_affinity</span> <span class="o">=</span> <span class="n">max_iter_affinity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tol_affinity</span> <span class="o">=</span> <span class="n">tol_affinity</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">symmetric_affinity</span><span class="p">:</span>
-            <span class="n">affinity_in</span> <span class="o">=</span> <span class="n">SymmetricEntropicAffinity</span><span class="p">(</span>
-                <span class="n">perplexity</span><span class="o">=</span><span class="n">perplexity</span><span class="p">,</span>
-                <span class="n">lr</span><span class="o">=</span><span class="n">lr_affinity_in</span><span class="p">,</span>
-                <span class="n">eps_square</span><span class="o">=</span><span class="n">eps_square_affinity_in</span><span class="p">,</span>
-                <span class="n">metric</span><span class="o">=</span><span class="n">metric_in</span><span class="p">,</span>
-                <span class="n">tol</span><span class="o">=</span><span class="n">tol_affinity_in</span><span class="p">,</span>
-                <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter_affinity_in</span><span class="p">,</span>
-                <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
-                <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
-                <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-                <span class="n">zero_diag</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">affinity_in</span> <span class="o">=</span> <span class="n">EntropicAffinity</span><span class="p">(</span>
-                <span class="n">perplexity</span><span class="o">=</span><span class="n">perplexity</span><span class="p">,</span>
-                <span class="n">metric</span><span class="o">=</span><span class="n">metric_in</span><span class="p">,</span>
-                <span class="n">tol</span><span class="o">=</span><span class="n">tol_affinity_in</span><span class="p">,</span>
-                <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter_affinity_in</span><span class="p">,</span>
-                <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
-                <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
-                <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="n">affinity_out</span> <span class="o">=</span> <span class="n">SinkhornAffinity</span><span class="p">(</span>
-            <span class="n">metric</span><span class="o">=</span><span class="n">metric_out</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MN_ratio</span> <span class="o">=</span> <span class="n">MN_ratio</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FP_ratio</span> <span class="o">=</span> <span class="n">FP_ratio</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_mid_near</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">MN_ratio</span> <span class="o">*</span> <span class="n">n_neighbors</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_further</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">FP_ratio</span> <span class="o">*</span> <span class="n">n_neighbors</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iter_per_phase</span> <span class="o">=</span> <span class="n">iter_per_phase</span>
+
+        <span class="n">affinity_in</span> <span class="o">=</span> <span class="n">PACMAPAffinity</span><span class="p">(</span>
+            <span class="n">n_neighbors</span><span class="o">=</span><span class="n">n_neighbors</span><span class="p">,</span>
+            <span class="n">metric</span><span class="o">=</span><span class="n">metric_in</span><span class="p">,</span>
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
             <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">affinity_out</span> <span class="o">=</span> <span class="n">NegativeCostAffinity</span><span class="p">(</span>
+            <span class="n">metric</span><span class="o">=</span><span class="n">metric_out</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">base_kernel</span><span class="o">=</span><span class="s2">&quot;student&quot;</span><span class="p">,</span>
-            <span class="n">with_grad</span><span class="o">=</span><span class="n">unrolling</span><span class="p">,</span>
-            <span class="n">max_iter</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -645,29 +595,96 @@
             <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
-            <span class="n">early_exaggeration_coeff</span><span class="o">=</span><span class="n">early_exaggeration_coeff</span><span class="p">,</span>
-            <span class="n">early_exaggeration_iter</span><span class="o">=</span><span class="n">early_exaggeration_iter</span><span class="p">,</span>
             <span class="n">check_interval</span><span class="o">=</span><span class="n">check_interval</span><span class="p">,</span>
+            <span class="n">n_negatives</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_further</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mid_near_input_affinity</span> <span class="o">=</span> <span class="n">NegativeCostAffinity</span><span class="p">(</span>
+            <span class="n">metric</span><span class="o">=</span><span class="n">metric_in</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>  <span class="c1"># To compute 2nd closest when finding mid-near points</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;dual_sinkhorn_&quot;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dual_sinkhorn_</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">X_</span> <span class="o">=</span> <span class="n">X</span>  <span class="c1"># Keep input data to compute mid-near loss</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_weights</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
-        <span class="n">log_Q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">init_dual</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dual_sinkhorn_</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dual_sinkhorn_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="o">.</span><span class="n">dual_</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
-        <span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PX_</span>
-
-        <span class="n">attractive_term</span> <span class="o">=</span> <span class="n">cross_entropy_loss</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">log_Q</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unrolling</span><span class="p">:</span>
-            <span class="n">repulsive_term</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_per_phase</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">w_NB</span> <span class="o">=</span> <span class="mi">2</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">w_MN</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="mi">1000</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_per_phase</span><span class="p">)</span>
+                <span class="o">+</span> <span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_per_phase</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">w_FP</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_per_phase</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">w_NB</span> <span class="o">=</span> <span class="mi">3</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">w_MN</span> <span class="o">=</span> <span class="mi">3</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">w_FP</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">repulsive_term</span> <span class="o">=</span> <span class="n">logsumexp_red</span><span class="p">(</span><span class="n">log_Q</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">w_NB</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">w_MN</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">w_FP</span> <span class="o">=</span> <span class="mi">1</span>
 
-        <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff_</span> <span class="o">*</span> <span class="n">attractive_term</span> <span class="o">+</span> <span class="n">repulsive_term</span>
-        <span class="k">return</span> <span class="n">loss</span></div>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_after_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_weights</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_attractive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Attractive loss with nearest neighbors</span>
+        <span class="n">D_tilde_near</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="p">(</span>  <span class="c1"># Distance is negative affinity</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span>
+        <span class="p">)</span>
+        <span class="n">Q_near</span> <span class="o">=</span> <span class="n">D_tilde_near</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1e1</span> <span class="o">+</span> <span class="n">D_tilde_near</span><span class="p">)</span>
+        <span class="n">near_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">w_NB</span> <span class="o">*</span> <span class="n">sum_red</span><span class="p">(</span><span class="n">Q_near</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">w_MN</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Attractive loss with mid-near points :</span>
+            <span class="c1"># we sample 6 mid-near points for each sample</span>
+            <span class="c1"># and keep the second closest in terms of input space distance</span>
+            <span class="n">device</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span><span class="p">,</span> <span class="s2">&quot;device&quot;</span><span class="p">,</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+            <span class="n">mid_near_indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_mid_near</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
+            <span class="p">)</span>
+            <span class="n">self_idxs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">n_possible_idxs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">-</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">n_possible_idxs</span> <span class="o">&lt;</span> <span class="mi">6</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;[TorchDR] ERROR : Not enough points to sample 6 mid-near points.&quot;</span>
+                <span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_mid_near</span><span class="p">):</span>  <span class="c1"># to do: broadcast for efficiency</span>
+                <span class="n">mid_near_candidates_indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
+                    <span class="mi">1</span><span class="p">,</span>
+                    <span class="n">n_possible_idxs</span><span class="p">,</span>
+                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
+                    <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">shifts</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span>
+                    <span class="n">self_idxs</span><span class="p">,</span> <span class="n">mid_near_candidates_indices</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
+                <span class="n">mid_near_candidates_indices</span> <span class="o">+=</span> <span class="n">shifts</span>
+                <span class="n">A_mid_near_candidates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mid_near_input_affinity</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">X_</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">mid_near_candidates_indices</span>
+                <span class="p">)</span>
+                <span class="n">_</span><span class="p">,</span> <span class="n">idxs</span> <span class="o">=</span> <span class="n">kmax</span><span class="p">(</span><span class="n">A_mid_near_candidates</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">mid_near_indices</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">idxs</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># Retrieve the second closest point</span>
+
+            <span class="n">D_tilde_mid_near</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="p">(</span>  <span class="c1"># Distance is negative affinity</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">mid_near_indices</span>
+            <span class="p">)</span>
+            <span class="n">Q_mid_near</span> <span class="o">=</span> <span class="n">D_tilde_mid_near</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1e4</span> <span class="o">+</span> <span class="n">D_tilde_mid_near</span><span class="p">)</span>
+            <span class="n">mid_near_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">w_MN</span> <span class="o">*</span> <span class="n">sum_red</span><span class="p">(</span><span class="n">Q_mid_near</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mid_near_loss</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">return</span> <span class="n">near_loss</span> <span class="o">+</span> <span class="n">mid_near_loss</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repulsive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_negatives</span><span class="p">(</span><span class="n">discard_NNs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">D_tilde_further</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">)</span>
+        <span class="n">Q_further</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">D_tilde_further</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">w_FP</span> <span class="o">*</span> <span class="n">sum_red</span><span class="p">(</span><span class="n">Q_further</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span></div>
 
 </pre></div>
 

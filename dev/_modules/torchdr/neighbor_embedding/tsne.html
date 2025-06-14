@@ -526,6 +526,8 @@
 <span class="sd">        Metric to use for the output affinity, by default &#39;sqeuclidean&#39;.</span>
 <span class="sd">    sparsity : bool, optional</span>
 <span class="sd">        Whether to use sparsity mode for the input affinity. Default is True.</span>
+<span class="sd">    check_interval : int, optional</span>
+<span class="sd">        Interval for checking the convergence of the algorithm, by default 50.</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -554,6 +556,7 @@
         <span class="n">metric_in</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
         <span class="n">metric_out</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
         <span class="n">sparsity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">check_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metric_in</span> <span class="o">=</span> <span class="n">metric_in</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metric_out</span> <span class="o">=</span> <span class="n">metric_out</span>
@@ -598,6 +601,7 @@
             <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
             <span class="n">early_exaggeration_coeff</span><span class="o">=</span><span class="n">early_exaggeration_coeff</span><span class="p">,</span>
             <span class="n">early_exaggeration_iter</span><span class="o">=</span><span class="n">early_exaggeration_iter</span><span class="p">,</span>
+            <span class="n">check_interval</span><span class="o">=</span><span class="n">check_interval</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_repulsive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

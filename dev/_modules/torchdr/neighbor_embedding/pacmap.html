@@ -507,10 +507,6 @@
 <span class="sd">        Verbosity, by default False.</span>
 <span class="sd">    random_state : float, optional</span>
 <span class="sd">        Random seed for reproducibility, by default None.</span>
-<span class="sd">    tol_affinity : float, optional</span>
-<span class="sd">        Precision threshold for the entropic affinity root search.</span>
-<span class="sd">    max_iter_affinity : int, optional</span>
-<span class="sd">        Number of maximum iterations for the entropic affinity root search.</span>
 <span class="sd">    metric_in : {&#39;sqeuclidean&#39;, &#39;manhattan&#39;}, optional</span>
 <span class="sd">        Metric to use for the input affinity, by default &#39;sqeuclidean&#39;.</span>
 <span class="sd">    metric_out : {&#39;sqeuclidean&#39;, &#39;manhattan&#39;}, optional</span>
@@ -544,8 +540,6 @@
         <span class="n">backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;faiss&quot;</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">tol_affinity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
-        <span class="n">max_iter_affinity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
         <span class="n">metric_in</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
         <span class="n">metric_out</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
         <span class="n">MN_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
@@ -556,8 +550,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span> <span class="o">=</span> <span class="n">n_neighbors</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metric_in</span> <span class="o">=</span> <span class="n">metric_in</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metric_out</span> <span class="o">=</span> <span class="n">metric_out</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">max_iter_affinity</span> <span class="o">=</span> <span class="n">max_iter_affinity</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tol_affinity</span> <span class="o">=</span> <span class="n">tol_affinity</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">MN_ratio</span> <span class="o">=</span> <span class="n">MN_ratio</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">FP_ratio</span> <span class="o">=</span> <span class="n">FP_ratio</span>

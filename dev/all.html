@@ -404,6 +404,7 @@
 <li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.PCA.html">PCA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.KernelPCA.html">KernelPCA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.IncrementalPCA.html">IncrementalPCA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.PHATE.html">PHATE</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.UMAP.html">UMAP</a></li>
@@ -541,6 +542,9 @@ eigendecomposition of the affinity matrix.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.IncrementalPCA.html#torchdr.IncrementalPCA" title="torchdr.IncrementalPCA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IncrementalPCA</span></code></a>([n_components, copy, ...])</p></td>
 <td><p>Incremental Principal Components Analysis (IPCA) leveraging PyTorch for GPU acceleration.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.PHATE.html#torchdr.PHATE" title="torchdr.PHATE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PHATE</span></code></a>([k, n_components, t, alpha, ...])</p></td>
+<td><p>Implementation of PHATE introduced in <span id="id2">[<a class="reference internal" href="torchdr.bibliography.html#id24" title="Kevin R Moon, David Van Dijk, Zheng Wang, Scott Gigante, Daniel B Burkhardt, William S Chen, Kristina Yim, Antonia van den Elzen, Matthew J Hirn, Ronald R Coifman, and others. Visualizing structure and transitions in high-dimensional biological data. Nature biotechnology, 37(12):1482–1492, 2019.">Moon <em>et al.</em>, 2019</a>]</span>.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -551,28 +555,28 @@ eigendecomposition of the affinity matrix.</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.UMAP.html#torchdr.UMAP" title="torchdr.UMAP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UMAP</span></code></a>([n_neighbors, n_components, min_dist, ...])</p></td>
-<td><p>UMAP introduced in <span id="id2">[<a class="reference internal" href="torchdr.bibliography.html#id9" title="Leland McInnes, John Healy, and James Melville. Umap: uniform manifold approximation and projection for dimension reduction. arXiv preprint arXiv:1802.03426, 2018.">McInnes <em>et al.</em>, 2018</a>]</span> and further studied in <span id="id3">[<a class="reference internal" href="torchdr.bibliography.html#id12" title="Sebastian Damrich and Fred A Hamprecht. On umap's true loss function. Advances in Neural Information Processing Systems, 34:5798–5809, 2021.">Damrich and Hamprecht, 2021</a>]</span>.</p></td>
+<td><p>UMAP introduced in <span id="id3">[<a class="reference internal" href="torchdr.bibliography.html#id9" title="Leland McInnes, John Healy, and James Melville. Umap: uniform manifold approximation and projection for dimension reduction. arXiv preprint arXiv:1802.03426, 2018.">McInnes <em>et al.</em>, 2018</a>]</span> and further studied in <span id="id4">[<a class="reference internal" href="torchdr.bibliography.html#id12" title="Sebastian Damrich and Fred A Hamprecht. On umap's true loss function. Advances in Neural Information Processing Systems, 34:5798–5809, 2021.">Damrich and Hamprecht, 2021</a>]</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.LargeVis.html#torchdr.LargeVis" title="torchdr.LargeVis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LargeVis</span></code></a>([perplexity, n_components, lr, ...])</p></td>
-<td><p>LargeVis algorithm introduced in <span id="id4">[<a class="reference internal" href="torchdr.bibliography.html#id13" title="Jian Tang, Jingzhou Liu, Ming Zhang, and Qiaozhu Mei. Visualizing large-scale and high-dimensional data. In Proceedings of the 25th international conference on world wide web, 287–297. 2016.">Tang <em>et al.</em>, 2016</a>]</span>.</p></td>
+<td><p>LargeVis algorithm introduced in <span id="id5">[<a class="reference internal" href="torchdr.bibliography.html#id13" title="Jian Tang, Jingzhou Liu, Ming Zhang, and Qiaozhu Mei. Visualizing large-scale and high-dimensional data. In Proceedings of the 25th international conference on world wide web, 287–297. 2016.">Tang <em>et al.</em>, 2016</a>]</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.PACMAP.html#torchdr.PACMAP" title="torchdr.PACMAP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PACMAP</span></code></a>([n_neighbors, n_components, lr, ...])</p></td>
-<td><p>PACMAP algorithm introduced in <span id="id5">[<a class="reference internal" href="torchdr.bibliography.html#id23" title="Yingfan Wang, Haiyang Huang, Cynthia Rudin, and Yaron Shaposhnik. Understanding how dimension reduction tools work: an empirical approach to deciphering t-sne, umap, trimap, and pacmap for data visualization. Journal of Machine Learning Research, 22(201):1–73, 2021.">Wang <em>et al.</em>, 2021</a>]</span>.</p></td>
+<td><p>PACMAP algorithm introduced in <span id="id6">[<a class="reference internal" href="torchdr.bibliography.html#id23" title="Yingfan Wang, Haiyang Huang, Cynthia Rudin, and Yaron Shaposhnik. Understanding how dimension reduction tools work: an empirical approach to deciphering t-sne, umap, trimap, and pacmap for data visualization. Journal of Machine Learning Research, 22(201):1–73, 2021.">Wang <em>et al.</em>, 2021</a>]</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.InfoTSNE.html#torchdr.InfoTSNE" title="torchdr.InfoTSNE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InfoTSNE</span></code></a>([perplexity, n_components, lr, ...])</p></td>
-<td><p>InfoTSNE algorithm introduced in <span id="id6">[<a class="reference internal" href="torchdr.bibliography.html#id14" title="Sebastian Damrich, Jan Niklas Böhm, Fred A Hamprecht, and Dmitry Kobak. From $ t $-sne to umap with contrastive learning. arXiv preprint arXiv:2206.01816, 2022.">Damrich <em>et al.</em>, 2022</a>]</span>.</p></td>
+<td><p>InfoTSNE algorithm introduced in <span id="id7">[<a class="reference internal" href="torchdr.bibliography.html#id14" title="Sebastian Damrich, Jan Niklas Böhm, Fred A Hamprecht, and Dmitry Kobak. From $ t $-sne to umap with contrastive learning. arXiv preprint arXiv:2206.01816, 2022.">Damrich <em>et al.</em>, 2022</a>]</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.SNE.html#torchdr.SNE" title="torchdr.SNE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SNE</span></code></a>([perplexity, n_components, lr, ...])</p></td>
-<td><p>Stochastic Neighbor Embedding (SNE) introduced in <span id="id7">[<a class="reference internal" href="torchdr.bibliography.html#id2" title="Geoffrey E Hinton and Sam Roweis. Stochastic neighbor embedding. Advances in neural information processing systems, 2002.">Hinton and Roweis, 2002</a>]</span>.</p></td>
+<td><p>Stochastic Neighbor Embedding (SNE) introduced in <span id="id8">[<a class="reference internal" href="torchdr.bibliography.html#id2" title="Geoffrey E Hinton and Sam Roweis. Stochastic neighbor embedding. Advances in neural information processing systems, 2002.">Hinton and Roweis, 2002</a>]</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.TSNE.html#torchdr.TSNE" title="torchdr.TSNE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TSNE</span></code></a>([perplexity, n_components, lr, ...])</p></td>
-<td><p>t-Stochastic Neighbor Embedding (t-SNE) introduced in <span id="id8">[<a class="reference internal" href="torchdr.bibliography.html#id3" title="Laurens Van der Maaten and Geoffrey Hinton. Visualizing data using t-sne. Journal of machine learning research, 2008.">Van der Maaten and Hinton, 2008</a>]</span>.</p></td>
+<td><p>t-Stochastic Neighbor Embedding (t-SNE) introduced in <span id="id9">[<a class="reference internal" href="torchdr.bibliography.html#id3" title="Laurens Van der Maaten and Geoffrey Hinton. Visualizing data using t-sne. Journal of machine learning research, 2008.">Van der Maaten and Hinton, 2008</a>]</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.TSNEkhorn.html#torchdr.TSNEkhorn" title="torchdr.TSNEkhorn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TSNEkhorn</span></code></a>([perplexity, n_components, lr, ...])</p></td>
-<td><p>TSNEkhorn algorithm introduced in <span id="id9">[<a class="reference internal" href="torchdr.bibliography.html#id4" title="Hugues Van Assel, Titouan Vayer, Rémi Flamary, and Nicolas Courty. Snekhorn: dimension reduction with symmetric entropic affinities. Advances in Neural Information Processing Systems, 2024.">Van Assel <em>et al.</em>, 2024</a>]</span>.</p></td>
+<td><p>TSNEkhorn algorithm introduced in <span id="id10">[<a class="reference internal" href="torchdr.bibliography.html#id4" title="Hugues Van Assel, Titouan Vayer, Rémi Flamary, and Nicolas Courty. Snekhorn: dimension reduction with symmetric entropic affinities. Advances in Neural Information Processing Systems, 2024.">Van Assel <em>et al.</em>, 2024</a>]</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.COSNE.html#torchdr.COSNE" title="torchdr.COSNE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">COSNE</span></code></a>([perplexity, lambda1, gamma, ...])</p></td>
-<td><p>Implementation of the CO-Stochastic Neighbor Embedding (CO-SNE) introduced in <span id="id10">[<a class="reference internal" href="torchdr.bibliography.html#id22" title="Yunhui Guo, Haoran Guo, and Stella X Yu. Co-sne: dimensionality reduction and visualization for hyperbolic data. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, 21–30. 2022.">Guo <em>et al.</em>, 2022</a>]</span>.</p></td>
+<td><p>Implementation of the CO-Stochastic Neighbor Embedding (CO-SNE) introduced in <span id="id11">[<a class="reference internal" href="torchdr.bibliography.html#id22" title="Yunhui Guo, Haoran Guo, and Stella X Yu. Co-sne: dimensionality reduction and visualization for hyperbolic data. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, 21–30. 2022.">Guo <em>et al.</em>, 2022</a>]</span>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -657,10 +661,10 @@ Broadly speaking, they define a notion of similarity between samples.</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.SelfTuningAffinity.html#torchdr.SelfTuningAffinity" title="torchdr.SelfTuningAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SelfTuningAffinity</span></code></a>([K, normalization_dim, ...])</p></td>
-<td><p>Self-tuning affinity introduced in <span id="id11">[<a class="reference internal" href="torchdr.bibliography.html#id19" title="Lihi Zelnik-Manor and Pietro Perona. Self-tuning spectral clustering. Advances in neural information processing systems, 2004.">Zelnik-Manor and Perona, 2004</a>]</span>.</p></td>
+<td><p>Self-tuning affinity introduced in <span id="id12">[<a class="reference internal" href="torchdr.bibliography.html#id19" title="Lihi Zelnik-Manor and Pietro Perona. Self-tuning spectral clustering. Advances in neural information processing systems, 2004.">Zelnik-Manor and Perona, 2004</a>]</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.MAGICAffinity.html#torchdr.MAGICAffinity" title="torchdr.MAGICAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MAGICAffinity</span></code></a>([K, metric, zero_diag, ...])</p></td>
-<td><p>Compute the MAGIC affinity introduced in <span id="id12">[<a class="reference internal" href="torchdr.bibliography.html#id20" title="David Van Dijk, Roshan Sharma, Juozas Nainys, Kristina Yim, Pooja Kathail, Ambrose J Carr, Cassandra Burdziak, Kevin R Moon, Christine L Chaffer, Diwakar Pattabiraman, and others. Recovering gene interactions from single-cell data using data diffusion. Cell, 174(3):716–729, 2018.">Van Dijk <em>et al.</em>, 2018</a>]</span>.</p></td>
+<td><p>Compute the MAGIC affinity with alpha-decay kernel introduced in <span id="id13">[<a class="reference internal" href="torchdr.bibliography.html#id20" title="David Van Dijk, Roshan Sharma, Juozas Nainys, Kristina Yim, Pooja Kathail, Ambrose J Carr, Cassandra Burdziak, Kevin R Moon, Christine L Chaffer, Diwakar Pattabiraman, and others. Recovering gene interactions from single-cell data using data diffusion. Cell, 174(3):716–729, 2018.">Van Dijk <em>et al.</em>, 2018</a>]</span>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -674,10 +678,10 @@ Broadly speaking, they define a notion of similarity between samples.</p>
 <td><p>Compute the symmetric doubly stochastic affinity matrix.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.EntropicAffinity.html#torchdr.EntropicAffinity" title="torchdr.EntropicAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EntropicAffinity</span></code></a>([perplexity, tol, ...])</p></td>
-<td><p>Solve the directed entropic affinity problem introduced in <span id="id13">[<a class="reference internal" href="torchdr.bibliography.html#id2" title="Geoffrey E Hinton and Sam Roweis. Stochastic neighbor embedding. Advances in neural information processing systems, 2002.">Hinton and Roweis, 2002</a>]</span>.</p></td>
+<td><p>Solve the directed entropic affinity problem introduced in <span id="id14">[<a class="reference internal" href="torchdr.bibliography.html#id2" title="Geoffrey E Hinton and Sam Roweis. Stochastic neighbor embedding. Advances in neural information processing systems, 2002.">Hinton and Roweis, 2002</a>]</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.SymmetricEntropicAffinity.html#torchdr.SymmetricEntropicAffinity" title="torchdr.SymmetricEntropicAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SymmetricEntropicAffinity</span></code></a>([perplexity, lr, ...])</p></td>
-<td><p>Compute the symmetric entropic affinity (SEA) introduced in <span id="id14">[<a class="reference internal" href="torchdr.bibliography.html#id4" title="Hugues Van Assel, Titouan Vayer, Rémi Flamary, and Nicolas Courty. Snekhorn: dimension reduction with symmetric entropic affinities. Advances in Neural Information Processing Systems, 2024.">Van Assel <em>et al.</em>, 2024</a>]</span>.</p></td>
+<td><p>Compute the symmetric entropic affinity (SEA) introduced in <span id="id15">[<a class="reference internal" href="torchdr.bibliography.html#id4" title="Hugues Van Assel, Titouan Vayer, Rémi Flamary, and Nicolas Courty. Snekhorn: dimension reduction with symmetric entropic affinities. Advances in Neural Information Processing Systems, 2024.">Van Assel <em>et al.</em>, 2024</a>]</span>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -691,10 +695,10 @@ Broadly speaking, they define a notion of similarity between samples.</p>
 <td><p>Compute the symmetric doubly stochastic affinity.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.UMAPAffinityIn.html#torchdr.UMAPAffinityIn" title="torchdr.UMAPAffinityIn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UMAPAffinityIn</span></code></a>([n_neighbors, tol, max_iter, ...])</p></td>
-<td><p>Compute the input affinity used in UMAP <span id="id15">[<a class="reference internal" href="torchdr.bibliography.html#id9" title="Leland McInnes, John Healy, and James Melville. Umap: uniform manifold approximation and projection for dimension reduction. arXiv preprint arXiv:1802.03426, 2018.">McInnes <em>et al.</em>, 2018</a>]</span>.</p></td>
+<td><p>Compute the input affinity used in UMAP <span id="id16">[<a class="reference internal" href="torchdr.bibliography.html#id9" title="Leland McInnes, John Healy, and James Melville. Umap: uniform manifold approximation and projection for dimension reduction. arXiv preprint arXiv:1802.03426, 2018.">McInnes <em>et al.</em>, 2018</a>]</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.UMAPAffinityOut.html#torchdr.UMAPAffinityOut" title="torchdr.UMAPAffinityOut"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UMAPAffinityOut</span></code></a>([min_dist, spread, a, b, ...])</p></td>
-<td><p>Compute the affinity used in embedding space in UMAP <span id="id16">[<a class="reference internal" href="torchdr.bibliography.html#id9" title="Leland McInnes, John Healy, and James Melville. Umap: uniform manifold approximation and projection for dimension reduction. arXiv preprint arXiv:1802.03426, 2018.">McInnes <em>et al.</em>, 2018</a>]</span>.</p></td>
+<td><p>Compute the affinity used in embedding space in UMAP <span id="id17">[<a class="reference internal" href="torchdr.bibliography.html#id9" title="Leland McInnes, John Healy, and James Melville. Umap: uniform manifold approximation and projection for dimension reduction. arXiv preprint arXiv:1802.03426, 2018.">McInnes <em>et al.</em>, 2018</a>]</span>.</p></td>
 </tr>
 </tbody>
 </table>

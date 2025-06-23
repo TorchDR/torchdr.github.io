@@ -463,7 +463,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogAffinity</span><span class="p">,</span> <span class="n">SparseLogAffinity</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">batch_transpose</span><span class="p">,</span>
+    <span class="n">matrix_transpose</span><span class="p">,</span>
     <span class="n">check_NaNs</span><span class="p">,</span>
     <span class="n">entropy</span><span class="p">,</span>
     <span class="n">false_position</span><span class="p">,</span>
@@ -478,72 +478,20 @@
 
 <span class="nd">@wrap_vectors</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">_log_Pe</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">eps</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the log of the unnormalized directed entropic affinity.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    C : torch.Tensor or pykeops.torch.LazyTensor of shape (n, n)</span>
-<span class="sd">        or shape (n_batch, batch_size, batch_size)</span>
-<span class="sd">        Pairwise distance matrix.</span>
-<span class="sd">    eps : torch.Tensor of shape (n) or (n_batch, batch_size)</span>
-<span class="sd">        Dual variable of the entropic constraint.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    log_P : torch.Tensor or pykeops.torch.LazyTensor of shape (n, n)</span>
-<span class="sd">        or shape (n_batch, batch_size, batch_size)</span>
-<span class="sd">        The log of the unnormalized affinity matrix.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="o">-</span><span class="n">C</span> <span class="o">/</span> <span class="n">eps</span>
 
 
 <span class="nd">@wrap_vectors</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">_log_Pse</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">eps_square</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the log of the symmetric entropic affinity matrix.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    C : torch.Tensor or pykeops.torch.LazyTensor of shape (n, n)</span>
-<span class="sd">        or shape (n_batch, batch_size, batch_size)</span>
-<span class="sd">        Pairwise distance matrix.</span>
-<span class="sd">    eps : torch.Tensor of shape (n) or (n_batch, batch_size)</span>
-<span class="sd">        Dual variable of the entropic constraint.</span>
-<span class="sd">    mu : torch.Tensor of shape (n) or (n_batch, batch_size)</span>
-<span class="sd">        Dual variable of the normalization constraint.</span>
-<span class="sd">    eps_square : bool, optional</span>
-<span class="sd">        Whether to optimize on the square of the dual variables.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    log_P : torch.Tensor or pykeops.torch.LazyTensor of shape (n, n)</span>
-<span class="sd">        or shape (n_batch, batch_size, batch_size)</span>
-<span class="sd">        The log of the unnormalized affinity matrix.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_eps</span> <span class="o">=</span> <span class="n">eps</span><span class="o">**</span><span class="mi">2</span> <span class="k">if</span> <span class="n">eps_square</span> <span class="k">else</span> <span class="n">eps</span>
-    <span class="n">mu_t</span> <span class="o">=</span> <span class="n">batch_transpose</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span>
-    <span class="n">_eps_t</span> <span class="o">=</span> <span class="n">batch_transpose</span><span class="p">(</span><span class="n">_eps</span><span class="p">)</span>
+    <span class="n">mu_t</span> <span class="o">=</span> <span class="n">matrix_transpose</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span>
+    <span class="n">_eps_t</span> <span class="o">=</span> <span class="n">matrix_transpose</span><span class="p">(</span><span class="n">_eps</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">mu</span> <span class="o">+</span> <span class="n">mu_t</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">C</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">_eps</span> <span class="o">+</span> <span class="n">_eps_t</span><span class="p">)</span>
 
 
 <span class="nd">@wrap_vectors</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">_log_Pds</span><span class="p">(</span><span class="n">log_K</span><span class="p">,</span> <span class="n">dual</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the log of the doubly stochastic normalization of log_K (in log domain).</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    log_K : torch.Tensor or pykeops.torch.LazyTensor of shape (n, n)</span>
-<span class="sd">        or shape (n_batch, batch_size, batch_size)</span>
-<span class="sd">        Log of the base kernel.</span>
-<span class="sd">    dual : torch.Tensor of shape (n) or (n_batch, batch_size)</span>
-<span class="sd">        Dual variable of the normalization constraint.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    log_P : torch.Tensor or pykeops.torch.LazyTensor of shape (n, n)</span>
-<span class="sd">        or shape (n_batch, batch_size, batch_size)</span>
-<span class="sd">        The log of the doubly stochastic normalization of log_K.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">dual_t</span> <span class="o">=</span> <span class="n">batch_transpose</span><span class="p">(</span><span class="n">dual</span><span class="p">)</span>
+    <span class="n">dual_t</span> <span class="o">=</span> <span class="n">matrix_transpose</span><span class="p">(</span><span class="n">dual</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dual</span> <span class="o">+</span> <span class="n">dual_t</span> <span class="o">+</span> <span class="n">log_K</span>
 
 

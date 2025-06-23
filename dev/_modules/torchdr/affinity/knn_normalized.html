@@ -456,49 +456,23 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Affinity</span><span class="p">,</span> <span class="n">LogAffinity</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">batch_transpose</span><span class="p">,</span> <span class="n">kmin</span><span class="p">,</span> <span class="n">logsumexp_red</span><span class="p">,</span> <span class="n">sum_red</span><span class="p">,</span> <span class="n">wrap_vectors</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">matrix_transpose</span><span class="p">,</span>
+    <span class="n">kmin</span><span class="p">,</span>
+    <span class="n">logsumexp_red</span><span class="p">,</span>
+    <span class="n">sum_red</span><span class="p">,</span>
+    <span class="n">wrap_vectors</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <span class="nd">@wrap_vectors</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">_log_SelfTuning</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the self-tuning affinity matrix with sample-wise bandwidth.</span>
-
-<span class="sd">    The bandwidth is determined by the distance from a point</span>
-<span class="sd">    to its K-th neirest neighbor in log domain.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    C : torch.Tensor or pykeops.torch.LazyTensor of shape (n, n)</span>
-<span class="sd">        Pairwise distance matrix.</span>
-<span class="sd">    sigma : torch.Tensor of shape (n,)</span>
-<span class="sd">        Sample-wise bandwidth parameter.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    log_P : torch.Tensor or pykeops.torch.LazyTensor</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">sigma_t</span> <span class="o">=</span> <span class="n">batch_transpose</span><span class="p">(</span><span class="n">sigma</span><span class="p">)</span>
+    <span class="n">sigma_t</span> <span class="o">=</span> <span class="n">matrix_transpose</span><span class="p">(</span><span class="n">sigma</span><span class="p">)</span>
     <span class="k">return</span> <span class="o">-</span><span class="n">C</span> <span class="o">/</span> <span class="p">(</span><span class="n">sigma</span> <span class="o">*</span> <span class="n">sigma_t</span><span class="p">)</span>
 
 
 <span class="nd">@wrap_vectors</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">_log_MAGIC</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the MAGIC affinity matrix with sample-wise bandwidth.</span>
-
-<span class="sd">    The bandwidth is determined by the distance from a point</span>
-<span class="sd">    to its K-th neirest neighbor in log domain.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    C : torch.Tensor or pykeops.torch.LazyTensor of shape (n, n)</span>
-<span class="sd">        Pairwise distance matrix.</span>
-<span class="sd">    sigma : torch.Tensor of shape (n,)</span>
-<span class="sd">        Sample-wise bandwidth parameter.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    log_P : torch.Tensor or pykeops.torch.LazyTensor</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="o">-</span><span class="n">C</span> <span class="o">/</span> <span class="n">sigma</span>
 
 
@@ -570,7 +544,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">C</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_matrix</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
-        <span class="n">minK_values</span><span class="p">,</span> <span class="n">minK_indices</span> <span class="o">=</span> <span class="n">kmin</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">minK_values</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">kmin</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sigma_</span> <span class="o">=</span> <span class="n">minK_values</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">log_affinity_matrix</span> <span class="o">=</span> <span class="n">_log_SelfTuning</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma_</span><span class="p">)</span>
 
@@ -587,10 +561,10 @@
 <div class="viewcode-block" id="MAGICAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.MAGICAffinity.html#torchdr.MAGICAffinity">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MAGICAffinity</span><span class="p">(</span><span class="n">Affinity</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the MAGIC affinity introduced in :cite:`van2018recovering`.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the MAGIC affinity with alpha-decay kernel introduced in :cite:`van2018recovering`.</span>
 
-<span class="sd">    The construction is as follows. First, it computes a Gaussian</span>
-<span class="sd">    kernel with sample-wise bandwidth :math:`\mathbf{\sigma} \in \mathbb{R}^n`.</span>
+<span class="sd">    The construction is as follows. First, it computes a generalized</span>
+<span class="sd">    kernel with sample-wise bandwidth :math:`\mathbf{\sigma} \in \mathbb{R}^n`:</span>
 
 <span class="sd">    .. math::</span>
 <span class="sd">        P_{ij} \leftarrow \exp \left( - \frac{C_{ij}}{\sigma_i} \right)</span>
@@ -613,7 +587,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    K : int, optional</span>
-<span class="sd">        K-th neirest neighbor .</span>
+<span class="sd">        K-th neirest neighbor. Default is 7.</span>
 <span class="sd">    metric : str, optional</span>
 <span class="sd">        Metric to use for pairwise distances computation.</span>
 <span class="sd">    zero_diag : bool, optional</span>
@@ -660,13 +634,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">C</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_matrix</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
-        <span class="n">minK_values</span><span class="p">,</span> <span class="n">minK_indices</span> <span class="o">=</span> <span class="n">kmin</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">minK_values</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">kmin</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sigma_</span> <span class="o">=</span> <span class="n">minK_values</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">affinity_matrix</span> <span class="o">=</span> <span class="n">_log_MAGIC</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma_</span><span class="p">)</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
-        <span class="n">affinity_matrix</span> <span class="o">=</span> <span class="p">(</span><span class="n">affinity_matrix</span> <span class="o">+</span> <span class="n">batch_transpose</span><span class="p">(</span><span class="n">affinity_matrix</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">normalization_</span> <span class="o">=</span> <span class="n">sum_red</span><span class="p">(</span><span class="n">affinity_matrix</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">affinity_matrix</span> <span class="o">=</span> <span class="n">affinity_matrix</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalization_</span>
+        <span class="n">affinity_matrix</span> <span class="o">=</span> <span class="p">(</span><span class="n">affinity_matrix</span> <span class="o">+</span> <span class="n">matrix_transpose</span><span class="p">(</span><span class="n">affinity_matrix</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">affinity_matrix</span> <span class="o">=</span> <span class="n">affinity_matrix</span> <span class="o">/</span> <span class="n">sum_red</span><span class="p">(</span><span class="n">affinity_matrix</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">affinity_matrix</span></div>
 

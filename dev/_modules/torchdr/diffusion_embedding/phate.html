@@ -444,11 +444,19 @@
                 <article class="bd-article">
                   
   <h1>Source code for torchdr.diffusion_embedding.phate</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+<span></span><span class="sd">&quot;&quot;&quot;PHATE algorithm.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity</span><span class="w"> </span><span class="kn">import</span> <span class="n">NegativeCostAffinity</span><span class="p">,</span> <span class="n">PHATEAffinity</span>
+<span class="c1"># Author: Guillaume Huguet @guillaumehu</span>
+<span class="c1">#         Danqi Liao @Danqi7</span>
+<span class="c1">#         Hugues Van Assel @huguesva</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD 3-Clause License</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity</span><span class="w"> </span><span class="kn">import</span> <span class="n">PHATEAffinity</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity_matcher</span><span class="w"> </span><span class="kn">import</span> <span class="n">AffinityMatcher</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">square_loss</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">square_loss</span><span class="p">,</span> <span class="n">pairwise_distances</span>
 
 
 <div class="viewcode-block" id="PHATE">
@@ -542,12 +550,9 @@
             <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">affinity_out</span> <span class="o">=</span> <span class="n">NegativeCostAffinity</span><span class="p">(</span>
-            <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;sqeuclidean&quot;</span>
-        <span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">affinity_in</span><span class="o">=</span><span class="n">affinity_in</span><span class="p">,</span>
-            <span class="n">affinity_out</span><span class="o">=</span><span class="n">affinity_out</span><span class="p">,</span>
+            <span class="n">affinity_out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">n_components</span><span class="o">=</span><span class="n">n_components</span><span class="p">,</span>
             <span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span>
             <span class="n">optimizer_kwargs</span><span class="o">=</span><span class="n">optimizer_kwargs</span><span class="p">,</span>
@@ -567,9 +572,13 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">Q</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="o">-</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">))</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">)</span><span class="o">.</span><span class="n">sqrt</span><span class="p">()</span>
+            <span class="o">-</span><span class="n">pairwise_distances</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend</span>
+            <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">sqrt</span><span class="p">()</span>
         <span class="p">)</span>  <span class="c1"># for numerical stability</span>
-        <span class="n">loss</span> <span class="o">=</span> <span class="n">square_loss</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PX_</span><span class="p">,</span> <span class="n">Q</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PX_</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">square_loss</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span><span class="p">,</span> <span class="n">Q</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">loss</span><span class="o">.</span><span class="n">sqrt</span><span class="p">()</span></div>
 
 </pre></div>

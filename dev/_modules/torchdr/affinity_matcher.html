@@ -508,8 +508,9 @@
 <span class="sd">    ----------</span>
 <span class="sd">    affinity_in : Affinity</span>
 <span class="sd">        The affinity object for the input space.</span>
-<span class="sd">    affinity_out : Affinity</span>
-<span class="sd">        The affinity object for the output embedding space.</span>
+<span class="sd">    affinity_out : Affinity, optional</span>
+<span class="sd">        The affinity object for the output embedding space. Default is None.</span>
+<span class="sd">        When None, a custom _loss method must be implemented.</span>
 <span class="sd">    kwargs_affinity_out : dict, optional</span>
 <span class="sd">        Additional keyword arguments for the affinity_out method.</span>
 <span class="sd">    n_components : int, optional</span>
@@ -554,7 +555,7 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">affinity_in</span><span class="p">:</span> <span class="n">Affinity</span><span class="p">,</span>
-        <span class="n">affinity_out</span><span class="p">:</span> <span class="n">Affinity</span><span class="p">,</span>
+        <span class="n">affinity_out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Affinity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">kwargs_affinity_out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">n_components</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
         <span class="n">loss_fn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;square_loss&quot;</span><span class="p">,</span>
@@ -604,28 +605,30 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="o">=</span> <span class="n">init</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_scaling</span> <span class="o">=</span> <span class="n">init_scaling</span>
 
-        <span class="c1"># --- check affinity_out ---</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">affinity_out</span><span class="p">,</span> <span class="n">Affinity</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;[TorchDR] ERROR : affinity_out must be an Affinity instance.&quot;</span>
-            <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span> <span class="o">=</span> <span class="n">affinity_out</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs_affinity_out</span> <span class="o">=</span> <span class="n">kwargs_affinity_out</span>
-
         <span class="c1"># --- check affinity_in ---</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">affinity_in</span><span class="p">,</span> <span class="n">Affinity</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">affinity_in</span> <span class="o">==</span> <span class="s2">&quot;precomputed&quot;</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s1">&#39;[TorchDR] affinity_in must be an Affinity instance or &quot;precomputed&quot;.&#39;</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">affinity_in</span><span class="p">,</span> <span class="s2">&quot;sparsity&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="p">,</span> <span class="n">UnnormalizedAffinity</span>
-        <span class="p">):</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;[TorchDR] WARNING : affinity_out must be a UnnormalizedAffinity &quot;</span>
-                <span class="s2">&quot;when affinity_in is sparse. Setting sparsity = False in affinity_in.&quot;</span>
-            <span class="p">)</span>
-            <span class="n">affinity_in</span><span class="o">.</span><span class="n">_sparsity</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># turn off sparsity</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span> <span class="o">=</span> <span class="n">affinity_in</span>
+
+        <span class="c1"># --- check affinity_out ---</span>
+        <span class="k">if</span> <span class="n">affinity_out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">affinity_out</span><span class="p">,</span> <span class="n">Affinity</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;[TorchDR] ERROR : affinity_out must be an Affinity instance when not None.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="p">,</span> <span class="s2">&quot;sparsity&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+                <span class="n">affinity_out</span><span class="p">,</span> <span class="n">UnnormalizedAffinity</span>
+            <span class="p">):</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="s2">&quot;[TorchDR] WARNING : affinity_out must be a UnnormalizedAffinity &quot;</span>
+                    <span class="s2">&quot;when affinity_in is sparse. Setting sparsity = False in affinity_in.&quot;</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="o">.</span><span class="n">_sparsity</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># turn off sparsity</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span> <span class="o">=</span> <span class="n">affinity_out</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs_affinity_out</span> <span class="o">=</span> <span class="n">kwargs_affinity_out</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
@@ -689,12 +692,14 @@
                     <span class="s2">&quot;(n_samples, n_samples).&quot;</span>
                 <span class="p">)</span>
             <span class="n">check_nonnegativity</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">PX_</span> <span class="o">=</span> <span class="n">X</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span> <span class="o">=</span> <span class="n">X</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="p">,</span> <span class="n">SparseLogAffinity</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">PX_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="p">(</span>
+                    <span class="n">X</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">PX_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_embedding</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_params</span><span class="p">()</span>
@@ -742,6 +747,11 @@
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;[TorchDR] ERROR : affinity_out is not set. Set it or implement _loss method.&quot;</span>
+            <span class="p">)</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs_affinity_out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">kwargs_affinity_out</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs_loss</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -760,7 +770,7 @@
 
         <span class="n">Q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs_affinity_out</span><span class="p">)</span>
 
-        <span class="n">loss</span> <span class="o">=</span> <span class="n">LOSS_DICT</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">PX_</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs_loss</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">LOSS_DICT</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs_loss</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">loss</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_after_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

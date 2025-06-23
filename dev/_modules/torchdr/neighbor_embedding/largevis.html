@@ -618,7 +618,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_attractive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">Q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span><span class="p">)</span>
         <span class="n">Q</span> <span class="o">=</span> <span class="n">Q</span> <span class="o">/</span> <span class="p">(</span><span class="n">Q</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">cross_entropy_loss</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PX_</span><span class="p">,</span> <span class="n">Q</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">cross_entropy_loss</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span><span class="p">,</span> <span class="n">Q</span><span class="p">)</span></div>
 
 </pre></div>
 

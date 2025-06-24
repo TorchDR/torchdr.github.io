@@ -453,9 +453,32 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">curve_fit</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">UnnormalizedAffinity</span><span class="p">,</span> <span class="n">UnnormalizedLogAffinity</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">LazyTensorType</span>
+
+
+<span class="c1"># from umap/umap/umap_.py</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_ab_params</span><span class="p">(</span><span class="n">spread</span><span class="p">,</span> <span class="n">min_dist</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fit a, b params as in UMAP.</span>
+
+<span class="sd">    Fit (a, b) for the differentiable curve used in lower</span>
+<span class="sd">    dimensional fuzzy simplicial complex construction. We want the</span>
+<span class="sd">    smooth curve (from a pre-defined family with simple gradient) that</span>
+<span class="sd">    best matches an offset exponential decay.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">curve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">a</span> <span class="o">*</span> <span class="n">x</span> <span class="o">**</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">b</span><span class="p">))</span>
+
+    <span class="n">xv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">spread</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">300</span><span class="p">)</span>
+    <span class="n">yv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">xv</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">yv</span><span class="p">[</span><span class="n">xv</span> <span class="o">&lt;</span> <span class="n">min_dist</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">yv</span><span class="p">[</span><span class="n">xv</span> <span class="o">&gt;=</span> <span class="n">min_dist</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">xv</span><span class="p">[</span><span class="n">xv</span> <span class="o">&gt;=</span> <span class="n">min_dist</span><span class="p">]</span> <span class="o">-</span> <span class="n">min_dist</span><span class="p">)</span> <span class="o">/</span> <span class="n">spread</span><span class="p">)</span>
+    <span class="n">params</span><span class="p">,</span> <span class="n">covar</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span><span class="n">curve</span><span class="p">,</span> <span class="n">xv</span><span class="p">,</span> <span class="n">yv</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">params</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="GaussianAffinity">
@@ -685,6 +708,78 @@
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="n">zero_diag</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="UMAPAffinityOut">
+<a class="viewcode-back" href="../../../gen_modules/torchdr.UMAPAffinityOut.html#torchdr.UMAPAffinityOut">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">UMAPAffinityOut</span><span class="p">(</span><span class="n">UnnormalizedLogAffinity</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the affinity used in embedding space in UMAP :cite:`mcinnes2018umap`.</span>
+
+<span class="sd">    Its :math:`(i,j)` coefficient is as follows:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        1 / \left(1 + a C_{ij}^{b} \right)</span>
+
+<span class="sd">    where parameters a and b are fitted to the spread and min_dist parameters.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    min_dist : float, optional</span>
+<span class="sd">        min_dist parameter from UMAP. Provides the minimum distance apart that</span>
+<span class="sd">        points are allowed to be.</span>
+<span class="sd">    spread : float, optional</span>
+<span class="sd">        spread parameter from UMAP.</span>
+<span class="sd">    a : float, optional</span>
+<span class="sd">        factor of the cost matrix.</span>
+<span class="sd">    b : float, optional</span>
+<span class="sd">        exponent of the cost matrix.</span>
+<span class="sd">    degrees_of_freedom : int, optional</span>
+<span class="sd">        Degrees of freedom for the Student-t distribution.</span>
+<span class="sd">    metric : str, optional</span>
+<span class="sd">        Metric to use for pairwise distances computation.</span>
+<span class="sd">    zero_diag : bool, optional</span>
+<span class="sd">        Whether to set the diagonal of the affinity matrix to zero.</span>
+<span class="sd">    device : str, optional</span>
+<span class="sd">        Device to use for computations.</span>
+<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None}, optional</span>
+<span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
+<span class="sd">        Default is None.</span>
+<span class="sd">    verbose : bool, optional</span>
+<span class="sd">        Verbosity. Default is False.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">min_dist</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">spread</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">a</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">b</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
+        <span class="n">zero_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
+            <span class="n">zero_diag</span><span class="o">=</span><span class="n">zero_diag</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_dist</span> <span class="o">=</span> <span class="n">min_dist</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spread</span> <span class="o">=</span> <span class="n">spread</span>
+
+        <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">b</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fitted_a</span><span class="p">,</span> <span class="n">fitted_b</span> <span class="o">=</span> <span class="n">find_ab_params</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spread</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_dist</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span> <span class="o">=</span> <span class="n">fitted_a</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span> <span class="n">fitted_b</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_a</span> <span class="o">=</span> <span class="n">a</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_b</span> <span class="o">=</span> <span class="n">b</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_log_affinity_formula</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">C</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+        <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_a</span> <span class="o">*</span> <span class="n">C</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="p">)</span><span class="o">.</span><span class="n">log</span><span class="p">()</span></div>
 
 </pre></div>
 

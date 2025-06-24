@@ -454,26 +454,41 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Affinity</span><span class="p">,</span> <span class="n">LogAffinity</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Affinity</span><span class="p">,</span> <span class="n">LogAffinity</span><span class="p">,</span> <span class="n">SparseLogAffinity</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">matrix_transpose</span><span class="p">,</span>
     <span class="n">kmin</span><span class="p">,</span>
     <span class="n">logsumexp_red</span><span class="p">,</span>
     <span class="n">sum_red</span><span class="p">,</span>
     <span class="n">wrap_vectors</span><span class="p">,</span>
+    <span class="n">pairwise_distances</span><span class="p">,</span>
+    <span class="n">matrix_power</span><span class="p">,</span>
+    <span class="n">check_neighbor_param</span><span class="p">,</span>
+    <span class="n">binary_search</span><span class="p">,</span>
 <span class="p">)</span>
 
 
 <span class="nd">@wrap_vectors</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">_log_SelfTuning</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_log_P_SelfTuning</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
     <span class="n">sigma_t</span> <span class="o">=</span> <span class="n">matrix_transpose</span><span class="p">(</span><span class="n">sigma</span><span class="p">)</span>
     <span class="k">return</span> <span class="o">-</span><span class="n">C</span> <span class="o">/</span> <span class="p">(</span><span class="n">sigma</span> <span class="o">*</span> <span class="n">sigma_t</span><span class="p">)</span>
 
 
 <span class="nd">@wrap_vectors</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">_log_MAGIC</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_log_P_MAGIC</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
     <span class="k">return</span> <span class="o">-</span><span class="n">C</span> <span class="o">/</span> <span class="n">sigma</span>
+
+
+<span class="nd">@wrap_vectors</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_log_P_UMAP</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
+    <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="n">C</span> <span class="o">-</span> <span class="n">rho</span><span class="p">)</span> <span class="o">/</span> <span class="n">sigma</span>
+
+
+<span class="nd">@wrap_vectors</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_log_P_PHATE</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">10.0</span><span class="p">):</span>
+    <span class="k">return</span> <span class="o">-</span><span class="p">((</span><span class="n">C</span> <span class="o">/</span> <span class="n">sigma</span><span class="p">)</span> <span class="o">**</span> <span class="n">alpha</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="SelfTuningAffinity">
@@ -546,7 +561,7 @@
 
         <span class="n">minK_values</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">kmin</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sigma_</span> <span class="o">=</span> <span class="n">minK_values</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">log_affinity_matrix</span> <span class="o">=</span> <span class="n">_log_SelfTuning</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma_</span><span class="p">)</span>
+        <span class="n">log_affinity_matrix</span> <span class="o">=</span> <span class="n">_log_P_SelfTuning</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma_</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalization_dim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log_normalization_</span> <span class="o">=</span> <span class="n">logsumexp_red</span><span class="p">(</span>
@@ -636,12 +651,277 @@
 
         <span class="n">minK_values</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">kmin</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sigma_</span> <span class="o">=</span> <span class="n">minK_values</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">affinity_matrix</span> <span class="o">=</span> <span class="n">_log_MAGIC</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma_</span><span class="p">)</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
+        <span class="n">affinity_matrix</span> <span class="o">=</span> <span class="n">_log_P_MAGIC</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma_</span><span class="p">)</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
         <span class="n">affinity_matrix</span> <span class="o">=</span> <span class="p">(</span><span class="n">affinity_matrix</span> <span class="o">+</span> <span class="n">matrix_transpose</span><span class="p">(</span><span class="n">affinity_matrix</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span>
         <span class="n">affinity_matrix</span> <span class="o">=</span> <span class="n">affinity_matrix</span> <span class="o">/</span> <span class="n">sum_red</span><span class="p">(</span><span class="n">affinity_matrix</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">affinity_matrix</span></div>
 
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">PHATEAffinity</span><span class="p">(</span><span class="n">Affinity</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the potential affinity used in PHATE :cite:`moon2019visualizing`.</span>
+
+<span class="sd">    The method follows these steps:</span>
+<span class="sd">    1. Compute pairwise distance matrix</span>
+<span class="sd">    2. Find k-th nearest neighbor distances to set bandwidth sigma</span>
+<span class="sd">    3. Compute base affinity with alpha-decay kernel: exp(-((d/sigma)^alpha))</span>
+<span class="sd">    4. Symmetrize the affinity matrix</span>
+<span class="sd">    5. Row-normalize to create diffusion matrix</span>
+<span class="sd">    6. Raise diffusion matrix to power t (diffusion steps)</span>
+<span class="sd">    7. Compute potential distances from the diffused matrix</span>
+<span class="sd">    8. Return negative potential distances as affinities</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    metric : str, optional (default=&quot;euclidean&quot;)</span>
+<span class="sd">        Metric to use for pairwise distances computation.</span>
+<span class="sd">    device : str, optional (default=None)</span>
+<span class="sd">        Device to use for computations. If None, uses the device of input data.</span>
+<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None}, optional (default=None)</span>
+<span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
+<span class="sd">    verbose : bool, optional (default=False)</span>
+<span class="sd">        Whether to print verbose output during computation.</span>
+<span class="sd">    k : int, optional (default=5)</span>
+<span class="sd">        Number of nearest neighbors used to determine bandwidth parameter sigma.</span>
+<span class="sd">    alpha : float, optional (default=10.0)</span>
+<span class="sd">        Exponent for the alpha-decay kernel in affinity computation.</span>
+<span class="sd">    t : int, optional (default=5)</span>
+<span class="sd">        Number of diffusion steps (power to raise diffusion matrix).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span>
+        <span class="n">t</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;faiss&quot;</span> <span class="ow">or</span> <span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;keops&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;[TorchDR] ERROR : </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> class does not support backend </span><span class="si">{</span><span class="n">backend</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="n">zero_diag</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">k</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="n">t</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+        <span class="n">C</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_matrix</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+        <span class="n">minK_values</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">kmin</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sigma_</span> <span class="o">=</span> <span class="n">minK_values</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">affinity</span> <span class="o">=</span> <span class="n">_log_P_PHATE</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
+        <span class="n">affinity</span> <span class="o">=</span> <span class="p">(</span><span class="n">affinity</span> <span class="o">+</span> <span class="n">matrix_transpose</span><span class="p">(</span><span class="n">affinity</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">affinity</span> <span class="o">=</span> <span class="n">affinity</span> <span class="o">/</span> <span class="n">sum_red</span><span class="p">(</span><span class="n">affinity</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">affinity</span> <span class="o">=</span> <span class="n">matrix_power</span><span class="p">(</span><span class="n">affinity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">)</span>
+        <span class="n">affinity</span> <span class="o">=</span> <span class="o">-</span><span class="n">pairwise_distances</span><span class="p">(</span>
+            <span class="o">-</span><span class="n">affinity</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">)</span><span class="o">.</span><span class="n">log</span><span class="p">(),</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend</span>
+        <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">affinity</span>
+
+
+<div class="viewcode-block" id="UMAPAffinityIn">
+<a class="viewcode-back" href="../../../gen_modules/torchdr.UMAPAffinityIn.html#torchdr.UMAPAffinityIn">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">UMAPAffinityIn</span><span class="p">(</span><span class="n">SparseLogAffinity</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the input affinity used in UMAP :cite:`mcinnes2018umap`.</span>
+
+<span class="sd">    The algorithm computes via root search the variable</span>
+<span class="sd">    :math:`\mathbf{\sigma}^* \in \mathbb{R}^n_{&gt;0}` such that</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \forall (i,j), \: P_{ij} = \exp(- (C_{ij} - \rho_i) / \sigma^\star_i) \quad \text{where} \quad \forall i, \: \sum_j P_{ij} = \log (\mathrm{n_neighbors})</span>
+
+<span class="sd">    and :math:`\rho_i = \min_j C_{ij}`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_neighbors : float, optional</span>
+<span class="sd">        Number of effective nearest neighbors to consider. Similar to the perplexity.</span>
+<span class="sd">    tol : float, optional</span>
+<span class="sd">        Precision threshold for the root search.</span>
+<span class="sd">    max_iter : int, optional</span>
+<span class="sd">        Maximum number of iterations for the root search.</span>
+<span class="sd">    sparsity : bool, optional</span>
+<span class="sd">        Whether to use sparsity mode.</span>
+<span class="sd">        Default is True.</span>
+<span class="sd">    metric : str, optional</span>
+<span class="sd">        Metric to use for pairwise distances computation.</span>
+<span class="sd">    zero_diag : bool, optional</span>
+<span class="sd">        Whether to set the diagonal of the affinity matrix to zero.</span>
+<span class="sd">    device : str, optional</span>
+<span class="sd">        Device to use for computations.</span>
+<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None}, optional</span>
+<span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
+<span class="sd">        Default is None.</span>
+<span class="sd">    verbose : bool, optional</span>
+<span class="sd">        Verbosity. Default is False.</span>
+<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">n_neighbors</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+        <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-5</span><span class="p">,</span>
+        <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+        <span class="n">sparsity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
+        <span class="n">zero_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span> <span class="o">=</span> <span class="n">n_neighbors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tol</span> <span class="o">=</span> <span class="n">tol</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">=</span> <span class="n">max_iter</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
+            <span class="n">zero_diag</span><span class="o">=</span><span class="n">zero_diag</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="n">sparsity</span><span class="o">=</span><span class="n">sparsity</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_sparse_log_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the input affinity matrix of UMAP from input data X.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : torch.Tensor or np.ndarray of shape (n_samples, n_features)</span>
+<span class="sd">            Data on which affinity is computed.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self : UMAPAffinityIn</span>
+<span class="sd">            The fitted instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">n_samples_in</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">n_neighbors</span> <span class="o">=</span> <span class="n">check_neighbor_param</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span><span class="p">,</span> <span class="n">n_samples_in</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparsity</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Sparsity mode enabled, computing </span><span class="si">{</span><span class="n">n_neighbors</span><span class="si">}</span><span class="s2"> nearest neighbors.&quot;</span>
+                <span class="p">)</span>
+            <span class="c1"># when using sparsity, we construct a reduced distance matrix</span>
+            <span class="c1"># of shape (n_samples, n_neighbors)</span>
+            <span class="n">C_</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_matrix</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">n_neighbors</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">C_</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_matrix</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">rho_</span> <span class="o">=</span> <span class="n">kmin</span><span class="p">(</span><span class="n">C_</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">marginal_gap</span><span class="p">(</span><span class="n">eps</span><span class="p">):</span>  <span class="c1"># function to find the root of</span>
+            <span class="n">marg</span> <span class="o">=</span> <span class="n">_log_P_UMAP</span><span class="p">(</span><span class="n">C_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho_</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span><span class="o">.</span><span class="n">logsumexp</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">marg</span> <span class="o">-</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">n_neighbors</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">eps_</span> <span class="o">=</span> <span class="n">binary_search</span><span class="p">(</span>
+            <span class="n">f</span><span class="o">=</span><span class="n">marginal_gap</span><span class="p">,</span>
+            <span class="n">n</span><span class="o">=</span><span class="n">n_samples_in</span><span class="p">,</span>
+            <span class="n">tol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tol</span><span class="p">,</span>
+            <span class="n">max_iter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">log_affinity_matrix</span> <span class="o">=</span> <span class="n">_log_P_UMAP</span><span class="p">(</span><span class="n">C_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps_</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">log_affinity_matrix</span><span class="p">,</span> <span class="n">indices</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">PACMAPAffinity</span><span class="p">(</span><span class="n">SparseLogAffinity</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the input affinity used in PACMAP :cite:`wang2021understanding`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_neighbors : float, optional</span>
+<span class="sd">        Number of effective nearest neighbors to consider. Similar to the perplexity.</span>
+<span class="sd">    tol : float, optional</span>
+<span class="sd">        Precision threshold for the root search.</span>
+<span class="sd">    metric : str, optional</span>
+<span class="sd">        Metric to use for pairwise distances computation.</span>
+<span class="sd">    zero_diag : bool, optional</span>
+<span class="sd">        Whether to set the diagonal of the affinity matrix to zero.</span>
+<span class="sd">    device : str, optional</span>
+<span class="sd">        Device to use for computations.</span>
+<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None}, optional</span>
+<span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
+<span class="sd">        Default is None.</span>
+<span class="sd">    verbose : bool, optional</span>
+<span class="sd">        Verbosity. Default is False.</span>
+<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">n_neighbors</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
+        <span class="n">zero_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span> <span class="o">=</span> <span class="n">n_neighbors</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
+            <span class="n">zero_diag</span><span class="o">=</span><span class="n">zero_diag</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="n">sparsity</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># PACMAP uses sparsity mode</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_sparse_log_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the input affinity matrix of PACMAP from input data X.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : torch.Tensor</span>
+<span class="sd">            Input data.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self : PACMAPAffinityIn</span>
+<span class="sd">            The fitted instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n_samples_in</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span> <span class="o">+</span> <span class="mi">50</span><span class="p">,</span> <span class="n">n_samples_in</span><span class="p">)</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">check_neighbor_param</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">n_samples_in</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sparsity mode enabled, computing </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> nearest neighbors.&quot;</span><span class="p">)</span>
+
+        <span class="n">C_</span><span class="p">,</span> <span class="n">temp_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_matrix</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
+
+        <span class="c1"># Compute rho as the average distance between the 4th to 6th neighbors</span>
+        <span class="n">sq_neighbor_distances</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">kmin</span><span class="p">(</span><span class="n">C_</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rho_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sq_neighbor_distances</span><span class="p">)[:,</span> <span class="mi">3</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
+
+        <span class="n">rho_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho_</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># Shape: (n_samples, 1)</span>
+        <span class="n">rho_j</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho_</span><span class="p">[</span><span class="n">temp_indices</span><span class="p">]</span>  <span class="c1"># Shape: (n_samples, k)</span>
+        <span class="n">normalized_C</span> <span class="o">=</span> <span class="n">C_</span> <span class="o">/</span> <span class="n">rho_i</span> <span class="o">*</span> <span class="n">rho_j</span>
+
+        <span class="c1"># Compute final NN indices</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">local_indices</span> <span class="o">=</span> <span class="n">kmin</span><span class="p">(</span><span class="n">normalized_C</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">final_indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">temp_indices</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">local_indices</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">final_indices</span>  <span class="c1"># PACMAP only uses the NN indices</span>
 </pre></div>
 
                 </article>

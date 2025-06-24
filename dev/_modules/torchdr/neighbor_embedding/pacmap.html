@@ -613,13 +613,13 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_attractive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Attractive loss with nearest neighbors</span>
-        <span class="n">D_tilde_near</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">Q_near</span> <span class="o">=</span> <span class="p">(</span>
             <span class="mi">1</span>
             <span class="o">+</span> <span class="n">symmetric_pairwise_distances_indices</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric_out</span>
             <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="n">Q_near</span> <span class="o">=</span> <span class="n">D_tilde_near</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1e1</span> <span class="o">+</span> <span class="n">D_tilde_near</span><span class="p">)</span>
+        <span class="n">Q_near</span> <span class="o">=</span> <span class="n">Q_near</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1e1</span> <span class="o">+</span> <span class="n">Q_near</span><span class="p">)</span>
         <span class="n">near_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">w_NB</span> <span class="o">*</span> <span class="n">sum_red</span><span class="p">(</span><span class="n">Q_near</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">w_MN</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -655,13 +655,13 @@
                 <span class="n">_</span><span class="p">,</span> <span class="n">idxs</span> <span class="o">=</span> <span class="n">kmin</span><span class="p">(</span><span class="n">D_mid_near_candidates</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
                 <span class="n">mid_near_indices</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">idxs</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># Retrieve the second closest point</span>
 
-            <span class="n">D_tilde_mid_near</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">Q_mid_near</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="mi">1</span>
                 <span class="o">+</span> <span class="n">symmetric_pairwise_distances_indices</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">mid_near_indices</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric_out</span>
                 <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
             <span class="p">)</span>
-            <span class="n">Q_mid_near</span> <span class="o">=</span> <span class="n">D_tilde_mid_near</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1e4</span> <span class="o">+</span> <span class="n">D_tilde_mid_near</span><span class="p">)</span>
+            <span class="n">Q_mid_near</span> <span class="o">=</span> <span class="n">Q_mid_near</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1e4</span> <span class="o">+</span> <span class="n">Q_mid_near</span><span class="p">)</span>
             <span class="n">mid_near_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">w_MN</span> <span class="o">*</span> <span class="n">sum_red</span><span class="p">(</span><span class="n">Q_mid_near</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">mid_near_loss</span> <span class="o">=</span> <span class="mi">0</span>
@@ -670,13 +670,13 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_repulsive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_negatives</span><span class="p">(</span><span class="n">discard_NNs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">D_tilde_further</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">Q_further</span> <span class="o">=</span> <span class="p">(</span>
             <span class="mi">1</span>
             <span class="o">+</span> <span class="n">symmetric_pairwise_distances_indices</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric_out</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">indices</span>
             <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="n">Q_further</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">D_tilde_further</span><span class="p">)</span>
+        <span class="n">Q_further</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">Q_further</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">w_FP</span> <span class="o">*</span> <span class="n">sum_red</span><span class="p">(</span><span class="n">Q_further</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span></div>
 
 </pre></div>

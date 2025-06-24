@@ -525,9 +525,9 @@
             <span class="p">)</span>
 
     <span class="n">X</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-    <span class="n">labels</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">weights</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">device</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">device</span>
@@ -591,13 +591,13 @@
                 <span class="n">dist_pos_j</span> <span class="o">=</span> <span class="n">inter_cluster_dists</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">pos_i</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">dist_pos_i</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">prod_matrix_vector</span><span class="p">(</span><span class="n">inter_cluster_dists</span><span class="p">,</span> <span class="n">weights</span><span class="p">[</span><span class="n">pos_j</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
-                    <span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="n">prod_matrix_vector</span><span class="p">(</span><span class="n">inter_cluster_dists</span><span class="p">,</span> <span class="n">weights</span><span class="p">[</span><span class="n">pos_j</span><span class="p">])</span>
+                    <span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
                     <span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
                 <span class="p">)</span>
                 <span class="n">dist_pos_j</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">prod_matrix_vector</span><span class="p">(</span><span class="n">inter_cluster_dists</span><span class="p">,</span> <span class="n">weights</span><span class="p">[</span><span class="n">pos_i</span><span class="p">])</span>
-                    <span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="n">prod_matrix_vector</span><span class="p">(</span><span class="n">inter_cluster_dists</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">weights</span><span class="p">[</span><span class="n">pos_i</span><span class="p">])</span>
+                    <span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
                     <span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
                 <span class="p">)</span>
                 <span class="n">dist_pos_i</span> <span class="o">=</span> <span class="n">dist_pos_i</span> <span class="o">/</span> <span class="n">weights</span><span class="p">[</span><span class="n">pos_j</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>

@@ -659,6 +659,8 @@
 
 
 
+<div class="viewcode-block" id="PHATEAffinity">
+<a class="viewcode-back" href="../../../gen_modules/torchdr.PHATEAffinity.html#torchdr.PHATEAffinity">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PHATEAffinity</span><span class="p">(</span><span class="n">Affinity</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the potential affinity used in PHATE :cite:`moon2019visualizing`.</span>
 
@@ -729,7 +731,8 @@
         <span class="n">affinity</span> <span class="o">=</span> <span class="o">-</span><span class="n">pairwise_distances</span><span class="p">(</span>
             <span class="o">-</span><span class="n">affinity</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">)</span><span class="o">.</span><span class="n">log</span><span class="p">(),</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend</span>
         <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">affinity</span>
+        <span class="k">return</span> <span class="n">affinity</span></div>
+
 
 
 <div class="viewcode-block" id="UMAPAffinityIn">
@@ -845,6 +848,8 @@
 
 
 
+<div class="viewcode-block" id="PACMAPAffinity">
+<a class="viewcode-back" href="../../../gen_modules/torchdr.PACMAPAffinity.html#torchdr.PACMAPAffinity">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PACMAPAffinity</span><span class="p">(</span><span class="n">SparseLogAffinity</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the input affinity used in PACMAP :cite:`wang2021understanding`.</span>
 
@@ -921,7 +926,8 @@
         <span class="n">_</span><span class="p">,</span> <span class="n">local_indices</span> <span class="o">=</span> <span class="n">kmin</span><span class="p">(</span><span class="n">normalized_C</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">final_indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">temp_indices</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">local_indices</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">final_indices</span>  <span class="c1"># PACMAP only uses the NN indices</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">final_indices</span>  <span class="c1"># PACMAP only uses the NN indices</span></div>
+
 </pre></div>
 
                 </article>

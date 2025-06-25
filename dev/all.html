@@ -402,8 +402,8 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.PCA.html">PCA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.KernelPCA.html">KernelPCA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.IncrementalPCA.html">IncrementalPCA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.KernelPCA.html">KernelPCA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.PHATE.html">PHATE</a></li>
 </ul>
 <ul class="nav bd-sidenav">
@@ -435,6 +435,9 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.SelfTuningAffinity.html">SelfTuningAffinity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.MAGICAffinity.html">MAGICAffinity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.PHATEAffinity.html">PHATEAffinity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.PACMAPAffinity.html">PACMAPAffinity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.UMAPAffinityIn.html">UMAPAffinityIn</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.SinkhornAffinity.html">SinkhornAffinity</a></li>
@@ -443,7 +446,6 @@
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.DoublyStochasticQuadraticAffinity.html">DoublyStochasticQuadraticAffinity</a></li>
-<li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.UMAPAffinityIn.html">UMAPAffinityIn</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.UMAPAffinityOut.html">UMAPAffinityOut</a></li>
 </ul>
 <ul class="nav bd-sidenav">
@@ -524,23 +526,16 @@ directly on the GPU memory without overflows using <code class="docutils literal
 <p>TorchDR supports a variety of dimensionality reduction methods. They are presented in the following sections.</p>
 <section id="spectral-embedding">
 <h3>Spectral Embedding<a class="headerlink" href="#spectral-embedding" title="Link to this heading">#</a></h3>
-<p>Those classes are used to perform classical spectral embedding from a
-<a class="reference internal" href="stubs/torchdr.Affinity.html#torchdr.Affinity" title="torchdr.Affinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.Affinity</span></code></a> object defined on the input data.
-They give the same output as using <a class="reference internal" href="stubs/torchdr.AffinityMatcher.html#torchdr.AffinityMatcher" title="torchdr.AffinityMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.AffinityMatcher</span></code></a> with this same
-<a class="reference internal" href="stubs/torchdr.Affinity.html#torchdr.Affinity" title="torchdr.Affinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.Affinity</span></code></a> in input space and a <a class="reference internal" href="gen_modules/torchdr.ScalarProductAffinity.html#torchdr.ScalarProductAffinity" title="torchdr.ScalarProductAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.ScalarProductAffinity</span></code></a> in
-the embedding space. However, <a class="reference internal" href="stubs/torchdr.AffinityMatcher.html#torchdr.AffinityMatcher" title="torchdr.AffinityMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.AffinityMatcher</span></code></a> relies on a
-gradient-based solver while the spectral embedding classes rely on the
-eigendecomposition of the affinity matrix.</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.PCA.html#torchdr.PCA" title="torchdr.PCA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PCA</span></code></a>([n_components, device, verbose, ...])</p></td>
 <td><p>Principal Component Analysis module.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.KernelPCA.html#torchdr.KernelPCA" title="torchdr.KernelPCA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">KernelPCA</span></code></a>(affinity, n_components, device, ...)</p></td>
-<td><p>Kernel Principal Component Analysis module.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.IncrementalPCA.html#torchdr.IncrementalPCA" title="torchdr.IncrementalPCA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IncrementalPCA</span></code></a>([n_components, copy, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.IncrementalPCA.html#torchdr.IncrementalPCA" title="torchdr.IncrementalPCA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IncrementalPCA</span></code></a>([n_components, copy, ...])</p></td>
 <td><p>Incremental Principal Components Analysis (IPCA) leveraging PyTorch for GPU acceleration.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.KernelPCA.html#torchdr.KernelPCA" title="torchdr.KernelPCA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">KernelPCA</span></code></a>(affinity, n_components, device, ...)</p></td>
+<td><p>Kernel Principal Component Analysis module.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.PHATE.html#torchdr.PHATE" title="torchdr.PHATE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PHATE</span></code></a>([k, n_components, t, alpha, ...])</p></td>
 <td><p>Implementation of PHATE introduced in <span id="id2">[<a class="reference internal" href="torchdr.bibliography.html#id24" title="Kevin R Moon, David Van Dijk, Zheng Wang, Scott Gigante, Daniel B Burkhardt, William S Chen, Kristina Yim, Antonia van den Elzen, Matthew J Hirn, Ronald R Coifman, and others. Visualizing structure and transitions in high-dimensional biological data. Nature biotechnology, 37(12):1482–1492, 2019.">Moon <em>et al.</em>, 2019</a>]</span>.</p></td>
@@ -551,7 +546,6 @@ eigendecomposition of the affinity matrix.</p>
 </section>
 <section id="neighbor-embedding">
 <h3>Neighbor Embedding<a class="headerlink" href="#neighbor-embedding" title="Link to this heading">#</a></h3>
-<p>TorchDR supports the following neighbor embedding methods.</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.UMAP.html#torchdr.UMAP" title="torchdr.UMAP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UMAP</span></code></a>([n_neighbors, n_components, min_dist, ...])</p></td>
@@ -608,10 +602,10 @@ two affinities in input and embedding spaces.</p>
 <section id="base-neighbor-embedding-modules">
 <h4>Base Neighbor Embedding Modules<a class="headerlink" href="#base-neighbor-embedding-modules" title="Link to this heading">#</a></h4>
 <p>Neighbor embedding base modules inherit from the <a class="reference internal" href="stubs/torchdr.AffinityMatcher.html#torchdr.AffinityMatcher" title="torchdr.AffinityMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.AffinityMatcher</span></code></a>
-class and implement specific strategies that are common to all neighbor embedding
-methods such as early exaggeration.</p>
-<p>In particular, <a class="reference internal" href="gen_modules/torchdr.SparseNeighborEmbedding.html#torchdr.SparseNeighborEmbedding" title="torchdr.SparseNeighborEmbedding"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.SparseNeighborEmbedding</span></code></a> relies on the sparsity of the
-input affinity to compute the attractive term in linear time. <a class="reference internal" href="gen_modules/torchdr.SampledNeighborEmbedding.html#torchdr.SampledNeighborEmbedding" title="torchdr.SampledNeighborEmbedding"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.SampledNeighborEmbedding</span></code></a> inherits from this class and adds the possibility to
+class.
+<a class="reference internal" href="gen_modules/torchdr.SparseNeighborEmbedding.html#torchdr.SparseNeighborEmbedding" title="torchdr.SparseNeighborEmbedding"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.SparseNeighborEmbedding</span></code></a> relies on the sparsity of the
+input affinity to compute the attractive term in linear time.
+<a class="reference internal" href="gen_modules/torchdr.SampledNeighborEmbedding.html#torchdr.SampledNeighborEmbedding" title="torchdr.SampledNeighborEmbedding"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.SampledNeighborEmbedding</span></code></a> inherits from this class and adds the possibility to
 approximate the repulsive term of the loss via negative samples.</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
@@ -631,8 +625,6 @@ approximate the repulsive term of the loss via negative samples.</p>
 </section>
 <section id="affinity-classes">
 <h3>Affinity Classes<a class="headerlink" href="#affinity-classes" title="Link to this heading">#</a></h3>
-<p>The following classes are used to compute the affinities between the data points.
-Broadly speaking, they define a notion of similarity between samples.</p>
 <section id="simple-affinities">
 <h4>Simple Affinities<a class="headerlink" href="#simple-affinities" title="Link to this heading">#</a></h4>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
@@ -666,6 +658,15 @@ Broadly speaking, they define a notion of similarity between samples.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.MAGICAffinity.html#torchdr.MAGICAffinity" title="torchdr.MAGICAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MAGICAffinity</span></code></a>([K, metric, zero_diag, ...])</p></td>
 <td><p>Compute the MAGIC affinity with alpha-decay kernel introduced in <span id="id13">[<a class="reference internal" href="torchdr.bibliography.html#id20" title="David Van Dijk, Roshan Sharma, Juozas Nainys, Kristina Yim, Pooja Kathail, Ambrose J Carr, Cassandra Burdziak, Kevin R Moon, Christine L Chaffer, Diwakar Pattabiraman, and others. Recovering gene interactions from single-cell data using data diffusion. Cell, 174(3):716–729, 2018.">Van Dijk <em>et al.</em>, 2018</a>]</span>.</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.PHATEAffinity.html#torchdr.PHATEAffinity" title="torchdr.PHATEAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PHATEAffinity</span></code></a>([metric, device, backend, ...])</p></td>
+<td><p>Compute the potential affinity used in PHATE <span id="id14">[<a class="reference internal" href="torchdr.bibliography.html#id24" title="Kevin R Moon, David Van Dijk, Zheng Wang, Scott Gigante, Daniel B Burkhardt, William S Chen, Kristina Yim, Antonia van den Elzen, Matthew J Hirn, Ronald R Coifman, and others. Visualizing structure and transitions in high-dimensional biological data. Nature biotechnology, 37(12):1482–1492, 2019.">Moon <em>et al.</em>, 2019</a>]</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.PACMAPAffinity.html#torchdr.PACMAPAffinity" title="torchdr.PACMAPAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PACMAPAffinity</span></code></a>([n_neighbors, metric, ...])</p></td>
+<td><p>Compute the input affinity used in PACMAP <span id="id15">[<a class="reference internal" href="torchdr.bibliography.html#id23" title="Yingfan Wang, Haiyang Huang, Cynthia Rudin, and Yaron Shaposhnik. Understanding how dimension reduction tools work: an empirical approach to deciphering t-sne, umap, trimap, and pacmap for data visualization. Journal of Machine Learning Research, 22(201):1–73, 2021.">Wang <em>et al.</em>, 2021</a>]</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.UMAPAffinityIn.html#torchdr.UMAPAffinityIn" title="torchdr.UMAPAffinityIn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UMAPAffinityIn</span></code></a>([n_neighbors, tol, max_iter, ...])</p></td>
+<td><p>Compute the input affinity used in UMAP <span id="id16">[<a class="reference internal" href="torchdr.bibliography.html#id9" title="Leland McInnes, John Healy, and James Melville. Umap: uniform manifold approximation and projection for dimension reduction. arXiv preprint arXiv:1802.03426, 2018.">McInnes <em>et al.</em>, 2018</a>]</span>.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -678,10 +679,10 @@ Broadly speaking, they define a notion of similarity between samples.</p>
 <td><p>Compute the symmetric doubly stochastic affinity matrix.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.EntropicAffinity.html#torchdr.EntropicAffinity" title="torchdr.EntropicAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EntropicAffinity</span></code></a>([perplexity, tol, ...])</p></td>
-<td><p>Solve the directed entropic affinity problem introduced in <span id="id14">[<a class="reference internal" href="torchdr.bibliography.html#id2" title="Geoffrey E Hinton and Sam Roweis. Stochastic neighbor embedding. Advances in neural information processing systems, 2002.">Hinton and Roweis, 2002</a>]</span>.</p></td>
+<td><p>Solve the directed entropic affinity problem introduced in <span id="id17">[<a class="reference internal" href="torchdr.bibliography.html#id2" title="Geoffrey E Hinton and Sam Roweis. Stochastic neighbor embedding. Advances in neural information processing systems, 2002.">Hinton and Roweis, 2002</a>]</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.SymmetricEntropicAffinity.html#torchdr.SymmetricEntropicAffinity" title="torchdr.SymmetricEntropicAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SymmetricEntropicAffinity</span></code></a>([perplexity, lr, ...])</p></td>
-<td><p>Compute the symmetric entropic affinity (SEA) introduced in <span id="id15">[<a class="reference internal" href="torchdr.bibliography.html#id4" title="Hugues Van Assel, Titouan Vayer, Rémi Flamary, and Nicolas Courty. Snekhorn: dimension reduction with symmetric entropic affinities. Advances in Neural Information Processing Systems, 2024.">Van Assel <em>et al.</em>, 2024</a>]</span>.</p></td>
+<td><p>Compute the symmetric entropic affinity (SEA) introduced in <span id="id18">[<a class="reference internal" href="torchdr.bibliography.html#id4" title="Hugues Van Assel, Titouan Vayer, Rémi Flamary, and Nicolas Courty. Snekhorn: dimension reduction with symmetric entropic affinities. Advances in Neural Information Processing Systems, 2024.">Van Assel <em>et al.</em>, 2024</a>]</span>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -694,11 +695,8 @@ Broadly speaking, they define a notion of similarity between samples.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.DoublyStochasticQuadraticAffinity.html#torchdr.DoublyStochasticQuadraticAffinity" title="torchdr.DoublyStochasticQuadraticAffinity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DoublyStochasticQuadraticAffinity</span></code></a>([eps, ...])</p></td>
 <td><p>Compute the symmetric doubly stochastic affinity.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.UMAPAffinityIn.html#torchdr.UMAPAffinityIn" title="torchdr.UMAPAffinityIn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UMAPAffinityIn</span></code></a>([n_neighbors, tol, max_iter, ...])</p></td>
-<td><p>Compute the input affinity used in UMAP <span id="id16">[<a class="reference internal" href="torchdr.bibliography.html#id9" title="Leland McInnes, John Healy, and James Melville. Umap: uniform manifold approximation and projection for dimension reduction. arXiv preprint arXiv:1802.03426, 2018.">McInnes <em>et al.</em>, 2018</a>]</span>.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.UMAPAffinityOut.html#torchdr.UMAPAffinityOut" title="torchdr.UMAPAffinityOut"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UMAPAffinityOut</span></code></a>([min_dist, spread, a, b, ...])</p></td>
-<td><p>Compute the affinity used in embedding space in UMAP <span id="id17">[<a class="reference internal" href="torchdr.bibliography.html#id9" title="Leland McInnes, John Healy, and James Melville. Umap: uniform manifold approximation and projection for dimension reduction. arXiv preprint arXiv:1802.03426, 2018.">McInnes <em>et al.</em>, 2018</a>]</span>.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.UMAPAffinityOut.html#torchdr.UMAPAffinityOut" title="torchdr.UMAPAffinityOut"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UMAPAffinityOut</span></code></a>([min_dist, spread, a, b, ...])</p></td>
+<td><p>Compute the affinity used in embedding space in UMAP <span id="id19">[<a class="reference internal" href="torchdr.bibliography.html#id9" title="Leland McInnes, John Healy, and James Melville. Umap: uniform manifold approximation and projection for dimension reduction. arXiv preprint arXiv:1802.03426, 2018.">McInnes <em>et al.</em>, 2018</a>]</span>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -707,7 +705,6 @@ Broadly speaking, they define a notion of similarity between samples.</p>
 </section>
 <section id="scores">
 <h3>Scores<a class="headerlink" href="#scores" title="Link to this heading">#</a></h3>
-<p>The following classes are used to evaluate the embeddings.</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.silhouette_score.html#torchdr.silhouette_score" title="torchdr.silhouette_score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">silhouette_score</span></code></a>(X, labels[, weights, ...])</p></td>
@@ -719,8 +716,6 @@ Broadly speaking, they define a notion of similarity between samples.</p>
 </section>
 <section id="utils">
 <h3>Utils<a class="headerlink" href="#utils" title="Link to this heading">#</a></h3>
-<p>The following classes are used to perform various operations such as computing
-the pairwise distances between the data points as well as solving root search problems.</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.pairwise_distances.html#torchdr.pairwise_distances" title="torchdr.pairwise_distances"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pairwise_distances</span></code></a>(X[, Y, metric, backend, ...])</p></td>

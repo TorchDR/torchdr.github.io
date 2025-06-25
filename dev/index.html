@@ -471,8 +471,8 @@
 </section>
 <section id="methods">
 <h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">#</a></h2>
-<section id="neighbor-embedding">
-<h3>Neighbor Embedding<a class="headerlink" href="#neighbor-embedding" title="Link to this heading">#</a></h3>
+<section id="neighbor-embedding-optimal-for-data-visualization">
+<h3>Neighbor Embedding (optimal for data visualization)<a class="headerlink" href="#neighbor-embedding-optimal-for-data-visualization" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> provides a suite of <strong>neighbor embedding</strong> methods.</p>
 <p><strong>Linear-time (Contrastive Learning).</strong> State-of-the-art speed on large datasets: <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.UMAP.html"><code class="docutils literal notranslate"><span class="pre">UMAP</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.LargeVis.html"><code class="docutils literal notranslate"><span class="pre">LargeVis</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.InfoTSNE.html"><code class="docutils literal notranslate"><span class="pre">InfoTSNE</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.PACMAP.html"><code class="docutils literal notranslate"><span class="pre">PACMAP</span></code></a>.</p>
 <p><strong>Quadratic-time (Exact Repulsion).</strong> Compute the full pairwise repulsion: <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.SNE.html"><code class="docutils literal notranslate"><span class="pre">SNE</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.TSNE.html"><code class="docutils literal notranslate"><span class="pre">TSNE</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.TSNEkhorn.html"><code class="docutils literal notranslate"><span class="pre">TSNEkhorn</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.COSNE.html"><code class="docutils literal notranslate"><span class="pre">COSNE</span></code></a>.</p>
@@ -483,12 +483,7 @@ For <code class="docutils literal notranslate"><span class="pre">TSNE</span></co
 </section>
 <section id="spectral-embedding">
 <h3>Spectral Embedding<a class="headerlink" href="#spectral-embedding" title="Link to this heading">#</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> provides <strong>spectral embeddings</strong> calculated via eigenvalue decomposition:</p>
-<ul class="simple">
-<li><p><a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.PCA.html"><code class="docutils literal notranslate"><span class="pre">PCA</span></code></a></p></li>
-<li><p><a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.IncrementalPCA.html"><code class="docutils literal notranslate"><span class="pre">IncrementalPCA</span></code></a> to handle massive datasets</p></li>
-<li><p><a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.KernelPCA.html"><code class="docutils literal notranslate"><span class="pre">KernelPCA</span></code></a> to leverage any <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> <em>Affinity</em> (see the <a class="reference internal" href="#affinities"><span class="xref myst">Affinities</span></a> subsection below)</p></li>
-</ul>
+<p><code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> provides various <strong>spectral embedding</strong> methods: <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.PCA.html"><code class="docutils literal notranslate"><span class="pre">PCA</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.IncrementalPCA.html"><code class="docutils literal notranslate"><span class="pre">IncrementalPCA</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.KernelPCA.html"><code class="docutils literal notranslate"><span class="pre">KernelPCA</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.PHATE.html"><code class="docutils literal notranslate"><span class="pre">PHATE</span></code></a>.</p>
 </section>
 </section>
 <section id="benchmarks">
@@ -524,7 +519,7 @@ Visualizing the CIFAR100 dataset using DINO features and <code class="docutils l
 <h3>Affinities<a class="headerlink" href="#affinities" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> features a <strong>wide range of affinities</strong> which can then be used as a building block for DR algorithms. It includes:</p>
 <ul class="simple">
-<li><p>Affinities based on k-NN normalizations: <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.SelfTuningAffinity.html"><code class="docutils literal notranslate"><span class="pre">SelfTuningAffinity</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.MAGICAffinity.html"><code class="docutils literal notranslate"><span class="pre">MAGICAffinity</span></code></a>.</p></li>
+<li><p>Affinities based on k-NN normalizations: <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.SelfTuningAffinity.html"><code class="docutils literal notranslate"><span class="pre">SelfTuningAffinity</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.MAGICAffinity.html"><code class="docutils literal notranslate"><span class="pre">MAGICAffinity</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.UMAPAffinityIn.html"><code class="docutils literal notranslate"><span class="pre">UMAPAffinityIn</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.PHATEAffinity.html"><code class="docutils literal notranslate"><span class="pre">PHATEAffinity</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.PACMAPAffinity.html"><code class="docutils literal notranslate"><span class="pre">PACMAPAffinity</span></code></a>.</p></li>
 <li><p>Doubly stochastic affinities: <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.SinkhornAffinity.html"><code class="docutils literal notranslate"><span class="pre">SinkhornAffinity</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.DoublyStochasticQuadraticAffinity.html"><code class="docutils literal notranslate"><span class="pre">DoublyStochasticQuadraticAffinity</span></code></a>.</p></li>
 <li><p>Adaptive affinities with entropy control: <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.EntropicAffinity.html"><code class="docutils literal notranslate"><span class="pre">EntropicAffinity</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.SymmetricEntropicAffinity.html"><code class="docutils literal notranslate"><span class="pre">SymmetricEntropicAffinity</span></code></a>.</p></li>
 </ul>
@@ -545,14 +540,30 @@ Visualizing the CIFAR100 dataset using DINO features and <code class="docutils l
 </section>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
-<p>You can install the toolbox through PyPI with:</p>
+<p>Install the core <code class="docutils literal notranslate"><span class="pre">torchdr</span></code> library from PyPI:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>torchdr
 </pre></div>
 </div>
-<p>To get the latest version, you can install it from the source code as follows:</p>
+<p><code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> does not install <code class="docutils literal notranslate"><span class="pre">faiss-gpu</span></code> or <code class="docutils literal notranslate"><span class="pre">pykeops</span></code> by default. You need to install them separately to use the corresponding backends.</p>
+<ul>
+<li><p><strong>Faiss (Recommended)</strong>: For the fastest k-NN computations, install <a class="reference external" href="https://github.com/facebookresearch/faiss">Faiss</a>. Please follow their <a class="reference external" href="https://github.com/facebookresearch/faiss/blob/main/INSTALL.md">official installation guide</a>. A common method is using <code class="docutils literal notranslate"><span class="pre">conda</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>pytorch<span class="w"> </span>-c<span class="w"> </span>nvidia<span class="w"> </span>faiss-gpu
+</pre></div>
+</div>
+</li>
+<li><p><strong>KeOps</strong>: For memory-efficient symbolic computations, install <a class="reference external" href="https://www.kernel-operations.io/keops/index.html">PyKeOps</a>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pykeops
+</pre></div>
+</div>
+</li>
+</ul>
+<section id="installation-from-source">
+<h3>Installation from Source<a class="headerlink" href="#installation-from-source" title="Link to this heading">#</a></h3>
+<p>If you want to use the latest, unreleased version of <code class="docutils literal notranslate"><span class="pre">torchdr</span></code>, you can install it directly from GitHub:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/torchdr/torchdr
 </pre></div>
 </div>
+</section>
 </section>
 <section id="finding-help">
 <h2>Finding Help<a class="headerlink" href="#finding-help" title="Link to this heading">#</a></h2>
@@ -601,7 +612,7 @@ Visualizing the CIFAR100 dataset using DINO features and <code class="docutils l
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#benefits-of-torchdr">Benefits of TorchDR</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-started">Getting Started</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#neighbor-embedding">Neighbor Embedding</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#neighbor-embedding-optimal-for-data-visualization">Neighbor Embedding (optimal for data visualization)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spectral-embedding">Spectral Embedding</a></li>
 </ul>
 </li>
@@ -613,7 +624,10 @@ Visualizing the CIFAR100 dataset using DINO features and <code class="docutils l
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#backends">Backends</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-from-source">Installation from Source</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#finding-help">Finding Help</a></li>
 </ul>
   </nav></div>

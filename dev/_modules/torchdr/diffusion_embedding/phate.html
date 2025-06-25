@@ -464,8 +464,13 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">PHATE</span><span class="p">(</span><span class="n">AffinityMatcher</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Implementation of PHATE introduced in :cite:`moon2019visualizing`.</span>
 
-<span class="sd">    PHATE is a diffusion map-based method that uses a potential distance</span>
-<span class="sd">    matrix to embed the data.</span>
+<span class="sd">    PHATE is a diffusion map-based method that uses a potential affinity matrix :math:`\mathbf{P}` implemented in :class:`~torchdr.PHATEAffinity` as input.</span>
+
+<span class="sd">    The loss function is defined as:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \sqrt{\sum_{i,j} (P_{ij} - \|\mathbf{z}_i - \mathbf{z}_j\|)^2 / \sum_{i,j} P_{ij}^2} \:.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>

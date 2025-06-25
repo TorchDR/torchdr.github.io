@@ -500,20 +500,28 @@ Defining a DR algorithm solely requires providing an <a class="reference interna
 <p>DR particularly benefits from GPU acceleration as most computations, including affinity calculations and the DR objective, involve matrix reductions that are highly parallelizable.</p>
 </div>
 </section>
-<section id="avoiding-memory-overflows-with-keops-symbolic-lazy-tensors">
-<h3>Avoiding memory overflows with KeOps symbolic (lazy) tensors<a class="headerlink" href="#avoiding-memory-overflows-with-keops-symbolic-lazy-tensors" title="Link to this heading">#</a></h3>
-<p>Affinities incur a quadratic memory cost, which can be particularly problematic when dealing with large numbers of samples, especially when using GPUs.</p>
-<p>To prevent memory overflows, TorchDR relies on <code class="docutils literal notranslate"><span class="pre">pykeops</span></code> <span id="id4">[<a class="reference internal" href="torchdr.bibliography.html#id16" title="Benjamin Charlier, Jean Feydy, Joan Alexis Glaunes, François-David Collin, and Ghislain Durif. Kernel operations on the gpu, with autodiff, without memory overflows. Journal of Machine Learning Research, 22(74):1–6, 2021.">Charlier <em>et al.</em>, 2021</a>]</span> lazy tensors. These tensors are expressed as mathematical formulas, evaluated directly on the data samples. This symbolic representation allows computations to be performed without storing the entire matrix in memory, thereby effectively eliminating any memory limitation.</p>
+<section id="handling-the-quadratic-cost-via-sparsity-or-symbolic-tensors">
+<h3>Handling the quadratic cost via sparsity or symbolic tensors<a class="headerlink" href="#handling-the-quadratic-cost-via-sparsity-or-symbolic-tensors" title="Link to this heading">#</a></h3>
+<p>Affinities naturally incur a quadratic memory cost, which can be particularly
+problematic when dealing with large numbers of samples, especially when using GPUs.</p>
+<p>Many affinity metrics only require computing distances to each point’s k nearest neighbors.
+For large datasets (typically when <span class="math notranslate nohighlight">\(n &gt; 10^4\)</span>) where the full pairwise-distance matrix won’t fit in GPU memory,
+TorchDR can offload these computations to the GPU-compatible kNN library <a class="reference external" href="https://github.com/facebookresearch/faiss">Faiss</a>.
+Simply set <code class="xref py py-attr docutils literal notranslate"><span class="pre">backend</span></code> to <code class="docutils literal notranslate"><span class="pre">faiss</span></code> to leverage Faiss’s efficient implementations.</p>
+<p>Alternatively, for exact computations or affinities that can’t be limited to kNNs, you can use symbolic (lazy) tensors to avoid memory overflows.
+TorchDR integrates with <code class="docutils literal notranslate"><span class="pre">pykeops</span></code><span id="id4">[<a class="reference internal" href="torchdr.bibliography.html#id16" title="Benjamin Charlier, Jean Feydy, Joan Alexis Glaunes, François-David Collin, and Ghislain Durif. Kernel operations on the gpu, with autodiff, without memory overflows. Journal of Machine Learning Research, 22(74):1–6, 2021.">Charlier <em>et al.</em>, 2021</a>]</span>, representing tensors as mathematical expressions evaluated directly on your data samples.
+By computing on-the-fly formulas instead of storing full matrices, this approach removes memory constraints entirely.
+However, for very large datasets (typically when <span class="math notranslate nohighlight">\(n &gt; 10^5\)</span>), the computational cost becomes prohibitive.
+Simply set <code class="xref py py-attr docutils literal notranslate"><span class="pre">backend</span></code> to <code class="docutils literal notranslate"><span class="pre">keops</span></code> in any module to enable it.</p>
 <a class="reference internal image-reference" href="_images/symbolic_matrix.svg"><img alt="_images/symbolic_matrix.svg" class="align-center" src="_images/symbolic_matrix.svg" style="width: 800px;" />
 </a>
 <p>The above figure is taken from <a class="reference external" href="https://github.com/getkeops/keops/blob/main/doc/_static/symbolic_matrix.svg">here</a>.</p>
-<p>Set <code class="xref py py-attr docutils literal notranslate"><span class="pre">backend=&quot;keops&quot;</span></code> as input to any module to use symbolic tensors.</p>
 </section>
 </section>
 <section id="affinities">
 <h2><a class="toc-backref" href="#id10" role="doc-backlink">Affinities</a><a class="headerlink" href="#affinities" title="Link to this heading">#</a></h2>
 <p>Affinities are the essential building blocks of dimensionality reduction methods.
-TorchDR provides a wide range of affinities, including basic ones such as <a class="reference internal" href="gen_modules/torchdr.GaussianAffinity.html#torchdr.GaussianAffinity" title="torchdr.GaussianAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">GaussianAffinity</span></code></a>, <a class="reference internal" href="gen_modules/torchdr.StudentAffinity.html#torchdr.StudentAffinity" title="torchdr.StudentAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StudentAffinity</span></code></a> and <a class="reference internal" href="gen_modules/torchdr.ScalarProductAffinity.html#torchdr.ScalarProductAffinity" title="torchdr.ScalarProductAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScalarProductAffinity</span></code></a>.</p>
+TorchDR provides a wide range of affinities. See <a class="reference internal" href="all.html#api-and-modules"><span class="std std-ref">API and Modules</span></a> for a complete list.</p>
 <section id="base-structure">
 <h3>Base structure<a class="headerlink" href="#base-structure" title="Link to this heading">#</a></h3>
 <p>Affinities inherit the structure of the following <a class="reference internal" href="stubs/torchdr.Affinity.html#torchdr.Affinity" title="torchdr.Affinity"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Affinity()</span></code></a> class.</p>
@@ -649,7 +657,7 @@ In these methods, <span class="math notranslate nohighlight">\(\mathbf{P}\)</spa
 <div class="math notranslate nohighlight">
 \[\min_{\mathbf{Z}} \: - \lambda \sum_{ij} P_{ij} \log Q_{ij} + \mathcal{L}_{\mathrm{rep}}(\mathbf{Q}) \:.\]</div>
 <p>In the above, <span class="math notranslate nohighlight">\(\mathcal{L}_{\mathrm{rep}}(\mathbf{Q})\)</span> represents the repulsive part of the loss function while <span class="math notranslate nohighlight">\(\lambda\)</span> is a hyperparameter that controls the balance between attraction and repulsion. The latter is called <code class="xref py py-attr docutils literal notranslate"><span class="pre">early_exaggeration_coeff</span></code> in TorchDR because it is often set to a value larger than one at the beginning of the optimization.</p>
-<p>Many NE methods can be represented within this framework. The following table summarizes the ones implemented in TorchDR, detailing their respective repulsive loss function, as well as their input and output affinities.</p>
+<p>Many NE methods can be represented within this framework. See below for some examples.</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p><strong>Method</strong></p></th>
@@ -748,7 +756,7 @@ for point <span class="math notranslate nohighlight">\(i\)</span>. They are usua
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#general-formulation-of-dimensionality-reduction">General Formulation of Dimensionality Reduction</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torch-gpu-support-and-automatic-differentiation">Torch GPU support and automatic differentiation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#avoiding-memory-overflows-with-keops-symbolic-lazy-tensors">Avoiding memory overflows with KeOps symbolic (lazy) tensors</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#handling-the-quadratic-cost-via-sparsity-or-symbolic-tensors">Handling the quadratic cost via sparsity or symbolic tensors</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#affinities">Affinities</a><ul class="nav section-nav flex-column">

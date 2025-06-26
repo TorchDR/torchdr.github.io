@@ -456,7 +456,13 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEstimator</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">bool_arg</span><span class="p">,</span> <span class="n">seed_everything</span><span class="p">,</span> <span class="n">set_logger</span><span class="p">,</span> <span class="n">handle_type</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">bool_arg</span><span class="p">,</span>
+    <span class="n">seed_everything</span><span class="p">,</span>
+    <span class="n">set_logger</span><span class="p">,</span>
+    <span class="n">handle_type</span><span class="p">,</span>
+    <span class="n">log_with_timing</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeVar</span>
 
@@ -568,6 +574,7 @@
 
 <div class="viewcode-block" id="DRModule.fit_transform">
 <a class="viewcode-back" href="../../stubs/torchdr.DRModule.html#torchdr.DRModule.fit_transform">[docs]</a>
+    <span class="nd">@log_with_timing</span><span class="p">(</span><span class="n">log_device_backend</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="nd">@handle_type</span><span class="p">(</span>
         <span class="n">accept_sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">ensure_min_samples</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>

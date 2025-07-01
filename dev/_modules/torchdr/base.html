@@ -457,11 +457,9 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEstimator</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">bool_arg</span><span class="p">,</span>
     <span class="n">seed_everything</span><span class="p">,</span>
     <span class="n">set_logger</span><span class="p">,</span>
     <span class="n">handle_type</span><span class="p">,</span>
-    <span class="n">log_with_timing</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeVar</span>
@@ -478,17 +476,19 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    n_components : int, default=2</span>
-<span class="sd">        Number of components to project the input data onto.</span>
-<span class="sd">    device : str, default=&quot;auto&quot;</span>
-<span class="sd">        Device on which the computations are performed.</span>
+<span class="sd">    n_components : int, optional</span>
+<span class="sd">        Number of dimensions for the embedding. Default is 2.</span>
+<span class="sd">    device : str, optional</span>
+<span class="sd">        Device to use for computations. Default is &quot;auto&quot;.</span>
 <span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None}, optional</span>
 <span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
 <span class="sd">        Default is None.</span>
-<span class="sd">    verbose : bool, default=False</span>
-<span class="sd">        Whether to print information during the computations.</span>
-<span class="sd">    random_state : float, default=None</span>
-<span class="sd">        Random seed for reproducibility.</span>
+<span class="sd">    verbose : bool, optional</span>
+<span class="sd">        Verbosity of the optimization process. Default is False.</span>
+<span class="sd">    random_state : float, optional</span>
+<span class="sd">        Random seed for reproducibility. Default is None.</span>
+<span class="sd">    compile : bool, default=False</span>
+<span class="sd">        Whether to use torch.compile for faster computation.</span>
 <span class="sd">    process_duplicates : bool, default=True</span>
 <span class="sd">        Whether to handle duplicate data points by default.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -497,23 +497,26 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n_components</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-        <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">random_state</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">process_duplicates</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="o">=</span> <span class="n">n_components</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">=</span> <span class="n">backend</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span> <span class="o">=</span> <span class="n">random_state</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">bool_arg</span><span class="p">(</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compile</span> <span class="o">=</span> <span class="nb">compile</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">process_duplicates</span> <span class="o">=</span> <span class="n">process_duplicates</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">set_logger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">random_state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_actual_seed</span> <span class="o">=</span> <span class="n">seed_everything</span><span class="p">(</span>
-                <span class="n">random_state</span><span class="p">,</span> <span class="n">fast</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">deterministic</span><span class="o">=</span><span class="kc">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">,</span> <span class="n">fast</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">deterministic</span><span class="o">=</span><span class="kc">False</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Random seed set to: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_actual_seed</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
@@ -574,7 +577,6 @@
 
 <div class="viewcode-block" id="DRModule.fit_transform">
 <a class="viewcode-back" href="../../stubs/torchdr.DRModule.html#torchdr.DRModule.fit_transform">[docs]</a>
-    <span class="nd">@log_with_timing</span><span class="p">(</span><span class="n">log_device_backend</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="nd">@handle_type</span><span class="p">(</span>
         <span class="n">accept_sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">ensure_min_samples</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>

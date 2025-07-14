@@ -457,7 +457,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Affinity</span><span class="p">,</span>
-    <span class="n">SparseLogAffinity</span><span class="p">,</span>
+    <span class="n">SparseAffinity</span><span class="p">,</span>
     <span class="n">UnnormalizedAffinity</span><span class="p">,</span>
     <span class="n">UnnormalizedLogAffinity</span><span class="p">,</span>
 <span class="p">)</span>
@@ -581,8 +581,8 @@
         <span class="n">_scheduler_kwargs</span> <span class="o">=</span> <span class="n">scheduler_kwargs</span>
         <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">&quot;LinearLR&quot;</span> <span class="ow">and</span> <span class="n">scheduler_kwargs</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
             <span class="n">_scheduler_kwargs</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;start_factor&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
-                <span class="s2">&quot;end_factor&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;start_factor&quot;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">1.0</span><span class="p">),</span>
+                <span class="s2">&quot;end_factor&quot;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
                 <span class="s2">&quot;total_iters&quot;</span><span class="p">:</span> <span class="n">max_iter</span><span class="p">,</span>
             <span class="p">}</span>
 
@@ -644,8 +644,16 @@
 
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;[TorchDR] ERROR : _loss method must be implemented.&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;[TorchDR] ERROR : _compute_loss method must be implemented.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;[TorchDR] ERROR : _compute_gradients method must be implemented &quot;</span>
+            <span class="s2">&quot;when _use_direct_gradients is True.&quot;</span>
+        <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_set_learning_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
@@ -718,7 +726,7 @@
 <span class="sd">    term of the loss function, :math:`\lambda` is the :attr:`early_exaggeration_coeff`</span>
 <span class="sd">    parameter.</span>
 
-<span class="sd">    **Fast attraction.** This class should be used when the input affinity matrix is a :class:`~torchdr.SparseLogAffinity` and the output affinity matrix is an :class:`~torchdr.UnnormalizedAffinity`. In such cases, the attractive term can be computed with linear complexity.</span>
+<span class="sd">    **Fast attraction.** This class should be used when the input affinity matrix is a :class:`~torchdr.SparseAffinity` and the output affinity matrix is an :class:`~torchdr.UnnormalizedAffinity`. In such cases, the attractive term can be computed with linear complexity.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -802,7 +810,7 @@
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="c1"># check affinity affinity_in</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">affinity_in</span><span class="p">,</span> <span class="n">SparseLogAffinity</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">affinity_in</span><span class="p">,</span> <span class="n">SparseAffinity</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
                 <span class="s2">&quot;[TorchDR] ERROR : when using SparseNeighborEmbedding, affinity_in &quot;</span>
                 <span class="s2">&quot;must be a sparse affinity.&quot;</span>
@@ -843,7 +851,7 @@
             <span class="nb">compile</span><span class="o">=</span><span class="nb">compile</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_attractive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_attractive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="p">,</span> <span class="n">UnnormalizedLogAffinity</span><span class="p">):</span>
             <span class="n">log_Q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span>
@@ -853,17 +861,37 @@
             <span class="n">Q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">cross_entropy_loss</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span><span class="p">,</span> <span class="n">Q</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_repulsive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_repulsive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;[TorchDR] ERROR : _repulsive_loss method must be implemented.&quot;</span>
+            <span class="s2">&quot;[TorchDR] ERROR : _compute_repulsive_loss method must be implemented.&quot;</span>
         <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">loss</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff_</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attractive_loss</span><span class="p">()</span>
-            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">repulsion_strength</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repulsive_loss</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff_</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_attractive_loss</span><span class="p">()</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">repulsion_strength</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_repulsive_loss</span><span class="p">()</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">loss</span></div>
+        <span class="k">return</span> <span class="n">loss</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># triggered when _use_direct_gradients is True</span>
+        <span class="n">gradients</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff_</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_attractive_gradients</span><span class="p">()</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">repulsion_strength</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_repulsive_gradients</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">gradients</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_attractive_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;[TorchDR] ERROR : _compute_attractive_gradients method must be implemented &quot;</span>
+            <span class="s2">&quot;when _use_direct_gradients is True.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_repulsive_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;[TorchDR] ERROR : _compute_repulsive_gradients method must be implemented &quot;</span>
+            <span class="s2">&quot;when _use_direct_gradients is True.&quot;</span>
+        <span class="p">)</span></div>
 
 
 
@@ -884,7 +912,7 @@
 <span class="sd">    parameter.</span>
 
 <span class="sd">    **Fast attraction.** This class should be used when the input affinity matrix is a</span>
-<span class="sd">    :class:`~torchdr.SparseLogAffinity` and the output affinity matrix is an</span>
+<span class="sd">    :class:`~torchdr.SparseAffinity` and the output affinity matrix is an</span>
 <span class="sd">    :class:`~torchdr.UnnormalizedAffinity`. In such cases, the attractive term</span>
 <span class="sd">    can be computed with linear complexity.</span>
 

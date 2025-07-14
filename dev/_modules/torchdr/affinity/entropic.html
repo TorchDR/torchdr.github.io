@@ -455,7 +455,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogAffinity</span><span class="p">,</span> <span class="n">SparseLogAffinity</span>
@@ -494,7 +493,7 @@
     <span class="k">return</span> <span class="n">dual</span> <span class="o">+</span> <span class="n">dual_t</span> <span class="o">+</span> <span class="n">log_K</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_bounds_entropic_affinity</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">perplexity</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_bounds_entropic_affinity</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">perplexity</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the entropic affinity bounds derived in :cite:`vladymyrov2013entropic`.</span>
 
 <span class="sd">    Parameters</span>
@@ -502,8 +501,12 @@
 <span class="sd">    C : tensor or lazy tensor of shape (n_samples, n_samples)</span>
 <span class="sd">        or (n_samples, k) if sparsity is used</span>
 <span class="sd">        Distance matrix between the samples.</span>
-<span class="sd">    perplexity : float</span>
+<span class="sd">    perplexity : torch.Tensor, shape ()</span>
 <span class="sd">        Perplexity parameter, related to the number of &#39;effective&#39; nearest neighbors.</span>
+<span class="sd">    device : torch.device</span>
+<span class="sd">        Device to use for computation.</span>
+<span class="sd">    dtype : torch.dtype</span>
+<span class="sd">        Data type to use for computation.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -513,39 +516,42 @@
 <span class="sd">        Upper bound of the root.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># we use the same notations as in [4] for clarity purposes</span>
-    <span class="n">N</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">n_samples_in</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">tN</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">n_samples_in</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">max_val</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">tN</span><span class="p">),</span> <span class="n">perplexity</span><span class="p">)</span>
 
     <span class="c1"># solve a unique 1D root finding problem</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">find_p1</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">N</span><span class="p">),</span> <span class="n">perplexity</span><span class="p">]))</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
-            <span class="n">N</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x</span><span class="p">))</span>
-        <span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_find_p1</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+        <span class="c1"># x : (1,) tensor in (0,1)</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">max_val</span><span class="p">)</span> <span class="o">-</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">tN</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">x</span><span class="p">)))</span>
 
-    <span class="n">begin</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">/</span> <span class="mi">4</span>
-    <span class="n">end</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="mf">1e-6</span>
+    <span class="n">b_lo</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">b_hi</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
     <span class="n">p1</span> <span class="o">=</span> <span class="n">binary_search</span><span class="p">(</span>
-        <span class="n">f</span><span class="o">=</span><span class="n">find_p1</span><span class="p">,</span>
+        <span class="n">f</span><span class="o">=</span><span class="n">_find_p1</span><span class="p">,</span>
         <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-        <span class="n">begin</span><span class="o">=</span><span class="n">begin</span><span class="p">,</span>
-        <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span>
+        <span class="n">begin</span><span class="o">=</span><span class="n">b_lo</span><span class="p">,</span>
+        <span class="n">end</span><span class="o">=</span><span class="n">b_hi</span><span class="p">,</span>
         <span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
-        <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span>
-    <span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
 
-    <span class="c1"># retrieve greatest and smallest pairwise distances</span>
     <span class="n">dN</span> <span class="o">=</span> <span class="n">kmax</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
     <span class="n">d12</span> <span class="o">=</span> <span class="n">kmin</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">d1</span> <span class="o">=</span> <span class="n">d12</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
-    <span class="n">d2</span> <span class="o">=</span> <span class="n">d12</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">d1</span><span class="p">,</span> <span class="n">d2</span> <span class="o">=</span> <span class="n">d12</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">d12</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+
     <span class="n">Delta_N</span> <span class="o">=</span> <span class="n">dN</span> <span class="o">-</span> <span class="n">d1</span>
     <span class="n">Delta_2</span> <span class="o">=</span> <span class="n">d2</span> <span class="o">-</span> <span class="n">d1</span>
 
     <span class="c1"># compute bounds derived in [4]</span>
+    <span class="n">log_ratio</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">tN</span> <span class="o">/</span> <span class="n">perplexity</span><span class="p">)</span>
     <span class="n">beta_L</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span>
-        <span class="p">(</span><span class="n">N</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">N</span> <span class="o">/</span> <span class="n">perplexity</span><span class="p">))</span> <span class="o">/</span> <span class="p">((</span><span class="n">N</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">Delta_N</span><span class="p">),</span>
-        <span class="n">torch</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">N</span> <span class="o">/</span> <span class="n">perplexity</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">dN</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">d1</span><span class="o">**</span><span class="mi">2</span><span class="p">)),</span>
+        <span class="p">(</span><span class="n">tN</span> <span class="o">*</span> <span class="n">log_ratio</span><span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="n">tN</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">Delta_N</span><span class="p">),</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">log_ratio</span> <span class="o">/</span> <span class="p">(</span><span class="n">dN</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">d1</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">))),</span>
     <span class="p">)</span>
-    <span class="n">beta_U</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">Delta_2</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">((</span><span class="n">N</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">p1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p1</span><span class="p">))</span>
+    <span class="n">beta_U</span> <span class="o">=</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">((</span><span class="n">tN</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">p1</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">p1</span><span class="p">)))</span> <span class="o">/</span> <span class="n">Delta_2</span>
 
     <span class="c1"># convert to our notations</span>
     <span class="n">begin</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">beta_U</span>
@@ -604,8 +610,6 @@
 <span class="sd">    perplexity : float, optional</span>
 <span class="sd">        Perplexity parameter, related to the number of &#39;effective&#39; nearest neighbors.</span>
 <span class="sd">        Consider selecting a value between 2 and the number of samples.</span>
-<span class="sd">    tol : float, optional</span>
-<span class="sd">        Precision threshold at which the root finding algorithm stops.</span>
 <span class="sd">    max_iter : int, optional</span>
 <span class="sd">        Number of maximum iterations for the root finding algorithm.</span>
 <span class="sd">    sparsity: bool, optional</span>
@@ -633,7 +637,6 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">perplexity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
-        <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
         <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
         <span class="n">sparsity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
@@ -645,7 +648,6 @@
         <span class="n">_pre_processed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span> <span class="o">=</span> <span class="n">perplexity</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tol</span> <span class="o">=</span> <span class="n">tol</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">=</span> <span class="n">max_iter</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -660,13 +662,18 @@
         <span class="p">)</span>
 
     <span class="nd">@compile_if_requested</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_sparse_log_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_sparse_log_affinity</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Solve the entropic affinity problem by :cite:`hinton2002stochastic`.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        X : torch.Tensor of shape (n_samples, n_features)</span>
 <span class="sd">            Data on which affinity is computed.</span>
+<span class="sd">        return_indices : bool, optional</span>
+<span class="sd">            If True, returns the indices of the non-zero elements in the affinity matrix</span>
+<span class="sd">            if sparsity is enabled. Default is False.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -676,9 +683,9 @@
 <span class="sd">        indices : torch.Tensor or None</span>
 <span class="sd">            Indices of the nearest neighbors if sparsity is used.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">n_samples_in</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">n_samples_in</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
         <span class="n">perplexity</span> <span class="o">=</span> <span class="n">check_neighbor_param</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span><span class="p">,</span> <span class="n">n_samples_in</span><span class="p">)</span>
-        <span class="n">target_entropy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">perplexity</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">target_entropy</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">perplexity</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
 
         <span class="n">k</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">perplexity</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparsity</span><span class="p">:</span>
@@ -698,31 +705,29 @@
             <span class="n">log_P_normalized</span> <span class="o">=</span> <span class="n">log_P</span> <span class="o">-</span> <span class="n">logsumexp_red</span><span class="p">(</span><span class="n">log_P</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">entropy</span><span class="p">(</span><span class="n">log_P_normalized</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-</span> <span class="n">target_entropy</span>
 
-        <span class="n">begin</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">_bounds_entropic_affinity</span><span class="p">(</span><span class="n">C_</span><span class="p">,</span> <span class="n">perplexity</span><span class="p">)</span>
-        <span class="n">begin</span> <span class="o">+=</span> <span class="mf">1e-6</span>  <span class="c1"># avoid numerical issues</span>
+        <span class="n">begin</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">_bounds_entropic_affinity</span><span class="p">(</span>
+            <span class="n">C_</span><span class="p">,</span> <span class="n">perplexity</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span>
+        <span class="p">)</span>
+        <span class="n">begin</span> <span class="o">=</span> <span class="n">begin</span> <span class="o">+</span> <span class="mf">1e-6</span>  <span class="c1"># avoid numerical issues</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">eps_</span> <span class="o">=</span> <span class="n">binary_search</span><span class="p">(</span>
             <span class="n">f</span><span class="o">=</span><span class="n">entropy_gap</span><span class="p">,</span>
             <span class="n">n</span><span class="o">=</span><span class="n">n_samples_in</span><span class="p">,</span>
             <span class="n">begin</span><span class="o">=</span><span class="n">begin</span><span class="p">,</span>
             <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span>
-            <span class="n">tol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tol</span><span class="p">,</span>
             <span class="n">max_iter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span>
             <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
             <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
-            <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="nb">compile</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">compile</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="n">log_P_final</span> <span class="o">=</span> <span class="n">_log_Pe</span><span class="p">(</span><span class="n">C_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps_</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_normalization_</span> <span class="o">=</span> <span class="n">logsumexp_red</span><span class="p">(</span><span class="n">log_P_final</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">log_affinity_matrix</span> <span class="o">=</span> <span class="n">log_P_final</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_normalization_</span>
 
-        <span class="n">log_affinity_matrix</span> <span class="o">-=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
+        <span class="n">log_affinity_matrix</span> <span class="o">-=</span> <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
             <span class="n">n_samples_in</span>
         <span class="p">)</span>  <span class="c1"># sum of each row is 1/n so that total sum is 1</span>
-        <span class="k">return</span> <span class="n">log_affinity_matrix</span><span class="p">,</span> <span class="n">indices</span></div>
+        <span class="k">return</span> <span class="p">(</span><span class="n">log_affinity_matrix</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span> <span class="k">if</span> <span class="n">return_indices</span> <span class="k">else</span> <span class="n">log_affinity_matrix</span></div>
 
 
 
@@ -860,7 +865,9 @@
 
         <span class="n">n_samples_in</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">perplexity</span> <span class="o">=</span> <span class="n">check_neighbor_param</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span><span class="p">,</span> <span class="n">n_samples_in</span><span class="p">)</span>
-        <span class="n">target_entropy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">perplexity</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">target_entropy</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">perplexity</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="p">)</span>
 
         <span class="n">one</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_samples_in</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
 

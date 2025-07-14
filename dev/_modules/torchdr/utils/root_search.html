@@ -444,7 +444,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for torchdr.utils.root_search</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Tools for optimization problems.&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;Root search algorithms for solving scalar equations.&quot;&quot;&quot;</span>
 
 <span class="c1"># Author: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
 <span class="c1">#         Rémi Flamary &lt;remi.flamary@polytechnique.edu&gt;</span>
@@ -452,95 +452,72 @@
 <span class="c1"># License: BSD 3-Clause License</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils.wrappers</span><span class="w"> </span><span class="kn">import</span> <span class="n">compile_if_requested</span>
 
-<span class="n">DTYPE</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">float32</span>
-<span class="n">DEVICE</span> <span class="o">=</span> <span class="s2">&quot;cpu&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="n">_DEFAULT_TOL</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">1e-6</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="binary_search">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.binary_search.html#torchdr.binary_search">[docs]</a>
-<span class="nd">@compile_if_requested</span>
+<span class="nd">@torch</span><span class="o">.</span><span class="n">compiler</span><span class="o">.</span><span class="n">disable</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">binary_search</span><span class="p">(</span>
-    <span class="n">f</span><span class="p">,</span>
-    <span class="n">n</span><span class="p">,</span>
-    <span class="n">begin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
-    <span class="n">tol</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">,</span>
-    <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">dtype</span><span class="o">=</span><span class="n">DTYPE</span><span class="p">,</span>
-    <span class="n">device</span><span class="o">=</span><span class="n">DEVICE</span><span class="p">,</span>
-    <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Implement the binary search root finding method.</span>
+    <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span>
+    <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">begin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">end</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="n">device</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">),</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Batched binary search root finding.</span>
 
-<span class="sd">    Perform a batched binary search to find the root of an increasing function f.</span>
-<span class="sd">    The domain of f is restricted to positive floats.</span>
+<span class="sd">    Finds the roots of an increasing function f over positive inputs</span>
+<span class="sd">    by repeatedly narrowing the bracket [begin, end].</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    f : function :math:`\mathbb{R}_{&gt;0} \to \mathbb{R}`</span>
-<span class="sd">        batched 1d increasing function which root should be computed.</span>
+<span class="sd">    f : Callable[[torch.Tensor], torch.Tensor]</span>
+<span class="sd">        Batched 1-D increasing function.</span>
 <span class="sd">    n : int</span>
-<span class="sd">        size of the input of f.</span>
-<span class="sd">    begin : float or torch.Tensor of shape (n), optional</span>
-<span class="sd">        initial lower bound of the root.</span>
-<span class="sd">    end : float or torch.Tensor of shape (n), optional</span>
-<span class="sd">        initial upper bound of the root.</span>
+<span class="sd">        Batch size (length of the input/output vectors).</span>
+<span class="sd">    begin : float, optional</span>
+<span class="sd">        Scalar initial lower bound (default: 1.0).</span>
+<span class="sd">    end : float, optional</span>
+<span class="sd">        Scalar initial upper bound (default: 1.0).</span>
 <span class="sd">    max_iter : int, optional</span>
-<span class="sd">        maximum iterations of search.</span>
-<span class="sd">    tol : float, optional</span>
-<span class="sd">        precision threshold at which the algorithm stops.</span>
-<span class="sd">    verbose : bool, optional</span>
-<span class="sd">        if True, prints current bounds.</span>
+<span class="sd">        Maximum number of iterations (default: 1000).</span>
 <span class="sd">    dtype : torch.dtype, optional</span>
-<span class="sd">        data type of the input.</span>
-<span class="sd">    device : str, optional</span>
-<span class="sd">        device on which the computation is performed.</span>
-<span class="sd">    logger : logging.Logger, optional</span>
-<span class="sd">        logger to use for printing.</span>
-<span class="sd">    compile : bool, optional</span>
-<span class="sd">        if True, the function is compiled.</span>
+<span class="sd">        Data type of all tensors (default: torch.float32).</span>
+<span class="sd">    device : torch.device, optional</span>
+<span class="sd">        Device for all tensors (default: CPU).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    m : torch.Tensor of shape (n)</span>
-<span class="sd">        root of f.</span>
+<span class="sd">    m : torch.Tensor of shape (n,)</span>
+<span class="sd">        Estimated roots where |f(m)| &lt; tol.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">begin</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">init_bounds</span><span class="p">(</span>
-        <span class="n">f</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
-        <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span>
-        <span class="n">begin</span><span class="o">=</span><span class="n">begin</span><span class="p">,</span>
-        <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-        <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
-        <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-        <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="n">tol</span> <span class="o">=</span> <span class="n">_DEFAULT_TOL</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="n">b</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="n">init_bounds</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">begin</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
 
-    <span class="n">m</span> <span class="o">=</span> <span class="p">(</span><span class="n">begin</span> <span class="o">+</span> <span class="n">end</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
-    <span class="n">fm</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+    <span class="n">f_b</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span> <span class="o">+</span> <span class="n">e</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span>
+    <span class="n">f_m</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
 
-    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iter</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">fm</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iter</span><span class="p">):</span>
+        <span class="n">active</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">f_m</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">tol</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">active</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
             <span class="k">break</span>
 
-        <span class="n">sam</span> <span class="o">=</span> <span class="n">fm</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">begin</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
-        <span class="n">begin</span> <span class="o">=</span> <span class="n">sam</span> <span class="o">*</span> <span class="n">m</span> <span class="o">+</span> <span class="p">(</span><span class="o">~</span><span class="n">sam</span><span class="p">)</span> <span class="o">*</span> <span class="n">begin</span>
-        <span class="n">end</span> <span class="o">=</span> <span class="p">(</span><span class="o">~</span><span class="n">sam</span><span class="p">)</span> <span class="o">*</span> <span class="n">m</span> <span class="o">+</span> <span class="n">sam</span> <span class="o">*</span> <span class="n">end</span>
-        <span class="n">m</span> <span class="o">=</span> <span class="p">(</span><span class="n">begin</span> <span class="o">+</span> <span class="n">end</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
-        <span class="n">fm</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+        <span class="n">same_sign</span> <span class="o">=</span> <span class="n">f_m</span> <span class="o">*</span> <span class="n">f_b</span> <span class="o">&gt;</span> <span class="mi">0</span>
 
-    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-        <span class="n">n_iter</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">max_iter</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Root found in </span><span class="si">{</span><span class="n">n_iter</span><span class="si">}</span><span class="s2"> iterations.&quot;</span>
-        <span class="k">if</span> <span class="n">logger</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[TorchDR] &quot;</span> <span class="o">+</span> <span class="n">msg</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">active</span> <span class="o">&amp;</span> <span class="n">same_sign</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">active</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="n">same_sign</span><span class="p">),</span> <span class="n">m</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="n">f_b</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">active</span> <span class="o">&amp;</span> <span class="n">same_sign</span><span class="p">,</span> <span class="n">f_m</span><span class="p">,</span> <span class="n">f_b</span><span class="p">)</span>
+
+        <span class="n">m</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span> <span class="o">+</span> <span class="n">e</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span>
+        <span class="n">f_m</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">m</span></div>
 
@@ -548,160 +525,117 @@
 
 <div class="viewcode-block" id="false_position">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.false_position.html#torchdr.false_position">[docs]</a>
-<span class="nd">@compile_if_requested</span>
+<span class="nd">@torch</span><span class="o">.</span><span class="n">compiler</span><span class="o">.</span><span class="n">disable</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">false_position</span><span class="p">(</span>
-    <span class="n">f</span><span class="p">,</span>
-    <span class="n">n</span><span class="p">,</span>
-    <span class="n">begin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
-    <span class="n">tol</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">,</span>
-    <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">dtype</span><span class="o">=</span><span class="n">DTYPE</span><span class="p">,</span>
-    <span class="n">device</span><span class="o">=</span><span class="n">DEVICE</span><span class="p">,</span>
-    <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Implement the false position root finding method.</span>
+    <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span>
+    <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">begin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">end</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="n">device</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">),</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Batched false-position root finding.</span>
 
-<span class="sd">    Perform a batched false position method to find the root</span>
+<span class="sd">    Uses linear interpolation to bracket and converge on the root</span>
 <span class="sd">    of an increasing function f.</span>
-<span class="sd">    The domain of f is restricted to positive floats.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    f : function :math:`\mathbb{R}_{&gt;0} \to \mathbb{R}`</span>
-<span class="sd">        increasing function which root should be computed.</span>
+<span class="sd">    f : Callable[[torch.Tensor], torch.Tensor]</span>
+<span class="sd">        Batched 1-D increasing function.</span>
 <span class="sd">    n : int</span>
-<span class="sd">        size of the input of f.</span>
-<span class="sd">    begin : torch.Tensor of shape (n) or float, optional</span>
-<span class="sd">        initial lower bound of the root.</span>
-<span class="sd">    end : torch.Tensor of shape (n) or float, optional</span>
-<span class="sd">        initial upper bound of the root.</span>
+<span class="sd">        Batch size (length of the input/output vectors).</span>
+<span class="sd">    begin : float, optional</span>
+<span class="sd">        Scalar initial lower bound (default: 1.0).</span>
+<span class="sd">    end : float, optional</span>
+<span class="sd">        Scalar initial upper bound (default: 1.0).</span>
 <span class="sd">    max_iter : int, optional</span>
-<span class="sd">        maximum iterations of search.</span>
-<span class="sd">    tol : float, optional</span>
-<span class="sd">        precision threshold at which the algorithm stops.</span>
-<span class="sd">    verbose : bool, optional</span>
-<span class="sd">        if True, prints current bounds.</span>
+<span class="sd">        Maximum number of iterations (default: 1000).</span>
 <span class="sd">    dtype : torch.dtype, optional</span>
-<span class="sd">        data type of the input.</span>
-<span class="sd">    device : str, optional</span>
-<span class="sd">        device on which the computation is performed.</span>
-<span class="sd">    logger : logging.Logger, optional</span>
-<span class="sd">        logger to use for printing.</span>
-<span class="sd">    compile : bool, optional</span>
-<span class="sd">        if True, the function is compiled.</span>
+<span class="sd">        Data type of all tensors (default: torch.float32).</span>
+<span class="sd">    device : torch.device, optional</span>
+<span class="sd">        Device for all tensors (default: CPU).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    m : torch.Tensor of shape (n)</span>
-<span class="sd">        root of f.</span>
+<span class="sd">    m : torch.Tensor of shape (n,)</span>
+<span class="sd">        Estimated roots where |f(m)| &lt; tol.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">begin</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">init_bounds</span><span class="p">(</span>
-        <span class="n">f</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
-        <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span>
-        <span class="n">begin</span><span class="o">=</span><span class="n">begin</span><span class="p">,</span>
-        <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-        <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
-        <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-        <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="n">tol</span> <span class="o">=</span> <span class="n">_DEFAULT_TOL</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="n">b</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="n">init_bounds</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">begin</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
 
-    <span class="n">f_begin</span><span class="p">,</span> <span class="n">f_end</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">begin</span><span class="p">),</span> <span class="n">f</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
-    <span class="n">m</span> <span class="o">=</span> <span class="n">begin</span> <span class="o">-</span> <span class="p">((</span><span class="n">begin</span> <span class="o">-</span> <span class="n">end</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">begin</span><span class="p">)</span> <span class="o">-</span> <span class="n">f</span><span class="p">(</span><span class="n">end</span><span class="p">)))</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">begin</span><span class="p">)</span>
-    <span class="n">fm</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">m</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">begin</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">end</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="p">(</span>
-        <span class="s2">&quot;dimension changed after evaluating the function which root should be computed.&quot;</span>
-    <span class="p">)</span>
+    <span class="n">f_b</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="n">f_e</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">b</span> <span class="o">-</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">e</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">f_b</span> <span class="o">-</span> <span class="n">f_e</span><span class="p">)</span> <span class="o">*</span> <span class="n">f_b</span>
+    <span class="n">f_m</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
 
-    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iter</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">fm</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iter</span><span class="p">):</span>
+        <span class="n">active</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">f_m</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">tol</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">active</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
             <span class="k">break</span>
 
-        <span class="n">sam</span> <span class="o">=</span> <span class="n">fm</span> <span class="o">*</span> <span class="n">f_begin</span> <span class="o">&gt;</span> <span class="mi">0</span>
-        <span class="n">begin</span> <span class="o">=</span> <span class="n">sam</span> <span class="o">*</span> <span class="n">m</span> <span class="o">+</span> <span class="p">(</span><span class="o">~</span><span class="n">sam</span><span class="p">)</span> <span class="o">*</span> <span class="n">begin</span>
-        <span class="n">f_begin</span> <span class="o">=</span> <span class="n">sam</span> <span class="o">*</span> <span class="n">fm</span> <span class="o">+</span> <span class="p">(</span><span class="o">~</span><span class="n">sam</span><span class="p">)</span> <span class="o">*</span> <span class="n">f_begin</span>
-        <span class="n">end</span> <span class="o">=</span> <span class="p">(</span><span class="o">~</span><span class="n">sam</span><span class="p">)</span> <span class="o">*</span> <span class="n">m</span> <span class="o">+</span> <span class="n">sam</span> <span class="o">*</span> <span class="n">end</span>
-        <span class="n">f_end</span> <span class="o">=</span> <span class="p">(</span><span class="o">~</span><span class="n">sam</span><span class="p">)</span> <span class="o">*</span> <span class="n">fm</span> <span class="o">+</span> <span class="n">sam</span> <span class="o">*</span> <span class="n">f_end</span>
-        <span class="n">m</span> <span class="o">=</span> <span class="n">begin</span> <span class="o">-</span> <span class="p">((</span><span class="n">begin</span> <span class="o">-</span> <span class="n">end</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">f_begin</span> <span class="o">-</span> <span class="n">f_end</span><span class="p">))</span> <span class="o">*</span> <span class="n">f_begin</span>
-        <span class="n">fm</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+        <span class="n">same_sign</span> <span class="o">=</span> <span class="n">f_m</span> <span class="o">*</span> <span class="n">f_b</span> <span class="o">&gt;</span> <span class="mi">0</span>
 
-    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-        <span class="n">n_iter</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">max_iter</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Root found in </span><span class="si">{</span><span class="n">n_iter</span><span class="si">}</span><span class="s2"> iterations.&quot;</span>
-        <span class="k">if</span> <span class="n">logger</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[TorchDR] &quot;</span> <span class="o">+</span> <span class="n">msg</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">active</span> <span class="o">&amp;</span> <span class="n">same_sign</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+        <span class="n">f_b</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">active</span> <span class="o">&amp;</span> <span class="n">same_sign</span><span class="p">,</span> <span class="n">f_m</span><span class="p">,</span> <span class="n">f_b</span><span class="p">)</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">active</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="n">same_sign</span><span class="p">),</span> <span class="n">m</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="n">f_e</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">active</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="n">same_sign</span><span class="p">),</span> <span class="n">f_m</span><span class="p">,</span> <span class="n">f_e</span><span class="p">)</span>
+
+        <span class="n">m</span> <span class="o">=</span> <span class="n">b</span> <span class="o">-</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">e</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">f_b</span> <span class="o">-</span> <span class="n">f_e</span><span class="p">)</span> <span class="o">*</span> <span class="n">f_b</span>
+        <span class="n">f_m</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">m</span></div>
 
 
 
-<span class="nd">@compile_if_requested</span>
+<span class="nd">@torch</span><span class="o">.</span><span class="n">compiler</span><span class="o">.</span><span class="n">disable</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">init_bounds</span><span class="p">(</span>
-    <span class="n">f</span><span class="p">,</span>
-    <span class="n">n</span><span class="p">,</span>
-    <span class="n">begin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">dtype</span><span class="o">=</span><span class="n">DTYPE</span><span class="p">,</span>
-    <span class="n">device</span><span class="o">=</span><span class="n">DEVICE</span><span class="p">,</span>
-    <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize the bounds of the root search.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">begin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">begin</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span>
+    <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">begin</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">end</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">max_iter</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize root‐search bounds for f, supporting both scalar and tensor inputs.&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">begin</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">begin</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">n</span><span class="p">,):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;begin tensor must have shape (</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">,), got </span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">begin</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)),</span> <span class="p">(</span>
-            <span class="s2">&quot;begin must be a float, an int or a tensor.&quot;</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">begin</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
-            <span class="k">assert</span> <span class="n">begin</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">n</span><span class="p">,),</span> <span class="s2">&quot;begin must have the same shape as the output.&quot;</span>
-            <span class="n">begin</span> <span class="o">=</span> <span class="n">begin</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
-        <span class="n">begin</span> <span class="o">=</span> <span class="n">begin</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">n</span><span class="p">,),</span> <span class="nb">float</span><span class="p">(</span><span class="n">begin</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">end</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">end</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">end</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">end</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">n</span><span class="p">,):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;end tensor must have shape (</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">,), got </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">end</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)),</span> <span class="p">(</span>
-            <span class="s2">&quot;end must be a float, an int or a tensor.&quot;</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">end</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
-            <span class="k">assert</span> <span class="n">end</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">n</span><span class="p">,),</span> <span class="s2">&quot;end must have the same shape as the output.&quot;</span>
-            <span class="n">end</span> <span class="o">=</span> <span class="n">end</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
-        <span class="n">end</span> <span class="o">=</span> <span class="n">end</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">n</span><span class="p">,),</span> <span class="nb">float</span><span class="p">(</span><span class="n">end</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
 
-    <span class="n">eval_counter</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1"># shrink `b` downward until f(b) ≤ 0, pulling `e` in with it</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iter</span><span class="p">):</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">mask</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="k">break</span>
 
-    <span class="c1"># Ensure that begin lower bounds the root</span>
-    <span class="n">out_begin</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">begin</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
-    <span class="k">while</span> <span class="n">out_begin</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-        <span class="n">end</span><span class="p">[</span><span class="n">out_begin</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">end</span><span class="p">[</span><span class="n">out_begin</span><span class="p">],</span> <span class="n">begin</span><span class="p">[</span><span class="n">out_begin</span><span class="p">])</span>
-        <span class="n">begin</span><span class="p">[</span><span class="n">out_begin</span><span class="p">]</span> <span class="o">/=</span> <span class="mi">2</span>
-        <span class="n">out_begin</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">begin</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
-        <span class="n">eval_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">old_b</span> <span class="o">=</span> <span class="n">b</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">old_b</span><span class="p">),</span> <span class="n">e</span><span class="p">)</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">b</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 
-    <span class="c1"># Ensure that end upper bounds the root</span>
-    <span class="n">out_end</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">end</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span>
-    <span class="k">while</span> <span class="n">out_end</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-        <span class="n">begin</span><span class="p">[</span><span class="n">out_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">begin</span><span class="p">[</span><span class="n">out_end</span><span class="p">],</span> <span class="n">end</span><span class="p">[</span><span class="n">out_end</span><span class="p">])</span>
-        <span class="n">end</span><span class="p">[</span><span class="n">out_end</span><span class="p">]</span> <span class="o">*=</span> <span class="mi">2</span>
-        <span class="n">out_end</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">end</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span>
-        <span class="n">eval_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="c1"># expand `e` upward until f(e) ≥ 0, pushing `b` out with it</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iter</span><span class="p">):</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">mask</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="k">break</span>
 
-    <span class="k">if</span> <span class="n">verbose</span> <span class="ow">and</span> <span class="n">eval_counter</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Root search bounds initialized in </span><span class="si">{</span><span class="n">eval_counter</span><span class="si">}</span><span class="s2"> evaluation(s).&quot;</span>
-        <span class="k">if</span> <span class="n">logger</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[TorchDR] &quot;</span> <span class="o">+</span> <span class="n">msg</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">old_e</span> <span class="o">=</span> <span class="n">e</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">old_e</span><span class="p">),</span> <span class="n">b</span><span class="p">)</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">e</span> <span class="o">*</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">begin</span><span class="p">,</span> <span class="n">end</span>
+    <span class="k">return</span> <span class="n">b</span><span class="p">,</span> <span class="n">e</span>
 </pre></div>
 
                 </article>

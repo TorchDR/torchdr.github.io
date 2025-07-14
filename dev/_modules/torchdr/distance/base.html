@@ -453,8 +453,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils.wrappers</span><span class="w"> </span><span class="kn">import</span> <span class="n">compile_if_requested</span>
-
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">pairwise_distances_torch</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.keops</span><span class="w"> </span><span class="kn">import</span> <span class="n">pairwise_distances_keops</span>
@@ -463,7 +461,6 @@
 
 <div class="viewcode-block" id="pairwise_distances">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.pairwise_distances.html#torchdr.pairwise_distances">[docs]</a>
-<span class="nd">@compile_if_requested</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">pairwise_distances</span><span class="p">(</span>
     <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
     <span class="n">Y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -471,7 +468,6 @@
     <span class="n">backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">exclude_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">k</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute pairwise distances between two tensors.</span>
 
@@ -491,8 +487,6 @@
 <span class="sd">        Only used when k is not None. Default is False.</span>
 <span class="sd">    k : int, optional</span>
 <span class="sd">        If not None, return only the k-nearest neighbors.</span>
-<span class="sd">    compile : bool, default=False</span>
-<span class="sd">        Whether to use torch.compile for faster computation.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -516,19 +510,17 @@
             <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">C</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">pairwise_distances_torch</span><span class="p">(</span>
-            <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="o">=</span><span class="n">Y</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">exclude_diag</span><span class="o">=</span><span class="n">exclude_diag</span><span class="p">,</span> <span class="nb">compile</span><span class="o">=</span><span class="nb">compile</span>
+            <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="o">=</span><span class="n">Y</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">exclude_diag</span><span class="o">=</span><span class="n">exclude_diag</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">C</span><span class="p">,</span> <span class="n">indices</span></div>
 
 
 
-<span class="nd">@compile_if_requested</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">symmetric_pairwise_distances_indices</span><span class="p">(</span>
     <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
     <span class="n">indices</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
     <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
-    <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute pairwise distances for a subset of pairs given by indices.</span>
 
@@ -543,8 +535,6 @@
 <span class="sd">        Indices of the pairs for which to compute the distances.</span>
 <span class="sd">    metric : str, optional</span>
 <span class="sd">        Metric to use for computing distances. The default is &quot;sqeuclidean&quot;.</span>
-<span class="sd">    compile : bool, optional</span>
-<span class="sd">        Whether to compile the distance computation. Default is False.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>

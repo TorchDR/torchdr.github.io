@@ -584,7 +584,6 @@
             <span class="n">backend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_</span><span class="p">,</span>
             <span class="n">exclude_diag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">zero_diag</span><span class="p">,</span>  <span class="c1"># infinite distance means zero affinity</span>
             <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
-            <span class="nb">compile</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">compile</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -684,10 +683,10 @@
 
 
 
-<span class="k">class</span><span class="w"> </span><span class="nc">SparseLogAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Base class for sparse log affinity matrices.</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SparseAffinity</span><span class="p">(</span><span class="n">Affinity</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Base class for sparse affinity matrices.</span>
 
-<span class="sd">    If sparsity is enabled, returns the log affinity matrix in a rectangular format</span>
+<span class="sd">    If sparsity is enabled, returns the affinity matrix in a rectangular format</span>
 <span class="sd">    with the corresponding indices.</span>
 <span class="sd">    Otherwise, returns the full affinity matrix and None.</span>
 
@@ -750,10 +749,89 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_sparsity</span> <span class="o">=</span> <span class="n">bool_arg</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the affinity matrix from the input data.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : torch.Tensor or np.ndarray of shape (n_samples, n_features)</span>
+<span class="sd">            Input data.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        affinity_matrix : torch.Tensor or pykeops.torch.LazyTensor</span>
+<span class="sd">            The computed affinity matrix.</span>
+<span class="sd">        indices : torch.Tensor</span>
+<span class="sd">            If return_indices is True, returns the indices of the non-zero elements</span>
+<span class="sd">            in the affinity matrix if sparsity is enabled. Otherwise, returns None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pre_processed</span><span class="p">:</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_sparse_affinity</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">return_indices</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_sparse_affinity</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the sparse affinity matrix from the input data.</span>
+
+<span class="sd">        This method must be overridden by subclasses.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : torch.Tensor of shape (n_samples, n_features)</span>
+<span class="sd">            Input data.</span>
+<span class="sd">        return_indices : bool, optional</span>
+<span class="sd">            If True, returns the indices of the non-zero elements in the affinity matrix</span>
+<span class="sd">            if sparsity is enabled. Default is False.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        NotImplementedError</span>
+<span class="sd">            If the `_compute_sparse_affinity` method is not implemented by</span>
+<span class="sd">            the subclass, a NotImplementedError is raised.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;[TorchDR] ERROR : `_compute_sparse_affinity` method is not implemented.&quot;</span>
+        <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SparseLogAffinity</span><span class="p">(</span><span class="n">SparseAffinity</span><span class="p">,</span> <span class="n">LogAffinity</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Base class for sparse log affinity matrices.</span>
+
+<span class="sd">    If sparsity is enabled, returns the log affinity matrix in a rectangular format</span>
+<span class="sd">    with the corresponding indices.</span>
+<span class="sd">    Otherwise, returns the full affinity matrix and None.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    metric : str, optional</span>
+<span class="sd">        The distance metric to use for computing pairwise distances.</span>
+<span class="sd">        Default is &quot;sqeuclidean&quot;.</span>
+<span class="sd">    zero_diag : bool, optional</span>
+<span class="sd">        Whether to set the diagonal of the affinity matrix to zero. Default is True.</span>
+<span class="sd">    device : str, optional</span>
+<span class="sd">        The device to use for computation. Typically &quot;cuda&quot; for GPU or &quot;cpu&quot; for CPU.</span>
+<span class="sd">        If &quot;auto&quot;, uses the device of the input data. Default is &quot;auto&quot;.</span>
+<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None}, optional</span>
+<span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
+<span class="sd">        Default is None.</span>
+<span class="sd">    verbose : bool, optional</span>
+<span class="sd">        If True, prints additional information during computation. Default is False.</span>
+<span class="sd">    compile : bool, optional</span>
+<span class="sd">        Whether to compile the affinity matrix computation. Default is False.</span>
+<span class="sd">    sparsity : bool or &#39;auto&#39;, optional</span>
+<span class="sd">        Whether to compute the affinity matrix in a sparse format. Default is &quot;auto&quot;.</span>
+<span class="sd">    _pre_processed : bool, optional</span>
+<span class="sd">        If True, assumes inputs are already torch tensors on the correct device</span>
+<span class="sd">        and skips the `to_torch` conversion. Default is False.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">X</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
         <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute and return the log affinity matrix from input data.</span>
@@ -781,15 +859,25 @@
 <span class="sd">            If return_indices is True, returns the indices of the non-zero elements</span>
 <span class="sd">            in the affinity matrix if sparsity is enabled. Otherwise, returns None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">X</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-        <span class="n">log_affinity</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_sparse_log_affinity</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">log_affinity</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">affinity_to_return</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">affinity_to_return</span> <span class="o">=</span> <span class="n">log_affinity</span> <span class="k">if</span> <span class="n">log</span> <span class="k">else</span> <span class="n">log_affinity</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">affinity_to_return</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span> <span class="k">if</span> <span class="n">return_indices</span> <span class="k">else</span> <span class="n">affinity_to_return</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pre_processed</span><span class="p">:</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_sparse_log_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">return_indices</span><span class="p">:</span>
+            <span class="n">log_affinity</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_sparse_log_affinity</span><span class="p">(</span>
+                <span class="n">X</span><span class="p">,</span> <span class="n">return_indices</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span>
+            <span class="n">affinity_to_return</span> <span class="o">=</span> <span class="n">log_affinity</span> <span class="k">if</span> <span class="n">log</span> <span class="k">else</span> <span class="n">log_affinity</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">affinity_to_return</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log_affinity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_sparse_log_affinity</span><span class="p">(</span>
+                <span class="n">X</span><span class="p">,</span> <span class="n">return_indices</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span>
+            <span class="n">affinity_to_return</span> <span class="o">=</span> <span class="n">log_affinity</span> <span class="k">if</span> <span class="n">log</span> <span class="k">else</span> <span class="n">log_affinity</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">affinity_to_return</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_sparse_log_affinity</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the log affinity matrix in a sparse format from the input data.</span>
 
 <span class="sd">        This method must be overridden by subclasses.</span>
@@ -798,6 +886,9 @@
 <span class="sd">        ----------</span>
 <span class="sd">        X : torch.Tensor of shape (n_samples, n_features)</span>
 <span class="sd">            Input data.</span>
+<span class="sd">        return_indices : bool, optional</span>
+<span class="sd">            If True, returns the indices of the non-zero elements in the affinity matrix</span>
+<span class="sd">            if sparsity is enabled. Default is False.</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
@@ -954,13 +1045,11 @@
         <span class="c1"># Note: The `backend_` attribute is set by the `@handle_keops` decorator.</span>
 
         <span class="k">elif</span> <span class="n">Y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Case 1: Cross-distance matrix</span>
-            <span class="k">return</span> <span class="n">pairwise_distances</span><span class="p">(</span>
-                <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_</span><span class="p">,</span> <span class="nb">compile</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">compile</span>
-            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">pairwise_distances</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Case 2: Sparse self-distance matrix</span>
             <span class="k">return</span> <span class="n">symmetric_pairwise_distances_indices</span><span class="p">(</span>
-                <span class="n">X</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span> <span class="nb">compile</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">compile</span>
+                <span class="n">X</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span>
             <span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># Case 3: Full self-distance matrix (with or without the diagonal)</span>
@@ -969,7 +1058,6 @@
                 <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span>
                 <span class="n">backend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_</span><span class="p">,</span>
                 <span class="n">exclude_diag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">zero_diag</span><span class="p">,</span>  <span class="c1"># infinite distance is zero affinity</span>
-                <span class="nb">compile</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">compile</span><span class="p">,</span>
             <span class="p">)</span>
 
 

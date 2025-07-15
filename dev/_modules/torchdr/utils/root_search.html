@@ -512,9 +512,12 @@
 
         <span class="n">same_sign</span> <span class="o">=</span> <span class="n">f_m</span> <span class="o">*</span> <span class="n">f_b</span> <span class="o">&gt;</span> <span class="mi">0</span>
 
-        <span class="n">b</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">active</span> <span class="o">&amp;</span> <span class="n">same_sign</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
-        <span class="n">e</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">active</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="n">same_sign</span><span class="p">),</span> <span class="n">m</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
-        <span class="n">f_b</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">active</span> <span class="o">&amp;</span> <span class="n">same_sign</span><span class="p">,</span> <span class="n">f_m</span><span class="p">,</span> <span class="n">f_b</span><span class="p">)</span>
+        <span class="n">mask1</span> <span class="o">=</span> <span class="n">active</span> <span class="o">&amp;</span> <span class="n">same_sign</span>
+        <span class="n">b</span><span class="p">[</span><span class="n">mask1</span><span class="p">]</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="n">mask1</span><span class="p">]</span>
+        <span class="n">f_b</span><span class="p">[</span><span class="n">mask1</span><span class="p">]</span> <span class="o">=</span> <span class="n">f_m</span><span class="p">[</span><span class="n">mask1</span><span class="p">]</span>
+
+        <span class="n">mask2</span> <span class="o">=</span> <span class="n">active</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="n">same_sign</span><span class="p">)</span>
+        <span class="n">e</span><span class="p">[</span><span class="n">mask2</span><span class="p">]</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="n">mask2</span><span class="p">]</span>
 
         <span class="n">m</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span> <span class="o">+</span> <span class="n">e</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span>
         <span class="n">f_m</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
@@ -577,10 +580,13 @@
 
         <span class="n">same_sign</span> <span class="o">=</span> <span class="n">f_m</span> <span class="o">*</span> <span class="n">f_b</span> <span class="o">&gt;</span> <span class="mi">0</span>
 
-        <span class="n">b</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">active</span> <span class="o">&amp;</span> <span class="n">same_sign</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
-        <span class="n">f_b</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">active</span> <span class="o">&amp;</span> <span class="n">same_sign</span><span class="p">,</span> <span class="n">f_m</span><span class="p">,</span> <span class="n">f_b</span><span class="p">)</span>
-        <span class="n">e</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">active</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="n">same_sign</span><span class="p">),</span> <span class="n">m</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
-        <span class="n">f_e</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">active</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="n">same_sign</span><span class="p">),</span> <span class="n">f_m</span><span class="p">,</span> <span class="n">f_e</span><span class="p">)</span>
+        <span class="n">mask1</span> <span class="o">=</span> <span class="n">active</span> <span class="o">&amp;</span> <span class="n">same_sign</span>
+        <span class="n">b</span><span class="p">[</span><span class="n">mask1</span><span class="p">]</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="n">mask1</span><span class="p">]</span>
+        <span class="n">f_b</span><span class="p">[</span><span class="n">mask1</span><span class="p">]</span> <span class="o">=</span> <span class="n">f_m</span><span class="p">[</span><span class="n">mask1</span><span class="p">]</span>
+
+        <span class="n">mask2</span> <span class="o">=</span> <span class="n">active</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="n">same_sign</span><span class="p">)</span>
+        <span class="n">e</span><span class="p">[</span><span class="n">mask2</span><span class="p">]</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="n">mask2</span><span class="p">]</span>
+        <span class="n">f_e</span><span class="p">[</span><span class="n">mask2</span><span class="p">]</span> <span class="o">=</span> <span class="n">f_m</span><span class="p">[</span><span class="n">mask2</span><span class="p">]</span>
 
         <span class="n">m</span> <span class="o">=</span> <span class="n">b</span> <span class="o">-</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">e</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">f_b</span> <span class="o">-</span> <span class="n">f_e</span><span class="p">)</span> <span class="o">*</span> <span class="n">f_b</span>
         <span class="n">f_m</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>

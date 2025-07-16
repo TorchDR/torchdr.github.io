@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Incremental PCA on GPU &#8212; TorchDR 0.2 documentation</title>
+    <title>Incremental PCA on GPU &#8212; TorchDR 0.3 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=10f1778b"></script>
+    <script src="../../_static/documentation_options.js?v=b489f392"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/basics/incremental_pca';</script>
@@ -51,7 +51,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Neighbor Embedding on genomics &amp; equivalent affinity matcher formulation" href="demo_ne_methods_affinity_matcher.html" />
-    <link rel="prev" title="TSNE embedding of the swiss roll dataset" href="demo_tsne_swiss_roll.html" />
+    <link rel="prev" title="TSNE vs COSNE : Euclidean vs Hyperbolic" href="demo_tsne_vs_cosne.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -120,8 +120,8 @@
       
     
     
-    <img src="../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.2 documentation - Home"/>
-    <img src="../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.2 documentation - Home"/>
+    <img src="../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3 documentation - Home"/>
+    <img src="../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3 documentation - Home"/>
   
   
 </a></div>
@@ -404,6 +404,7 @@
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="demo_pca_via_affinity_matcher.html">PCA via SVD and via AffinityMatcher</a></li>
 <li class="toctree-l1"><a class="reference internal" href="demo_tsne_swiss_roll.html">TSNE embedding of the swiss roll dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="demo_tsne_vs_cosne.html">TSNE vs COSNE : Euclidean vs Hyperbolic</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Incremental PCA on GPU</a></li>
 <li class="toctree-l1"><a class="reference internal" href="demo_ne_methods_affinity_matcher.html">Neighbor Embedding on genomics &amp; equivalent affinity matcher formulation</a></li>
 </ul>
@@ -483,14 +484,14 @@ We compare the memory usage and time taken to fit the model with the regular
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr</span><span class="w"> </span><span class="kn">import</span> <span class="n">IncrementalPCA</span><span class="p">,</span> <span class="n">PCA</span>
 
 <span class="c1"># Choose the GPU device if available.</span>
-<span class="n">device</span> <span class="o">=</span> <a href="http://pytorch.org/docs/2.0/tensor_attributes.html#torch.device" title="torch.device" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">torch</span><span class="o">.</span><span class="n">device</span></a><span class="p">(</span><span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <a href="http://pytorch.org/docs/2.0/generated/torch.cuda.is_available.html#torch.cuda.is_available" title="torch.cuda.is_available" class="sphx-glr-backref-module-torch-cuda sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span></a><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+<span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
 <span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="s2">&quot;cuda&quot;</span><span class="p">:</span>
     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;This example requires a CUDA-capable GPU.&quot;</span><span class="p">)</span>
 
 <span class="c1"># Generate a large random dataset on CPU.</span>
 <span class="n">n_samples</span> <span class="o">=</span> <span class="mi">100_000</span>
 <span class="n">n_features</span> <span class="o">=</span> <span class="mi">500</span>
-<span class="n">X</span> <span class="o">=</span> <a href="http://pytorch.org/docs/2.0/generated/torch.randn.html#torch.randn" title="torch.randn" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">randn</span></a><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span><span class="p">)</span>  <span class="c1"># Stored on CPU</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span><span class="p">)</span>  <span class="c1"># Stored on CPU</span>
 
 <span class="c1"># --------------------------</span>
 <span class="c1"># Incremental PCA on GPU</span>
@@ -500,14 +501,14 @@ We compare the memory usage and time taken to fit the model with the regular
 <span class="n">ipca</span> <span class="o">=</span> <span class="n">IncrementalPCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
 
 <span class="c1"># Reset GPU memory stats before fitting.</span>
-<a href="http://pytorch.org/docs/2.0/generated/torch.cuda.reset_peak_memory_stats.html#torch.cuda.reset_peak_memory_stats" title="torch.cuda.reset_peak_memory_stats" class="sphx-glr-backref-module-torch-cuda sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">reset_peak_memory_stats</span></a><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">reset_peak_memory_stats</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
 
 <span class="n">start</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
 <span class="n">ipca</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">check_input</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">ipca_time</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
 
 <span class="c1"># Get the peak GPU memory allocated (in bytes).</span>
-<span class="n">ipca_peak_mem</span> <span class="o">=</span> <a href="http://pytorch.org/docs/2.0/generated/torch.cuda.max_memory_allocated.html#torch.cuda.max_memory_allocated" title="torch.cuda.max_memory_allocated" class="sphx-glr-backref-module-torch-cuda sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">max_memory_allocated</span></a><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="n">ipca_peak_mem</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">max_memory_allocated</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span>
     <span class="sa">f</span><span class="s2">&quot;Incremental PCA on GPU:</span><span class="se">\n</span><span class="s2">&quot;</span>
     <span class="sa">f</span><span class="s2">&quot;  Time: </span><span class="si">{</span><span class="n">ipca_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> sec, &quot;</span>
@@ -516,7 +517,7 @@ We compare the memory usage and time taken to fit the model with the regular
 
 <span class="c1"># Clean up and free GPU memory.</span>
 <span class="k">del</span> <span class="n">ipca</span>
-<a href="http://pytorch.org/docs/2.0/generated/torch.cuda.empty_cache.html#torch.cuda.empty_cache" title="torch.cuda.empty_cache" class="sphx-glr-backref-module-torch-cuda sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">empty_cache</span></a><span class="p">()</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">empty_cache</span><span class="p">()</span>
 <a href="https://docs.python.org/3.4/library/gc.html#gc.collect" title="gc.collect" class="sphx-glr-backref-module-gc sphx-glr-backref-type-py-function"><span class="n">gc</span><span class="o">.</span><span class="n">collect</span></a><span class="p">()</span>
 
 <span class="c1"># --------------------------</span>
@@ -526,7 +527,7 @@ We compare the memory usage and time taken to fit the model with the regular
 <span class="n">pca</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
 
 <span class="c1"># Reset GPU memory stats before fitting.</span>
-<a href="http://pytorch.org/docs/2.0/generated/torch.cuda.reset_peak_memory_stats.html#torch.cuda.reset_peak_memory_stats" title="torch.cuda.reset_peak_memory_stats" class="sphx-glr-backref-module-torch-cuda sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">reset_peak_memory_stats</span></a><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">reset_peak_memory_stats</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
 
 <span class="n">start</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
 <span class="c1"># Here we assume that pca.fit will move the full dataset to the GPU.</span>
@@ -534,7 +535,7 @@ We compare the memory usage and time taken to fit the model with the regular
 <span class="n">pca_time</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
 
 <span class="c1"># Get the peak GPU memory allocated (in bytes).</span>
-<span class="n">pca_peak_mem</span> <span class="o">=</span> <a href="http://pytorch.org/docs/2.0/generated/torch.cuda.max_memory_allocated.html#torch.cuda.max_memory_allocated" title="torch.cuda.max_memory_allocated" class="sphx-glr-backref-module-torch-cuda sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">max_memory_allocated</span></a><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="n">pca_peak_mem</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">max_memory_allocated</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span>
     <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Regular PCA on GPU:</span><span class="se">\n</span><span class="s2">&quot;</span>
     <span class="sa">f</span><span class="s2">&quot;  Time: </span><span class="si">{</span><span class="n">pca_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> sec, &quot;</span>
@@ -567,12 +568,12 @@ We compare the memory usage and time taken to fit the model with the regular
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="demo_tsne_swiss_roll.html"
+       href="demo_tsne_vs_cosne.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">TSNE embedding of the swiss roll dataset</p>
+        <p class="prev-next-title">TSNE vs COSNE : Euclidean vs Hyperbolic</p>
       </div>
     </a>
     <a class="right-next"

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Neighbor Embedding on genomics &amp; equivalent affinity matcher formulation &#8212; TorchDR 0.2 documentation</title>
+    <title>Neighbor Embedding on genomics &amp; equivalent affinity matcher formulation &#8212; TorchDR 0.3 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=10f1778b"></script>
+    <script src="../../_static/documentation_options.js?v=b489f392"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/basics/demo_ne_methods_affinity_matcher';</script>
@@ -120,8 +120,8 @@
       
     
     
-    <img src="../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.2 documentation - Home"/>
-    <img src="../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.2 documentation - Home"/>
+    <img src="../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3 documentation - Home"/>
+    <img src="../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3 documentation - Home"/>
   
   
 </a></div>
@@ -404,6 +404,7 @@
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="demo_pca_via_affinity_matcher.html">PCA via SVD and via AffinityMatcher</a></li>
 <li class="toctree-l1"><a class="reference internal" href="demo_tsne_swiss_roll.html">TSNE embedding of the swiss roll dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="demo_tsne_vs_cosne.html">TSNE vs COSNE : Euclidean vs Hyperbolic</a></li>
 <li class="toctree-l1"><a class="reference internal" href="incremental_pca.html">Incremental PCA on GPU</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Neighbor Embedding on genomics &amp; equivalent affinity matcher formulation</a></li>
 </ul>
@@ -522,11 +523,12 @@ on the SNARE-seq gene expression dataset with given cell type labels.</p>
     <span class="s2">&quot;optimizer_kwargs&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
     <span class="s2">&quot;max_iter&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
     <span class="s2">&quot;lr&quot;</span><span class="p">:</span> <span class="mf">1e0</span><span class="p">,</span>
+    <span class="s2">&quot;backend&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">sne</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">SNE</span></a><span class="p">(</span><span class="n">early_exaggeration_coeff</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><a href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">params</span></a><span class="p">)</span>
 
-<span class="n">umap</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">UMAP</span></a><span class="p">(</span><span class="n">early_exaggeration_coeff</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><a href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">params</span></a><span class="p">)</span>
+<span class="n">umap</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">UMAP</span></a><span class="p">(</span><span class="o">**</span><a href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">params</span></a><span class="p">)</span>
 
 <span class="n">tsne</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">TSNE</span></a><span class="p">(</span><span class="n">early_exaggeration_coeff</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><a href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">params</span></a><span class="p">)</span>
 
@@ -605,7 +607,7 @@ using <a class="reference internal" href="../../stubs/torchdr.AffinityMatcher.ht
 In TorchDR, it is therefore recommended to use the specific class associated
 with the desired algorithm when available.</p>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 8.712 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 12.281 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-basics-demo-ne-methods-affinity-matcher-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/286dcc8a82b9a5553a5d809cc0f6fa61/demo_ne_methods_affinity_matcher.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">demo_ne_methods_affinity_matcher.ipynb</span></code></a></p>

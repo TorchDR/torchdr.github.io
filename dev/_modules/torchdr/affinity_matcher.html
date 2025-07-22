@@ -669,18 +669,31 @@
                     <span class="s2">&quot;(n_samples, n_samples).&quot;</span>
                 <span class="p">)</span>
             <span class="n">check_nonnegativity</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span> <span class="o">=</span> <span class="n">X</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;affinity_in_&quot;</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;----- Computing the input affinity matrix with </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> -----&quot;</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="p">,</span> <span class="n">SparseAffinity</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="p">(</span>
-                    <span class="n">X</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="kc">True</span>
-                <span class="p">)</span>
+                <span class="n">affinity_matrix</span><span class="p">,</span> <span class="n">nn_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="c1"># LazyTensors (from keops backend) can&#39;t be registered as buffers</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="o">.</span><span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;keops&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span> <span class="o">=</span> <span class="n">affinity_matrix</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span>
+                        <span class="s2">&quot;affinity_in_&quot;</span><span class="p">,</span> <span class="n">affinity_matrix</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span>
+                    <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;NN_indices_&quot;</span><span class="p">,</span> <span class="n">nn_indices</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+                <span class="n">affinity_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+                <span class="c1"># LazyTensors (from keops backend) can&#39;t be registered as buffers</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="o">.</span><span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;keops&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span> <span class="o">=</span> <span class="n">affinity_matrix</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span>
+                        <span class="s2">&quot;affinity_in_&quot;</span><span class="p">,</span> <span class="n">affinity_matrix</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span>
+                    <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">on_affinity_computation_end</span><span class="p">()</span>
 
@@ -692,8 +705,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_embedding</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_params</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_learning_rate</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_optimizer</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_scheduler</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_configure_optimizer</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_configure_scheduler</span><span class="p">()</span>
 
         <span class="n">grad_norm</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">):</span>
@@ -731,6 +744,9 @@
                             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">grad_norm</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">.&quot;</span>
                         <span class="p">)</span>
                     <span class="k">break</span>
+
+        <span class="c1"># Always clear memory after training</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_memory</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span>
 
@@ -801,7 +817,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">params_</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">}]</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_set_optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_configure_optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="c1"># Try to get the optimizer from torch.optim</span>
             <span class="k">try</span><span class="p">:</span>
@@ -834,13 +850,13 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">lr_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_set_scheduler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_iter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_configure_scheduler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_iter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="n">n_iter</span> <span class="o">=</span> <span class="n">n_iter</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;optimizer_&quot;</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;[TorchDR] ERROR : optimizer not set. &quot;</span>
-                <span class="s2">&quot;Please call _set_optimizer before _set_scheduler.&quot;</span>
+                <span class="s2">&quot;Please call _configure_optimizer before _configure_scheduler.&quot;</span>
             <span class="p">)</span>
 
         <span class="c1"># If scheduler is None, don&#39;t create a scheduler</span>
@@ -914,7 +930,28 @@
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">requires_grad_</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">requires_grad_</span><span class="p">()</span>
+
+<div class="viewcode-block" id="AffinityMatcher.clear_memory">
+<a class="viewcode-back" href="../../stubs/torchdr.AffinityMatcher.html#torchdr.AffinityMatcher.clear_memory">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear_memory</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear all training-related memory including buffers and optimizer state.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">clear_memory</span><span class="p">()</span>
+
+        <span class="c1"># Clear affinity_in_ if it&#39;s a LazyTensor (from keops backend)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;affinity_in_&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="p">,</span> <span class="n">Affinity</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="o">.</span><span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;keops&quot;</span><span class="p">:</span>
+                <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;affinity_in_&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="p">,</span> <span class="n">Affinity</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="o">.</span><span class="n">clear_memory</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="p">,</span> <span class="n">Affinity</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="o">.</span><span class="n">clear_memory</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;optimizer_&quot;</span><span class="p">,</span> <span class="s2">&quot;scheduler_&quot;</span><span class="p">,</span> <span class="s2">&quot;params_&quot;</span><span class="p">,</span> <span class="s2">&quot;lr_&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+                <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span></div>
+</div>
 
 </pre></div>
 

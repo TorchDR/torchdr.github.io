@@ -617,8 +617,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff_</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="c1"># reinitialize optim</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_set_learning_rate</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_set_optimizer</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_set_scheduler</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_configure_optimizer</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_configure_scheduler</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="bp">self</span>
 
@@ -668,7 +668,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">lr_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_set_optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_configure_optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="c1"># Get optimizer directly from torch.optim</span>
             <span class="k">try</span><span class="p">:</span>
@@ -701,12 +701,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_</span> <span class="o">=</span> <span class="n">optimizer_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params_</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lr_</span><span class="p">,</span> <span class="o">**</span><span class="n">optimizer_kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_set_scheduler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_configure_scheduler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff_</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">n_iter</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_iter</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">n_iter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_iter</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_set_scheduler</span><span class="p">(</span><span class="n">n_iter</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_configure_scheduler</span><span class="p">(</span><span class="n">n_iter</span><span class="p">)</span></div>
 
 
 
@@ -1055,9 +1055,12 @@
                 <span class="n">exclude</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">self_idxs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">exclude</span> <span class="o">=</span> <span class="n">self_idxs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">exclude_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">exclude</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># sort exclude so searchsorted works</span>
+        <span class="n">exclude_sorted</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">exclude</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># sort exclude so searchsorted works</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span>
+            <span class="s2">&quot;negative_exclusion_indices_&quot;</span><span class="p">,</span> <span class="n">exclude_sorted</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
 
-        <span class="n">n_possible</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">n_possible</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative_exclusion_indices_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span> <span class="o">&gt;</span> <span class="n">n_possible</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;[TorchDR] ERROR : requested </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span><span class="si">}</span><span class="s2"> negatives but &quot;</span>
@@ -1072,12 +1075,15 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_training_step_start</span><span class="p">()</span>
         <span class="n">negatives</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
             <span class="mi">1</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative_exclusion_indices_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
             <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span><span class="p">),</span>
             <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">shifts</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exclude_</span><span class="p">,</span> <span class="n">negatives</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">neg_indices_</span> <span class="o">=</span> <span class="n">negatives</span> <span class="o">+</span> <span class="n">shifts</span></div>
+        <span class="n">shifts</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">negative_exclusion_indices_</span><span class="p">,</span> <span class="n">negatives</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="n">neg_indices</span> <span class="o">=</span> <span class="n">negatives</span> <span class="o">+</span> <span class="n">shifts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;neg_indices_&quot;</span><span class="p">,</span> <span class="n">neg_indices</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

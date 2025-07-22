@@ -513,11 +513,11 @@
         <span class="n">same_sign</span> <span class="o">=</span> <span class="n">f_m</span> <span class="o">*</span> <span class="n">f_b</span> <span class="o">&gt;</span> <span class="mi">0</span>
 
         <span class="n">mask1</span> <span class="o">=</span> <span class="n">active</span> <span class="o">&amp;</span> <span class="n">same_sign</span>
-        <span class="n">b</span><span class="p">[</span><span class="n">mask1</span><span class="p">]</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="n">mask1</span><span class="p">]</span>
-        <span class="n">f_b</span><span class="p">[</span><span class="n">mask1</span><span class="p">]</span> <span class="o">=</span> <span class="n">f_m</span><span class="p">[</span><span class="n">mask1</span><span class="p">]</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">masked_scatter_</span><span class="p">(</span><span class="n">mask1</span><span class="p">,</span> <span class="n">m</span><span class="p">[</span><span class="n">mask1</span><span class="p">])</span>
+        <span class="n">f_b</span><span class="o">.</span><span class="n">masked_scatter_</span><span class="p">(</span><span class="n">mask1</span><span class="p">,</span> <span class="n">f_m</span><span class="p">[</span><span class="n">mask1</span><span class="p">])</span>
 
         <span class="n">mask2</span> <span class="o">=</span> <span class="n">active</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="n">same_sign</span><span class="p">)</span>
-        <span class="n">e</span><span class="p">[</span><span class="n">mask2</span><span class="p">]</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="n">mask2</span><span class="p">]</span>
+        <span class="n">e</span><span class="o">.</span><span class="n">masked_scatter_</span><span class="p">(</span><span class="n">mask2</span><span class="p">,</span> <span class="n">m</span><span class="p">[</span><span class="n">mask2</span><span class="p">])</span>
 
         <span class="n">m</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span> <span class="o">+</span> <span class="n">e</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span>
         <span class="n">f_m</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
@@ -581,12 +581,12 @@
         <span class="n">same_sign</span> <span class="o">=</span> <span class="n">f_m</span> <span class="o">*</span> <span class="n">f_b</span> <span class="o">&gt;</span> <span class="mi">0</span>
 
         <span class="n">mask1</span> <span class="o">=</span> <span class="n">active</span> <span class="o">&amp;</span> <span class="n">same_sign</span>
-        <span class="n">b</span><span class="p">[</span><span class="n">mask1</span><span class="p">]</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="n">mask1</span><span class="p">]</span>
-        <span class="n">f_b</span><span class="p">[</span><span class="n">mask1</span><span class="p">]</span> <span class="o">=</span> <span class="n">f_m</span><span class="p">[</span><span class="n">mask1</span><span class="p">]</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">masked_scatter_</span><span class="p">(</span><span class="n">mask1</span><span class="p">,</span> <span class="n">m</span><span class="p">[</span><span class="n">mask1</span><span class="p">])</span>
+        <span class="n">f_b</span><span class="o">.</span><span class="n">masked_scatter_</span><span class="p">(</span><span class="n">mask1</span><span class="p">,</span> <span class="n">f_m</span><span class="p">[</span><span class="n">mask1</span><span class="p">])</span>
 
         <span class="n">mask2</span> <span class="o">=</span> <span class="n">active</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="n">same_sign</span><span class="p">)</span>
-        <span class="n">e</span><span class="p">[</span><span class="n">mask2</span><span class="p">]</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="n">mask2</span><span class="p">]</span>
-        <span class="n">f_e</span><span class="p">[</span><span class="n">mask2</span><span class="p">]</span> <span class="o">=</span> <span class="n">f_m</span><span class="p">[</span><span class="n">mask2</span><span class="p">]</span>
+        <span class="n">e</span><span class="o">.</span><span class="n">masked_scatter_</span><span class="p">(</span><span class="n">mask2</span><span class="p">,</span> <span class="n">m</span><span class="p">[</span><span class="n">mask2</span><span class="p">])</span>
+        <span class="n">f_e</span><span class="o">.</span><span class="n">masked_scatter_</span><span class="p">(</span><span class="n">mask2</span><span class="p">,</span> <span class="n">f_m</span><span class="p">[</span><span class="n">mask2</span><span class="p">])</span>
 
         <span class="n">m</span> <span class="o">=</span> <span class="n">b</span> <span class="o">-</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">e</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">f_b</span> <span class="o">-</span> <span class="n">f_e</span><span class="p">)</span> <span class="o">*</span> <span class="n">f_b</span>
         <span class="n">f_m</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
@@ -627,9 +627,10 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">mask</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
             <span class="k">break</span>
 
-        <span class="n">old_b</span> <span class="o">=</span> <span class="n">b</span>
-        <span class="n">e</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">old_b</span><span class="p">),</span> <span class="n">e</span><span class="p">)</span>
-        <span class="n">b</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">b</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+        <span class="n">old_b</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+        <span class="c1"># In-place operations for efficiency</span>
+        <span class="n">e</span><span class="o">.</span><span class="n">masked_scatter_</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">old_b</span><span class="p">[</span><span class="n">mask</span><span class="p">]))</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">masked_scatter_</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">)</span>
 
     <span class="c1"># expand `e` upward until f(e) ≥ 0, pushing `b` out with it</span>
     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iter</span><span class="p">):</span>
@@ -637,9 +638,10 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">mask</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
             <span class="k">break</span>
 
-        <span class="n">old_e</span> <span class="o">=</span> <span class="n">e</span>
-        <span class="n">b</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">old_e</span><span class="p">),</span> <span class="n">b</span><span class="p">)</span>
-        <span class="n">e</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">e</span> <span class="o">*</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="n">old_e</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+        <span class="c1"># In-place operations for efficiency</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">masked_scatter_</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">old_e</span><span class="p">[</span><span class="n">mask</span><span class="p">]))</span>
+        <span class="n">e</span><span class="o">.</span><span class="n">masked_scatter_</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">e</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">*</span> <span class="mf">2.0</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">b</span><span class="p">,</span> <span class="n">e</span>
 </pre></div>

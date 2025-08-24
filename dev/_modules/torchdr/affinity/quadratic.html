@@ -450,11 +450,12 @@
 <span class="c1">#</span>
 <span class="c1"># License: BSD 3-Clause License</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity</span><span class="w"> </span><span class="kn">import</span> <span class="n">Affinity</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distance</span><span class="w"> </span><span class="kn">import</span> <span class="n">FaissConfig</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">matrix_transpose</span><span class="p">,</span>
     <span class="n">check_NaNs</span><span class="p">,</span>
@@ -530,8 +531,13 @@
 <span class="sd">        Whether to set the diagonal elements of the affinity matrix to 0.</span>
 <span class="sd">    device : str, optional</span>
 <span class="sd">        Device to use for computation.</span>
-<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None}, optional</span>
+<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None} or FaissConfig, optional</span>
 <span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
+<span class="sd">        Can be:</span>
+<span class="sd">        - &quot;keops&quot;: Use KeOps for memory-efficient symbolic computations</span>
+<span class="sd">        - &quot;faiss&quot;: Use FAISS for fast k-NN computations with default settings</span>
+<span class="sd">        - None: Use standard PyTorch operations</span>
+<span class="sd">        - FaissConfig object: Use FAISS with custom configuration</span>
 <span class="sd">        Default is None.</span>
 <span class="sd">    verbose : bool, optional</span>
 <span class="sd">        Verbosity. Default is False.</span>
@@ -555,11 +561,16 @@
         <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
         <span class="n">zero_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-        <span class="n">backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">backend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">_pre_processed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
+        <span class="c1"># DoublyStochasticQuadraticAffinity doesn&#39;t use k-NN, so fall back to None if FAISS is used</span>
+        <span class="c1"># but keep &quot;keops&quot; for memory efficiency</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">)</span> <span class="ow">or</span> <span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;faiss&quot;</span><span class="p">:</span>
+            <span class="n">backend</span> <span class="o">=</span> <span class="kc">None</span>
+
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
             <span class="n">zero_diag</span><span class="o">=</span><span class="n">zero_diag</span><span class="p">,</span>

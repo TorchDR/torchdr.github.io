@@ -468,6 +468,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distance</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">pairwise_distances</span><span class="p">,</span>
     <span class="n">symmetric_pairwise_distances_indices</span><span class="p">,</span>
+    <span class="n">FaissConfig</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -485,8 +486,14 @@
 <span class="sd">    device : str, optional</span>
 <span class="sd">        The device to use for computation. Typically &quot;cuda&quot; for GPU or &quot;cpu&quot; for CPU.</span>
 <span class="sd">        If &quot;auto&quot;, uses the device of the input data.</span>
-<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None}, optional</span>
+<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None} or FaissConfig, optional</span>
 <span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
+<span class="sd">        Can be:</span>
+<span class="sd">        - &quot;keops&quot;: Use KeOps for memory-efficient symbolic computations</span>
+<span class="sd">        - &quot;faiss&quot;: Use FAISS for fast k-NN computations with default settings</span>
+<span class="sd">        - None: Use standard PyTorch operations</span>
+<span class="sd">        - FaissConfig object: Use FAISS with custom configuration</span>
+<span class="sd">          (e.g., FaissConfig(use_float16=True, temp_memory=2.0))</span>
 <span class="sd">        Default is None.</span>
 <span class="sd">    verbose : bool, optional</span>
 <span class="sd">        Verbosity. Default is False.</span>
@@ -502,7 +509,7 @@
         <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
         <span class="n">zero_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-        <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">backend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -514,7 +521,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">metric</span> <span class="o">=</span> <span class="n">metric</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">zero_diag</span> <span class="o">=</span> <span class="n">bool_arg</span><span class="p">(</span><span class="n">zero_diag</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">=</span> <span class="n">backend</span>
+
+        <span class="c1"># Store the original backend parameter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_backend_orig</span> <span class="o">=</span> <span class="n">backend</span>
+        <span class="c1"># Parse backend parameter for internal use</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">=</span> <span class="s2">&quot;faiss&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">=</span> <span class="n">backend</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">bool_arg</span><span class="p">(</span><span class="n">verbose</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span> <span class="o">=</span> <span class="n">random_state</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">compile</span> <span class="o">=</span> <span class="nb">compile</span>
@@ -586,10 +601,16 @@
 <span class="sd">            is returned. Otherwise, a torch.Tensor is returned.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># The `@handle_keops` decorator sets `self.backend_`, which is used below.</span>
+        <span class="c1"># If we have a FaissConfig, use the original backend parameter</span>
+        <span class="n">backend_to_use</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_backend_orig</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_backend_orig</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">)</span>
+            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend_</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">pairwise_distances</span><span class="p">(</span>
             <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>
             <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span>
-            <span class="n">backend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_</span><span class="p">,</span>
+            <span class="n">backend</span><span class="o">=</span><span class="n">backend_to_use</span><span class="p">,</span>
             <span class="n">exclude_diag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">zero_diag</span><span class="p">,</span>  <span class="c1"># infinite distance means zero affinity</span>
             <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
             <span class="n">return_indices</span><span class="o">=</span><span class="n">return_indices</span><span class="p">,</span>
@@ -622,8 +643,13 @@
 <span class="sd">    device : str, optional</span>
 <span class="sd">        The device to use for computation. Typically &quot;cuda&quot; for GPU or &quot;cpu&quot; for CPU.</span>
 <span class="sd">        If &quot;auto&quot;, uses the device of the input data.</span>
-<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None}, optional</span>
+<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None} or FaissConfig, optional</span>
 <span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
+<span class="sd">        Can be:</span>
+<span class="sd">        - &quot;keops&quot;: Use KeOps for memory-efficient symbolic computations</span>
+<span class="sd">        - &quot;faiss&quot;: Use FAISS for fast k-NN computations with default settings</span>
+<span class="sd">        - None: Use standard PyTorch operations</span>
+<span class="sd">        - FaissConfig object: Use FAISS with custom configuration</span>
 <span class="sd">        Default is None.</span>
 <span class="sd">    verbose : bool, optional</span>
 <span class="sd">        If True, prints additional information during computation. Default is False.</span>
@@ -639,7 +665,7 @@
         <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
         <span class="n">zero_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-        <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">backend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -722,8 +748,13 @@
 <span class="sd">    device : str, optional</span>
 <span class="sd">        The device to use for computation. Typically &quot;cuda&quot; for GPU or &quot;cpu&quot; for CPU.</span>
 <span class="sd">        If &quot;auto&quot;, uses the device of the input data. Default is &quot;auto&quot;.</span>
-<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None}, optional</span>
+<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None} or FaissConfig, optional</span>
 <span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
+<span class="sd">        Can be:</span>
+<span class="sd">        - &quot;keops&quot;: Use KeOps for memory-efficient symbolic computations</span>
+<span class="sd">        - &quot;faiss&quot;: Use FAISS for fast k-NN computations with default settings</span>
+<span class="sd">        - None: Use standard PyTorch operations</span>
+<span class="sd">        - FaissConfig object: Use FAISS with custom configuration</span>
 <span class="sd">        Default is None.</span>
 <span class="sd">    verbose : bool, optional</span>
 <span class="sd">        If True, prints additional information during computation. Default is False.</span>
@@ -741,7 +772,7 @@
         <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
         <span class="n">zero_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-        <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">backend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">sparsity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -835,8 +866,13 @@
 <span class="sd">    device : str, optional</span>
 <span class="sd">        The device to use for computation. Typically &quot;cuda&quot; for GPU or &quot;cpu&quot; for CPU.</span>
 <span class="sd">        If &quot;auto&quot;, uses the device of the input data. Default is &quot;auto&quot;.</span>
-<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None}, optional</span>
+<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None} or FaissConfig, optional</span>
 <span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
+<span class="sd">        Can be:</span>
+<span class="sd">        - &quot;keops&quot;: Use KeOps for memory-efficient symbolic computations</span>
+<span class="sd">        - &quot;faiss&quot;: Use FAISS for fast k-NN computations with default settings</span>
+<span class="sd">        - None: Use standard PyTorch operations</span>
+<span class="sd">        - FaissConfig object: Use FAISS with custom configuration</span>
 <span class="sd">        Default is None.</span>
 <span class="sd">    verbose : bool, optional</span>
 <span class="sd">        If True, prints additional information during computation. Default is False.</span>
@@ -940,8 +976,13 @@
 <span class="sd">    device : str, optional</span>
 <span class="sd">        The device to use for computation, e.g., &quot;cuda&quot; for GPU or &quot;cpu&quot; for CPU.</span>
 <span class="sd">        If &quot;auto&quot;, it uses the device of the input data. Default is &quot;auto&quot;.</span>
-<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None}, optional</span>
+<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None} or FaissConfig, optional</span>
 <span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
+<span class="sd">        Can be:</span>
+<span class="sd">        - &quot;keops&quot;: Use KeOps for memory-efficient symbolic computations</span>
+<span class="sd">        - &quot;faiss&quot;: Use FAISS for fast k-NN computations with default settings</span>
+<span class="sd">        - None: Use standard PyTorch operations</span>
+<span class="sd">        - FaissConfig object: Use FAISS with custom configuration</span>
 <span class="sd">        Default is None.</span>
 <span class="sd">    verbose : bool, optional</span>
 <span class="sd">        If True, prints additional information during computation. Default is False.</span>
@@ -957,7 +998,7 @@
         <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
         <span class="n">zero_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-        <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">backend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -1067,7 +1108,13 @@
         <span class="c1"># Note: The `backend_` attribute is set by the `@handle_keops` decorator.</span>
 
         <span class="k">elif</span> <span class="n">Y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Case 1: Cross-distance matrix</span>
-            <span class="k">return</span> <span class="n">pairwise_distances</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_</span><span class="p">)</span>
+            <span class="c1"># If we have a FaissConfig, use the original backend parameter</span>
+            <span class="n">backend_to_use</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_backend_orig</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_backend_orig</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">)</span>
+                <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend_</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">pairwise_distances</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend_to_use</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Case 2: Sparse self-distance matrix</span>
             <span class="k">return</span> <span class="n">symmetric_pairwise_distances_indices</span><span class="p">(</span>
@@ -1075,10 +1122,16 @@
             <span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># Case 3: Full self-distance matrix (with or without the diagonal)</span>
+            <span class="c1"># If we have a FaissConfig, use the original backend parameter</span>
+            <span class="n">backend_to_use</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_backend_orig</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_backend_orig</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">)</span>
+                <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend_</span>
+            <span class="p">)</span>
             <span class="k">return</span> <span class="n">pairwise_distances</span><span class="p">(</span>
                 <span class="n">X</span><span class="p">,</span>
                 <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span>
-                <span class="n">backend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_</span><span class="p">,</span>
+                <span class="n">backend</span><span class="o">=</span><span class="n">backend_to_use</span><span class="p">,</span>
                 <span class="n">exclude_diag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">zero_diag</span><span class="p">,</span>  <span class="c1"># infinite distance is zero affinity</span>
             <span class="p">)</span>
 
@@ -1100,8 +1153,13 @@
 <span class="sd">    device : str, optional</span>
 <span class="sd">        The device to use for computation, e.g., &quot;cuda&quot; for GPU or &quot;cpu&quot; for CPU.</span>
 <span class="sd">        If &quot;auto&quot;, it uses the device of the input data. Default is &quot;auto&quot;.</span>
-<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None}, optional</span>
+<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None} or FaissConfig, optional</span>
 <span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
+<span class="sd">        Can be:</span>
+<span class="sd">        - &quot;keops&quot;: Use KeOps for memory-efficient symbolic computations</span>
+<span class="sd">        - &quot;faiss&quot;: Use FAISS for fast k-NN computations with default settings</span>
+<span class="sd">        - None: Use standard PyTorch operations</span>
+<span class="sd">        - FaissConfig object: Use FAISS with custom configuration</span>
 <span class="sd">        Default is None.</span>
 <span class="sd">    verbose : bool, optional</span>
 <span class="sd">        If True, prints additional information during computation. Default is False.</span>
@@ -1117,7 +1175,7 @@
         <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
         <span class="n">zero_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-        <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">backend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>

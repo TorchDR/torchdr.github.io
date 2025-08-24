@@ -466,6 +466,7 @@
     <span class="n">UnnormalizedAffinity</span><span class="p">,</span>
     <span class="n">UnnormalizedLogAffinity</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distance</span><span class="w"> </span><span class="kn">import</span> <span class="n">FaissConfig</span>
 
 
 <div class="viewcode-block" id="KernelPCA">
@@ -481,8 +482,13 @@
 <span class="sd">        Number of components to project the input data onto.</span>
 <span class="sd">    device : str, default=&quot;auto&quot;</span>
 <span class="sd">        Device on which the computations are performed.</span>
-<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None}, optional</span>
+<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None} or FaissConfig, optional</span>
 <span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
+<span class="sd">        Can be:</span>
+<span class="sd">        - &quot;keops&quot;: Use KeOps for memory-efficient symbolic computations</span>
+<span class="sd">        - &quot;faiss&quot;: Use FAISS for fast k-NN computations with default settings</span>
+<span class="sd">        - None: Use standard PyTorch operations</span>
+<span class="sd">        - FaissConfig object: Use FAISS with custom configuration</span>
 <span class="sd">        Default is None.</span>
 <span class="sd">    verbose : bool, default=False</span>
 <span class="sd">        Whether to print information during the computations.</span>
@@ -497,7 +503,7 @@
         <span class="n">affinity</span><span class="p">:</span> <span class="n">Affinity</span> <span class="o">=</span> <span class="n">GaussianAffinity</span><span class="p">(),</span>
         <span class="n">n_components</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-        <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">backend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">nodiag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>

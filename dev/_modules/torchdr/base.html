@@ -462,8 +462,9 @@
     <span class="n">set_logger</span><span class="p">,</span>
     <span class="n">handle_type</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distance</span><span class="w"> </span><span class="kn">import</span> <span class="n">FaissConfig</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="n">ArrayLike</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;ArrayLike&quot;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span>
 
@@ -481,8 +482,13 @@
 <span class="sd">        Number of dimensions for the embedding. Default is 2.</span>
 <span class="sd">    device : str, optional</span>
 <span class="sd">        Device to use for computations. Default is &quot;auto&quot;.</span>
-<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None}, optional</span>
+<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None} or FaissConfig, optional</span>
 <span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
+<span class="sd">        Can be:</span>
+<span class="sd">        - &quot;keops&quot;: Use KeOps for memory-efficient symbolic computations</span>
+<span class="sd">        - &quot;faiss&quot;: Use FAISS for fast k-NN computations with default settings</span>
+<span class="sd">        - None: Use standard PyTorch operations</span>
+<span class="sd">        - FaissConfig object: Use FAISS with custom configuration</span>
 <span class="sd">        Default is None.</span>
 <span class="sd">    verbose : bool, optional</span>
 <span class="sd">        Verbosity of the optimization process. Default is False.</span>
@@ -498,7 +504,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n_components</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-        <span class="n">backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">backend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>

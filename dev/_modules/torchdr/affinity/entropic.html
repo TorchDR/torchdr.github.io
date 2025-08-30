@@ -689,9 +689,9 @@
 <span class="sd">        indices : torch.Tensor or None</span>
 <span class="sd">            Indices of the nearest neighbors if sparsity is used.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">n_samples_in</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-        <span class="n">perplexity</span> <span class="o">=</span> <span class="n">check_neighbor_param</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span><span class="p">,</span> <span class="n">n_samples_in</span><span class="p">)</span>
-        <span class="n">target_entropy</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">perplexity</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">n_samples_in</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">n_samples_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">n_samples_in</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">perplexity</span> <span class="o">=</span> <span class="n">check_neighbor_param</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span><span class="p">,</span> <span class="n">n_samples_tensor</span><span class="p">)</span>
 
         <span class="n">k</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">perplexity</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparsity</span><span class="p">:</span>
@@ -699,12 +699,14 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;Sparsity mode enabled, computing </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> nearest neighbors...&quot;</span>
                 <span class="p">)</span>
-            <span class="n">k</span> <span class="o">=</span> <span class="n">check_neighbor_param</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">n_samples_in</span><span class="p">)</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="n">check_neighbor_param</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">n_samples_tensor</span><span class="p">)</span>
             <span class="c1"># when using sparsity, we construct a reduced distance matrix</span>
             <span class="c1"># of shape (n_samples, k)</span>
             <span class="n">C_</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_matrix</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">C_</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_matrix</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">target_entropy</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">perplexity</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">entropy_gap</span><span class="p">(</span><span class="n">eps</span><span class="p">):</span>  <span class="c1"># function to find the root of</span>
             <span class="n">log_P</span> <span class="o">=</span> <span class="n">_log_Pe</span><span class="p">(</span><span class="n">C_</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span>
@@ -718,23 +720,27 @@
 
         <span class="n">eps</span> <span class="o">=</span> <span class="n">binary_search</span><span class="p">(</span>
             <span class="n">f</span><span class="o">=</span><span class="n">entropy_gap</span><span class="p">,</span>
-            <span class="n">n</span><span class="o">=</span><span class="n">n_samples_in</span><span class="p">,</span>
+            <span class="n">n</span><span class="o">=</span><span class="n">C_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
             <span class="n">begin</span><span class="o">=</span><span class="n">begin</span><span class="p">,</span>
             <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span>
             <span class="n">max_iter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">,</span>
             <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
             <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
         <span class="p">)</span>
+
+        <span class="n">log_affinity_matrix</span> <span class="o">=</span> <span class="n">_log_Pe</span><span class="p">(</span><span class="n">C_</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;eps_&quot;</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-        <span class="n">log_affinity_matrix</span> <span class="o">=</span> <span class="n">_log_Pe</span><span class="p">(</span><span class="n">C_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps_</span><span class="p">)</span>
+        <span class="c1"># Normalize the affinity matrix</span>
         <span class="n">log_normalization</span> <span class="o">=</span> <span class="n">logsumexp_red</span><span class="p">(</span><span class="n">log_affinity_matrix</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;log_normalization_&quot;</span><span class="p">,</span> <span class="n">log_normalization</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">log_affinity_matrix</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_normalization_</span>
 
+        <span class="c1"># Final normalization: sum of each row is 1/n so that total sum is 1</span>
         <span class="n">log_affinity_matrix</span> <span class="o">-=</span> <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
-            <span class="n">n_samples_in</span>
-        <span class="p">)</span>  <span class="c1"># sum of each row is 1/n so that total sum is 1</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">n_samples_in</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="p">)</span>
+
         <span class="k">return</span> <span class="p">(</span><span class="n">log_affinity_matrix</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span> <span class="k">if</span> <span class="n">return_indices</span> <span class="k">else</span> <span class="n">log_affinity_matrix</span></div>
 
 

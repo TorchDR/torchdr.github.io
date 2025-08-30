@@ -469,6 +469,8 @@
     <span class="n">exclude_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">k</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">indices</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute pairwise distances between two tensors.</span>
 
@@ -495,6 +497,13 @@
 <span class="sd">    return_indices : bool, optional</span>
 <span class="sd">        Whether to return the indices of the k-nearest neighbors.</span>
 <span class="sd">        Default is False.</span>
+<span class="sd">    indices : torch.Tensor of shape (n_samples, n_neighbors), optional</span>
+<span class="sd">        If provided, compute distances only for these specific pairs.</span>
+<span class="sd">        Cannot be used with Y or k parameters.</span>
+<span class="sd">    device : str, default=&quot;auto&quot;</span>
+<span class="sd">        Device to use for computation. If &quot;auto&quot;, keeps data on its current device.</span>
+<span class="sd">        Otherwise, temporarily moves data to specified device for computation.</span>
+<span class="sd">        Output remains on the computation device. Used with backend=None (torch) and backend=&quot;keops&quot;.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -520,6 +529,21 @@
 <span class="sd">    &gt;&gt;&gt; config = FaissConfig(use_float16=True, temp_memory=2.0)</span>
 <span class="sd">    &gt;&gt;&gt; distances = pairwise_distances(X.cuda(), k=10, backend=config)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">Y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;[TorchDR] ERROR: Cannot provide both Y and indices parameters. &quot;</span>
+                <span class="s2">&quot;indices is for computing sparse distances within X.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;[TorchDR] ERROR: Cannot provide both k and indices parameters. &quot;</span>
+                <span class="s2">&quot;indices means neighbors are already specified.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">symmetric_pairwise_distances_indices</span><span class="p">(</span>
+            <span class="n">X</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="n">return_indices</span>
+        <span class="p">)</span>
+
     <span class="c1"># Parse backend parameter</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">):</span>
         <span class="n">backend_str</span> <span class="o">=</span> <span class="s2">&quot;faiss&quot;</span>
@@ -530,20 +554,27 @@
 
     <span class="k">if</span> <span class="n">backend_str</span> <span class="o">==</span> <span class="s2">&quot;keops&quot;</span><span class="p">:</span>
         <span class="n">C</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">pairwise_distances_keops</span><span class="p">(</span>
-            <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="o">=</span><span class="n">Y</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span> <span class="n">exclude_diag</span><span class="o">=</span><span class="n">exclude_diag</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span>
+            <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="o">=</span><span class="n">Y</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span> <span class="n">exclude_diag</span><span class="o">=</span><span class="n">exclude_diag</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
         <span class="p">)</span>
     <span class="k">elif</span> <span class="n">backend_str</span> <span class="o">==</span> <span class="s2">&quot;faiss&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">k</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">C</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">pairwise_distances_faiss</span><span class="p">(</span>
-                <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="o">=</span><span class="n">Y</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">exclude_diag</span><span class="o">=</span><span class="n">exclude_diag</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span>
+                <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>
+                <span class="n">Y</span><span class="o">=</span><span class="n">Y</span><span class="p">,</span>
+                <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
+                <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
+                <span class="n">exclude_diag</span><span class="o">=</span><span class="n">exclude_diag</span><span class="p">,</span>
+                <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+                <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;[TorchDR] ERROR : k must be provided when using `backend=faiss`.&quot;</span>
+            <span class="c1"># Fall back to PyTorch when FAISS is specified but k is not provided</span>
+            <span class="n">C</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">pairwise_distances_torch</span><span class="p">(</span>
+                <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="o">=</span><span class="n">Y</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">exclude_diag</span><span class="o">=</span><span class="n">exclude_diag</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
             <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">C</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">pairwise_distances_torch</span><span class="p">(</span>
-            <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="o">=</span><span class="n">Y</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">exclude_diag</span><span class="o">=</span><span class="n">exclude_diag</span>
+            <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="o">=</span><span class="n">Y</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">exclude_diag</span><span class="o">=</span><span class="n">exclude_diag</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">return_indices</span><span class="p">:</span>

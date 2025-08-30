@@ -24,7 +24,7 @@ PCA via SVD and via AffinityMatcher
 We show how to compute a PCA embedding using the closed form
 and using the AffinityMatcher class. Both approaches lead to the same solution.
 
-.. GENERATED FROM PYTHON SOURCE LINES 9-19
+.. GENERATED FROM PYTHON SOURCE LINES 9-38
 
 .. code-block:: Python
 
@@ -35,24 +35,43 @@ and using the AffinityMatcher class. Both approaches lead to the same solution.
 
     import matplotlib.pyplot as plt
     from sklearn.datasets import load_digits
+    import torch
 
-    from torchdr import AffinityMatcher, ScalarProductAffinity, PCA
-
-
-
-
+    from torchdr import AffinityMatcher, PCA
+    from torchdr.affinity import Affinity
 
 
+    class ScalarProductAffinity(Affinity):
+        """Compute the scalar product affinity matrix X @ X.T."""
+
+        def __init__(self, device="auto", backend=None, verbose=False):
+            super().__init__(
+                metric="angular",
+                device=device,
+                backend=backend,
+                verbose=verbose,
+                zero_diag=False,
+            )
+
+        def _compute_affinity(self, X):
+            return X @ X.T
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 20-24
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 39-43
 
 Load toy images
 ---------------
 
 First, let's load 5 classes of the digits dataset from sklearn.
 
-.. GENERATED FROM PYTHON SOURCE LINES 24-29
+.. GENERATED FROM PYTHON SOURCE LINES 43-48
 
 .. code-block:: Python
 
@@ -68,7 +87,7 @@ First, let's load 5 classes of the digits dataset from sklearn.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 30-36
+.. GENERATED FROM PYTHON SOURCE LINES 49-55
 
 PCA via SVD
 -----------
@@ -77,7 +96,7 @@ Let us perform PCA using the closed form solution given by the
 Singular Value Decomposition (SVD).
 In ``Torchdr``, it is available at :class:`torchdr.PCA`.
 
-.. GENERATED FROM PYTHON SOURCE LINES 36-45
+.. GENERATED FROM PYTHON SOURCE LINES 55-64
 
 .. code-block:: Python
 
@@ -102,7 +121,7 @@ In ``Torchdr``, it is available at :class:`torchdr.PCA`.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 46-55
+.. GENERATED FROM PYTHON SOURCE LINES 65-74
 
 PCA via AffinityMatcher
 -----------------------
@@ -114,7 +133,7 @@ as well as the scalar product affinity
 for both input data and embeddings,
 and the square loss as global objective.
 
-.. GENERATED FROM PYTHON SOURCE LINES 55-74
+.. GENERATED FROM PYTHON SOURCE LINES 74-93
 
 .. code-block:: Python
 
@@ -149,7 +168,7 @@ and the square loss as global objective.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 75-77
+.. GENERATED FROM PYTHON SOURCE LINES 94-96
 
 We can see that we obtain the same PCA embedding (up to a rotation) using
 both methods.
@@ -157,7 +176,7 @@ both methods.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 13.284 seconds)
+   **Total running time of the script:** (0 minutes 3.085 seconds)
 
 
 .. _sphx_glr_download_auto_examples_basics_demo_pca_via_affinity_matcher.py:

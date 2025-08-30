@@ -458,12 +458,9 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Affinity</span><span class="p">,</span>
     <span class="n">SparseAffinity</span><span class="p">,</span>
-    <span class="n">UnnormalizedAffinity</span><span class="p">,</span>
-    <span class="n">UnnormalizedLogAffinity</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distance</span><span class="w"> </span><span class="kn">import</span> <span class="n">FaissConfig</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity_matcher</span><span class="w"> </span><span class="kn">import</span> <span class="n">AffinityMatcher</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">cross_entropy_loss</span>
 
 
 <div class="viewcode-block" id="NeighborEmbedding">
@@ -732,7 +729,7 @@
 <span class="sd">    term of the loss function, :math:`\lambda` is the :attr:`early_exaggeration_coeff`</span>
 <span class="sd">    parameter.</span>
 
-<span class="sd">    **Fast attraction.** This class should be used when the input affinity matrix is a :class:`~torchdr.SparseAffinity` and the output affinity matrix is an :class:`~torchdr.UnnormalizedAffinity`. In such cases, the attractive term can be computed with linear complexity.</span>
+<span class="sd">    **Fast attraction.** This class should be used when the input affinity matrix is sparse. In such cases, the attractive term can be computed with linear complexity.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -827,15 +824,6 @@
                 <span class="s2">&quot;must be a sparse affinity.&quot;</span>
             <span class="p">)</span>
 
-        <span class="c1"># check affinity affinity_out (only if not None)</span>
-        <span class="k">if</span> <span class="n">affinity_out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
-            <span class="n">affinity_out</span><span class="p">,</span> <span class="n">UnnormalizedAffinity</span>
-        <span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="s2">&quot;[TorchDR] ERROR : when using SparseNeighborEmbedding, affinity_out &quot;</span>
-                <span class="s2">&quot;must be an UnnormalizedAffinity object or None.&quot;</span>
-            <span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">repulsion_strength</span> <span class="o">=</span> <span class="n">repulsion_strength</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -863,14 +851,9 @@
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_attractive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="p">,</span> <span class="n">UnnormalizedLogAffinity</span><span class="p">):</span>
-            <span class="n">log_Q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span>
-            <span class="p">)</span>
-            <span class="k">return</span> <span class="n">cross_entropy_loss</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span><span class="p">,</span> <span class="n">log_Q</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">Q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">cross_entropy_loss</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span><span class="p">,</span> <span class="n">Q</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;[TorchDR] ERROR : _compute_attractive_loss method must be implemented.&quot;</span>
+        <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_repulsive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
@@ -923,10 +906,8 @@
 <span class="sd">    term of the loss function, :math:`\lambda` is the :attr:`early_exaggeration_coeff`</span>
 <span class="sd">    parameter.</span>
 
-<span class="sd">    **Fast attraction.** This class should be used when the input affinity matrix is a</span>
-<span class="sd">    :class:`~torchdr.SparseAffinity` and the output affinity matrix is an</span>
-<span class="sd">    :class:`~torchdr.UnnormalizedAffinity`. In such cases, the attractive term</span>
-<span class="sd">    can be computed with linear complexity.</span>
+<span class="sd">    **Fast attraction.** This class should be used when the input affinity matrix is sparse.</span>
+<span class="sd">    In such cases, the attractive term can be computed with linear complexity.</span>
 
 <span class="sd">    **Fast repulsion.** A stochastic estimation of the repulsive term is used</span>
 <span class="sd">    to reduce its complexity to linear.</span>
@@ -1089,16 +1070,34 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">on_training_step_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sample negatives.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_training_step_start</span><span class="p">()</span>
-        <span class="n">negatives</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
-            <span class="mi">1</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative_exclusion_indices_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span><span class="p">),</span>
-            <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">shifts</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">negative_exclusion_indices_</span><span class="p">,</span> <span class="n">negatives</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">True</span>
-        <span class="p">)</span>
-        <span class="n">neg_indices</span> <span class="o">=</span> <span class="n">negatives</span> <span class="o">+</span> <span class="n">shifts</span>
+
+        <span class="c1"># Fast path for k=1 (only excluding self-indices)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative_exclusion_indices_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># Sample from [0, n-1) for each point</span>
+            <span class="n">negatives</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span><span class="p">),</span>
+                <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="c1"># Shift indices &gt;= self_idx by 1 to skip self</span>
+            <span class="n">self_idx</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">device</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">neg_indices</span> <span class="o">=</span> <span class="n">negatives</span> <span class="o">+</span> <span class="p">(</span><span class="n">negatives</span> <span class="o">&gt;=</span> <span class="n">self_idx</span><span class="p">)</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># General case: use searchsorted for multiple exclusions</span>
+            <span class="n">negatives</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
+                <span class="mi">1</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative_exclusion_indices_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span><span class="p">),</span>
+                <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">shifts</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">negative_exclusion_indices_</span><span class="p">,</span> <span class="n">negatives</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="n">neg_indices</span> <span class="o">=</span> <span class="n">negatives</span> <span class="o">+</span> <span class="n">shifts</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;neg_indices_&quot;</span><span class="p">,</span> <span class="n">neg_indices</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 </div>
 

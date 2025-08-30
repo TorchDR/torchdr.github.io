@@ -52,7 +52,7 @@
     <link rel="icon" href="../_static/logo.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="GaussianAffinity" href="torchdr.GaussianAffinity.html" />
+    <link rel="next" title="NormalizedGaussianAffinity" href="torchdr.NormalizedGaussianAffinity.html" />
     <link rel="prev" title="SparseNeighborEmbedding" href="torchdr.SparseNeighborEmbedding.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -426,9 +426,6 @@
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">SampledNeighborEmbedding</a></li>
 </ul>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="torchdr.GaussianAffinity.html">GaussianAffinity</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torchdr.StudentAffinity.html">StudentAffinity</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torchdr.ScalarProductAffinity.html">ScalarProductAffinity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchdr.NormalizedGaussianAffinity.html">NormalizedGaussianAffinity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchdr.NormalizedStudentAffinity.html">NormalizedStudentAffinity</a></li>
 </ul>
@@ -528,10 +525,8 @@
 output affinity matrix, <span class="math notranslate nohighlight">\(\mathcal{L}_{\mathrm{rep}}\)</span> is the repulsive
 term of the loss function, <span class="math notranslate nohighlight">\(\lambda\)</span> is the <code class="xref py py-attr docutils literal notranslate"><span class="pre">early_exaggeration_coeff</span></code>
 parameter.</p>
-<p><strong>Fast attraction.</strong> This class should be used when the input affinity matrix is a
-<code class="xref py py-class docutils literal notranslate"><span class="pre">SparseAffinity</span></code> and the output affinity matrix is an
-<code class="xref py py-class docutils literal notranslate"><span class="pre">UnnormalizedAffinity</span></code>. In such cases, the attractive term
-can be computed with linear complexity.</p>
+<p><strong>Fast attraction.</strong> This class should be used when the input affinity matrix is sparse.
+In such cases, the attractive term can be computed with linear complexity.</p>
 <p><strong>Fast repulsion.</strong> A stochastic estimation of the repulsive term is used
 to reduce its complexity to linear.
 This is done by sampling a fixed number of negative samples
@@ -619,11 +614,11 @@ Default is 1.0.</p></li>
       </div>
     </a>
     <a class="right-next"
-       href="torchdr.GaussianAffinity.html"
+       href="torchdr.NormalizedGaussianAffinity.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">GaussianAffinity</p>
+        <p class="prev-next-title">NormalizedGaussianAffinity</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

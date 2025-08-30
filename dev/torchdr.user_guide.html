@@ -543,12 +543,12 @@ TorchDR provides a wide range of affinities. See <a class="reference internal" h
 </table>
 </div>
 <p>Affinities are objects that can directly be called. The outputted affinity matrix is a <strong>square matrix of size (n, n)</strong> where n is the number of input samples.</p>
-<p>Here is an example with the <a class="reference internal" href="gen_modules/torchdr.GaussianAffinity.html#torchdr.GaussianAffinity" title="torchdr.GaussianAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">GaussianAffinity</span></code></a>:</p>
+<p>Here is an example with the <a class="reference internal" href="gen_modules/torchdr.NormalizedGaussianAffinity.html#torchdr.NormalizedGaussianAffinity" title="torchdr.NormalizedGaussianAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">NormalizedGaussianAffinity</span></code></a>:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span><span class="o">,</span><span class="w"> </span><span class="nn">torchdr</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">n</span> <span class="o">=</span> <span class="mi">100</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">affinity</span> <span class="o">=</span> <span class="n">torchdr</span><span class="o">.</span><span class="n">GaussianAffinity</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">affinity</span> <span class="o">=</span> <span class="n">torchdr</span><span class="o">.</span><span class="n">NormalizedGaussianAffinity</span><span class="p">(</span><span class="n">normalization_dim</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">affinity_matrix</span> <span class="o">=</span> <span class="n">affinity</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">affinity_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 <span class="go">(100, 100)</span>
@@ -671,12 +671,12 @@ In these methods, <span class="math notranslate nohighlight">\(\mathbf{P}\)</spa
 <tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.SNE.html#torchdr.SNE" title="torchdr.SNE"><code class="xref py py-class docutils literal notranslate"><span class="pre">SNE</span></code></a></p></td>
 <td><p><span class="math notranslate nohighlight">\(\sum_{i} \log(\sum_j Q_{ij})\)</span></p></td>
 <td><p><a class="reference internal" href="gen_modules/torchdr.EntropicAffinity.html#torchdr.EntropicAffinity" title="torchdr.EntropicAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">EntropicAffinity</span></code></a></p></td>
-<td><p><a class="reference internal" href="gen_modules/torchdr.GaussianAffinity.html#torchdr.GaussianAffinity" title="torchdr.GaussianAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">GaussianAffinity</span></code></a></p></td>
+<td><p>None</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.TSNE.html#torchdr.TSNE" title="torchdr.TSNE"><code class="xref py py-class docutils literal notranslate"><span class="pre">TSNE</span></code></a></p></td>
 <td><p><span class="math notranslate nohighlight">\(\log(\sum_{ij} Q_{ij})\)</span></p></td>
 <td><p><a class="reference internal" href="gen_modules/torchdr.EntropicAffinity.html#torchdr.EntropicAffinity" title="torchdr.EntropicAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">EntropicAffinity</span></code></a></p></td>
-<td><p><a class="reference internal" href="gen_modules/torchdr.StudentAffinity.html#torchdr.StudentAffinity" title="torchdr.StudentAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StudentAffinity</span></code></a></p></td>
+<td><p>None</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.TSNEkhorn.html#torchdr.TSNEkhorn" title="torchdr.TSNEkhorn"><code class="xref py py-class docutils literal notranslate"><span class="pre">TSNEkhorn</span></code></a></p></td>
 <td><p><span class="math notranslate nohighlight">\(\sum_{ij} Q_{ij}\)</span></p></td>
@@ -686,7 +686,7 @@ In these methods, <span class="math notranslate nohighlight">\(\mathbf{P}\)</spa
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.InfoTSNE.html#torchdr.InfoTSNE" title="torchdr.InfoTSNE"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoTSNE</span></code></a></p></td>
 <td><p><span class="math notranslate nohighlight">\(\sum_i \log(\sum_{j \in \mathrm{Neg}(i)} Q_{ij})\)</span></p></td>
 <td><p><a class="reference internal" href="gen_modules/torchdr.EntropicAffinity.html#torchdr.EntropicAffinity" title="torchdr.EntropicAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">EntropicAffinity</span></code></a></p></td>
-<td><p><a class="reference internal" href="gen_modules/torchdr.StudentAffinity.html#torchdr.StudentAffinity" title="torchdr.StudentAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StudentAffinity</span></code></a></p></td>
+<td><p>None</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.UMAP.html#torchdr.UMAP" title="torchdr.UMAP"><code class="xref py py-class docutils literal notranslate"><span class="pre">UMAP</span></code></a></p></td>
 <td><p><span class="math notranslate nohighlight">\(- \sum_{i, j \in \mathrm{Neg}(i)} \log (1 - Q_{ij})\)</span></p></td>
@@ -696,7 +696,7 @@ In these methods, <span class="math notranslate nohighlight">\(\mathbf{P}\)</spa
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.LargeVis.html#torchdr.LargeVis" title="torchdr.LargeVis"><code class="xref py py-class docutils literal notranslate"><span class="pre">LargeVis</span></code></a></p></td>
 <td><p><span class="math notranslate nohighlight">\(- \sum_{i, j \in \mathrm{Neg}(i)} \log (1 - Q_{ij})\)</span></p></td>
 <td><p><a class="reference internal" href="gen_modules/torchdr.EntropicAffinity.html#torchdr.EntropicAffinity" title="torchdr.EntropicAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">EntropicAffinity</span></code></a></p></td>
-<td><p><a class="reference internal" href="gen_modules/torchdr.StudentAffinity.html#torchdr.StudentAffinity" title="torchdr.StudentAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StudentAffinity</span></code></a></p></td>
+<td><p>None</p></td>
 </tr>
 </tbody>
 </table>

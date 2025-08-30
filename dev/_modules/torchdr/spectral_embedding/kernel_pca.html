@@ -453,18 +453,15 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">DRModule</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">handle_type</span><span class="p">,</span> <span class="n">svd_flip</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">svd_flip</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">sum_red</span><span class="p">,</span> <span class="n">center_kernel</span><span class="p">,</span> <span class="n">check_nonnegativity_eigenvalues</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">center_kernel</span><span class="p">,</span> <span class="n">check_nonnegativity_eigenvalues</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Affinity</span><span class="p">,</span>
-    <span class="n">GaussianAffinity</span><span class="p">,</span>
-    <span class="n">UnnormalizedAffinity</span><span class="p">,</span>
-    <span class="n">UnnormalizedLogAffinity</span><span class="p">,</span>
+    <span class="n">NormalizedGaussianAffinity</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distance</span><span class="w"> </span><span class="kn">import</span> <span class="n">FaissConfig</span>
 
@@ -476,7 +473,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    affinity : Affinity, default=GaussianAffinity()</span>
+<span class="sd">    affinity : Affinity, default=NormalizedGaussianAffinity(normalization_dim=None)</span>
 <span class="sd">        Affinity object to compute the kernel matrix.</span>
 <span class="sd">    n_components : int, default=2</span>
 <span class="sd">        Number of components to project the input data onto.</span>
@@ -500,7 +497,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">affinity</span><span class="p">:</span> <span class="n">Affinity</span> <span class="o">=</span> <span class="n">GaussianAffinity</span><span class="p">(),</span>
+        <span class="n">affinity</span><span class="p">:</span> <span class="n">Affinity</span> <span class="o">=</span> <span class="n">NormalizedGaussianAffinity</span><span class="p">(</span><span class="n">normalization_dim</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
         <span class="n">n_components</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
         <span class="n">backend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -571,53 +568,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">eigenvectors_</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigenvalues_</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">]</span><span class="o">.</span><span class="n">sqrt</span><span class="p">()</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span>
-
-<div class="viewcode-block" id="KernelPCA.transform">
-<a class="viewcode-back" href="../../../gen_modules/torchdr.KernelPCA.html#torchdr.KernelPCA.transform">[docs]</a>
-    <span class="nd">@handle_type</span><span class="p">()</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Project the input data onto the KernelPCA components.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        X : torch.Tensor or np.ndarray of shape (n_samples, n_features)</span>
-<span class="sd">            Data to project onto the KernelPCA components.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        X_new : torch.Tensor or np.ndarray of shape (n_samples, n_components)</span>
-<span class="sd">            Projected data.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">affinity</span><span class="p">,</span> <span class="p">(</span><span class="n">UnnormalizedAffinity</span><span class="p">,</span> <span class="n">UnnormalizedLogAffinity</span><span class="p">)</span>
-        <span class="p">):</span>
-            <span class="n">aff_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;KernelPCA.transform can only be used when `affinity` is &quot;</span>
-                <span class="s2">&quot;an UnnormalizedAffinity or UnnormalizedLogAffinity. &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">aff_name</span><span class="si">}</span><span class="s2"> is not. Use the fit_transform method instead.&quot;</span>
-            <span class="p">)</span>
-        <span class="n">K</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">X_fit_</span><span class="p">)</span>
-        <span class="c1"># center à la sklearn: using fit data for rows and all, new data for col</span>
-        <span class="n">pred_cols</span> <span class="o">=</span> <span class="n">sum_red</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">K_fit_rows_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">K</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">K_fit_rows_</span>
-        <span class="n">K</span> <span class="o">-=</span> <span class="n">pred_cols</span>
-        <span class="n">K</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">K_fit_all_</span>
-
-        <span class="n">result</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">K</span>
-            <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigenvectors_</span>
-            <span class="o">@</span> <span class="n">torch</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigenvalues_</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">]</span><span class="o">.</span><span class="n">sqrt</span><span class="p">())</span>
-        <span class="p">)</span>
-        <span class="c1"># remove np.inf arising from division by 0 eigenvalues:</span>
-        <span class="n">zero_eigvals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigenvalues_</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span>
-        <span class="k">if</span> <span class="n">zero_eigvals</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-            <span class="n">result</span><span class="p">[:,</span> <span class="n">zero_eigvals</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">return</span> <span class="n">result</span></div>
-</div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span></div>
 
 </pre></div>
 

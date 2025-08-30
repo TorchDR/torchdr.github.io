@@ -426,9 +426,6 @@
 <li class="toctree-l1"><a class="reference internal" href="torchdr.SampledNeighborEmbedding.html">SampledNeighborEmbedding</a></li>
 </ul>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="torchdr.GaussianAffinity.html">GaussianAffinity</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torchdr.StudentAffinity.html">StudentAffinity</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torchdr.ScalarProductAffinity.html">ScalarProductAffinity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchdr.NormalizedGaussianAffinity.html">NormalizedGaussianAffinity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchdr.NormalizedStudentAffinity.html">NormalizedStudentAffinity</a></li>
 </ul>
@@ -528,7 +525,7 @@
 output affinity matrix, <span class="math notranslate nohighlight">\(\mathcal{L}_{\mathrm{rep}}\)</span> is the repulsive
 term of the loss function, <span class="math notranslate nohighlight">\(\lambda\)</span> is the <code class="xref py py-attr docutils literal notranslate"><span class="pre">early_exaggeration_coeff</span></code>
 parameter.</p>
-<p><strong>Fast attraction.</strong> This class should be used when the input affinity matrix is a <code class="xref py py-class docutils literal notranslate"><span class="pre">SparseAffinity</span></code> and the output affinity matrix is an <code class="xref py py-class docutils literal notranslate"><span class="pre">UnnormalizedAffinity</span></code>. In such cases, the attractive term can be computed with linear complexity.</p>
+<p><strong>Fast attraction.</strong> This class should be used when the input affinity matrix is sparse. In such cases, the attractive term can be computed with linear complexity.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

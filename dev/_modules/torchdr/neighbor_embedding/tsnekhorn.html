@@ -468,9 +468,8 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">TSNEkhorn</span><span class="p">(</span><span class="n">NeighborEmbedding</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;TSNEkhorn algorithm introduced in :cite:`van2024snekhorn`.</span>
 
-<span class="sd">    It uses a :class:`~torchdr.SymmetricEntropicAffinity` as input</span>
-<span class="sd">    affinity :math:`\mathbf{P}` and a :class:`~torchdr.SinkhornAffinity` as output</span>
-<span class="sd">    affinity :math:`\mathbf{Q}`.</span>
+<span class="sd">    It uses a :class:`~torchdr.SymmetricEntropicAffinity` as input affinity :math:`\mathbf{P}`</span>
+<span class="sd">    and a :class:`~torchdr.SinkhornAffinity` as output affinity :math:`\mathbf{Q}`.</span>
 
 <span class="sd">    The loss function is defined as:</span>
 
@@ -546,10 +545,8 @@
 <span class="sd">        Precision threshold for the symmetric entropic affinity computation.</span>
 <span class="sd">    max_iter_affinity_in : int, optional</span>
 <span class="sd">        Number of maximum iterations for the symmetric entropic affinity computation.</span>
-<span class="sd">    metric_in : {&#39;sqeuclidean&#39;, &#39;manhattan&#39;}, optional</span>
+<span class="sd">    metric : {&#39;sqeuclidean&#39;, &#39;manhattan&#39;}, optional</span>
 <span class="sd">        Metric to use for the input affinity, by default &#39;sqeuclidean&#39;.</span>
-<span class="sd">    metric_out : {&#39;sqeuclidean&#39;, &#39;manhattan&#39;}, optional</span>
-<span class="sd">        Metric to use for the output affinity, by default &#39;sqeuclidean&#39;.</span>
 <span class="sd">    unrolling : bool, optional</span>
 <span class="sd">        Whether to use unrolling for solving inverse OT. If False, uses</span>
 <span class="sd">        the gap objective. Default is False.</span>
@@ -587,16 +584,14 @@
         <span class="n">eps_square_affinity_in</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">tol_affinity_in</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
         <span class="n">max_iter_affinity_in</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
-        <span class="n">metric_in</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
-        <span class="n">metric_out</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
+        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
         <span class="n">unrolling</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">symmetric_affinity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">check_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">metric_in</span> <span class="o">=</span> <span class="n">metric_in</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">metric_out</span> <span class="o">=</span> <span class="n">metric_out</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metric</span> <span class="o">=</span> <span class="n">metric</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span> <span class="o">=</span> <span class="n">perplexity</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lr_affinity_in</span> <span class="o">=</span> <span class="n">lr_affinity_in</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">eps_square_affinity_in</span> <span class="o">=</span> <span class="n">bool_arg</span><span class="p">(</span><span class="n">eps_square_affinity_in</span><span class="p">)</span>
@@ -610,7 +605,7 @@
                 <span class="n">perplexity</span><span class="o">=</span><span class="n">perplexity</span><span class="p">,</span>
                 <span class="n">lr</span><span class="o">=</span><span class="n">lr_affinity_in</span><span class="p">,</span>
                 <span class="n">eps_square</span><span class="o">=</span><span class="n">eps_square_affinity_in</span><span class="p">,</span>
-                <span class="n">metric</span><span class="o">=</span><span class="n">metric_in</span><span class="p">,</span>
+                <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
                 <span class="n">tol</span><span class="o">=</span><span class="n">tol_affinity_in</span><span class="p">,</span>
                 <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter_affinity_in</span><span class="p">,</span>
                 <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
@@ -621,14 +616,14 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">affinity_in</span> <span class="o">=</span> <span class="n">EntropicAffinity</span><span class="p">(</span>
                 <span class="n">perplexity</span><span class="o">=</span><span class="n">perplexity</span><span class="p">,</span>
-                <span class="n">metric</span><span class="o">=</span><span class="n">metric_in</span><span class="p">,</span>
+                <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
                 <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter_affinity_in</span><span class="p">,</span>
                 <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
                 <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
                 <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="n">affinity_out</span> <span class="o">=</span> <span class="n">SinkhornAffinity</span><span class="p">(</span>
-            <span class="n">metric</span><span class="o">=</span><span class="n">metric_out</span><span class="p">,</span>
+            <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
             <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>

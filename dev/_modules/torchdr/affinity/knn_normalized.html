@@ -875,7 +875,6 @@
 <span class="sd">        self : UMAPAffinityIn</span>
 <span class="sd">            The fitted instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="n">n_samples_in</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">n_neighbors</span> <span class="o">=</span> <span class="n">check_neighbor_param</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span><span class="p">,</span> <span class="n">n_samples_in</span><span class="p">)</span>
 
@@ -884,35 +883,33 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;Sparsity mode enabled, computing </span><span class="si">{</span><span class="n">n_neighbors</span><span class="si">}</span><span class="s2"> nearest neighbors...&quot;</span>
                 <span class="p">)</span>
-            <span class="c1"># when using sparsity, we construct a reduced distance matrix</span>
-            <span class="c1"># of shape (n_samples, n_neighbors)</span>
             <span class="n">C_</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_matrix</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">n_neighbors</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">C_</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_matrix</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="n">rho</span> <span class="o">=</span> <span class="n">kmin</span><span class="p">(</span><span class="n">C_</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;rho_&quot;</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="n">log_n_neighbors</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">n_neighbors</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
         <span class="p">)</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">marginal_gap</span><span class="p">(</span><span class="n">eps</span><span class="p">):</span>
-            <span class="n">log_marg</span> <span class="o">=</span> <span class="n">_log_P_UMAP</span><span class="p">(</span><span class="n">C_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho_</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span><span class="o">.</span><span class="n">logsumexp</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">log_marg</span> <span class="o">=</span> <span class="n">_log_P_UMAP</span><span class="p">(</span><span class="n">C_</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span><span class="o">.</span><span class="n">logsumexp</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">log_marg</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span> <span class="o">-</span> <span class="n">log_n_neighbors</span>
 
         <span class="n">eps</span> <span class="o">=</span> <span class="n">binary_search</span><span class="p">(</span>
             <span class="n">f</span><span class="o">=</span><span class="n">marginal_gap</span><span class="p">,</span>
-            <span class="n">n</span><span class="o">=</span><span class="n">n_samples_in</span><span class="p">,</span>
+            <span class="n">n</span><span class="o">=</span><span class="n">C_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
             <span class="n">max_iter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">,</span>
             <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
             <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;eps_&quot;</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-        <span class="c1"># Compute log affinity matrix</span>
-        <span class="n">log_affinity_matrix</span> <span class="o">=</span> <span class="n">_log_P_UMAP</span><span class="p">(</span><span class="n">C_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps_</span><span class="p">)</span>
-        <span class="n">affinity_matrix</span> <span class="o">=</span> <span class="n">log_affinity_matrix</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
+        <span class="n">log_affinity</span> <span class="o">=</span> <span class="n">_log_P_UMAP</span><span class="p">(</span><span class="n">C_</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span>
+        <span class="n">affinity_matrix</span> <span class="o">=</span> <span class="n">log_affinity</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;rho_&quot;</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;eps_&quot;</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="c1"># symmetrize if requested : P = P + P^T - P * P^T</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">symmetrize</span><span class="p">:</span>

@@ -478,6 +478,10 @@
 <span class="sd">    This class provides methods to fit the model on data incrementally in batches,</span>
 <span class="sd">    and to transform new data based on the principal components learned during the fitting process.</span>
 
+<span class="sd">    The algorithm uses incremental SVD updates based on :cite:p:`ross2008incremental`,</span>
+<span class="sd">    which allows maintaining a low-rank approximation of the data covariance matrix</span>
+<span class="sd">    without storing all data or recomputing from scratch.</span>
+
 <span class="sd">    It is particularly useful when the dataset to be decomposed is too large to fit in memory.</span>
 <span class="sd">    Adapted from `Scikit-learn Incremental PCA &lt;https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/decomposition/_incremental_pca.py&gt;`_.</span>
 
@@ -718,11 +722,13 @@
                 <span class="s2">&quot;last_variance should not be None if last_sample_count &gt; 0.&quot;</span>
             <span class="p">)</span>
 
-        <span class="n">new_sample_count</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="c1"># Use device of last_sample_count which is always provided and on the right device</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="n">last_sample_count</span><span class="o">.</span><span class="n">device</span>
+        <span class="n">new_sample_count</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
         <span class="n">updated_sample_count</span> <span class="o">=</span> <span class="n">last_sample_count</span> <span class="o">+</span> <span class="n">new_sample_count</span>
 
         <span class="k">if</span> <span class="n">last_mean</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">last_sum</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="n">last_sum</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">last_sum</span> <span class="o">=</span> <span class="n">last_mean</span> <span class="o">*</span> <span class="n">last_sample_count</span>
 
@@ -816,8 +822,8 @@
         <span class="k">if</span> <span class="n">first_pass</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">var_</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="c1"># Store on computation device (either self.device or X.device if auto)</span>
-            <span class="n">param_device</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">device</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span>
+            <span class="c1"># Store on computation device</span>
+            <span class="n">param_device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_device</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_seen_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="n">device</span><span class="o">=</span><span class="n">param_device</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">n_features_</span> <span class="o">=</span> <span class="n">n_features</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">:</span>
@@ -962,7 +968,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">n_features</span>
 
         <span class="c1"># Determine computation device</span>
-        <span class="n">compute_device</span> <span class="o">=</span> <span class="n">X_</span><span class="o">.</span><span class="n">device</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span>
+        <span class="n">compute_device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_device</span><span class="p">(</span><span class="n">X_</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gen_batches</span><span class="p">(</span>
             <span class="n">n_samples</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">min_batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="ow">or</span> <span class="mi">0</span>
@@ -1019,6 +1025,382 @@
             <span class="n">start</span> <span class="o">=</span> <span class="n">end</span>
         <span class="k">if</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
             <span class="k">yield</span> <span class="nb">slice</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ExactIncrementalPCA">
+<a class="viewcode-back" href="../../../gen_modules/torchdr.ExactIncrementalPCA.html#torchdr.ExactIncrementalPCA">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ExactIncrementalPCA</span><span class="p">(</span><span class="n">DRModule</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Exact Incremental Principal Component Analysis.</span>
+
+<span class="sd">    This implementation computes the exact PCA solution by incrementally building</span>
+<span class="sd">    the covariance matrix X.T @ X in batches. This is memory-efficient when the</span>
+<span class="sd">    number of features is small, as only the (n_features, n_features) covariance</span>
+<span class="sd">    matrix needs to be stored, not the full dataset.</span>
+
+<span class="sd">    Unlike IncrementalPCA which uses an approximate incremental SVD algorithm,</span>
+<span class="sd">    this method computes the exact PCA solution but requires two passes through</span>
+<span class="sd">    the data: one to compute the mean, and one to build the covariance matrix.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_components : int, default=2</span>
+<span class="sd">        Number of components to keep.</span>
+<span class="sd">    device : str, default=&quot;auto&quot;</span>
+<span class="sd">        Device on which the computations are performed.</span>
+<span class="sd">    verbose : bool, default=False</span>
+<span class="sd">        Whether to print information during the computations.</span>
+<span class="sd">    random_state : float, default=None</span>
+<span class="sd">        Random seed for reproducibility.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mean_ : torch.Tensor of shape (n_features,)</span>
+<span class="sd">        Per-feature empirical mean, calculated from the training set.</span>
+<span class="sd">    components_ : torch.Tensor of shape (n_components, n_features)</span>
+<span class="sd">        Principal axes in feature space, representing the directions of</span>
+<span class="sd">        maximum variance in the data.</span>
+<span class="sd">    explained_variance_ : torch.Tensor of shape (n_components,)</span>
+<span class="sd">        The amount of variance explained by each of the selected components.</span>
+<span class="sd">    n_samples_seen_ : int</span>
+<span class="sd">        The number of samples processed.</span>
+<span class="sd">    n_features_in_ : int</span>
+<span class="sd">        Number of features seen during fit.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    When to use each incremental PCA variant:</span>
+
+<span class="sd">    - **IncrementalPCA**: Use when you need single-pass processing, can tolerate</span>
+<span class="sd">      approximate results, or have high-dimensional data where storing the full</span>
+<span class="sd">      covariance matrix would be prohibitive.</span>
+
+<span class="sd">    - **ExactIncrementalPCA**: Use when you need exact PCA results, have</span>
+<span class="sd">      low-dimensional data (small n_features), and can afford two passes</span>
+<span class="sd">      through the data.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Using with PyTorch DataLoader for large datasets::</span>
+
+<span class="sd">        from torch.utils.data import DataLoader, TensorDataset</span>
+<span class="sd">        from torchdr.spectral_embedding import ExactIncrementalPCA</span>
+
+<span class="sd">        # Create a DataLoader for a huge dataset</span>
+<span class="sd">        dataset = TensorDataset(huge_X_tensor)</span>
+<span class="sd">        dataloader = DataLoader(dataset, batch_size=1000, shuffle=False)</span>
+
+<span class="sd">        # Initialize the model</span>
+<span class="sd">        pca = ExactIncrementalPCA(n_components=50, device=&#39;cuda&#39;)</span>
+
+<span class="sd">        # First pass: compute mean</span>
+<span class="sd">        batch_list = []</span>
+<span class="sd">        for batch in dataloader:</span>
+<span class="sd">            X_batch = batch[0]  # DataLoader returns tuples</span>
+<span class="sd">            batch_list.append(X_batch)</span>
+<span class="sd">        pca.compute_mean(batch_list)</span>
+
+<span class="sd">        # Second pass: fit the model</span>
+<span class="sd">        pca.fit(batch_list)</span>
+
+<span class="sd">        # Transform new data</span>
+<span class="sd">        test_loader = DataLoader(test_dataset, batch_size=1000)</span>
+<span class="sd">        transformed_batches = []</span>
+<span class="sd">        for batch in test_loader:</span>
+<span class="sd">            X_batch = batch[0]</span>
+<span class="sd">            X_transformed = pca.transform(X_batch)</span>
+<span class="sd">            transformed_batches.append(X_transformed)</span>
+
+<span class="sd">    Using with data generators for streaming::</span>
+
+<span class="sd">        import torch</span>
+<span class="sd">        from torchdr.spectral_embedding import ExactIncrementalPCA</span>
+
+<span class="sd">        # Generate large dataset that doesn&#39;t fit in memory</span>
+<span class="sd">        def data_generator():</span>
+<span class="sd">            for i in range(100):  # 100 batches</span>
+<span class="sd">                yield torch.randn(1000, 50)  # 1000 samples, 50 features</span>
+
+<span class="sd">        # First pass: compute mean</span>
+<span class="sd">        pca = ExactIncrementalPCA(n_components=10)</span>
+<span class="sd">        pca.compute_mean(data_generator())</span>
+
+<span class="sd">        # Second pass: fit the model</span>
+<span class="sd">        pca.fit(data_generator())</span>
+
+<span class="sd">        # Transform new data</span>
+<span class="sd">        X_new = torch.randn(100, 50)</span>
+<span class="sd">        X_transformed = pca.transform(X_new)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">n_components</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">random_state</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">n_components</span><span class="o">=</span><span class="n">n_components</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">components_</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">explained_variance_</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_seen_</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_features_in_</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_XtX</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Accumulated X.T @ X matrix</span>
+
+<div class="viewcode-block" id="ExactIncrementalPCA.compute_mean">
+<a class="viewcode-back" href="../../../gen_modules/torchdr.ExactIncrementalPCA.html#torchdr.ExactIncrementalPCA.compute_mean">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_mean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_batches</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the mean from batches of data (first pass).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X_batches : iterable of torch.Tensor or single torch.Tensor</span>
+<span class="sd">            Either an iterable yielding batches of data, or a single tensor.</span>
+<span class="sd">            Each batch should have shape (n_samples, n_features).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self : ExactIncrementalPCA</span>
+<span class="sd">            Returns the instance itself.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">total_sum</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">n_samples_seen</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Handle single tensor input</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X_batches</span><span class="p">,</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+            <span class="n">X_batches</span> <span class="o">=</span> <span class="p">[</span><span class="n">X_batches</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">X_batches</span><span class="p">:</span>
+            <span class="n">batch</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">!=</span> <span class="s2">&quot;auto&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">batch</span> <span class="o">=</span> <span class="n">batch</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">total_sum</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_features_in_</span> <span class="o">=</span> <span class="n">batch</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">total_sum</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">n_features_in_</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">batch</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">batch</span><span class="o">.</span><span class="n">device</span>
+                <span class="p">)</span>
+
+            <span class="n">total_sum</span> <span class="o">+=</span> <span class="n">batch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">n_samples_seen</span> <span class="o">+=</span> <span class="n">batch</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_seen_</span> <span class="o">=</span> <span class="n">n_samples_seen</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span> <span class="o">=</span> <span class="n">total_sum</span> <span class="o">/</span> <span class="n">n_samples_seen</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Computed mean from </span><span class="si">{</span><span class="n">n_samples_seen</span><span class="si">}</span><span class="s2"> samples&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="ExactIncrementalPCA.partial_fit">
+<a class="viewcode-back" href="../../../gen_modules/torchdr.ExactIncrementalPCA.html#torchdr.ExactIncrementalPCA.partial_fit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">partial_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Incrementally fit the model with a batch of samples.</span>
+
+<span class="sd">        This method assumes the mean has already been computed using compute_mean().</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : torch.Tensor of shape (n_samples, n_features)</span>
+<span class="sd">            Training batch.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self : ExactIncrementalPCA</span>
+<span class="sd">            Returns the instance itself.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Mean must be computed first using compute_mean()&quot;</span><span class="p">)</span>
+
+        <span class="n">X</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">!=</span> <span class="s2">&quot;auto&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="c1"># Center the data</span>
+        <span class="n">X_centered</span> <span class="o">=</span> <span class="n">X</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span>
+
+        <span class="c1"># Initialize or update X.T @ X</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_XtX</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_XtX</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_features_in_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_features_in_</span><span class="p">),</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+                <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_device</span><span class="p">(</span><span class="n">X</span><span class="p">),</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_XtX</span> <span class="o">+=</span> <span class="n">X_centered</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">X_centered</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="ExactIncrementalPCA.fit">
+<a class="viewcode-back" href="../../../gen_modules/torchdr.ExactIncrementalPCA.html#torchdr.ExactIncrementalPCA.fit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_batches</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit the model with batches of samples.</span>
+
+<span class="sd">        This method assumes the mean has already been computed using compute_mean().</span>
+<span class="sd">        If mean is not computed, it will compute it first (requiring two passes).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X_batches : iterable of torch.Tensor or single torch.Tensor</span>
+<span class="sd">            Either an iterable yielding batches of data, or a single tensor.</span>
+<span class="sd">            Each batch should have shape (n_samples, n_features).</span>
+<span class="sd">        y : None</span>
+<span class="sd">            Ignored. Present for API consistency.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self : ExactIncrementalPCA</span>
+<span class="sd">            Returns the instance itself.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Handle single tensor input</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X_batches</span><span class="p">,</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+            <span class="n">X_batches_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">X_batches</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Convert generator to list to allow multiple passes</span>
+            <span class="n">X_batches_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">X_batches</span><span class="p">)</span>
+
+        <span class="c1"># Compute mean if not already done</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Computing mean (first pass through data)&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compute_mean</span><span class="p">(</span><span class="n">X_batches_list</span><span class="p">)</span>
+
+        <span class="c1"># Reset XtX for fresh computation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_XtX</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Build covariance matrix (second pass)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Building covariance matrix (second pass through data)&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">X_batches_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+
+        <span class="c1"># Compute eigendecomposition</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_compute_components</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute principal components from the accumulated covariance matrix.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_XtX</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No data has been fitted yet&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Compute covariance matrix</span>
+        <span class="n">covariance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_XtX</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_seen_</span>
+
+        <span class="c1"># Compute eigendecomposition</span>
+        <span class="c1"># eigh returns eigenvalues in ascending order</span>
+        <span class="n">eigenvalues</span><span class="p">,</span> <span class="n">eigenvectors</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">covariance</span><span class="p">)</span>
+
+        <span class="c1"># Select top n_components (reverse order for descending eigenvalues)</span>
+        <span class="n">n_components</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_features_in_</span><span class="p">)</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">eigenvalues</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)[:</span><span class="n">n_components</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">explained_variance_</span> <span class="o">=</span> <span class="n">eigenvalues</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">components_</span> <span class="o">=</span> <span class="n">eigenvectors</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+
+        <span class="c1"># Ensure deterministic output using svd_flip convention</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_components</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">components_</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">components_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Computed </span><span class="si">{</span><span class="n">n_components</span><span class="si">}</span><span class="s2"> principal components&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_batches</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Internal fit_transform without decorator.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X_batches : torch.Tensor</span>
+<span class="sd">            Single tensor of data to fit and transform.</span>
+<span class="sd">        y : None</span>
+<span class="sd">            Ignored. Present for API consistency.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        X_transformed : torch.Tensor</span>
+<span class="sd">            Transformed data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># For a single tensor, we can fit and transform efficiently</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compute_mean</span><span class="p">([</span><span class="n">X_batches</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">([</span><span class="n">X_batches</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_batches</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ExactIncrementalPCA.fit_transform">
+<a class="viewcode-back" href="../../../gen_modules/torchdr.ExactIncrementalPCA.html#torchdr.ExactIncrementalPCA.fit_transform">[docs]</a>
+    <span class="nd">@handle_input_output</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_batches</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit the model and transform the data.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X_batches : iterable of torch.Tensor or single torch.Tensor</span>
+<span class="sd">            Either an iterable yielding batches of data, or a single tensor.</span>
+<span class="sd">        y : None</span>
+<span class="sd">            Ignored. Present for API consistency.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        X_transformed : torch.Tensor</span>
+<span class="sd">            Transformed data (concatenated from all batches).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Fit the model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_batches</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+        <span class="c1"># Transform the data</span>
+        <span class="c1"># Need to re-iterate through the data</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X_batches</span><span class="p">,</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_batches</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># For generator input, we&#39;d need to store data or require another pass</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">&quot;fit_transform with generator input requires storing data. &quot;</span>
+                <span class="s2">&quot;Please use fit() followed by transform() on your data.&quot;</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ExactIncrementalPCA.transform">
+<a class="viewcode-back" href="../../../gen_modules/torchdr.ExactIncrementalPCA.html#torchdr.ExactIncrementalPCA.transform">[docs]</a>
+    <span class="nd">@handle_input_output</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply dimensionality reduction on X.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : torch.Tensor of shape (n_samples, n_features)</span>
+<span class="sd">            Data to transform.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        X_transformed : torch.Tensor of shape (n_samples, n_components)</span>
+<span class="sd">            Transformed data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">components_</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Model has not been fitted yet&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">!=</span> <span class="s2">&quot;auto&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="c1"># Center and project</span>
+        <span class="n">X_centered</span> <span class="o">=</span> <span class="n">X</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span>
+        <span class="n">X_transformed</span> <span class="o">=</span> <span class="n">X_centered</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">components_</span><span class="o">.</span><span class="n">T</span>
+
+        <span class="k">return</span> <span class="n">X_transformed</span></div>
 </div>
 
 </pre></div>

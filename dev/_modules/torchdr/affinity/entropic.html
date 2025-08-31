@@ -690,7 +690,10 @@
 <span class="sd">            Indices of the nearest neighbors if sparsity is used.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">n_samples_in</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">n_samples_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">n_samples_in</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">target_device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_device</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">n_samples_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
+            <span class="n">n_samples_in</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">target_device</span>
+        <span class="p">)</span>
         <span class="n">perplexity</span> <span class="o">=</span> <span class="n">check_neighbor_param</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span><span class="p">,</span> <span class="n">n_samples_tensor</span><span class="p">)</span>
 
         <span class="n">k</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">perplexity</span>
@@ -714,7 +717,7 @@
             <span class="k">return</span> <span class="n">entropy</span><span class="p">(</span><span class="n">log_P_normalized</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-</span> <span class="n">target_entropy</span>
 
         <span class="n">begin</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">_bounds_entropic_affinity</span><span class="p">(</span>
-            <span class="n">C_</span><span class="p">,</span> <span class="n">perplexity</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span>
+            <span class="n">C_</span><span class="p">,</span> <span class="n">perplexity</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">target_device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span>
         <span class="p">)</span>
         <span class="n">begin</span> <span class="o">=</span> <span class="n">begin</span> <span class="o">+</span> <span class="mf">1e-6</span>  <span class="c1"># avoid numerical issues</span>
 
@@ -725,7 +728,7 @@
             <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span>
             <span class="n">max_iter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">,</span>
             <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
-            <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">target_device</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="n">log_affinity_matrix</span> <span class="o">=</span> <span class="n">_log_Pe</span><span class="p">(</span><span class="n">C_</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span>
@@ -738,7 +741,7 @@
 
         <span class="c1"># Final normalization: sum of each row is 1/n so that total sum is 1</span>
         <span class="n">log_affinity_matrix</span> <span class="o">-=</span> <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
-            <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">n_samples_in</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">n_samples_in</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">target_device</span><span class="p">)</span>
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="p">(</span><span class="n">log_affinity_matrix</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span> <span class="k">if</span> <span class="n">return_indices</span> <span class="k">else</span> <span class="n">log_affinity_matrix</span></div>
@@ -888,16 +891,17 @@
         <span class="n">C</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_matrix</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
         <span class="n">n_samples_in</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">target_device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_device</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="n">perplexity</span> <span class="o">=</span> <span class="n">check_neighbor_param</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span><span class="p">,</span> <span class="n">n_samples_in</span><span class="p">)</span>
         <span class="n">target_entropy</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">perplexity</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">perplexity</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">target_device</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="p">)</span>
 
-        <span class="n">one</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_samples_in</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">one</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_samples_in</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">target_device</span><span class="p">)</span>
 
         <span class="c1"># dual variables, size (n_samples)</span>
-        <span class="n">eps</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_samples_in</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-        <span class="n">mu</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_samples_in</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">eps</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_samples_in</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">target_device</span><span class="p">)</span>
+        <span class="n">mu</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_samples_in</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">target_device</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;eps_&quot;</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;mu_&quot;</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
@@ -1150,9 +1154,10 @@
         <span class="n">n_samples_in</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">log_K</span> <span class="o">=</span> <span class="o">-</span><span class="n">C</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps</span>
 
+        <span class="n">target_device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_device</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="c1"># Performs warm-start if a dual variable f is provided</span>
         <span class="n">dual</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_samples_in</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_samples_in</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">target_device</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">init_dual</span> <span class="ow">is</span> <span class="kc">None</span>
             <span class="k">else</span> <span class="n">init_dual</span>
         <span class="p">)</span>

@@ -50,7 +50,7 @@
     <link rel="icon" href="../_static/logo.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="KernelPCA" href="torchdr.KernelPCA.html" />
+    <link rel="next" title="ExactIncrementalPCA" href="torchdr.ExactIncrementalPCA.html" />
     <link rel="prev" title="PCA" href="torchdr.PCA.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -401,6 +401,7 @@
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="torchdr.PCA.html">PCA</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">IncrementalPCA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.ExactIncrementalPCA.html">ExactIncrementalPCA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchdr.KernelPCA.html">KernelPCA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchdr.PHATE.html">PHATE</a></li>
 </ul>
@@ -518,12 +519,15 @@
 <p>Incremental Principal Components Analysis (IPCA) leveraging PyTorch for GPU acceleration.</p>
 <p>This class provides methods to fit the model on data incrementally in batches,
 and to transform new data based on the principal components learned during the fitting process.</p>
+<p>The algorithm uses incremental SVD updates based on <span id="id1">[<a class="reference internal" href="../torchdr.bibliography.html#id25" title="David A Ross, Jongwoo Lim, Ruei-Sung Lin, and Ming-Hsuan Yang. Incremental learning for robust visual tracking. International journal of computer vision, 77(1):125–141, 2008.">Ross <em>et al.</em>, 2008</a>]</span>,
+which allows maintaining a low-rank approximation of the data covariance matrix
+without storing all data or recomputing from scratch.</p>
 <p>It is particularly useful when the dataset to be decomposed is too large to fit in memory.
 Adapted from <a class="reference external" href="https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/decomposition/_incremental_pca.py">Scikit-learn Incremental PCA</a>.</p>
 <p>Memory Management Strategy:
 - Data is processed in batches to avoid loading entire dataset into memory
 - Each batch is temporarily moved to computation device (GPU if specified)
-- Model parameters (<a href="#id1"><span class="problematic" id="id2">mean_</span></a>, <a href="#id3"><span class="problematic" id="id4">components_</span></a>) are kept on computation device
+- Model parameters (<a href="#id2"><span class="problematic" id="id3">mean_</span></a>, <a href="#id4"><span class="problematic" id="id5">components_</span></a>) are kept on computation device
 - Only the current batch needs to fit in GPU memory, not the full dataset</p>
 <p class="rubric">Examples</p>
 <p>Using with PyTorch DataLoader for true out-of-core learning:</p>
@@ -670,7 +674,7 @@ Should fit in memory/GPU memory.</p></li>
 </div>
 <p class="rubric">Notes</p>
 <ul class="simple">
-<li><p>Parameters (<a href="#id5"><span class="problematic" id="id6">mean_</span></a>, <a href="#id7"><span class="problematic" id="id8">components_</span></a>, etc.) are stored on the computation device,
+<li><p>Parameters (<a href="#id6"><span class="problematic" id="id7">mean_</span></a>, <a href="#id8"><span class="problematic" id="id9">components_</span></a>, etc.) are stored on the computation device,
 which is either self.device (if specified) or the device of the first batch
 (if self.device == “auto”).</p></li>
 <li><p>Uses Welford’s algorithm for numerically stable incremental mean/variance.</p></li>
@@ -774,11 +778,11 @@ Will be on the same device and format as input X.</p>
       </div>
     </a>
     <a class="right-next"
-       href="torchdr.KernelPCA.html"
+       href="torchdr.ExactIncrementalPCA.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">KernelPCA</p>
+        <p class="prev-next-title">ExactIncrementalPCA</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

@@ -518,8 +518,62 @@
 <p>Incremental Principal Components Analysis (IPCA) leveraging PyTorch for GPU acceleration.</p>
 <p>This class provides methods to fit the model on data incrementally in batches,
 and to transform new data based on the principal components learned during the fitting process.</p>
-<p>It is partially useful when the dataset to be decomposed is too large to fit in memory.
+<p>It is particularly useful when the dataset to be decomposed is too large to fit in memory.
 Adapted from <a class="reference external" href="https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/decomposition/_incremental_pca.py">Scikit-learn Incremental PCA</a>.</p>
+<p>Memory Management Strategy:
+- Data is processed in batches to avoid loading entire dataset into memory
+- Each batch is temporarily moved to computation device (GPU if specified)
+- Model parameters (<a href="#id1"><span class="problematic" id="id2">mean_</span></a>, <a href="#id3"><span class="problematic" id="id4">components_</span></a>) are kept on computation device
+- Only the current batch needs to fit in GPU memory, not the full dataset</p>
+<p class="rubric">Examples</p>
+<p>Using with PyTorch DataLoader for true out-of-core learning:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span><span class="p">,</span> <span class="n">TensorDataset</span>
+
+<span class="c1"># Create a DataLoader for a huge dataset</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">TensorDataset</span><span class="p">(</span><span class="n">huge_X_tensor</span><span class="p">,</span> <span class="n">huge_y_tensor</span><span class="p">)</span>
+<span class="n">dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Fit incrementally using DataLoader</span>
+<span class="n">ipca</span> <span class="o">=</span> <span class="n">IncrementalPCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cuda&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
+    <span class="n">X_batch</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># DataLoader returns (X, y) tuples</span>
+    <span class="n">ipca</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">X_batch</span><span class="p">)</span>
+
+<span class="c1"># Transform new data in batches</span>
+<span class="n">test_loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">test_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">test_loader</span><span class="p">:</span>
+    <span class="n">X_batch</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">X_transformed</span> <span class="o">=</span> <span class="n">ipca</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_batch</span><span class="p">)</span>
+    <span class="c1"># Process transformed batch...</span>
+</pre></div>
+</div>
+<p>Using with data generators for streaming large files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">data_generator</span><span class="p">():</span>
+    <span class="c1"># Read huge CSV in chunks</span>
+    <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;huge_file.csv&#39;</span><span class="p">,</span> <span class="n">chunksize</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">chunk</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+<span class="n">ipca</span> <span class="o">=</span> <span class="n">IncrementalPCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">data_generator</span><span class="p">():</span>
+    <span class="n">ipca</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Using with HDF5 or memory-mapped arrays:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span>
+
+<span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="s1">&#39;huge_dataset.h5&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>  <span class="c1"># HDF5 dataset, not loaded into memory</span>
+    <span class="n">n_samples</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">1000</span>
+
+    <span class="n">ipca</span> <span class="o">=</span> <span class="n">IncrementalPCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">):</span>
+        <span class="n">batch</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">batch_size</span><span class="p">])</span>
+        <span class="n">ipca</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -549,30 +603,43 @@ Defaults to 4.</p></li>
 <dt class="sig sig-object py" id="torchdr.IncrementalPCA.gen_batches">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gen_batches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/spectral_embedding/incremental_pca.html#IncrementalPCA.gen_batches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.IncrementalPCA.gen_batches" title="Link to this definition">#</a></dt>
 <dd><p>Generate slices containing <cite>batch_size</cite> elements from 0 to <cite>n</cite>.</p>
-<p>The last slice may contain less than <cite>batch_size</cite> elements, when
+<p>Used to split the dataset into manageable batches that fit in GPU memory.
+The last slice may contain less than <cite>batch_size</cite> elements, when
 <cite>batch_size</cite> does not divide <cite>n</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>n</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) – Size of the sequence.</p></li>
-<li><p><strong>batch_size</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) – Number of elements in each batch.</p></li>
-<li><p><strong>min_batch_size</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a><em>, </em><em>optional</em>) – Minimum number of elements in each batch. Defaults to 0.</p></li>
+<li><p><strong>n</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) – Total size of the dataset.</p></li>
+<li><p><strong>batch_size</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) – Number of samples in each batch. Should be chosen to fit in GPU memory.</p></li>
+<li><p><strong>min_batch_size</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a><em>, </em><em>optional</em>) – Minimum number of samples in each batch. Used to ensure batches
+have enough samples for meaningful statistics. Defaults to 0.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Yields<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>slice</em> – A slice of <cite>batch_size</cite> elements.</p>
+<dd class="field-even"><p><em>slice</em> – A slice object representing indices [start:end] for the current batch.</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">IncrementalPCA</span><span class="o">.</span><span class="n">gen_batches</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="go">[slice(0, 3), slice(3, 6), slice(6, 9), slice(9, 10)]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="torchdr.IncrementalPCA.partial_fit">
 <span class="sig-name descname"><span class="pre">partial_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_input</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/spectral_embedding/incremental_pca.html#IncrementalPCA.partial_fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.IncrementalPCA.partial_fit" title="Link to this definition">#</a></dt>
 <dd><p>Fit incrementally the model with batch data <cite>X</cite>.</p>
+<p>This method updates the PCA model with a new batch of data without
+requiring access to previously seen data. It maintains running statistics
+(mean, variance) and incrementally updates the principal components.</p>
+<p>The batch X should already be on the computation device when called
+from _fit_transform. When called directly, X can be on any device.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>torch.Tensor</em>) – The batch input data tensor with shape (n_samples, n_features).</p></li>
+<li><p><strong>X</strong> (<em>torch.Tensor</em>) – The batch input data tensor with shape (n_samples, n_features).
+Should fit in memory/GPU memory.</p></li>
 <li><p><strong>check_input</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, validates the input. Defaults to True.</p></li>
 </ul>
 </dd>
@@ -583,6 +650,34 @@ Defaults to 4.</p></li>
 <dd class="field-odd"><p><a class="reference internal" href="#torchdr.IncrementalPCA" title="torchdr.IncrementalPCA">IncrementalPCA</a></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<p>Basic usage with manual batching:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ipca</span> <span class="o">=</span> <span class="n">IncrementalPCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="n">batch_size</span><span class="p">):</span>
+    <span class="n">ipca</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">batch_size</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>With PyTorch DataLoader (recommended for large datasets):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
+<span class="n">dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">256</span><span class="p">)</span>
+
+<span class="n">ipca</span> <span class="o">=</span> <span class="n">IncrementalPCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
+    <span class="c1"># Handle DataLoader&#39;s (X, y) tuple format</span>
+    <span class="n">X_batch</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">batch</span>
+    <span class="n">ipca</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">X_batch</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Parameters (<a href="#id5"><span class="problematic" id="id6">mean_</span></a>, <a href="#id7"><span class="problematic" id="id8">components_</span></a>, etc.) are stored on the computation device,
+which is either self.device (if specified) or the device of the first batch
+(if self.device == “auto”).</p></li>
+<li><p>Uses Welford’s algorithm for numerically stable incremental mean/variance.</p></li>
+<li><p>SVD is performed on augmented matrix containing previous components
+and current batch to update the decomposition.</p></li>
+<li><p>This is the recommended method for fitting with DataLoader or generators.</p></li>
+</ul>
 </dd></dl>
 
 <dl class="py method">
@@ -621,19 +716,30 @@ parameters and not others.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="torchdr.IncrementalPCA.transform">
-<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/spectral_embedding/incremental_pca.html#IncrementalPCA.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.IncrementalPCA.transform" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/torchdr/spectral_embedding/incremental_pca.html#IncrementalPCA.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.IncrementalPCA.transform" title="Link to this definition">#</a></dt>
 <dd><p>Apply dimensionality reduction to <cite>X</cite>.</p>
-<p>The input data <cite>X</cite> is projected on the first principal components
-previously extracted from a training set.</p>
+<p>Projects input data onto the principal components learned during fitting.
+Unlike fit, this processes the full input at once, not in batches.</p>
+<p>Device Management:
+- If X and parameters are on different devices, X is temporarily moved</p>
+<blockquote>
+<div><p>to parameters’ device for computation</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>Result is moved back to X’s original device</p></li>
+<li><p>This avoids moving parameters which would be inefficient for repeated transforms</p></li>
+</ul>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>X</strong> (<em>torch.Tensor</em><em> or </em><em>np.ndarray</em>) – New data tensor with shape (n_samples, n_features) to be transformed.</p>
+<dd class="field-odd"><p><strong>X</strong> (<em>ArrayLike</em>) – New data with shape (n_samples, n_features) to be transformed.
+Can be on any device.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Transformed data tensor with shape (n_samples, n_components).</p>
+<dd class="field-even"><p>Transformed data with shape (n_samples, n_components).
+Will be on the same device and format as input X.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>torch.Tensor</p>
+<dd class="field-odd"><p>ArrayLike</p>
 </dd>
 </dl>
 </dd></dl>

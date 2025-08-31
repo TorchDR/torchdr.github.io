@@ -458,12 +458,16 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">DRModule</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">handle_type</span><span class="p">,</span>
+    <span class="n">handle_input_output</span><span class="p">,</span>
     <span class="n">svd_flip</span><span class="p">,</span>
     <span class="n">to_torch</span><span class="p">,</span>
+    <span class="n">restore_original_format</span><span class="p">,</span>
+    <span class="n">validate_tensor</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeVar</span>
+
+<span class="n">ArrayLike</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;ArrayLike&quot;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="IncrementalPCA">
@@ -474,8 +478,64 @@
 <span class="sd">    This class provides methods to fit the model on data incrementally in batches,</span>
 <span class="sd">    and to transform new data based on the principal components learned during the fitting process.</span>
 
-<span class="sd">    It is partially useful when the dataset to be decomposed is too large to fit in memory.</span>
+<span class="sd">    It is particularly useful when the dataset to be decomposed is too large to fit in memory.</span>
 <span class="sd">    Adapted from `Scikit-learn Incremental PCA &lt;https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/decomposition/_incremental_pca.py&gt;`_.</span>
+
+<span class="sd">    Memory Management Strategy:</span>
+<span class="sd">    - Data is processed in batches to avoid loading entire dataset into memory</span>
+<span class="sd">    - Each batch is temporarily moved to computation device (GPU if specified)</span>
+<span class="sd">    - Model parameters (mean_, components_) are kept on computation device</span>
+<span class="sd">    - Only the current batch needs to fit in GPU memory, not the full dataset</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Using with PyTorch DataLoader for true out-of-core learning::</span>
+
+<span class="sd">        from torch.utils.data import DataLoader, TensorDataset</span>
+
+<span class="sd">        # Create a DataLoader for a huge dataset</span>
+<span class="sd">        dataset = TensorDataset(huge_X_tensor, huge_y_tensor)</span>
+<span class="sd">        dataloader = DataLoader(dataset, batch_size=1000, shuffle=True)</span>
+
+<span class="sd">        # Fit incrementally using DataLoader</span>
+<span class="sd">        ipca = IncrementalPCA(n_components=50, device=&#39;cuda&#39;)</span>
+<span class="sd">        for batch in dataloader:</span>
+<span class="sd">            X_batch = batch[0]  # DataLoader returns (X, y) tuples</span>
+<span class="sd">            ipca.partial_fit(X_batch)</span>
+
+<span class="sd">        # Transform new data in batches</span>
+<span class="sd">        test_loader = DataLoader(test_dataset, batch_size=1000)</span>
+<span class="sd">        for batch in test_loader:</span>
+<span class="sd">            X_batch = batch[0]</span>
+<span class="sd">            X_transformed = ipca.transform(X_batch)</span>
+<span class="sd">            # Process transformed batch...</span>
+
+<span class="sd">    Using with data generators for streaming large files::</span>
+
+<span class="sd">        import pandas as pd</span>
+
+<span class="sd">        def data_generator():</span>
+<span class="sd">            # Read huge CSV in chunks</span>
+<span class="sd">            for chunk in pd.read_csv(&#39;huge_file.csv&#39;, chunksize=1000):</span>
+<span class="sd">                yield torch.tensor(chunk.values, dtype=torch.float32)</span>
+
+<span class="sd">        ipca = IncrementalPCA(n_components=50)</span>
+<span class="sd">        for batch in data_generator():</span>
+<span class="sd">            ipca.partial_fit(batch)</span>
+
+<span class="sd">    Using with HDF5 or memory-mapped arrays::</span>
+
+<span class="sd">        import h5py</span>
+
+<span class="sd">        with h5py.File(&#39;huge_dataset.h5&#39;, &#39;r&#39;) as f:</span>
+<span class="sd">            X = f[&#39;data&#39;]  # HDF5 dataset, not loaded into memory</span>
+<span class="sd">            n_samples = X.shape[0]</span>
+<span class="sd">            batch_size = 1000</span>
+
+<span class="sd">            ipca = IncrementalPCA(n_components=100)</span>
+<span class="sd">            for i in range(0, n_samples, batch_size):</span>
+<span class="sd">                batch = torch.tensor(X[i:i+batch_size])</span>
+<span class="sd">                ipca.partial_fit(batch)</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -562,29 +622,46 @@
             <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-        <span class="n">valid_dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate and prepare input data for processing.</span>
 
+<span class="sd">        Ensures the input is a torch tensor with appropriate dtype and shape.</span>
+<span class="sd">        Does NOT move data to computation device - that happens per batch.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : array-like</span>
+<span class="sd">            Input data to validate.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        torch.Tensor</span>
+<span class="sd">            Validated tensor on its original device.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Convert to tensor if needed</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
-            <span class="n">X</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">:</span>
             <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
 
-        <span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="o">&gt;</span> <span class="n">n_features</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;n_components=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="si">}</span><span class="s2"> invalid for &quot;</span>
-                <span class="s2">&quot;n_features=</span><span class="si">{n_features}</span><span class="s2">, need more rows than columns &quot;</span>
-                <span class="s2">&quot;for IncrementalPCA processing.&quot;</span>
-            <span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="o">&gt;</span> <span class="n">n_samples</span><span class="p">:</span>
+        <span class="c1"># Use standard validation</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">validate_tensor</span><span class="p">(</span>
+            <span class="n">X</span><span class="p">,</span>
+            <span class="n">ensure_2d</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">ensure_min_samples</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">ensure_min_features</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">max_components</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># IncrementalPCA-specific validation for batch size</span>
+        <span class="n">n_samples</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="o">&gt;</span> <span class="n">n_samples</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;n_components=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="si">}</span><span class="s2"> must be less or equal &quot;</span>
-                <span class="s2">&quot;to the batch number of samples </span><span class="si">{n_samples}</span><span class="s2">.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;to the batch number of samples </span><span class="si">{</span><span class="n">n_samples</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_dtypes</span><span class="p">:</span>
+        <span class="c1"># Ensure float dtype (validate_tensor doesn&#39;t handle dtype conversion)</span>
+        <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
             <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">X</span>
@@ -593,6 +670,43 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_incremental_mean_and_var</span><span class="p">(</span>
         <span class="n">X</span><span class="p">,</span> <span class="n">last_mean</span><span class="p">,</span> <span class="n">last_variance</span><span class="p">,</span> <span class="n">last_sample_count</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Incrementally compute mean and variance using Welford&#39;s algorithm.</span>
+
+<span class="sd">        This method implements a numerically stable algorithm for computing running</span>
+<span class="sd">        statistics without needing access to all previous data. It works by:</span>
+
+<span class="sd">        1. Computing the sum of the new batch in float64 for precision</span>
+<span class="sd">        2. Combining it with the previous sum (mean * count) from past batches</span>
+<span class="sd">        3. Using Welford&#39;s update formula to compute variance, which involves:</span>
+<span class="sd">           - Computing deviation of each point from the batch mean</span>
+<span class="sd">           - Applying a correction term to avoid numerical cancellation</span>
+<span class="sd">           - Combining with previous variance using weighted averaging</span>
+
+<span class="sd">        The algorithm uses float64 internally because:</span>
+<span class="sd">        - Sums of millions of float32 values accumulate significant rounding error</span>
+<span class="sd">        - The variance formula involves subtracting large similar numbers (catastrophic cancellation)</span>
+<span class="sd">        - Each batch compounds any numerical errors from previous batches</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : torch.Tensor</span>
+<span class="sd">            Current batch of data (n_samples, n_features).</span>
+<span class="sd">        last_mean : torch.Tensor or None</span>
+<span class="sd">            Mean from previous batches (n_features,). None on first batch.</span>
+<span class="sd">        last_variance : torch.Tensor or None</span>
+<span class="sd">            Variance from previous batches (n_features,). None on first batch.</span>
+<span class="sd">        last_sample_count : torch.Tensor</span>
+<span class="sd">            Number of samples seen in previous batches. 0 on first batch.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        updated_mean : torch.Tensor</span>
+<span class="sd">            Updated mean including current batch (n_features,).</span>
+<span class="sd">        updated_variance : torch.Tensor</span>
+<span class="sd">            Updated variance including current batch (n_features,).</span>
+<span class="sd">        updated_sample_count : torch.Tensor</span>
+<span class="sd">            Total number of samples seen (scalar).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">last_mean</span><span class="p">,</span> <span class="n">last_variance</span><span class="p">,</span> <span class="n">last_sample_count</span>
 
@@ -643,10 +757,18 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">partial_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">check_input</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit incrementally the model with batch data `X`.</span>
 
+<span class="sd">        This method updates the PCA model with a new batch of data without</span>
+<span class="sd">        requiring access to previously seen data. It maintains running statistics</span>
+<span class="sd">        (mean, variance) and incrementally updates the principal components.</span>
+
+<span class="sd">        The batch X should already be on the computation device when called</span>
+<span class="sd">        from _fit_transform. When called directly, X can be on any device.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        X : torch.Tensor</span>
 <span class="sd">            The batch input data tensor with shape (n_samples, n_features).</span>
+<span class="sd">            Should fit in memory/GPU memory.</span>
 <span class="sd">        check_input : bool, optional</span>
 <span class="sd">            If True, validates the input. Defaults to True.</span>
 
@@ -654,6 +776,35 @@
 <span class="sd">        -------</span>
 <span class="sd">        IncrementalPCA:</span>
 <span class="sd">            The updated IPCA model after processing the batch.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        Basic usage with manual batching::</span>
+
+<span class="sd">            ipca = IncrementalPCA(n_components=10)</span>
+<span class="sd">            for i in range(0, len(X), batch_size):</span>
+<span class="sd">                ipca.partial_fit(X[i:i+batch_size])</span>
+
+<span class="sd">        With PyTorch DataLoader (recommended for large datasets)::</span>
+
+<span class="sd">            from torch.utils.data import DataLoader</span>
+<span class="sd">            dataloader = DataLoader(dataset, batch_size=256)</span>
+
+<span class="sd">            ipca = IncrementalPCA(n_components=50)</span>
+<span class="sd">            for batch in dataloader:</span>
+<span class="sd">                # Handle DataLoader&#39;s (X, y) tuple format</span>
+<span class="sd">                X_batch = batch[0] if isinstance(batch, tuple) else batch</span>
+<span class="sd">                ipca.partial_fit(X_batch)</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        - Parameters (mean_, components_, etc.) are stored on the computation device,</span>
+<span class="sd">          which is either self.device (if specified) or the device of the first batch</span>
+<span class="sd">          (if self.device == &quot;auto&quot;).</span>
+<span class="sd">        - Uses Welford&#39;s algorithm for numerically stable incremental mean/variance.</span>
+<span class="sd">        - SVD is performed on augmented matrix containing previous components</span>
+<span class="sd">          and current batch to update the decomposition.</span>
+<span class="sd">        - This is the recommended method for fitting with DataLoader or generators.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">first_pass</span> <span class="o">=</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;components_&quot;</span><span class="p">)</span>
 
@@ -665,7 +816,9 @@
         <span class="k">if</span> <span class="n">first_pass</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">var_</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_seen_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="c1"># Store on computation device (either self.device or X.device if auto)</span>
+            <span class="n">param_device</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">device</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_seen_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="n">device</span><span class="o">=</span><span class="n">param_device</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">n_features_</span> <span class="o">=</span> <span class="n">n_features</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span><span class="p">)</span>
@@ -711,60 +864,120 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">noise_variance_</span> <span class="o">=</span> <span class="n">explained_variance</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="p">:]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">noise_variance_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="c1"># Use same device as other parameters</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">noise_variance_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mean_</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
 
 <div class="viewcode-block" id="IncrementalPCA.transform">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.IncrementalPCA.html#torchdr.IncrementalPCA.transform">[docs]</a>
-    <span class="nd">@handle_type</span><span class="p">()</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]):</span>
+    <span class="nd">@handle_input_output</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ArrayLike</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply dimensionality reduction to `X`.</span>
 
-<span class="sd">        The input data `X` is projected on the first principal components</span>
-<span class="sd">        previously extracted from a training set.</span>
+<span class="sd">        Projects input data onto the principal components learned during fitting.</span>
+<span class="sd">        Unlike fit, this processes the full input at once, not in batches.</span>
+
+<span class="sd">        Device Management:</span>
+<span class="sd">        - If X and parameters are on different devices, X is temporarily moved</span>
+<span class="sd">          to parameters&#39; device for computation</span>
+<span class="sd">        - Result is moved back to X&#39;s original device</span>
+<span class="sd">        - This avoids moving parameters which would be inefficient for repeated transforms</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        X : torch.Tensor or np.ndarray</span>
-<span class="sd">            New data tensor with shape (n_samples, n_features) to be transformed.</span>
+<span class="sd">        X : ArrayLike</span>
+<span class="sd">            New data with shape (n_samples, n_features) to be transformed.</span>
+<span class="sd">            Can be on any device.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        torch.Tensor:</span>
-<span class="sd">            Transformed data tensor with shape (n_samples, n_components).</span>
+<span class="sd">        ArrayLike</span>
+<span class="sd">            Transformed data with shape (n_samples, n_components).</span>
+<span class="sd">            Will be on the same device and format as input X.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">X</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">components_</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">T</span></div>
+        <span class="c1"># Move input to the same device as the model parameters for computation</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span><span class="o">.</span><span class="n">device</span> <span class="o">!=</span> <span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">:</span>
+            <span class="n">X_compute</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mean_</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="c1"># Ensure dtype compatibility after moving</span>
+            <span class="n">mean</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">X_compute</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">X_compute</span><span class="o">.</span><span class="n">dtype</span>
+                <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span>
+            <span class="p">)</span>
+            <span class="n">components</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">components_</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">X_compute</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">components_</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">X_compute</span><span class="o">.</span><span class="n">dtype</span>
+                <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">components_</span>
+            <span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="n">X_compute</span> <span class="o">-</span> <span class="n">mean</span><span class="p">)</span> <span class="o">@</span> <span class="n">components</span><span class="o">.</span><span class="n">T</span>
+            <span class="c1"># Move result back to original device</span>
+            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Ensure dtype compatibility</span>
+            <span class="n">mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">X</span><span class="o">.</span><span class="n">dtype</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span>
+            <span class="n">components</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">components_</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">components_</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">X</span><span class="o">.</span><span class="n">dtype</span>
+                <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">components_</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">X</span> <span class="o">-</span> <span class="n">mean</span><span class="p">)</span> <span class="o">@</span> <span class="n">components</span><span class="o">.</span><span class="n">T</span></div>
 
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ArrayLike</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit the model with X and apply the dimensionality reduction on X.</span>
+
+<span class="sd">        This is the main entry point that orchestrates batch processing:</span>
+<span class="sd">        1. Splits data into batches (only batches need to fit in GPU memory)</span>
+<span class="sd">        2. Moves each batch to computation device</span>
+<span class="sd">        3. Calls partial_fit to incrementally update the model</span>
+<span class="sd">        4. After fitting all batches, transforms the full dataset</span>
+
+<span class="sd">        Memory Strategy:</span>
+<span class="sd">        - Full dataset X stays on its original device (typically CPU)</span>
+<span class="sd">        - Only individual batches are moved to GPU for processing</span>
+<span class="sd">        - This allows processing datasets larger than GPU memory</span>
+<span class="sd">        - Final transform operates on full dataset (already in memory)</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        X : torch.Tensor or np.ndarray of shape (n_samples, n_features)</span>
+<span class="sd">        X : ArrayLike of shape (n_samples, n_features)</span>
 <span class="sd">            Data on which to fit the PCA model and project onto the components.</span>
+<span class="sd">            Should fit in CPU memory but may be too large for GPU memory.</span>
 <span class="sd">        y : Optional[Any], default=None</span>
 <span class="sd">            Target values (None for unsupervised transformations).</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        X_new : torch.Tensor or np.ndarray of shape (n_samples, n_components)</span>
-<span class="sd">            Projected data.</span>
+<span class="sd">        ArrayLike of shape (n_samples, n_components)</span>
+<span class="sd">            Projected data. Will be on the same device/backend as input.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">X</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
-        <span class="n">X</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_data</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-        <span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span>
+        <span class="c1"># Track original format for output conversion</span>
+        <span class="n">X_</span><span class="p">,</span> <span class="n">input_backend</span><span class="p">,</span> <span class="n">input_device</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">return_backend_device</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Validate the tensor</span>
+        <span class="n">X_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_data</span><span class="p">(</span><span class="n">X_</span><span class="p">)</span>
+        <span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span> <span class="o">=</span> <span class="n">X_</span><span class="o">.</span><span class="n">shape</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">n_features</span>
+
+        <span class="c1"># Determine computation device</span>
+        <span class="n">compute_device</span> <span class="o">=</span> <span class="n">X_</span><span class="o">.</span><span class="n">device</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span>
 
         <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gen_batches</span><span class="p">(</span>
             <span class="n">n_samples</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">min_batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="ow">or</span> <span class="mi">0</span>
         <span class="p">):</span>
-            <span class="n">X_batch</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">batch</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">device</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="c1"># Move batch to computation device if needed</span>
+            <span class="n">X_batch</span> <span class="o">=</span> <span class="n">X_</span><span class="p">[</span><span class="n">batch</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">X_batch</span><span class="o">.</span><span class="n">device</span> <span class="o">!=</span> <span class="n">compute_device</span><span class="p">:</span>
+                <span class="n">X_batch</span> <span class="o">=</span> <span class="n">X_batch</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">compute_device</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">X_batch</span><span class="p">,</span> <span class="n">check_input</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="c1"># Transform and convert back to original format</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span> <span class="o">=</span> <span class="n">restore_original_format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">input_backend</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">input_device</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span>
 
 <div class="viewcode-block" id="IncrementalPCA.gen_batches">
@@ -773,22 +986,29 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">gen_batches</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">min_batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate slices containing `batch_size` elements from 0 to `n`.</span>
 
+<span class="sd">        Used to split the dataset into manageable batches that fit in GPU memory.</span>
 <span class="sd">        The last slice may contain less than `batch_size` elements, when</span>
 <span class="sd">        `batch_size` does not divide `n`.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        n : int</span>
-<span class="sd">            Size of the sequence.</span>
+<span class="sd">            Total size of the dataset.</span>
 <span class="sd">        batch_size : int</span>
-<span class="sd">            Number of elements in each batch.</span>
+<span class="sd">            Number of samples in each batch. Should be chosen to fit in GPU memory.</span>
 <span class="sd">        min_batch_size : int, optional</span>
-<span class="sd">            Minimum number of elements in each batch. Defaults to 0.</span>
+<span class="sd">            Minimum number of samples in each batch. Used to ensure batches</span>
+<span class="sd">            have enough samples for meaningful statistics. Defaults to 0.</span>
 
 <span class="sd">        Yields</span>
 <span class="sd">        ------</span>
 <span class="sd">        slice:</span>
-<span class="sd">            A slice of `batch_size` elements.</span>
+<span class="sd">            A slice object representing indices [start:end] for the current batch.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; list(IncrementalPCA.gen_batches(10, 3))</span>
+<span class="sd">        [slice(0, 3), slice(3, 6), slice(6, 9), slice(9, 10)]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">n</span> <span class="o">//</span> <span class="n">batch_size</span><span class="p">)):</span>

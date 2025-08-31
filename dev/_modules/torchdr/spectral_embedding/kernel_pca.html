@@ -540,11 +540,8 @@
 <span class="sd">        embedding_ : torch.Tensor of shape (n_samples, n_components)</span>
 <span class="sd">            Projected data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">X_fit_</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
         <span class="n">K</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-        <span class="n">K</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">col_mean</span><span class="p">,</span> <span class="n">mean</span> <span class="o">=</span> <span class="n">center_kernel</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">return_all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">K_fit_rows_</span> <span class="o">=</span> <span class="n">col_mean</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">K_fit_all_</span> <span class="o">=</span> <span class="n">mean</span>
+        <span class="n">K</span> <span class="o">=</span> <span class="n">center_kernel</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">return_all</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="n">eigvals</span><span class="p">,</span> <span class="n">eigvecs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">K</span><span class="p">)</span>
         <span class="n">eigvals</span> <span class="o">=</span> <span class="n">check_nonnegativity_eigenvalues</span><span class="p">(</span><span class="n">eigvals</span><span class="p">)</span>

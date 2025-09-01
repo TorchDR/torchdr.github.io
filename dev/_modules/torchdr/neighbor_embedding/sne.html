@@ -456,7 +456,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity</span><span class="w"> </span><span class="kn">import</span> <span class="n">EntropicAffinity</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.neighbor_embedding.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">SparseNeighborEmbedding</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logsumexp_red</span><span class="p">,</span> <span class="n">cross_entropy_loss</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distance</span><span class="w"> </span><span class="kn">import</span> <span class="n">FaissConfig</span><span class="p">,</span> <span class="n">pairwise_distances</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distance</span><span class="w"> </span><span class="kn">import</span> <span class="n">FaissConfig</span><span class="p">,</span> <span class="n">pairwise_distances</span><span class="p">,</span> <span class="n">pairwise_distances_indexed</span>
 
 
 <div class="viewcode-block" id="SNE">
@@ -598,11 +598,10 @@
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_attractive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">distances_sq</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span>
+        <span class="n">distances_sq</span> <span class="o">=</span> <span class="n">pairwise_distances_indexed</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span>
+            <span class="n">key_indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span><span class="p">,</span>
             <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
-            <span class="n">backend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span>
-            <span class="n">indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">cross_entropy_loss</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span><span class="p">,</span> <span class="o">-</span><span class="n">distances_sq</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 

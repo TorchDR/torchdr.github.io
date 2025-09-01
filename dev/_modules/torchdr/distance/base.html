@@ -469,10 +469,18 @@
     <span class="n">exclude_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">k</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">indices</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute pairwise distances between two tensors.</span>
+
+<span class="sd">    This is the main distance computation function that supports multiple backends</span>
+<span class="sd">    for efficient computation. It can compute:</span>
+<span class="sd">    - Full pairwise distance matrices between X and Y (or X and itself)</span>
+<span class="sd">    - k-nearest neighbor distances when k is specified</span>
+<span class="sd">    - Distances with various metrics (euclidean, manhattan, angular, etc.)</span>
+
+<span class="sd">    For computing distances between specific indexed subsets, use</span>
+<span class="sd">    pairwise_distances_indexed instead.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -497,9 +505,6 @@
 <span class="sd">    return_indices : bool, optional</span>
 <span class="sd">        Whether to return the indices of the k-nearest neighbors.</span>
 <span class="sd">        Default is False.</span>
-<span class="sd">    indices : torch.Tensor of shape (n_samples, n_neighbors), optional</span>
-<span class="sd">        If provided, compute distances only for these specific pairs.</span>
-<span class="sd">        Cannot be used with Y or k parameters.</span>
 <span class="sd">    device : str, default=&quot;auto&quot;</span>
 <span class="sd">        Device to use for computation. If &quot;auto&quot;, keeps data on its current device.</span>
 <span class="sd">        Otherwise, temporarily moves data to specified device for computation.</span>
@@ -529,21 +534,6 @@
 <span class="sd">    &gt;&gt;&gt; config = FaissConfig(use_float16=True, temp_memory=2.0)</span>
 <span class="sd">    &gt;&gt;&gt; distances = pairwise_distances(X.cuda(), k=10, backend=config)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">Y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;[TorchDR] ERROR: Cannot provide both Y and indices parameters. &quot;</span>
-                <span class="s2">&quot;indices is for computing sparse distances within X.&quot;</span>
-            <span class="p">)</span>
-        <span class="k">if</span> <span class="n">k</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;[TorchDR] ERROR: Cannot provide both k and indices parameters. &quot;</span>
-                <span class="s2">&quot;indices means neighbors are already specified.&quot;</span>
-            <span class="p">)</span>
-        <span class="k">return</span> <span class="n">symmetric_pairwise_distances_indices</span><span class="p">(</span>
-            <span class="n">X</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="n">return_indices</span>
-        <span class="p">)</span>
-
     <span class="c1"># Parse backend parameter</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">):</span>
         <span class="n">backend_str</span> <span class="o">=</span> <span class="s2">&quot;faiss&quot;</span>
@@ -584,59 +574,160 @@
 
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">symmetric_pairwise_distances_indices</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">pairwise_distances_indexed</span><span class="p">(</span>
     <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
-    <span class="n">indices</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">query_indices</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">key_indices</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">Y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
-    <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute pairwise distances for a subset of pairs given by indices.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute pairwise distances between indexed subsets of tensors.</span>
 
-<span class="sd">    The output distance matrix has shape (n, k) and its (i,j) element is the</span>
-<span class="sd">    distance between X[i] and Y[indices[i, j]].</span>
+<span class="sd">    This function efficiently computes distances between specific subsets of points</span>
+<span class="sd">    selected by indices, rather than computing the full pairwise distance matrix.</span>
+<span class="sd">    It&#39;s particularly useful for:</span>
+<span class="sd">    - Computing distances to specific neighbors only (e.g., k-NN indices)</span>
+<span class="sd">    - Multi-GPU scenarios where each GPU processes a chunk of data</span>
+<span class="sd">    - Negative sampling where distances are needed only to sampled points</span>
+
+<span class="sd">    The function allows flexible indexing of both query points (from X) and</span>
+<span class="sd">    key points (from Y or X if Y is None).</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    X : torch.Tensor of shape (n, p)</span>
-<span class="sd">        Input dataset.</span>
-<span class="sd">    indices : torch.Tensor of shape (n, k)</span>
-<span class="sd">        Indices of the pairs for which to compute the distances.</span>
+<span class="sd">    X : torch.Tensor of shape (n_samples, n_features)</span>
+<span class="sd">        Input data containing query points.</span>
+<span class="sd">    query_indices : torch.Tensor of shape (n_queries,) or (n_queries, k), optional</span>
+<span class="sd">        Indices of rows from X to use as queries.</span>
+<span class="sd">        - If 1D: selects rows X[query_indices] as queries</span>
+<span class="sd">        - If 2D: for each row i, uses X[query_indices[i, :]] as multiple queries</span>
+<span class="sd">        - If None: uses all rows of X as queries</span>
+<span class="sd">    key_indices : torch.Tensor of shape (n_keys,) or (n_queries, n_keys), optional</span>
+<span class="sd">        Indices of rows from Y (or X if Y is None) to use as keys.</span>
+<span class="sd">        - If 1D: selects rows as keys for all queries</span>
+<span class="sd">        - If 2D: for each query i, uses specific keys at key_indices[i, :]</span>
+<span class="sd">        - If None: uses all rows of Y (or X) as keys</span>
+<span class="sd">    Y : torch.Tensor of shape (m_samples, n_features), optional</span>
+<span class="sd">        Input data containing key points. If None, uses X for keys.</span>
 <span class="sd">    metric : str, optional</span>
-<span class="sd">        Metric to use for computing distances. The default is &quot;sqeuclidean&quot;.</span>
-<span class="sd">    return_indices : bool, optional</span>
-<span class="sd">        Whether to return the indices of the pairs for which to compute the distances.</span>
-<span class="sd">        Default is False.</span>
+<span class="sd">        Metric to use for distance computation. Default is &quot;sqeuclidean&quot;.</span>
+<span class="sd">        Supported: &quot;sqeuclidean&quot;, &quot;euclidean&quot;, &quot;manhattan&quot;, &quot;angular&quot;, &quot;sqhyperbolic&quot;</span>
+<span class="sd">    backend : {&#39;keops&#39;, &#39;faiss&#39;, None} or FaissConfig, optional</span>
+<span class="sd">        Backend to use for computation. Currently only None (torch) is supported</span>
+<span class="sd">        for indexed operations.</span>
+<span class="sd">    device : str, default=&quot;auto&quot;</span>
+<span class="sd">        Device to use for computation.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    C_indices : torch.Tensor of shape (n, k)</span>
-<span class="sd">        Pairwise distances matrix for the subset of pairs.</span>
-<span class="sd">    indices : torch.Tensor of shape (n, k)</span>
-<span class="sd">        Indices of the pairs for which to compute the distances.</span>
+<span class="sd">    distances : torch.Tensor</span>
+<span class="sd">        Pairwise distances with shape determined by input indices:</span>
+<span class="sd">        - query_indices=None, key_indices=None: (n_samples, m_samples)</span>
+<span class="sd">        - query_indices=1D, key_indices=None: (n_queries, m_samples)</span>
+<span class="sd">        - query_indices=None, key_indices=1D: (n_samples, n_keys)</span>
+<span class="sd">        - query_indices=1D, key_indices=1D: (n_queries, n_keys)</span>
+<span class="sd">        - query_indices=2D, key_indices=2D: (n_queries, n_keys_per_query)</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import torch</span>
+<span class="sd">    &gt;&gt;&gt; from torchdr.distance import pairwise_distances_indexed</span>
+
+<span class="sd">    &gt;&gt;&gt; # Compute distances from chunk to negatives (multi-GPU use case)</span>
+<span class="sd">    &gt;&gt;&gt; X = torch.randn(1000, 128)</span>
+<span class="sd">    &gt;&gt;&gt; chunk_indices = torch.arange(100, 200)  # GPU&#39;s chunk</span>
+<span class="sd">    &gt;&gt;&gt; neg_indices = torch.randint(0, 1000, (100, 5))  # Negative samples</span>
+<span class="sd">    &gt;&gt;&gt; distances = pairwise_distances_indexed(</span>
+<span class="sd">    ...     X, query_indices=chunk_indices, key_indices=neg_indices</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &gt;&gt;&gt; distances.shape</span>
+<span class="sd">    torch.Size([100, 5])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">X_indices</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">indices</span><span class="o">.</span><span class="n">int</span><span class="p">()]</span>  <span class="c1"># Shape (n, k, p)</span>
+    <span class="k">if</span> <span class="n">Y</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">Y</span> <span class="o">=</span> <span class="n">X</span>
 
-    <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">:</span>
-        <span class="n">C_indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">X</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">X_indices</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">:</span>
-        <span class="n">C_indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">X</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">X_indices</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sqrt</span><span class="p">()</span>
-    <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;manhattan&quot;</span><span class="p">:</span>
-        <span class="n">C_indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">X_indices</span><span class="p">),</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;angular&quot;</span><span class="p">:</span>
-        <span class="n">C_indices</span> <span class="o">=</span> <span class="o">-</span><span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">X_indices</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;sqhyperbolic&quot;</span><span class="p">:</span>
-        <span class="n">X_indices_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">X_indices</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">X_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">C_indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">X</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">X_indices</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span>
-        <span class="n">denom</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">X_norm</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">X_indices_norm</span><span class="p">)</span>
-        <span class="n">C_indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arccosh</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">C_indices</span> <span class="o">/</span> <span class="n">denom</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-8</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Metric &#39;</span><span class="si">{</span><span class="n">metric</span><span class="si">}</span><span class="s2">&#39; is not (yet) implemented.&quot;</span><span class="p">)</span>
+    <span class="c1"># Handle device placement</span>
+    <span class="k">if</span> <span class="n">device</span> <span class="o">!=</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">Y</span> <span class="o">=</span> <span class="n">Y</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">query_indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">query_indices</span> <span class="o">=</span> <span class="n">query_indices</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">key_indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">key_indices</span> <span class="o">=</span> <span class="n">key_indices</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">return_indices</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">C_indices</span><span class="p">,</span> <span class="n">indices</span>
+    <span class="c1"># Extract query points</span>
+    <span class="k">if</span> <span class="n">query_indices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">X_queries</span> <span class="o">=</span> <span class="n">X</span>
+    <span class="k">elif</span> <span class="n">query_indices</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">X_queries</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">query_indices</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># 2D indices</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;2D query indices not yet supported&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Extract key points</span>
+    <span class="k">if</span> <span class="n">key_indices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">Y_keys</span> <span class="o">=</span> <span class="n">Y</span>
+    <span class="k">elif</span> <span class="n">key_indices</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">Y_keys</span> <span class="o">=</span> <span class="n">Y</span><span class="p">[</span><span class="n">key_indices</span><span class="o">.</span><span class="n">long</span><span class="p">()]</span>
+    <span class="k">elif</span> <span class="n">key_indices</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="c1"># Each query has specific keys</span>
+        <span class="k">if</span> <span class="n">query_indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">query_indices</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># Ensure key_indices has same first dimension as number of queries</span>
+            <span class="k">assert</span> <span class="n">key_indices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">query_indices</span><span class="p">),</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;key_indices first dim </span><span class="si">{</span><span class="n">key_indices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> must match number of queries </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">query_indices</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="n">Y_keys</span> <span class="o">=</span> <span class="n">Y</span><span class="p">[</span>
+            <span class="n">key_indices</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
+        <span class="p">]</span>  <span class="c1"># Shape: (n_queries, n_keys_per_query, n_features)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">C_indices</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;key_indices must be 1D or 2D, got </span><span class="si">{</span><span class="n">key_indices</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Compute distances based on shapes</span>
+    <span class="k">if</span> <span class="n">Y_keys</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="c1"># Standard case: queries x keys</span>
+        <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">:</span>
+            <span class="n">distances</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cdist</span><span class="p">(</span><span class="n">X_queries</span><span class="p">,</span> <span class="n">Y_keys</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">:</span>
+            <span class="n">distances</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cdist</span><span class="p">(</span><span class="n">X_queries</span><span class="p">,</span> <span class="n">Y_keys</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;manhattan&quot;</span><span class="p">:</span>
+            <span class="n">distances</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cdist</span><span class="p">(</span><span class="n">X_queries</span><span class="p">,</span> <span class="n">Y_keys</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;angular&quot;</span><span class="p">:</span>
+            <span class="n">distances</span> <span class="o">=</span> <span class="o">-</span><span class="n">torch</span><span class="o">.</span><span class="n">mm</span><span class="p">(</span><span class="n">X_queries</span><span class="p">,</span> <span class="n">Y_keys</span><span class="o">.</span><span class="n">t</span><span class="p">())</span>
+        <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;sqhyperbolic&quot;</span><span class="p">:</span>
+            <span class="n">X_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">X_queries</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">Y_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">Y_keys</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">t</span><span class="p">()</span>
+            <span class="n">distances</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cdist</span><span class="p">(</span><span class="n">X_queries</span><span class="p">,</span> <span class="n">Y_keys</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">denom</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">X_norm</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">Y_norm</span><span class="p">)</span>
+            <span class="n">distances</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arccosh</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">distances</span> <span class="o">/</span> <span class="n">denom</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-8</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Metric &#39;</span><span class="si">{</span><span class="n">metric</span><span class="si">}</span><span class="s2">&#39; not implemented for indexed distances&quot;</span>
+            <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># Y_keys.dim() == 3</span>
+        <span class="c1"># Each query has specific keys</span>
+        <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">:</span>
+            <span class="n">distances</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">X_queries</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">Y_keys</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">:</span>
+            <span class="n">distances</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">X_queries</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">Y_keys</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sqrt</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;manhattan&quot;</span><span class="p">:</span>
+            <span class="n">distances</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">X_queries</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">Y_keys</span><span class="p">),</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;angular&quot;</span><span class="p">:</span>
+            <span class="n">distances</span> <span class="o">=</span> <span class="o">-</span><span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">X_queries</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">Y_keys</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;sqhyperbolic&quot;</span><span class="p">:</span>
+            <span class="n">Y_keys_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">Y_keys</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">X_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">X_queries</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">distances</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">X_queries</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">Y_keys</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">denom</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">X_norm</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">Y_keys_norm</span><span class="p">)</span>
+            <span class="n">distances</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arccosh</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">distances</span> <span class="o">/</span> <span class="n">denom</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-8</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Metric &#39;</span><span class="si">{</span><span class="n">metric</span><span class="si">}</span><span class="s2">&#39; not implemented for indexed distances&quot;</span>
+            <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">distances</span>
 </pre></div>
 
                 </article>

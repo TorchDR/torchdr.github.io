@@ -517,7 +517,7 @@
 <span class="sd">            Projected data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">original_device</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">device</span>
-        <span class="n">target_device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_device</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">target_device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_compute_device</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">target_device</span> <span class="o">!=</span> <span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">:</span>
             <span class="n">X_compute</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">target_device</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>

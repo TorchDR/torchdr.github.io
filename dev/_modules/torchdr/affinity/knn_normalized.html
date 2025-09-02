@@ -825,6 +825,12 @@
 <span class="sd">        Whether to compile the computation. Default is False.</span>
 <span class="sd">    symmetrize : bool, optional</span>
 <span class="sd">        Whether to symmetrize the affinity matrix. Default is True.</span>
+<span class="sd">    distributed : bool or &#39;auto&#39;, optional</span>
+<span class="sd">        Whether to use distributed computation across multiple GPUs.</span>
+<span class="sd">        - &quot;auto&quot;: Automatically detect if running with torchrun (default)</span>
+<span class="sd">        - True: Force distributed mode (requires torchrun)</span>
+<span class="sd">        - False: Disable distributed mode</span>
+<span class="sd">        Default is &quot;auto&quot;.</span>
 <span class="sd">    _pre_processed : bool, optional</span>
 <span class="sd">        If True, assumes inputs are already torch tensors on the correct device</span>
 <span class="sd">        and skips the `to_torch` conversion. Default is False.</span>
@@ -842,11 +848,11 @@
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">symmetrize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">distributed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
         <span class="n">_pre_processed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span> <span class="o">=</span> <span class="n">n_neighbors</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">=</span> <span class="n">max_iter</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">symmetrize</span> <span class="o">=</span> <span class="n">symmetrize</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
@@ -856,8 +862,20 @@
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="n">sparsity</span><span class="o">=</span><span class="n">sparsity</span><span class="p">,</span>
             <span class="nb">compile</span><span class="o">=</span><span class="nb">compile</span><span class="p">,</span>
+            <span class="n">distributed</span><span class="o">=</span><span class="n">distributed</span><span class="p">,</span>
             <span class="n">_pre_processed</span><span class="o">=</span><span class="n">_pre_processed</span><span class="p">,</span>
         <span class="p">)</span>
+
+        <span class="c1"># Warn if symmetrization was requested in multi-GPU mode</span>
+        <span class="k">if</span> <span class="n">symmetrize</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_multi_gpu</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;Symmetrization not supported in multi-GPU mode. &quot;</span>
+                    <span class="s2">&quot;Setting symmetrize=False. Use single-GPU mode if symmetrization is required.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">symmetrize</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">symmetrize</span> <span class="o">=</span> <span class="n">symmetrize</span>
 
     <span class="nd">@compile_if_requested</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_sparse_affinity</span><span class="p">(</span>
@@ -958,6 +976,12 @@
 <span class="sd">        Verbosity. Default is False.</span>
 <span class="sd">    compile : bool, optional</span>
 <span class="sd">        Whether to compile the computation. Default is False.</span>
+<span class="sd">    distributed : bool or &#39;auto&#39;, optional</span>
+<span class="sd">        Whether to use distributed computation across multiple GPUs.</span>
+<span class="sd">        - &quot;auto&quot;: Automatically detect if running with torchrun (default)</span>
+<span class="sd">        - True: Force distributed mode (requires torchrun)</span>
+<span class="sd">        - False: Disable distributed mode</span>
+<span class="sd">        Default is &quot;auto&quot;.</span>
 <span class="sd">    _pre_processed : bool, optional</span>
 <span class="sd">        If True, assumes inputs are already torch tensors on the correct device</span>
 <span class="sd">        and skips the `to_torch` conversion. Default is False.</span>
@@ -972,9 +996,17 @@
         <span class="n">backend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">distributed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">_pre_processed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span> <span class="o">=</span> <span class="n">n_neighbors</span>
+
+        <span class="c1"># TODO: Fix multi-GPU support for PACMAPAffinity</span>
+        <span class="c1"># The current implementation has issues with index handling in distributed mode</span>
+        <span class="k">if</span> <span class="n">distributed</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;[TorchDR] ERROR : PACMAPAffinity does not support distributed.&quot;</span>
+            <span class="p">)</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
@@ -984,6 +1016,7 @@
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="n">sparsity</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># PACMAP uses sparsity mode</span>
             <span class="nb">compile</span><span class="o">=</span><span class="nb">compile</span><span class="p">,</span>
+            <span class="n">distributed</span><span class="o">=</span><span class="n">distributed</span><span class="p">,</span>
             <span class="n">_pre_processed</span><span class="o">=</span><span class="n">_pre_processed</span><span class="p">,</span>
         <span class="p">)</span>
 

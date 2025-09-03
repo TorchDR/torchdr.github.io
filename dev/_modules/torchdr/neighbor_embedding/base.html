@@ -451,9 +451,11 @@
 <span class="c1"># License: BSD 3-Clause License</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.distributed</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dist</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Affinity</span><span class="p">,</span>
@@ -914,6 +916,11 @@
 <span class="sd">    This is done by sampling a fixed number of negative samples</span>
 <span class="sd">    :attr:`n_negatives` for each point.</span>
 
+<span class="sd">    **Multi-GPU training.** When launched with torchrun, this class supports</span>
+<span class="sd">    distributed multi-GPU training. Each rank processes its chunk of the input</span>
+<span class="sd">    affinity, the embedding is replicated across ranks, and gradients are</span>
+<span class="sd">    synchronized during optimization.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    affinity_in : Affinity</span>
@@ -975,6 +982,12 @@
 <span class="sd">        Whether to discard nearest neighbors from negative sampling. Default is False.</span>
 <span class="sd">    compile : bool, default=False</span>
 <span class="sd">        Whether to use torch.compile for faster computation.</span>
+<span class="sd">    distributed : bool or &#39;auto&#39;, optional</span>
+<span class="sd">        Whether to use distributed computation across multiple GPUs.</span>
+<span class="sd">        - &quot;auto&quot;: Automatically detect if running with torchrun (default)</span>
+<span class="sd">        - True: Force distributed mode (requires torchrun)</span>
+<span class="sd">        - False: Disable distributed mode</span>
+<span class="sd">        Default is &quot;auto&quot;.</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -1005,10 +1018,8 @@
         <span class="n">check_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
         <span class="n">discard_NNs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">distributed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span> <span class="o">=</span> <span class="n">n_negatives</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">discard_NNs</span> <span class="o">=</span> <span class="n">discard_NNs</span>
-
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">affinity_in</span><span class="o">=</span><span class="n">affinity_in</span><span class="p">,</span>
             <span class="n">affinity_out</span><span class="o">=</span><span class="n">affinity_out</span><span class="p">,</span>
@@ -1034,29 +1045,91 @@
             <span class="nb">compile</span><span class="o">=</span><span class="nb">compile</span><span class="p">,</span>
         <span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span> <span class="o">=</span> <span class="n">n_negatives</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">discard_NNs</span> <span class="o">=</span> <span class="n">discard_NNs</span>
+
+        <span class="k">if</span> <span class="n">distributed</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">distributed</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">dist</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="s2">&quot;[TorchDR] distributed=True requires launching with torchrun. &quot;</span>
+                    <span class="s2">&quot;Example: torchrun --nproc_per_node=4 your_script.py&quot;</span>
+                <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">get_rank</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">world_size</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">get_world_size</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_multi_gpu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">world_size</span> <span class="o">&gt;</span> <span class="mi">1</span>
+
+            <span class="c1"># Bind to local CUDA device</span>
+            <span class="n">local_rank</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LOCAL_RANK&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">set_device</span><span class="p">(</span><span class="n">local_rank</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">==</span> <span class="s2">&quot;cpu&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;[TorchDR] Distributed mode requires GPU (device cannot be &#39;cpu&#39;)&quot;</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cuda:</span><span class="si">{</span><span class="n">local_rank</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">world_size</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_multi_gpu</span> <span class="o">=</span> <span class="kc">False</span>
+
 <div class="viewcode-block" id="SampledNeighborEmbedding.on_affinity_computation_end">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.SampledNeighborEmbedding.html#torchdr.SampledNeighborEmbedding.on_affinity_computation_end">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_affinity_computation_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare for negative sampling by sampling samples&#39; indices to exclude.&quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_affinity_computation_end</span><span class="p">()</span>
-        <span class="n">device</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span><span class="p">,</span> <span class="s2">&quot;device&quot;</span><span class="p">,</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
-        <span class="n">self_idxs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare for negative sampling by building per-row exclusion indices.</span>
 
+<span class="sd">        Unified logic for single- and multi-GPU using chunk bounds.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_affinity_computation_end</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="p">,</span> <span class="s2">&quot;chunk_start_&quot;</span><span class="p">):</span>
+            <span class="n">chunk_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="o">.</span><span class="n">chunk_start_</span>
+            <span class="n">chunk_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="o">.</span><span class="n">chunk_size_</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_multi_gpu</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;[TorchDR] ERROR : when using SampledNeighborEmbedding, affinity_in &quot;</span>
+                    <span class="s2">&quot;must have chunk_start_ and chunk_size_ attributes when distributed mode is True.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">chunk_start</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">chunk_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
+            <span class="n">chunk_start</span><span class="p">,</span> <span class="n">chunk_start</span> <span class="o">+</span> <span class="n">chunk_size</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span>
+        <span class="p">)</span>
+        <span class="n">global_self_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">chunk_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">global_self_idx</span><span class="p">)</span>
+
+        <span class="c1"># Optionally include NN indices (rows aligned with local slice)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">discard_NNs</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;NN_indices_&quot;</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                     <span class="s2">&quot;NN_indices_ not found. Cannot discard NNs from negative sampling.&quot;</span>
                 <span class="p">)</span>
-                <span class="n">exclude</span> <span class="o">=</span> <span class="n">self_idxs</span>
+                <span class="n">exclude</span> <span class="o">=</span> <span class="n">global_self_idx</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">exclude</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">self_idxs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">nn_rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span>
+                <span class="k">if</span> <span class="n">nn_rows</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">chunk_size</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;[TorchDR] ERROR: In distributed mode, expected NN_indices_ to have &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">chunk_size</span><span class="si">}</span><span class="s2"> rows for chunk size, but got </span><span class="si">{</span><span class="n">nn_rows</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">.&quot;</span>
+                    <span class="p">)</span>
+                <span class="n">exclude</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">global_self_idx</span><span class="p">,</span> <span class="n">nn_rows</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">exclude</span> <span class="o">=</span> <span class="n">self_idxs</span>
-        <span class="n">exclude_sorted</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">exclude</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># sort exclude so searchsorted works</span>
+            <span class="n">exclude</span> <span class="o">=</span> <span class="n">global_self_idx</span>
+
+        <span class="c1"># Sort per-row exclusions for searchsorted</span>
+        <span class="n">exclude_sorted</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">exclude</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span>
             <span class="s2">&quot;negative_exclusion_indices_&quot;</span><span class="p">,</span> <span class="n">exclude_sorted</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
 
+        <span class="c1"># Safety check on number of available negatives</span>
         <span class="n">n_possible</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative_exclusion_indices_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span> <span class="o">&gt;</span> <span class="n">n_possible</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -1068,38 +1141,62 @@
 <div class="viewcode-block" id="SampledNeighborEmbedding.on_training_step_start">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.SampledNeighborEmbedding.html#torchdr.SampledNeighborEmbedding.on_training_step_start">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_training_step_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sample negatives.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sample negatives using a unified path for single- and multi-GPU.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_training_step_start</span><span class="p">()</span>
 
-        <span class="c1"># Fast path for k=1 (only excluding self-indices)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative_exclusion_indices_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="c1"># Sample from [0, n-1) for each point</span>
+        <span class="n">chunk_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span><span class="p">)</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">device</span>
+
+        <span class="n">exclusion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative_exclusion_indices_</span>
+        <span class="n">excl_width</span> <span class="o">=</span> <span class="n">exclusion</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># Only excluding self-indices</span>
+        <span class="k">if</span> <span class="n">excl_width</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">negatives</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
                 <span class="mi">0</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
-                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span><span class="p">),</span>
-                <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+                <span class="p">(</span><span class="n">chunk_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span><span class="p">),</span>
+                <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="c1"># Shift indices &gt;= self_idx by 1 to skip self</span>
-            <span class="n">self_idx</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">device</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">self_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
             <span class="n">neg_indices</span> <span class="o">=</span> <span class="n">negatives</span> <span class="o">+</span> <span class="p">(</span><span class="n">negatives</span> <span class="o">&gt;=</span> <span class="n">self_idx</span><span class="p">)</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
+
+        <span class="c1"># Excluding self-indices and NNs indices (computed in on_affinity_computation_end)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># General case: use searchsorted for multiple exclusions</span>
             <span class="n">negatives</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
                 <span class="mi">1</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative_exclusion_indices_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span><span class="p">),</span>
-                <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">-</span> <span class="n">excl_width</span><span class="p">,</span>
+                <span class="p">(</span><span class="n">chunk_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span><span class="p">),</span>
+                <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">shifts</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">negative_exclusion_indices_</span><span class="p">,</span> <span class="n">negatives</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">True</span>
-            <span class="p">)</span>
+            <span class="n">shifts</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">exclusion</span><span class="p">,</span> <span class="n">negatives</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">neg_indices</span> <span class="o">=</span> <span class="n">negatives</span> <span class="o">+</span> <span class="n">shifts</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;neg_indices_&quot;</span><span class="p">,</span> <span class="n">neg_indices</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
-</div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_embedding</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize embedding across ranks (broadcast from rank 0).&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">world_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_init_embedding</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">n</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">),</span>
+                    <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+                    <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+                    <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">is_contiguous</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
+
+            <span class="n">dist</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">src</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">requires_grad_</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_init_embedding</span><span class="p">(</span><span class="n">X</span><span class="p">)</span></div>
 
 </pre></div>
 

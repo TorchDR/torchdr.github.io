@@ -497,6 +497,11 @@
 
 <span class="sd">    where :math:`\mathrm{Neg}(i)` is the set of negatives samples for point :math:`i`.</span>
 
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+<span class="sd">    This implementation supports multi-GPU training when launched with ``torchrun``.</span>
+<span class="sd">    Set ``distributed=&#39;auto&#39;`` (default) to automatically detect and use multiple GPUs.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    n_neighbors : float, optional</span>
@@ -560,6 +565,12 @@
 <span class="sd">        Default is False.</span>
 <span class="sd">    compile : bool, optional</span>
 <span class="sd">        Whether to compile the algorithm using torch.compile. Default is False.</span>
+<span class="sd">    distributed : bool or &#39;auto&#39;, optional</span>
+<span class="sd">        Whether to use distributed computation across multiple GPUs.</span>
+<span class="sd">        - &quot;auto&quot;: Automatically detect if running with torchrun (default)</span>
+<span class="sd">        - True: Force distributed mode (requires torchrun)</span>
+<span class="sd">        - False: Disable distributed mode</span>
+<span class="sd">        Default is &quot;auto&quot;.</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -591,6 +602,7 @@
         <span class="n">check_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
         <span class="n">discard_NNs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">distributed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span> <span class="o">=</span> <span class="n">n_neighbors</span>
@@ -620,6 +632,7 @@
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="n">sparsity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sparsity</span><span class="p">,</span>
             <span class="nb">compile</span><span class="o">=</span><span class="nb">compile</span><span class="p">,</span>
+            <span class="n">distributed</span><span class="o">=</span><span class="n">distributed</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -642,6 +655,7 @@
             <span class="n">discard_NNs</span><span class="o">=</span><span class="n">discard_NNs</span><span class="p">,</span>
             <span class="nb">compile</span><span class="o">=</span><span class="nb">compile</span><span class="p">,</span>
             <span class="n">n_negatives</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span><span class="p">,</span>
+            <span class="n">distributed</span><span class="o">=</span><span class="n">distributed</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -672,6 +686,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_attractive_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">D</span> <span class="o">=</span> <span class="n">pairwise_distances_indexed</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span>
+            <span class="n">query_indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span><span class="p">,</span>
             <span class="n">key_indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span><span class="p">,</span>
             <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
         <span class="p">)</span>
@@ -690,7 +705,10 @@
         <span class="p">]</span>
         <span class="n">D</span><span class="o">.</span><span class="n">masked_fill_</span><span class="p">(</span><span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">mask_affinity_in_</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
-        <span class="n">diff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span><span class="p">]</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span><span class="p">]</span>
+        <span class="p">)</span>
         <span class="n">grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ijk,ij-&gt;ik&quot;</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span>
         <span class="n">grad</span><span class="o">.</span><span class="n">clamp_</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>  <span class="c1"># clamp as in umap repo</span>
         <span class="k">return</span> <span class="n">grad</span>
@@ -698,6 +716,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_repulsive_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">D</span> <span class="o">=</span> <span class="n">pairwise_distances_indexed</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span>
+            <span class="n">query_indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span><span class="p">,</span>
             <span class="n">key_indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">neg_indices_</span><span class="p">,</span>
             <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
         <span class="p">)</span>
@@ -714,7 +733,10 @@
         <span class="n">filtered_edges</span> <span class="o">=</span> <span class="n">col_idx</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">ge</span><span class="p">(</span><span class="n">neg_counts</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">])</span>
         <span class="n">D</span><span class="o">.</span><span class="n">masked_fill_</span><span class="p">(</span><span class="n">filtered_edges</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
-        <span class="n">diff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">neg_indices_</span><span class="p">]</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">neg_indices_</span><span class="p">]</span>
+        <span class="p">)</span>
         <span class="n">grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ijk,ij-&gt;ik&quot;</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span>
         <span class="n">grad</span><span class="o">.</span><span class="n">clamp_</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>  <span class="c1"># clamp as in umap repo</span>
         <span class="k">return</span> <span class="n">grad</span></div>

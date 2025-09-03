@@ -468,6 +468,9 @@
     <span class="n">FaissConfig</span><span class="p">,</span>
 <span class="p">)</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.distributed</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dist</span>
+
 
 <div class="viewcode-block" id="Affinity">
 <a class="viewcode-back" href="../../../stubs/torchdr.Affinity.html#torchdr.Affinity">[docs]</a>
@@ -783,24 +786,31 @@
         <span class="n">random_state</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">_pre_processed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="c1"># Auto-detect distributed mode</span>
         <span class="k">if</span> <span class="n">distributed</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span> <span class="o">=</span> <span class="n">distributed</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">distributed</span><span class="p">)</span>
 
-        <span class="c1"># Validate and configure for distributed mode</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">torch</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">dist</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">():</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
                     <span class="s2">&quot;[TorchDR] distributed=True requires launching with torchrun. &quot;</span>
                     <span class="s2">&quot;Example: torchrun --nproc_per_node=4 your_script.py&quot;</span>
                 <span class="p">)</span>
 
-            <span class="c1"># Initialize distributed properties</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">get_rank</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">world_size</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">get_world_size</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">get_rank</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">world_size</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">get_world_size</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">is_multi_gpu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">world_size</span> <span class="o">&gt;</span> <span class="mi">1</span>
+
+            <span class="c1"># Bind to local CUDA device</span>
+            <span class="n">local_rank</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LOCAL_RANK&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">set_device</span><span class="p">(</span><span class="n">local_rank</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">device</span> <span class="o">==</span> <span class="s2">&quot;cpu&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;[TorchDR] Distributed mode requires GPU (device cannot be &#39;cpu&#39;)&quot;</span>
+                <span class="p">)</span>
+            <span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cuda:</span><span class="si">{</span><span class="n">local_rank</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
             <span class="c1"># Force sparsity and faiss backend for distributed mode</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_sparsity_forced</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">sparsity</span>
@@ -816,19 +826,13 @@
             <span class="k">elif</span> <span class="n">backend</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">backend</span> <span class="o">=</span> <span class="s2">&quot;faiss&quot;</span>
 
-            <span class="k">if</span> <span class="n">device</span> <span class="o">==</span> <span class="s2">&quot;cpu&quot;</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;[TorchDR] Distributed mode requires GPU (device cannot be &#39;cpu&#39;)&quot;</span>
-                <span class="p">)</span>
-
             <span class="c1"># Prepare FAISS configuration for distributed mode</span>
-            <span class="n">gpu_device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">current_device</span><span class="p">()</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">):</span>
                 <span class="c1"># Copy all parameters from the user&#39;s config, but override device</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_distributed_faiss_config</span> <span class="o">=</span> <span class="n">FaissConfig</span><span class="p">(</span>
                     <span class="n">use_float16</span><span class="o">=</span><span class="n">backend</span><span class="o">.</span><span class="n">use_float16</span><span class="p">,</span>
                     <span class="n">temp_memory</span><span class="o">=</span><span class="n">backend</span><span class="o">.</span><span class="n">temp_memory</span><span class="p">,</span>
-                    <span class="n">device</span><span class="o">=</span><span class="n">gpu_device</span><span class="p">,</span>  <span class="c1"># Override with current GPU</span>
+                    <span class="n">device</span><span class="o">=</span><span class="n">local_rank</span><span class="p">,</span>  <span class="c1"># Override with current GPU</span>
                     <span class="n">index_type</span><span class="o">=</span><span class="n">backend</span><span class="o">.</span><span class="n">index_type</span><span class="p">,</span>
                     <span class="n">nprobe</span><span class="o">=</span><span class="n">backend</span><span class="o">.</span><span class="n">nprobe</span><span class="p">,</span>
                     <span class="n">nlist</span><span class="o">=</span><span class="n">backend</span><span class="o">.</span><span class="n">nlist</span><span class="p">,</span>
@@ -838,12 +842,12 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_distributed_faiss_config</span> <span class="o">=</span> <span class="n">FaissConfig</span><span class="p">(</span>
                     <span class="n">use_float16</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># Better precision for affinity computations</span>
                     <span class="n">temp_memory</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-                    <span class="n">device</span><span class="o">=</span><span class="n">gpu_device</span><span class="p">,</span>
+                    <span class="n">device</span><span class="o">=</span><span class="n">local_rank</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">is_multi_gpu</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">world_size</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_multi_gpu</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
@@ -857,7 +861,6 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparsity</span> <span class="o">=</span> <span class="n">sparsity</span>
 
-        <span class="c1"># Log warnings after logger is initialized</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sparsity_forced</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>

@@ -454,14 +454,14 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity</span><span class="w"> </span><span class="kn">import</span> <span class="n">EntropicAffinity</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.neighbor_embedding.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">SampledNeighborEmbedding</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.neighbor_embedding.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">NegativeSamplingNeighborEmbedding</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logsumexp_red</span><span class="p">,</span> <span class="n">cross_entropy_loss</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distance</span><span class="w"> </span><span class="kn">import</span> <span class="n">FaissConfig</span><span class="p">,</span> <span class="n">pairwise_distances_indexed</span>
 
 
 <div class="viewcode-block" id="InfoTSNE">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.InfoTSNE.html#torchdr.InfoTSNE">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">InfoTSNE</span><span class="p">(</span><span class="n">SampledNeighborEmbedding</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">InfoTSNE</span><span class="p">(</span><span class="n">NegativeSamplingNeighborEmbedding</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;InfoTSNE algorithm introduced in :cite:`damrich2022t`.</span>
 
 <span class="sd">    It uses a :class:`~torchdr.EntropicAffinity` as input affinity :math:`\mathbf{P}`</span>

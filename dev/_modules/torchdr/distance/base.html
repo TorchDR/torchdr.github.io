@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.distance.base &#8212; TorchDR 0.3.dev47+gb667fea4b documentation</title>
+    <title>torchdr.distance.base &#8212; TorchDR 0.3.dev48+gbd0f63e15 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=1d38c8ef"></script>
+    <script src="../../../_static/documentation_options.js?v=a6149b43"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchdr/distance/base';</script>
@@ -117,8 +117,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev47+gb667fea4b documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev47+gb667fea4b documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev48+gbd0f63e15 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev48+gbd0f63e15 documentation - Home"/>
   
   
 </a></div>
@@ -453,10 +453,10 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">.torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">pairwise_distances_torch</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.keops</span><span class="w"> </span><span class="kn">import</span> <span class="n">pairwise_distances_keops</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.faiss</span><span class="w"> </span><span class="kn">import</span> <span class="n">pairwise_distances_faiss</span><span class="p">,</span> <span class="n">FaissConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">DistributedContext</span>
 
 
 <div class="viewcode-block" id="pairwise_distances">
@@ -470,6 +470,7 @@
     <span class="n">k</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+    <span class="n">distributed_ctx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DistributedContext</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute pairwise distances between two tensors.</span>
 
@@ -509,6 +510,13 @@
 <span class="sd">        Device to use for computation. If &quot;auto&quot;, keeps data on its current device.</span>
 <span class="sd">        Otherwise, temporarily moves data to specified device for computation.</span>
 <span class="sd">        Output remains on the computation device. Used with backend=None (torch) and backend=&quot;keops&quot;.</span>
+<span class="sd">    distributed_ctx : DistributedContext, optional</span>
+<span class="sd">        Distributed computation context for multi-GPU scenarios. When provided:</span>
+<span class="sd">        - Each GPU computes distances for its assigned chunk of rows</span>
+<span class="sd">        - Requires k to be specified (sparse computation)</span>
+<span class="sd">        - Forces backend to &quot;faiss&quot; if not already set</span>
+<span class="sd">        - Results remain distributed (no gathering across GPUs)</span>
+<span class="sd">        Default is None (single GPU computation).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -529,8 +537,71 @@
 <span class="sd">    &gt;&gt;&gt; # Using FaissConfig with custom settings</span>
 <span class="sd">    &gt;&gt;&gt; config = FaissConfig(temp_memory=2.0)</span>
 <span class="sd">    &gt;&gt;&gt; distances = pairwise_distances(X.cuda(), k=10, backend=config)</span>
+
+<span class="sd">    &gt;&gt;&gt; # Distributed computation (after torch.distributed.init_process_group)</span>
+<span class="sd">    &gt;&gt;&gt; from torchdr.utils import DistributedContext</span>
+<span class="sd">    &gt;&gt;&gt; dist_ctx = DistributedContext()</span>
+<span class="sd">    &gt;&gt;&gt; # Each GPU computes its chunk of rows</span>
+<span class="sd">    &gt;&gt;&gt; distances, indices = pairwise_distances(</span>
+<span class="sd">    ...     X, k=10, distributed_ctx=dist_ctx, return_indices=True</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &gt;&gt;&gt; # distances.shape[0] will be approximately len(X) / world_size</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Parse backend parameter</span>
+    <span class="c1"># Handle distributed computation</span>
+    <span class="k">if</span> <span class="n">distributed_ctx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">distributed_ctx</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;[TorchDR] Distributed mode requires sparse computation with k-NN. &quot;</span>
+                <span class="s2">&quot;k cannot be None when distributed_ctx is provided.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">Y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;[TorchDR] Distributed mode does not support cross-distance computation. &quot;</span>
+                <span class="s2">&quot;Y must be None when distributed_ctx is provided.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Force FAISS backend for distributed mode</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">):</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="n">distributed_ctx</span><span class="o">.</span><span class="n">get_faiss_config</span><span class="p">(</span><span class="n">backend</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;faiss&quot;</span><span class="p">:</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="n">distributed_ctx</span><span class="o">.</span><span class="n">get_faiss_config</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">backend</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="n">distributed_ctx</span><span class="o">.</span><span class="n">get_faiss_config</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># User specified keops or other backend - override with FAISS</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="n">distributed_ctx</span><span class="o">.</span><span class="n">get_faiss_config</span><span class="p">()</span>
+
+        <span class="c1"># Compute chunk bounds for this rank</span>
+        <span class="n">n_samples</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">chunk_start</span><span class="p">,</span> <span class="n">chunk_end</span> <span class="o">=</span> <span class="n">distributed_ctx</span><span class="o">.</span><span class="n">compute_chunk_bounds</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span>
+        <span class="n">X_chunk</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">chunk_start</span><span class="p">:</span><span class="n">chunk_end</span><span class="p">]</span>
+
+        <span class="c1"># Compute k-NN: queries=chunk, database=full dataset</span>
+        <span class="c1"># Note: exclude_diag doesn&#39;t work since X_chunk is a subset of X</span>
+        <span class="c1"># We handle self-neighbors by searching for k+1 if needed</span>
+        <span class="n">k_search</span> <span class="o">=</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">exclude_diag</span> <span class="k">else</span> <span class="n">k</span>
+
+        <span class="n">C</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">pairwise_distances_faiss</span><span class="p">(</span>
+            <span class="n">X</span><span class="o">=</span><span class="n">X_chunk</span><span class="p">,</span>
+            <span class="n">Y</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>  <span class="c1"># Full dataset as database</span>
+            <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
+            <span class="n">k</span><span class="o">=</span><span class="n">k_search</span><span class="p">,</span>
+            <span class="n">exclude_diag</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># Can&#39;t use since X_chunk != X</span>
+            <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Remove self-distances if needed</span>
+        <span class="k">if</span> <span class="n">exclude_diag</span><span class="p">:</span>
+            <span class="n">C</span> <span class="o">=</span> <span class="n">C</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="n">indices</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span>
+
+        <span class="k">if</span> <span class="n">return_indices</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">C</span><span class="p">,</span> <span class="n">indices</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">C</span>
+
+    <span class="c1"># Parse backend parameter for non-distributed case</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">):</span>
         <span class="n">backend_str</span> <span class="o">=</span> <span class="s2">&quot;faiss&quot;</span>
         <span class="n">config</span> <span class="o">=</span> <span class="n">backend</span>

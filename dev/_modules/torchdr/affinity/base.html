@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.affinity.base &#8212; TorchDR 0.3.dev47+gb667fea4b documentation</title>
+    <title>torchdr.affinity.base &#8212; TorchDR 0.3.dev48+gbd0f63e15 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=1d38c8ef"></script>
+    <script src="../../../_static/documentation_options.js?v=a6149b43"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchdr/affinity/base';</script>
@@ -117,8 +117,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev47+gb667fea4b documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev47+gb667fea4b documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev48+gbd0f63e15 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev48+gbd0f63e15 documentation - Home"/>
   
   
 </a></div>
@@ -461,6 +461,7 @@
     <span class="n">to_torch</span><span class="p">,</span>
     <span class="n">bool_arg</span><span class="p">,</span>
     <span class="n">set_logger</span><span class="p">,</span>
+    <span class="n">DistributedContext</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distance</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -468,7 +469,6 @@
     <span class="n">FaissConfig</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch.distributed</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dist</span>
 
 
@@ -738,6 +738,20 @@
 <span class="sd">    with the corresponding indices.</span>
 <span class="sd">    Otherwise, returns the full affinity matrix and None.</span>
 
+<span class="sd">    **Distributed Training:** This class supports multi-GPU distributed training</span>
+<span class="sd">    via the ``distributed`` parameter. When enabled (using ``torchrun``), each GPU</span>
+<span class="sd">    processes one chunk of the dataset in parallel:</span>
+
+<span class="sd">    - The full dataset (n_samples) is partitioned across GPUs by rows</span>
+<span class="sd">    - Each GPU computes k-NN affinities for its assigned chunk against the full dataset</span>
+<span class="sd">    - GPU i handles rows [chunk_start_i, chunk_end_i) where chunks are balanced across GPUs</span>
+<span class="sd">    - All GPUs maintain the full dataset in memory but only compute distances for their chunk</span>
+<span class="sd">    - Distributed mode requires ``sparsity=True`` and ``backend=&quot;faiss&quot;``</span>
+
+<span class="sd">    Example: With 2 GPUs and 10,000 samples, GPU 0 computes rows 0-5,000 and</span>
+<span class="sd">    GPU 1 computes rows 5,000-10,000. Launch with:</span>
+<span class="sd">    ``torchrun --nproc_per_node=2 script.py``</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    metric : str, optional</span>
@@ -798,49 +812,33 @@
                     <span class="s2">&quot;Example: torchrun --nproc_per_node=4 your_script.py&quot;</span>
                 <span class="p">)</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">get_rank</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">world_size</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">get_world_size</span><span class="p">()</span>
+            <span class="c1"># Create distributed context</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dist_ctx</span> <span class="o">=</span> <span class="n">DistributedContext</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist_ctx</span><span class="o">.</span><span class="n">rank</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">world_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist_ctx</span><span class="o">.</span><span class="n">world_size</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">is_multi_gpu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">world_size</span> <span class="o">&gt;</span> <span class="mi">1</span>
 
             <span class="c1"># Bind to local CUDA device</span>
-            <span class="n">local_rank</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LOCAL_RANK&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-            <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
-                <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">set_device</span><span class="p">(</span><span class="n">local_rank</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">device</span> <span class="o">==</span> <span class="s2">&quot;cpu&quot;</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s2">&quot;[TorchDR] Distributed mode requires GPU (device cannot be &#39;cpu&#39;)&quot;</span>
                 <span class="p">)</span>
-            <span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cuda:</span><span class="si">{</span><span class="n">local_rank</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cuda:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dist_ctx</span><span class="o">.</span><span class="n">local_rank</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-            <span class="c1"># Force sparsity and faiss backend for distributed mode</span>
+            <span class="c1"># Force sparsity for distributed mode</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_sparsity_forced</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">sparsity</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sparsity_forced</span><span class="p">:</span>
                 <span class="n">sparsity</span> <span class="o">=</span> <span class="kc">True</span>
 
+            <span class="c1"># Track if backend was forced (for warning messages)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_backend_forced</span> <span class="o">=</span> <span class="n">backend</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;faiss&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
                 <span class="n">backend</span><span class="p">,</span> <span class="n">FaissConfig</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_backend_forced</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_original_backend</span> <span class="o">=</span> <span class="n">backend</span>
-                <span class="n">backend</span> <span class="o">=</span> <span class="s2">&quot;faiss&quot;</span>
-            <span class="k">elif</span> <span class="n">backend</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">backend</span> <span class="o">=</span> <span class="s2">&quot;faiss&quot;</span>
-
-            <span class="c1"># Prepare FAISS configuration for distributed mode</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">):</span>
-                <span class="c1"># Copy all parameters from the user&#39;s config, but override device</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_distributed_faiss_config</span> <span class="o">=</span> <span class="n">FaissConfig</span><span class="p">(</span>
-                    <span class="n">temp_memory</span><span class="o">=</span><span class="n">backend</span><span class="o">.</span><span class="n">temp_memory</span><span class="p">,</span>
-                    <span class="n">device</span><span class="o">=</span><span class="n">local_rank</span><span class="p">,</span>  <span class="c1"># Override with current GPU</span>
-                    <span class="n">index_type</span><span class="o">=</span><span class="n">backend</span><span class="o">.</span><span class="n">index_type</span><span class="p">,</span>
-                    <span class="n">nprobe</span><span class="o">=</span><span class="n">backend</span><span class="o">.</span><span class="n">nprobe</span><span class="p">,</span>
-                    <span class="n">nlist</span><span class="o">=</span><span class="n">backend</span><span class="o">.</span><span class="n">nlist</span><span class="p">,</span>
-                    <span class="o">**</span><span class="n">backend</span><span class="o">.</span><span class="n">faiss_kwargs</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># Create default config for this GPU</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_distributed_faiss_config</span> <span class="o">=</span> <span class="n">FaissConfig</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">local_rank</span><span class="p">)</span>
+                <span class="n">backend</span> <span class="o">=</span> <span class="s2">&quot;faiss&quot;</span>  <span class="c1"># Override backend for distributed mode</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dist_ctx</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">world_size</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">is_multi_gpu</span> <span class="o">=</span> <span class="kc">False</span>
@@ -881,31 +879,10 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the sparsity of the affinity matrix.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sparsity</span> <span class="o">=</span> <span class="n">bool_arg</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_chunk_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute chunk boundaries for this rank in distributed mode.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        n_samples : int</span>
-<span class="sd">            Total number of samples in the dataset.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">chunk_size</span> <span class="o">=</span> <span class="n">n_samples</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">world_size</span>
-        <span class="n">remainder</span> <span class="o">=</span> <span class="n">n_samples</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">world_size</span>
-
-        <span class="c1"># First &#39;remainder&#39; ranks get chunk_size + 1 samples</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">&lt;</span> <span class="n">remainder</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">chunk_start_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">*</span> <span class="p">(</span><span class="n">chunk_size</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">chunk_end_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunk_start_</span> <span class="o">+</span> <span class="n">chunk_size</span> <span class="o">+</span> <span class="mi">1</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">chunk_start_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">*</span> <span class="n">chunk_size</span> <span class="o">+</span> <span class="n">remainder</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">chunk_end_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunk_start_</span> <span class="o">+</span> <span class="n">chunk_size</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">chunk_size_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunk_end_</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunk_start_</span>
-
     <span class="k">def</span><span class="w"> </span><span class="nf">_distance_matrix</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Override to handle distributed computation transparently.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Override to pass distributed context to pairwise_distances.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -923,79 +900,26 @@
 <span class="sd">        indices : torch.Tensor, optional</span>
 <span class="sd">            Indices if return_indices=True.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Use distributed computation if we&#39;re in multi-GPU mode</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_multi_gpu</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">k</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;[TorchDR] Distributed mode requires sparse computation with k-NN. &quot;</span>
-                    <span class="s2">&quot;k cannot be None in distributed mode.&quot;</span>
-                <span class="p">)</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distributed_distance_matrix</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">return_indices</span><span class="p">)</span>
-
-        <span class="c1"># Fall back to standard computation</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_distance_matrix</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">return_indices</span><span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_distributed_distance_matrix</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute distances for this GPU&#39;s chunk of points.</span>
-
-<span class="sd">        Each GPU computes k-NN distances where:</span>
-<span class="sd">        - Database (keys): Full dataset X</span>
-<span class="sd">        - Queries: This GPU&#39;s assigned chunk of X</span>
-
-<span class="sd">        This way each GPU computes and stores only its rows of the affinity matrix.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        X : torch.Tensor</span>
-<span class="sd">            Full input data tensor.</span>
-<span class="sd">        k : int</span>
-<span class="sd">            Number of nearest neighbors.</span>
-<span class="sd">        return_indices : bool, default=False</span>
-<span class="sd">            Whether to return indices along with distances.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        distances : torch.Tensor</span>
-<span class="sd">            Distance matrix for this GPU&#39;s chunk. Shape (chunk_size, k).</span>
-<span class="sd">        indices : torch.Tensor, optional</span>
-<span class="sd">            Indices of nearest neighbors if return_indices=True.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">n_samples</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_compute_chunk_info</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span>
-        <span class="n">X_chunk</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_start_</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunk_end_</span><span class="p">]</span>
-
-        <span class="c1"># Since X_chunk is a subset of X, we need to handle diagonal exclusion</span>
-        <span class="n">k_search</span> <span class="o">=</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">zero_diag</span> <span class="k">else</span> <span class="n">k</span>
-
-        <span class="c1"># Compute k-NN: queries=chunk, database=full dataset</span>
-        <span class="n">faiss_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distributed_faiss_config</span>
-        <span class="n">distances</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span>
-            <span class="n">X</span><span class="o">=</span><span class="n">X_chunk</span><span class="p">,</span>
-            <span class="n">Y</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>  <span class="c1"># Full dataset as database</span>
-            <span class="n">k</span><span class="o">=</span><span class="n">k_search</span><span class="p">,</span>
+        <span class="c1"># Pass distributed context to pairwise_distances if in distributed mode</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span>
+            <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>
             <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span>
-            <span class="n">backend</span><span class="o">=</span><span class="n">faiss_config</span><span class="p">,</span>
-            <span class="n">exclude_diag</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># Can&#39;t use since X_chunk != X</span>
-            <span class="n">return_indices</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">backend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span>
+            <span class="n">exclude_diag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">zero_diag</span><span class="p">,</span>
+            <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
+            <span class="n">return_indices</span><span class="o">=</span><span class="n">return_indices</span><span class="p">,</span>
             <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">distributed_ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dist_ctx</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="c1"># Remove self-distances if needed</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">zero_diag</span><span class="p">:</span>
-            <span class="n">distances</span> <span class="o">=</span> <span class="n">distances</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span>
-            <span class="n">indices</span> <span class="o">=</span> <span class="n">indices</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span>
+        <span class="c1"># Store chunk bounds for later use (e.g., distributed symmetrization)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist_ctx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">chunk_start</span><span class="p">,</span> <span class="n">chunk_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist_ctx</span><span class="o">.</span><span class="n">compute_chunk_bounds</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chunk_start_</span> <span class="o">=</span> <span class="n">chunk_start</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chunk_end_</span> <span class="o">=</span> <span class="n">chunk_end</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chunk_size_</span> <span class="o">=</span> <span class="n">chunk_end</span> <span class="o">-</span> <span class="n">chunk_start</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Rank </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="si">}</span><span class="s2">: Computed distances for chunk [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_start_</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_end_</span><span class="si">}</span><span class="s2">] &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;(shape: </span><span class="si">{</span><span class="n">distances</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">)&quot;</span>
-            <span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">return_indices</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">distances</span><span class="p">,</span> <span class="n">indices</span>
-        <span class="k">return</span> <span class="n">distances</span>
+        <span class="k">return</span> <span class="n">result</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>

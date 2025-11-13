@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.affinity.base &#8212; TorchDR 0.3.dev46+g1cfd03953 documentation</title>
+    <title>torchdr.affinity.base &#8212; TorchDR 0.3.dev47+gb667fea4b documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=a61215bd"></script>
+    <script src="../../../_static/documentation_options.js?v=1d38c8ef"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchdr/affinity/base';</script>
@@ -117,8 +117,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev46+g1cfd03953 documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev46+g1cfd03953 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev47+gb667fea4b documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev47+gb667fea4b documentation - Home"/>
   
   
 </a></div>
@@ -493,7 +493,7 @@
 <span class="sd">        - &quot;faiss&quot;: Use FAISS for fast k-NN computations with default settings</span>
 <span class="sd">        - None: Use standard PyTorch operations</span>
 <span class="sd">        - FaissConfig object: Use FAISS with custom configuration</span>
-<span class="sd">          (e.g., FaissConfig(use_float16=True, temp_memory=2.0))</span>
+<span class="sd">          (e.g., FaissConfig(temp_memory=2.0))</span>
 <span class="sd">        Default is None.</span>
 <span class="sd">    verbose : bool, optional</span>
 <span class="sd">        Verbosity. Default is False.</span>
@@ -830,20 +830,16 @@
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">):</span>
                 <span class="c1"># Copy all parameters from the user&#39;s config, but override device</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_distributed_faiss_config</span> <span class="o">=</span> <span class="n">FaissConfig</span><span class="p">(</span>
-                    <span class="n">use_float16</span><span class="o">=</span><span class="n">backend</span><span class="o">.</span><span class="n">use_float16</span><span class="p">,</span>
                     <span class="n">temp_memory</span><span class="o">=</span><span class="n">backend</span><span class="o">.</span><span class="n">temp_memory</span><span class="p">,</span>
                     <span class="n">device</span><span class="o">=</span><span class="n">local_rank</span><span class="p">,</span>  <span class="c1"># Override with current GPU</span>
                     <span class="n">index_type</span><span class="o">=</span><span class="n">backend</span><span class="o">.</span><span class="n">index_type</span><span class="p">,</span>
                     <span class="n">nprobe</span><span class="o">=</span><span class="n">backend</span><span class="o">.</span><span class="n">nprobe</span><span class="p">,</span>
                     <span class="n">nlist</span><span class="o">=</span><span class="n">backend</span><span class="o">.</span><span class="n">nlist</span><span class="p">,</span>
+                    <span class="o">**</span><span class="n">backend</span><span class="o">.</span><span class="n">faiss_kwargs</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># Create default config for this GPU</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_distributed_faiss_config</span> <span class="o">=</span> <span class="n">FaissConfig</span><span class="p">(</span>
-                    <span class="n">use_float16</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># Better precision for affinity computations</span>
-                    <span class="n">temp_memory</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-                    <span class="n">device</span><span class="o">=</span><span class="n">local_rank</span><span class="p">,</span>
-                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_distributed_faiss_config</span> <span class="o">=</span> <span class="n">FaissConfig</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">local_rank</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">world_size</span> <span class="o">=</span> <span class="mi">1</span>

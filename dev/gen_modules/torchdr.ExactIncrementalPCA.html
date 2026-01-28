@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>ExactIncrementalPCA &#8212; TorchDR 0.3.dev54+g576acfde2 documentation</title>
+    <title>ExactIncrementalPCA &#8212; TorchDR 0.3.dev55+ge697507e1 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=dd68c454"></script>
+    <script src="../_static/documentation_options.js?v=35fe958c"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'gen_modules/torchdr.ExactIncrementalPCA';</script>
@@ -120,8 +120,8 @@
       
     
     
-    <img src="../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev54+g576acfde2 documentation - Home"/>
-    <img src="../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev54+g576acfde2 documentation - Home"/>
+    <img src="../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev55+ge697507e1 documentation - Home"/>
+    <img src="../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev55+ge697507e1 documentation - Home"/>
   
   
 </a></div>
@@ -445,6 +445,10 @@
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="torchdr.silhouette_score.html">silhouette_score</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.silhouette_samples.html">silhouette_samples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.knn_label_accuracy.html">knn_label_accuracy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.neighborhood_preservation.html">neighborhood_preservation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torchdr.kmeans_ari.html">kmeans_ari</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="torchdr.pairwise_distances.html">pairwise_distances</a></li>
@@ -514,7 +518,7 @@
 <h1>ExactIncrementalPCA<a class="headerlink" href="#exactincrementalpca" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="torchdr.ExactIncrementalPCA">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchdr.</span></span><span class="sig-name descname"><span class="pre">ExactIncrementalPCA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_components</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.4/library/constants.html#None" title="(in Python v3.4)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/spectral_embedding/incremental_pca.html#ExactIncrementalPCA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.ExactIncrementalPCA" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchdr.</span></span><span class="sig-name descname"><span class="pre">ExactIncrementalPCA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_components</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/spectral_embedding/incremental_pca.html#ExactIncrementalPCA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.ExactIncrementalPCA" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../stubs/torchdr.DRModule.html#torchdr.DRModule" title="torchdr.base.DRModule"><code class="xref py py-class docutils literal notranslate"><span class="pre">DRModule</span></code></a></p>
 <p>Exact Incremental Principal Component Analysis.</p>
 <p>This implementation computes the exact PCA solution by incrementally building
@@ -527,10 +531,10 @@ the data: one to compute the mean, and one to build the covariance matrix.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>n_components</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a><em>, </em><em>default=2</em>) – Number of components to keep.</p></li>
-<li><p><strong>device</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a><em>, </em><em>default=&quot;auto&quot;</em>) – Device on which the computations are performed.</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><em>bool</em></a><em>, </em><em>default=False</em>) – Whether to print information during the computations.</p></li>
-<li><p><strong>random_state</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><em>float</em></a><em>, </em><em>default=None</em>) – Random seed for reproducibility.</p></li>
+<li><p><strong>n_components</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default=2</em>) – Number of components to keep.</p></li>
+<li><p><strong>device</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>default=&quot;auto&quot;</em>) – Device on which the computations are performed.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>default=False</em>) – Whether to print information during the computations.</p></li>
+<li><p><strong>random_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>default=None</em>) – Random seed for reproducibility.</p></li>
 </ul>
 </dd>
 </dl>
@@ -540,7 +544,7 @@ the data: one to compute the mean, and one to build the covariance matrix.</p>
 <dd><p>Per-feature empirical mean, calculated from the training set.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>torch.Tensor of shape (n_features,)</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)">torch.Tensor</a> of shape (n_features,)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -552,7 +556,7 @@ the data: one to compute the mean, and one to build the covariance matrix.</p>
 maximum variance in the data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>torch.Tensor of shape (n_components, n_features)</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)">torch.Tensor</a> of shape (n_components, n_features)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -563,7 +567,7 @@ maximum variance in the data.</p>
 <dd><p>The amount of variance explained by each of the selected components.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>torch.Tensor of shape (n_components,)</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)">torch.Tensor</a> of shape (n_components,)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -574,7 +578,7 @@ maximum variance in the data.</p>
 <dd><p>The number of samples processed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)">int</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -585,7 +589,7 @@ maximum variance in the data.</p>
 <dd><p>Number of features seen during fit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)">int</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -658,7 +662,7 @@ through the data.</p></li>
 <dd><p>Compute the mean from batches of data (first pass).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>X_batches</strong> (<em>iterable</em><em> of </em><em>torch.Tensor</em><em> or </em><em>single torch.Tensor</em>) – Either an iterable yielding batches of data, or a single tensor.
+<dd class="field-odd"><p><strong>X_batches</strong> (<em>iterable</em><em> of </em><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)"><em>torch.Tensor</em></a><em> or </em><em>single torch.Tensor</em>) – Either an iterable yielding batches of data, or a single tensor.
 Each batch should have shape (n_samples, n_features).</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -679,7 +683,7 @@ If mean is not computed, it will compute it first (requiring two passes).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X_batches</strong> (<em>iterable</em><em> of </em><em>torch.Tensor</em><em> or </em><em>single torch.Tensor</em>) – Either an iterable yielding batches of data, or a single tensor.
+<li><p><strong>X_batches</strong> (<em>iterable</em><em> of </em><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)"><em>torch.Tensor</em></a><em> or </em><em>single torch.Tensor</em>) – Either an iterable yielding batches of data, or a single tensor.
 Each batch should have shape (n_samples, n_features).</p></li>
 <li><p><strong>y</strong> (<em>None</em>) – Ignored. Present for API consistency.</p></li>
 </ul>
@@ -700,7 +704,7 @@ Each batch should have shape (n_samples, n_features).</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X_batches</strong> (<em>iterable</em><em> of </em><em>torch.Tensor</em><em> or </em><em>single torch.Tensor</em>) – Either an iterable yielding batches of data, or a single tensor.</p></li>
+<li><p><strong>X_batches</strong> (<em>iterable</em><em> of </em><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)"><em>torch.Tensor</em></a><em> or </em><em>single torch.Tensor</em>) – Either an iterable yielding batches of data, or a single tensor.</p></li>
 <li><p><strong>y</strong> (<em>None</em>) – Ignored. Present for API consistency.</p></li>
 </ul>
 </dd>
@@ -708,19 +712,19 @@ Each batch should have shape (n_samples, n_features).</p></li>
 <dd class="field-even"><p><strong>X_transformed</strong> – Transformed data (concatenated from all batches).</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>torch.Tensor</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)">torch.Tensor</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="torchdr.ExactIncrementalPCA.partial_fit">
-<span class="sig-name descname"><span class="pre">partial_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/spectral_embedding/incremental_pca.html#ExactIncrementalPCA.partial_fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.ExactIncrementalPCA.partial_fit" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">partial_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/spectral_embedding/incremental_pca.html#ExactIncrementalPCA.partial_fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.ExactIncrementalPCA.partial_fit" title="Link to this definition">#</a></dt>
 <dd><p>Incrementally fit the model with a batch of samples.</p>
 <p>This method assumes the mean has already been computed using compute_mean().</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>X</strong> (<em>torch.Tensor</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – Training batch.</p>
+<dd class="field-odd"><p><strong>X</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)"><em>torch.Tensor</em></a><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – Training batch.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>self</strong> – Returns the instance itself.</p>
@@ -733,7 +737,7 @@ Each batch should have shape (n_samples, n_features).</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="torchdr.ExactIncrementalPCA.set_fit_request">
-<span class="sig-name descname"><span class="pre">set_fit_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_batches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.4/library/constants.html#None" title="(in Python v3.4)"><span class="pre">None</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'$UNCHANGED$'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#torchdr.ExactIncrementalPCA" title="torchdr.spectral_embedding.incremental_pca.ExactIncrementalPCA"><span class="pre">ExactIncrementalPCA</span></a></span></span><a class="headerlink" href="#torchdr.ExactIncrementalPCA.set_fit_request" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">set_fit_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_batches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'$UNCHANGED$'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#torchdr.ExactIncrementalPCA" title="torchdr.spectral_embedding.incremental_pca.ExactIncrementalPCA"><span class="pre">ExactIncrementalPCA</span></a></span></span><a class="headerlink" href="#torchdr.ExactIncrementalPCA.set_fit_request" title="Link to this definition">#</a></dt>
 <dd><p>Configure whether metadata should be requested to be passed to the <code class="docutils literal notranslate"><span class="pre">fit</span></code> method.</p>
 <p>Note that this method is only relevant when this estimator is used as a
 sub-estimator within a <span class="xref std std-term">meta-estimator</span> and metadata routing is enabled
@@ -755,30 +759,30 @@ parameters and not others.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>X_batches</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a><em>, </em><em>True</em><em>, </em><em>False</em><em>, or </em><em>None</em><em>,                     </em><em>default=sklearn.utils.metadata_routing.UNCHANGED</em>) – Metadata routing for <code class="docutils literal notranslate"><span class="pre">X_batches</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">fit</span></code>.</p>
+<dd class="field-odd"><p><strong>X_batches</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>True</em><em>, </em><em>False</em><em>, or </em><em>None</em><em>,                     </em><em>default=sklearn.utils.metadata_routing.UNCHANGED</em>) – Metadata routing for <code class="docutils literal notranslate"><span class="pre">X_batches</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">fit</span></code>.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>self</strong> – The updated object.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#object" title="(in Python v3.4)">object</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)">object</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="torchdr.ExactIncrementalPCA.transform">
-<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="reference internal" href="../_modules/torchdr/spectral_embedding/incremental_pca.html#ExactIncrementalPCA.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.ExactIncrementalPCA.transform" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)"><span class="pre">Tensor</span></a></span></span><a class="reference internal" href="../_modules/torchdr/spectral_embedding/incremental_pca.html#ExactIncrementalPCA.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.ExactIncrementalPCA.transform" title="Link to this definition">#</a></dt>
 <dd><p>Apply dimensionality reduction on X.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>X</strong> (<em>torch.Tensor</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – Data to transform.</p>
+<dd class="field-odd"><p><strong>X</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)"><em>torch.Tensor</em></a><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – Data to transform.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>X_transformed</strong> – Transformed data.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>torch.Tensor of shape (n_samples, n_components)</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)">torch.Tensor</a> of shape (n_samples, n_components)</p>
 </dd>
 </dl>
 </dd></dl>

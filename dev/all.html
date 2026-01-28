@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>API and Modules &#8212; TorchDR 0.3.dev54+g576acfde2 documentation</title>
+    <title>API and Modules &#8212; TorchDR 0.3.dev55+ge697507e1 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=dd68c454"></script>
+    <script src="_static/documentation_options.js?v=35fe958c"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>window.MathJax = {"tex": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}}</script>
@@ -122,8 +122,8 @@
       
     
     
-    <img src="_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev54+g576acfde2 documentation - Home"/>
-    <img src="_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev54+g576acfde2 documentation - Home"/>
+    <img src="_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev55+ge697507e1 documentation - Home"/>
+    <img src="_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev55+ge697507e1 documentation - Home"/>
   
   
 </a></div>
@@ -447,6 +447,10 @@
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.silhouette_score.html">silhouette_score</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.silhouette_samples.html">silhouette_samples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.knn_label_accuracy.html">knn_label_accuracy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.neighborhood_preservation.html">neighborhood_preservation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.kmeans_ari.html">kmeans_ari</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.pairwise_distances.html">pairwise_distances</a></li>
@@ -691,12 +695,24 @@ approximate the repulsive term of the loss via negative samples.</p>
 </div>
 </section>
 </section>
-<section id="scores">
-<h3>Scores<a class="headerlink" href="#scores" title="Link to this heading">#</a></h3>
+<section id="evaluation-metrics">
+<h3>Evaluation Metrics<a class="headerlink" href="#evaluation-metrics" title="Link to this heading">#</a></h3>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.silhouette_score.html#torchdr.silhouette_score" title="torchdr.silhouette_score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">silhouette_score</span></code></a>(X, labels[, weights, ...])</p></td>
 <td><p>Compute the Silhouette score as the mean of silhouette coefficients.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.silhouette_samples.html#torchdr.silhouette_samples" title="torchdr.silhouette_samples"><code class="xref py py-obj docutils literal notranslate"><span class="pre">silhouette_samples</span></code></a>(X, labels[, weights, ...])</p></td>
+<td><p>Compute the silhouette coefficients for each data sample.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.knn_label_accuracy.html#torchdr.knn_label_accuracy" title="torchdr.knn_label_accuracy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">knn_label_accuracy</span></code></a>(X, labels[, k, metric, ...])</p></td>
+<td><p>Compute k-NN label accuracy to evaluate class structure preservation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.neighborhood_preservation.html#torchdr.neighborhood_preservation" title="torchdr.neighborhood_preservation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neighborhood_preservation</span></code></a>(X, Z, K[, metric, ...])</p></td>
+<td><p>Compute K-ary neighborhood preservation between input data and embeddings.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.kmeans_ari.html#torchdr.kmeans_ari" title="torchdr.kmeans_ari"><code class="xref py py-obj docutils literal notranslate"><span class="pre">kmeans_ari</span></code></a>(X, labels[, n_clusters, niter, ...])</p></td>
+<td><p>Perform K-means clustering and compute Adjusted Rand Index.</p></td>
 </tr>
 </tbody>
 </table>
@@ -786,7 +802,7 @@ approximate the repulsive term of the loss via negative samples.</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#other-affinities">Other Affinities</a></li>
 </ul>
 </li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#scores">Scores</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation-metrics">Evaluation Metrics</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utils">Utils</a></li>
 </ul>
 </li>

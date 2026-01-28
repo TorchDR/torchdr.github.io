@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.eval.silhouette &#8212; TorchDR 0.3.dev54+g576acfde2 documentation</title>
+    <title>torchdr.eval.silhouette &#8212; TorchDR 0.3.dev55+ge697507e1 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=dd68c454"></script>
+    <script src="../../../_static/documentation_options.js?v=35fe958c"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchdr/eval/silhouette';</script>
@@ -117,8 +117,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev54+g576acfde2 documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev54+g576acfde2 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev55+ge697507e1 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev55+ge697507e1 documentation - Home"/>
   
   
 </a></div>
@@ -464,6 +464,8 @@
 <span class="n">admissible_LIST_METRICS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;euclidean&quot;</span><span class="p">,</span> <span class="s2">&quot;manhattan&quot;</span><span class="p">,</span> <span class="s2">&quot;hyperbolic&quot;</span><span class="p">,</span> <span class="s2">&quot;precomputed&quot;</span><span class="p">]</span>
 
 
+<div class="viewcode-block" id="silhouette_samples">
+<a class="viewcode-back" href="../../../gen_modules/torchdr.silhouette_samples.html#torchdr.silhouette_samples">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">silhouette_samples</span><span class="p">(</span>
     <span class="n">X</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
     <span class="n">labels</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
@@ -487,7 +489,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    X : torch.Tensor, np.ndarray of shape (n_samples_x, n_samples_x) if</span>
-<span class="sd">        `metric=&quot;precomputed&quot; else (n_samples_x, n_features)</span>
+<span class="sd">        ``metric=&quot;precomputed&quot;`` else (n_samples_x, n_features)</span>
 <span class="sd">        Input data as a pairwise distance matrix or a feature matrix.</span>
 <span class="sd">    labels : torch.Tensor or np.ndarray of shape (n_samples_x,)</span>
 <span class="sd">        Labels associated to X.</span>
@@ -611,7 +613,8 @@
             <span class="n">B</span><span class="p">[</span><span class="n">pos_j</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">dist_pos_j</span><span class="p">,</span> <span class="n">B</span><span class="p">[</span><span class="n">pos_j</span><span class="p">])</span>
 
     <span class="n">coefficients</span> <span class="o">=</span> <span class="p">(</span><span class="n">B</span> <span class="o">-</span> <span class="n">A</span><span class="p">)</span> <span class="o">/</span> <span class="n">torch</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">coefficients</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">coefficients</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="silhouette_score">
@@ -641,7 +644,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    X : torch.Tensor, np.ndarray of shape (n_samples_x, n_samples_x) if</span>
-<span class="sd">        `metric=&quot;precomputed&quot; else (n_samples_x, n_features)</span>
+<span class="sd">        ``metric=&quot;precomputed&quot;`` else (n_samples_x, n_features)</span>
 <span class="sd">        Input data as a pairwise distance matrix or a feature matrix.</span>
 <span class="sd">    labels : torch.Tensor or np.ndarray of shape (n_samples_x,)</span>
 <span class="sd">        Labels associated to X.</span>

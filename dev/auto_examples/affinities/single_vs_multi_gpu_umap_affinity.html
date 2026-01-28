@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>&lt;no title&gt; &#8212; TorchDR 0.3.dev54+g576acfde2 documentation</title>
+    <title>Single vs Multi-GPU UMAPAffinity Comparison &#8212; TorchDR 0.3.dev55+ge697507e1 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=dd68c454"></script>
+    <script src="../../_static/documentation_options.js?v=35fe958c"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/affinities/single_vs_multi_gpu_umap_affinity';</script>
@@ -120,8 +120,8 @@
       
     
     
-    <img src="../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev54+g576acfde2 documentation - Home"/>
-    <img src="../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev54+g576acfde2 documentation - Home"/>
+    <img src="../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev55+ge697507e1 documentation - Home"/>
+    <img src="../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev55+ge697507e1 documentation - Home"/>
   
   
 </a></div>
@@ -398,8 +398,9 @@
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="demo_ea_adaptivity.html">Entropic Affinities can adapt to varying noise levels</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Single vs Multi-GPU UMAPAffinity Comparison</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../basics/demo_pca_via_affinity_matcher.html">PCA via SVD and via AffinityMatcher</a></li>
@@ -450,7 +451,7 @@
     
     <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Gallery</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">&lt;no title&gt;</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Single vs Multi-GPU UMAPAffinity Comparison</span></li>
   </ul>
 </nav>
 </div>
@@ -472,11 +473,13 @@
 <p><a class="reference internal" href="#sphx-glr-download-auto-examples-affinities-single-vs-multi-gpu-umap-affinity-py"><span class="std std-ref">Go to the end</span></a>
 to download the full example code.</p>
 </div>
-<p class="sphx-glr-example-title" id="sphx-glr-auto-examples-affinities-single-vs-multi-gpu-umap-affinity-py">Simple example of using UMAPAffinity with multi-GPU on 10x mouse Zheng dataset.
+<section class="sphx-glr-example-title" id="single-vs-multi-gpu-umapaffinity-comparison">
+<span id="sphx-glr-auto-examples-affinities-single-vs-multi-gpu-umap-affinity-py"></span><h1>Single vs Multi-GPU UMAPAffinity Comparison<a class="headerlink" href="#single-vs-multi-gpu-umapaffinity-comparison" title="Link to this heading">#</a></h1>
+<p>Simple example of using UMAPAffinity with multi-GPU on 10x mouse Zheng dataset.
 Compares distributed vs non-distributed performance and verifies outputs are similar.
 Must be launched with torchrun for distributed execution.</p>
 <dl class="simple">
-<dt>Usage:</dt><dd><p>torchrun –nproc_per_node=4 test_mnist_entropic_multigpu.py</p>
+<dt>Usage:</dt><dd><p>torchrun –nproc_per_node=4 single_vs_multi_gpu_umap_affinity.py</p>
 </dd>
 </dl>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
@@ -485,7 +488,7 @@ Must be launched with torchrun for distributed execution.</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">gzip</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.python.org/3.4/library/io.html#io.BytesIO" title="io.BytesIO" class="sphx-glr-backref-module-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">BytesIO</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.python.org/3/library/io.html#io.BytesIO" title="io.BytesIO" class="sphx-glr-backref-module-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">BytesIO</span></a>
 <span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity</span><span class="w"> </span><span class="kn">import</span> <span class="n">UMAPAffinity</span>
@@ -494,38 +497,38 @@ Must be launched with torchrun for distributed execution.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">download_and_load_dataset</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Download and load pickled dataset from URL.&quot;&quot;&quot;</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-    <span class="k">with</span> <a href="https://docs.python.org/3.4/library/gzip.html#gzip.GzipFile" title="gzip.GzipFile" class="sphx-glr-backref-module-gzip sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">gzip</span><span class="o">.</span><span class="n">GzipFile</span></a><span class="p">(</span><span class="n">fileobj</span><span class="o">=</span><a href="https://docs.python.org/3.4/library/io.html#io.BytesIO" title="io.BytesIO" class="sphx-glr-backref-module-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">BytesIO</span></a><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">data</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/pickle.html#pickle.load" title="pickle.load" class="sphx-glr-backref-module-pickle sphx-glr-backref-type-py-function"><span class="n">pickle</span><span class="o">.</span><span class="n">load</span></a><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">with</span> <a href="https://docs.python.org/3/library/gzip.html#gzip.GzipFile" title="gzip.GzipFile" class="sphx-glr-backref-module-gzip sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">gzip</span><span class="o">.</span><span class="n">GzipFile</span></a><span class="p">(</span><span class="n">fileobj</span><span class="o">=</span><a href="https://docs.python.org/3/library/io.html#io.BytesIO" title="io.BytesIO" class="sphx-glr-backref-module-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">BytesIO</span></a><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/pickle.html#pickle.load" title="pickle.load" class="sphx-glr-backref-module-pickle sphx-glr-backref-type-py-function"><span class="n">pickle</span><span class="o">.</span><span class="n">load</span></a><span class="p">(</span><span class="n">f</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">data</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">setup_distributed</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize distributed training environment.&quot;&quot;&quot;</span>
     <span class="c1"># torchrun sets the environment variables, but we still need to init the process group</span>
-    <span class="n">local_rank</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><a href="https://docs.python.org/3.4/library/os.html#os.environ" title="os.environ" class="sphx-glr-backref-module-os sphx-glr-backref-type-py-data"><span class="n">os</span><span class="o">.</span><span class="n">environ</span></a><span class="p">[</span><span class="s2">&quot;LOCAL_RANK&quot;</span><span class="p">])</span>
-    <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">set_device</span><span class="p">(</span><span class="n">local_rank</span><span class="p">)</span>
-    <span class="n">dist</span><span class="o">.</span><span class="n">init_process_group</span><span class="p">(</span>
-        <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;nccl&quot;</span><span class="p">,</span> <span class="n">device_id</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cuda:</span><span class="si">{</span><span class="n">local_rank</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">local_rank</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><a href="https://docs.python.org/3/library/os.html#os.environ" title="os.environ" class="sphx-glr-backref-module-os sphx-glr-backref-type-py-data"><span class="n">os</span><span class="o">.</span><span class="n">environ</span></a><span class="p">[</span><span class="s2">&quot;LOCAL_RANK&quot;</span><span class="p">])</span>
+    <a href="https://docs.pytorch.org/docs/stable/generated/torch.cuda.set_device.html#torch.cuda.set_device" title="torch.cuda.set_device" class="sphx-glr-backref-module-torch-cuda sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">set_device</span></a><span class="p">(</span><span class="n">local_rank</span><span class="p">)</span>
+    <a href="https://docs.pytorch.org/docs/stable/distributed.html#torch.distributed.init_process_group" title="torch.distributed.init_process_group" class="sphx-glr-backref-module-torch-distributed sphx-glr-backref-type-py-function"><span class="n">dist</span><span class="o">.</span><span class="n">init_process_group</span></a><span class="p">(</span>
+        <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;nccl&quot;</span><span class="p">,</span> <span class="n">device_id</span><span class="o">=</span><a href="https://docs.pytorch.org/docs/stable/tensor_attributes.html#torch.device" title="torch.device" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">torch</span><span class="o">.</span><span class="n">device</span></a><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cuda:</span><span class="si">{</span><span class="n">local_rank</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">cleanup_distributed</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Clean up distributed training environment.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">dist</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">():</span>
+    <span class="k">if</span> <a href="https://docs.pytorch.org/docs/stable/distributed.html#torch.distributed.is_initialized" title="torch.distributed.is_initialized" class="sphx-glr-backref-module-torch-distributed sphx-glr-backref-type-py-function"><span class="n">dist</span><span class="o">.</span><span class="n">is_initialized</span></a><span class="p">():</span>
         <span class="n">dist</span><span class="o">.</span><span class="n">destroy_process_group</span><span class="p">()</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
     <span class="c1"># Initialize distributed training</span>
     <span class="n">setup_distributed</span><span class="p">()</span>
-    <span class="n">rank</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">get_rank</span><span class="p">()</span>
-    <span class="n">world_size</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">get_world_size</span><span class="p">()</span>
+    <span class="n">rank</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/stable/distributed.html#torch.distributed.get_rank" title="torch.distributed.get_rank" class="sphx-glr-backref-module-torch-distributed sphx-glr-backref-type-py-function"><span class="n">dist</span><span class="o">.</span><span class="n">get_rank</span></a><span class="p">()</span>
+    <span class="n">world_size</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/stable/distributed.html#torch.distributed.get_world_size" title="torch.distributed.get_world_size" class="sphx-glr-backref-module-torch-distributed sphx-glr-backref-type-py-function"><span class="n">dist</span><span class="o">.</span><span class="n">get_world_size</span></a><span class="p">()</span>
 
     <span class="c1"># Print from all ranks to verify all GPUs are active</span>
     <span class="nb">print</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;[Rank </span><span class="si">{</span><span class="n">rank</span><span class="si">}</span><span class="s2">] Process started on GPU </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">current_device</span><span class="p">()</span><span class="si">}</span><span class="s2">, device name: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">get_device_name</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;[Rank </span><span class="si">{</span><span class="n">rank</span><span class="si">}</span><span class="s2">] Process started on GPU </span><span class="si">{</span><a href="https://docs.pytorch.org/docs/stable/generated/torch.cuda.current_device.html#torch.cuda.current_device" title="torch.cuda.current_device" class="sphx-glr-backref-module-torch-cuda sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">current_device</span></a><span class="p">()</span><span class="si">}</span><span class="s2">, device name: </span><span class="si">{</span><a href="https://docs.pytorch.org/docs/stable/generated/torch.cuda.get_device_name.html#torch.cuda.get_device_name" title="torch.cuda.get_device_name" class="sphx-glr-backref-module-torch-cuda sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">get_device_name</span></a><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="p">)</span>
-    <span class="n">dist</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>  <span class="c1"># Synchronize before continuing</span>
+    <a href="https://docs.pytorch.org/docs/stable/distributed.html#torch.distributed.barrier" title="torch.distributed.barrier" class="sphx-glr-backref-module-torch-distributed sphx-glr-backref-type-py-function"><span class="n">dist</span><span class="o">.</span><span class="n">barrier</span></a><span class="p">()</span>  <span class="c1"># Synchronize before continuing</span>
 
     <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Running comparison on </span><span class="si">{</span><span class="n">world_size</span><span class="si">}</span><span class="s2"> GPUs&quot;</span><span class="p">)</span>
@@ -542,14 +545,14 @@ Must be launched with torchrun for distributed execution.</p>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Data already PCA-reduced to 50 dimensions&quot;</span><span class="p">)</span>
 
     <span class="c1"># Convert to tensor (data stays on CPU)</span>
-    <span class="n">X</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">X</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.tensor.html#torch.tensor" title="torch.tensor" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span></a><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Data shape: </span><span class="si">{</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TEST 1: Multi-GPU UMAPAffinity (distributed=True)&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
-        <span class="n">start_time</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
+        <span class="n">start_time</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
 
     <span class="c1"># Create UMAPAffinity with distributed=True</span>
     <span class="n">affinity_distributed</span> <span class="o">=</span> <span class="n">UMAPAffinity</span><span class="p">(</span>
@@ -566,17 +569,17 @@ Must be launched with torchrun for distributed execution.</p>
     <span class="n">P_dist</span><span class="p">,</span> <span class="n">indices_distributed</span> <span class="o">=</span> <span class="n">affinity_distributed</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="c1"># Synchronize all GPUs</span>
-    <span class="k">if</span> <span class="n">dist</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">():</span>
-        <span class="n">dist</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
+    <span class="k">if</span> <a href="https://docs.pytorch.org/docs/stable/distributed.html#torch.distributed.is_initialized" title="torch.distributed.is_initialized" class="sphx-glr-backref-module-torch-distributed sphx-glr-backref-type-py-function"><span class="n">dist</span><span class="o">.</span><span class="n">is_initialized</span></a><span class="p">():</span>
+        <a href="https://docs.pytorch.org/docs/stable/distributed.html#torch.distributed.barrier" title="torch.distributed.barrier" class="sphx-glr-backref-module-torch-distributed sphx-glr-backref-type-py-function"><span class="n">dist</span><span class="o">.</span><span class="n">barrier</span></a><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">distributed_time</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+        <span class="n">distributed_time</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Multi-GPU computation completed in </span><span class="si">{</span><span class="n">distributed_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TEST 2: Single-GPU UMAPAffinity (distributed=False)&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
-        <span class="n">start_time</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
+        <span class="n">start_time</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
 
     <span class="c1"># Only rank 0 computes the single-GPU version</span>
     <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -595,7 +598,7 @@ Must be launched with torchrun for distributed execution.</p>
         <span class="c1"># Compute affinity matrix with single GPU</span>
         <span class="n">P_single</span><span class="p">,</span> <span class="n">indices_single</span> <span class="o">=</span> <span class="n">affinity_single</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-        <span class="n">single_time</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+        <span class="n">single_time</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Single-GPU computation completed in </span><span class="si">{</span><span class="n">single_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
 
         <span class="c1"># Compare results</span>
@@ -633,25 +636,25 @@ Must be launched with torchrun for distributed execution.</p>
         <span class="n">chunk_size</span> <span class="o">=</span> <span class="n">P_dist</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="c1"># Compare indices for the chunk</span>
-        <span class="n">indices_match</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span>
+        <span class="n">indices_match</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.allclose.html#torch.allclose" title="torch.allclose" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">allclose</span></a><span class="p">(</span>
             <span class="n">indices_distributed</span><span class="p">,</span> <span class="n">indices_single</span><span class="p">[:</span><span class="n">chunk_size</span><span class="p">],</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-5</span>
         <span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Indices match (chunk of </span><span class="si">{</span><span class="n">chunk_size</span><span class="si">}</span><span class="s2"> points): </span><span class="si">{</span><span class="n">indices_match</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="c1"># Compare affinity values for the chunk</span>
         <span class="n">P_single_chunk</span> <span class="o">=</span> <span class="n">P_single</span><span class="p">[:</span><span class="n">chunk_size</span><span class="p">]</span>
-        <span class="n">values_diff</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">P_dist</span> <span class="o">-</span> <span class="n">P_single_chunk</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">values_diff</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.abs.html#torch.abs" title="torch.abs" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">abs</span></a><span class="p">(</span><span class="n">P_dist</span> <span class="o">-</span> <span class="n">P_single_chunk</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
         <span class="nb">print</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;  Mean absolute difference in affinity values: </span><span class="si">{</span><span class="n">values_diff</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
         <span class="c1"># Check relative difference</span>
         <span class="n">relative_diff</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">P_dist</span> <span class="o">-</span> <span class="n">P_single_chunk</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">P_single_chunk</span> <span class="o">+</span> <span class="mf">1e-10</span><span class="p">)</span>
+            <a href="https://docs.pytorch.org/docs/stable/generated/torch.abs.html#torch.abs" title="torch.abs" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">abs</span></a><span class="p">(</span><span class="n">P_dist</span> <span class="o">-</span> <span class="n">P_single_chunk</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">P_single_chunk</span> <span class="o">+</span> <span class="mf">1e-10</span><span class="p">)</span>
         <span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Mean relative difference: </span><span class="si">{</span><span class="n">relative_diff</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="n">values_match</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">P_dist</span><span class="p">,</span> <span class="n">P_single_chunk</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
+        <span class="n">values_match</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.allclose.html#torch.allclose" title="torch.allclose" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">allclose</span></a><span class="p">(</span><span class="n">P_dist</span><span class="p">,</span> <span class="n">P_single_chunk</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Affinity values match (rtol=1e-3): </span><span class="si">{</span><span class="n">values_match</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="c1"># Clean up</span>
@@ -674,6 +677,7 @@ Must be launched with torchrun for distributed execution.</p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
 
 
                 </article>
@@ -713,18 +717,6 @@ Must be launched with torchrun for distributed execution.</p>
                 <dialog id="pst-secondary-sidebar-modal"></dialog>
                 <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
-
-  <div class="sidebar-secondary-item">
-<div
-    id="pst-page-navigation-heading-2"
-    class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="simple visible nav section-nav flex-column">
-</ul>
-
-  </nav></div>
 
   <div class="sidebar-secondary-item">
   <div role="note" aria-label="source link">

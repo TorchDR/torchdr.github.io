@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Torch Dimensionality Reduction &#8212; TorchDR 0.3.dev54+g576acfde2 documentation</title>
+    <title>Torch Dimensionality Reduction &#8212; TorchDR 0.3.dev55+ge697507e1 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=dd68c454"></script>
+    <script src="_static/documentation_options.js?v=35fe958c"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>window.MathJax = {"tex": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}}</script>
@@ -121,8 +121,8 @@
       
     
     
-    <img src="_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev54+g576acfde2 documentation - Home"/>
-    <img src="_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev54+g576acfde2 documentation - Home"/>
+    <img src="_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev55+ge697507e1 documentation - Home"/>
+    <img src="_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev55+ge697507e1 documentation - Home"/>
   
   
 </a></div>
@@ -441,14 +441,37 @@
 <a class="reference internal" href="#"><span class="xref myst"><img alt="Test Status" src="https://github.com/torchdr/torchdr/actions/workflows/testing.yml/badge.svg" /></span></a>
 <a class="reference external" href="https://dl.circleci.com/status-badge/redirect/gh/TorchDR/TorchDR/tree/main"><img alt="CircleCI" src="https://dl.circleci.com/status-badge/img/gh/TorchDR/TorchDR/tree/main.svg?style=svg" /></a>
 <a class="reference external" href="https://codecov.io/gh/torchdr/torchdr"><img alt="codecov" src="https://codecov.io/gh/torchdr/torchdr/branch/main/graph/badge.svg" /></a></p>
-<p><strong>TorchDR</strong> is an open-source library for <strong>dimensionality reduction (DR)</strong> built on PyTorch. DR constructs <strong>low-dimensional representations (or embeddings)</strong> that <strong>best preserve the intrinsic geometry of an input dataset</strong> encoded via a pairwise affinity matrix. <strong>TorchDR</strong> provides <strong>GPU-accelerated</strong> implementations of popular DR algorithms in a <strong>unified framework</strong>, ensuring <strong>high performance</strong> by leveraging the latest advances of the PyTorch ecosystem.</p>
+<p><strong>TorchDR</strong> is a high-performance dimensionality reduction library built on PyTorch. It provides GPU and multi-GPU accelerated DR methods in a unified framework with a simple, scikit-learn-compatible API.</p>
 <section id="key-features">
 <h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading">#</a></h2>
-<p>🚀 <strong>Blazing Fast</strong>: engineered for speed with GPU acceleration, <code class="docutils literal notranslate"><span class="pre">torch.compile</span></code> support, and optimized algorithms leveraging sparsity and negative sampling.</p>
-<p>🧩 <strong>Modular by Design</strong>: very component is designed to be easily customized, extended, or replaced to fit your specific needs.</p>
-<p>🪶 <strong>Memory-Efficient</strong>: natively handles sparsity and memory-efficient symbolic operations to process massive datasets without memory overflows.</p>
-<p>🤝 <strong>Seamless Integration</strong>: Fully compatible with the scikit-learn and PyTorch ecosystems. Use familiar APIs and integrate effortlessly into your existing workflows.</p>
-<p>📦 <strong>Minimal Dependencies</strong>: requires only PyTorch, NumPy, and scikit‑learn; optionally add Faiss for fast k‑NN or KeOps for symbolic computation.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Feature</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>High Performance</strong></p></td>
+<td><p>Engineered for speed with GPU acceleration, <code class="docutils literal notranslate"><span class="pre">torch.compile</span></code> support, and optimized algorithms leveraging sparsity and negative sampling.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Multi-GPU Support</strong></p></td>
+<td><p>Scale to massive datasets with built-in distributed computing. Use the <code class="docutils literal notranslate"><span class="pre">torchdr</span></code> CLI or <code class="docutils literal notranslate"><span class="pre">torchrun</span></code> for easy multi-GPU execution of compatible modules and methods.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Modular by Design</strong></p></td>
+<td><p>Every component is designed to be easily customized, extended, or replaced to fit your specific needs.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Memory-Efficient</strong></p></td>
+<td><p>Natively handles sparsity and memory-efficient symbolic operations to process massive datasets without memory overflows.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Seamless Integration</strong></p></td>
+<td><p>Fully compatible with the scikit-learn and PyTorch ecosystems. Use familiar APIs and integrate effortlessly into your existing workflows.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Minimal Dependencies</strong></p></td>
+<td><p>Requires only PyTorch, NumPy, and scikit‑learn; optionally add Faiss for fast k‑NN or KeOps for symbolic computation.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 <section id="getting-started">
 <h2>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading">#</a></h2>
@@ -462,22 +485,25 @@
 </pre></div>
 </div>
 <section id="gpu-acceleration">
-<h3>🚀 GPU Acceleration<a class="headerlink" href="#gpu-acceleration" title="Link to this heading">#</a></h3>
+<h3>GPU Acceleration<a class="headerlink" href="#gpu-acceleration" title="Link to this heading">#</a></h3>
 <p><strong>TorchDR</strong> is fully <strong>GPU compatible</strong>, enabling <strong>significant speed-ups</strong> when a GPU is available. To run computations on the GPU, simply set <code class="docutils literal notranslate"><span class="pre">device=&quot;cuda&quot;</span></code> as shown in the example below:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z_gpu</span> <span class="o">=</span> <span class="n">UMAP</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><strong>Device Management</strong>: By default (<code class="docutils literal notranslate"><span class="pre">device=&quot;auto&quot;</span></code>), computations use the input data’s device. For optimal memory management, you can keep input data on CPU while specifying <code class="docutils literal notranslate"><span class="pre">device=&quot;cuda&quot;</span></code> to perform computations on GPU - TorchDR will handle transfers automatically.</p>
-</section>
-<section id="pytorch-2-0-torch-compile-support">
-<h3>🔥 PyTorch 2.0+ torch.compile Support<a class="headerlink" href="#pytorch-2-0-torch-compile-support" title="Link to this heading">#</a></h3>
-<p><strong>TorchDR</strong> supports <code class="docutils literal notranslate"><span class="pre">torch.compile</span></code> for an additional performance boost on modern PyTorch versions. Just add the <code class="docutils literal notranslate"><span class="pre">compile=True</span></code> flag as follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z_gpu_compile</span> <span class="o">=</span> <span class="n">UMAP</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="nb">compile</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<p><strong>Multi-GPU Execution</strong>: Use the <code class="docutils literal notranslate"><span class="pre">torchdr</span></code> CLI to run your script across multiple GPUs:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>torchdr<span class="w"> </span>my_script.py<span class="w">            </span><span class="c1"># Use all available GPUs</span>
+torchdr<span class="w"> </span>--gpus<span class="w"> </span><span class="m">4</span><span class="w"> </span>my_script.py<span class="w">   </span><span class="c1"># Use 4 GPUs</span>
+</pre></div>
+</div>
+<p>No code changes required - TorchDR automatically parallelizes compatible operations across GPUs.</p>
+<p><strong>torch.compile Support</strong>: For an additional performance boost on PyTorch 2.0+, enable compilation with <code class="docutils literal notranslate"><span class="pre">compile=True</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span> <span class="o">=</span> <span class="n">UMAP</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="nb">compile</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="backends">
-<h3>⚙️ Backends<a class="headerlink" href="#backends" title="Link to this heading">#</a></h3>
+<h3>Backends<a class="headerlink" href="#backends" title="Link to this heading">#</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">backend</span></code> keyword specifies which tool to use for handling kNN computations and memory-efficient symbolic computations.</p>
 <ul class="simple">
 <li><p>Set <code class="docutils literal notranslate"><span class="pre">backend=&quot;faiss&quot;</span></code> to rely on <a class="reference external" href="https://github.com/facebookresearch/faiss">Faiss</a> for fast kNN computations <strong>(Recommended)</strong>.</p></li>
@@ -488,14 +514,63 @@
 </section>
 <section id="methods">
 <h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">#</a></h2>
-<section id="neighbor-embedding-optimal-for-data-visualization">
-<h3>Neighbor Embedding (optimal for data visualization)<a class="headerlink" href="#neighbor-embedding-optimal-for-data-visualization" title="Link to this heading">#</a></h3>
-<p><strong>TorchDR</strong> provides a suite of <strong>neighbor embedding</strong> methods.</p>
-<p><strong>Linear-time (Negative Sampling).</strong> State-of-the-art speed on large datasets: <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.UMAP.html"><code class="docutils literal notranslate"><span class="pre">UMAP</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.LargeVis.html"><code class="docutils literal notranslate"><span class="pre">LargeVis</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.InfoTSNE.html"><code class="docutils literal notranslate"><span class="pre">InfoTSNE</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.PACMAP.html"><code class="docutils literal notranslate"><span class="pre">PACMAP</span></code></a>.</p>
-<p><strong>Quadratic-time (Exact Repulsion).</strong> Compute the full pairwise repulsion: <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.SNE.html"><code class="docutils literal notranslate"><span class="pre">SNE</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.TSNE.html"><code class="docutils literal notranslate"><span class="pre">TSNE</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.TSNEkhorn.html"><code class="docutils literal notranslate"><span class="pre">TSNEkhorn</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.COSNE.html"><code class="docutils literal notranslate"><span class="pre">COSNE</span></code></a>.</p>
+<section id="neighbor-embedding">
+<h3>Neighbor Embedding<a class="headerlink" href="#neighbor-embedding" title="Link to this heading">#</a></h3>
+<p><strong>TorchDR</strong> provides a suite of neighbor embedding methods, optimal for data visualization.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head text-center"><p>Complexity</p></th>
+<th class="head text-center"><p>Multi-GPU</p></th>
+<th class="head text-center"><p>Paper</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.UMAP.html"><code class="docutils literal notranslate"><span class="pre">UMAP</span></code></a></p></td>
+<td class="text-center"><p>O(n)</p></td>
+<td class="text-center"><p>✅</p></td>
+<td class="text-center"><p><a class="reference external" href="https://arxiv.org/abs/1802.03426">↗</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.LargeVis.html"><code class="docutils literal notranslate"><span class="pre">LargeVis</span></code></a></p></td>
+<td class="text-center"><p>O(n)</p></td>
+<td class="text-center"><p>✅</p></td>
+<td class="text-center"><p><a class="reference external" href="https://arxiv.org/abs/1602.00370">↗</a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.InfoTSNE.html"><code class="docutils literal notranslate"><span class="pre">InfoTSNE</span></code></a></p></td>
+<td class="text-center"><p>O(n)</p></td>
+<td class="text-center"><p>✅</p></td>
+<td class="text-center"><p><a class="reference external" href="https://arxiv.org/abs/2206.01816">↗</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.PACMAP.html"><code class="docutils literal notranslate"><span class="pre">PACMAP</span></code></a></p></td>
+<td class="text-center"><p>O(n)</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p><a class="reference external" href="https://arxiv.org/abs/2012.04456">↗</a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.SNE.html"><code class="docutils literal notranslate"><span class="pre">SNE</span></code></a></p></td>
+<td class="text-center"><p>O(n²)</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p><a class="reference external" href="https://papers.nips.cc/paper/2002/hash/6150ccc6069bea6b5716254057a194ef-Abstract.html">↗</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.TSNE.html"><code class="docutils literal notranslate"><span class="pre">TSNE</span></code></a></p></td>
+<td class="text-center"><p>O(n²)</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p><a class="reference external" href="https://jmlr.org/papers/v9/vandermaaten08a.html">↗</a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.TSNEkhorn.html"><code class="docutils literal notranslate"><span class="pre">TSNEkhorn</span></code></a></p></td>
+<td class="text-center"><p>O(n²)</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p><a class="reference external" href="https://arxiv.org/abs/2305.13797">↗</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.COSNE.html"><code class="docutils literal notranslate"><span class="pre">COSNE</span></code></a></p></td>
+<td class="text-center"><p>O(n²)</p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-center"><p><a class="reference external" href="https://arxiv.org/abs/2111.15037">↗</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <blockquote>
-<div><p><em>Remark.</em> For quadratic-time algorithms, <code class="docutils literal notranslate"><span class="pre">TorchDR</span></code> provides exact implementations that scale linearly in memory using <code class="docutils literal notranslate"><span class="pre">backend=keops</span></code>.
-For <code class="docutils literal notranslate"><span class="pre">TSNE</span></code> specifically, one can also explore fast approximations, such as <code class="docutils literal notranslate"><span class="pre">FIt-SNE</span></code> implemented in <a class="reference external" href="https://github.com/CannyLab/tsne-cuda">tsne-cuda</a>, which bypass full pairwise repulsion.</p>
+<div><p><em>Note:</em> Quadratic methods support <code class="docutils literal notranslate"><span class="pre">backend=&quot;keops&quot;</span></code> for exact computation with linear memory usage.</p>
 </div></blockquote>
 </section>
 <section id="spectral-embedding">
@@ -541,18 +616,18 @@ Visualizing the CIFAR100 dataset using DINO features and <code class="docutils l
 <li><p>Adaptive affinities with entropy control: <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.EntropicAffinity.html"><code class="docutils literal notranslate"><span class="pre">EntropicAffinity</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.SymmetricEntropicAffinity.html"><code class="docutils literal notranslate"><span class="pre">SymmetricEntropicAffinity</span></code></a>.</p></li>
 </ul>
 </section>
-<section id="evaluation-metric">
-<h3>Evaluation Metric<a class="headerlink" href="#evaluation-metric" title="Link to this heading">#</a></h3>
-<p><strong>TorchDR</strong> provides efficient GPU-compatible evaluation metrics: <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.silhouette_score.html"><code class="docutils literal notranslate"><span class="pre">silhouette_score</span></code></a>.</p>
+<section id="evaluation-metrics">
+<h3>Evaluation Metrics<a class="headerlink" href="#evaluation-metrics" title="Link to this heading">#</a></h3>
+<p><strong>TorchDR</strong> provides efficient GPU-compatible evaluation metrics: <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.silhouette_score.html"><code class="docutils literal notranslate"><span class="pre">silhouette_score</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.knn_label_accuracy.html"><code class="docutils literal notranslate"><span class="pre">knn_label_accuracy</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.neighborhood_preservation.html"><code class="docutils literal notranslate"><span class="pre">neighborhood_preservation</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.kmeans_ari.html"><code class="docutils literal notranslate"><span class="pre">kmeans_ari</span></code></a>.</p>
 </section>
 </section>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
 <p>Install the core <code class="docutils literal notranslate"><span class="pre">torchdr</span></code> library from PyPI:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>torchdr
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>torchdr<span class="w">  </span><span class="c1"># or: uv pip install torchdr</span>
 </pre></div>
 </div>
-<p>:warning: <code class="docutils literal notranslate"><span class="pre">torchdr</span></code> does not install <code class="docutils literal notranslate"><span class="pre">faiss-gpu</span></code> or <code class="docutils literal notranslate"><span class="pre">pykeops</span></code> by default. You need to install them separately to use the corresponding backends.</p>
+<p><strong>Note:</strong> <code class="docutils literal notranslate"><span class="pre">torchdr</span></code> does not install <code class="docutils literal notranslate"><span class="pre">faiss-gpu</span></code> or <code class="docutils literal notranslate"><span class="pre">pykeops</span></code> by default. You need to install them separately to use the corresponding backends.</p>
 <ul>
 <li><p><strong>Faiss (Recommended)</strong>: For the fastest k-NN computations, install <a class="reference external" href="https://github.com/facebookresearch/faiss">Faiss</a>. Please follow their <a class="reference external" href="https://github.com/facebookresearch/faiss/blob/main/INSTALL.md">official installation guide</a>. A common method is using <code class="docutils literal notranslate"><span class="pre">conda</span></code>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>pytorch<span class="w"> </span>-c<span class="w"> </span>nvidia<span class="w"> </span>faiss-gpu
@@ -619,13 +694,12 @@ Visualizing the CIFAR100 dataset using DINO features and <code class="docutils l
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-features">Key Features</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-started">Getting Started</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gpu-acceleration">🚀 GPU Acceleration</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-2-0-torch-compile-support">🔥 PyTorch 2.0+ torch.compile Support</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#backends">⚙️ Backends</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gpu-acceleration">GPU Acceleration</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#backends">Backends</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#neighbor-embedding-optimal-for-data-visualization">Neighbor Embedding (optimal for data visualization)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#neighbor-embedding">Neighbor Embedding</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spectral-embedding">Spectral Embedding</a></li>
 </ul>
 </li>
@@ -633,7 +707,7 @@ Visualizing the CIFAR100 dataset using DINO features and <code class="docutils l
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples">Examples</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-features">Advanced Features</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#affinities">Affinities</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation-metric">Evaluation Metric</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation-metrics">Evaluation Metrics</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a><ul class="nav section-nav flex-column">

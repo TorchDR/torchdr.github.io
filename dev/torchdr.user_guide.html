@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>User Guide &#8212; TorchDR 0.3.dev57+g8801eb4fe documentation</title>
+    <title>User Guide &#8212; TorchDR 0.3.dev58+gcac5e6472 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=985c76d9"></script>
+    <script src="_static/documentation_options.js?v=a3efca2f"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>window.MathJax = {"tex": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}}</script>
@@ -122,8 +122,8 @@
       
     
     
-    <img src="_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev57+g8801eb4fe documentation - Home"/>
-    <img src="_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev57+g8801eb4fe documentation - Home"/>
+    <img src="_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev58+gcac5e6472 documentation - Home"/>
+    <img src="_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev58+gcac5e6472 documentation - Home"/>
   
   
 </a></div>
@@ -517,6 +517,57 @@ Simply set <code class="xref py py-attr docutils literal notranslate"><span clas
 </a>
 <p>The above figure is taken from <a class="reference external" href="https://github.com/getkeops/keops/blob/main/doc/_static/symbolic_matrix.svg">here</a>.</p>
 </section>
+<section id="multi-gpu-distributed-training">
+<h3>Multi-GPU distributed training<a class="headerlink" href="#multi-gpu-distributed-training" title="Link to this heading">#</a></h3>
+<p>For very large datasets, TorchDR supports <strong>multi-GPU distributed training</strong> to parallelize computations across multiple GPUs. This is particularly useful when the affinity matrix is too large to compute on a single GPU or when faster computation is needed.</p>
+<p><strong>How it works:</strong></p>
+<ol class="arabic simple">
+<li><p><strong>Data partitioning</strong>: The full dataset <span class="math notranslate nohighlight">\(\mathbf{X} \in \mathbb{R}^{N \times d}\)</span> is split into chunks across GPUs. Each GPU handles a subset of <span class="math notranslate nohighlight">\(n_i\)</span> samples.</p></li>
+<li><p><strong>Shared neighbor index</strong>: A FAISS index is built on the full dataset and shared across all GPUs, enabling efficient k-nearest neighbor queries.</p></li>
+<li><p><strong>Parallel affinity computation</strong>: Each GPU computes the affinity rows for its chunk by querying the shared index. GPU <span class="math notranslate nohighlight">\(i\)</span> computes rows <span class="math notranslate nohighlight">\([\text{start}_i, \text{end}_i)\)</span> of the affinity matrix.</p></li>
+<li><p><strong>Distributed gradient computation</strong>: During optimization, each GPU:</p>
+<ul class="simple">
+<li><p>Computes gradients <span class="math notranslate nohighlight">\(\nabla \mathcal{L}_i\)</span> for its local chunk</p></li>
+<li><p>Maintains a full copy of the embedding <span class="math notranslate nohighlight">\(\mathbf{Z} \in \mathbb{R}^{N \times q}\)</span></p></li>
+<li><p>Synchronizes gradients via <strong>all-reduce</strong> across GPUs</p></li>
+</ul>
+</li>
+<li><p><strong>Synchronized updates</strong>: After all-reduce, each GPU has identical aggregated gradients and applies the same optimizer step, keeping embeddings synchronized.</p></li>
+</ol>
+<a class="reference internal image-reference" href="_images/multi_gpu_dr_extended.png"><img alt="_images/multi_gpu_dr_extended.png" class="align-center" src="_images/multi_gpu_dr_extended.png" style="width: 800px;" />
+</a>
+<p><em>Multi-GPU dimensionality reduction pipeline. The dataset is split into chunks across GPUs. Each GPU performs neighbor search using a shared index, computes its affinity chunk, and generates local gradients. Gradients are synchronized via all-reduce and used to update the embedding copies maintained on each device.</em></p>
+<p><strong>Usage:</strong></p>
+<p>Multi-GPU mode is enabled automatically when launching with <code class="docutils literal notranslate"><span class="pre">torchrun</span></code> or the TorchDR CLI:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Using the TorchDR CLI (recommended)</span>
+torchdr<span class="w"> </span>--gpus<span class="w"> </span><span class="m">4</span><span class="w"> </span>your_script.py
+
+<span class="c1"># Or using torchrun directly</span>
+torchrun<span class="w"> </span>--nproc_per_node<span class="o">=</span><span class="m">4</span><span class="w"> </span>your_script.py
+</pre></div>
+</div>
+<p>In your script, simply use TorchDR as usual:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torchdr</span>
+
+<span class="c1"># Distributed mode is auto-detected when launched with torchrun</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">torchdr</span><span class="o">.</span><span class="n">UMAP</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">embedding</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Requirements:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">backend=&quot;faiss&quot;</span></code> (default for most methods)</p></li>
+<li><p>Multiple CUDA GPUs available</p></li>
+<li><p>Launch with <code class="docutils literal notranslate"><span class="pre">torchdr</span></code> CLI or <code class="docutils literal notranslate"><span class="pre">torchrun</span></code></p></li>
+</ul>
+<p><strong>Supported methods:</strong></p>
+<p>Currently, the following methods support multi-GPU:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="gen_modules/torchdr.UMAP.html#torchdr.UMAP" title="torchdr.UMAP"><code class="xref py py-class docutils literal notranslate"><span class="pre">UMAP</span></code></a></p></li>
+<li><p><a class="reference internal" href="gen_modules/torchdr.InfoTSNE.html#torchdr.InfoTSNE" title="torchdr.InfoTSNE"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoTSNE</span></code></a></p></li>
+<li><p><a class="reference internal" href="gen_modules/torchdr.LargeVis.html#torchdr.LargeVis" title="torchdr.LargeVis"><code class="xref py py-class docutils literal notranslate"><span class="pre">LargeVis</span></code></a></p></li>
+</ul>
+</section>
 </section>
 <section id="affinities">
 <h2><a class="toc-backref" href="#id10" role="doc-backlink">Affinities</a><a class="headerlink" href="#affinities" title="Link to this heading">#</a></h2>
@@ -758,6 +809,7 @@ for point <span class="math notranslate nohighlight">\(i\)</span>. They are usua
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#general-formulation-of-dimensionality-reduction">General Formulation of Dimensionality Reduction</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torch-gpu-support-and-automatic-differentiation">Torch GPU support and automatic differentiation</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#handling-the-quadratic-cost-via-sparsity-or-symbolic-tensors">Handling the quadratic cost via sparsity or symbolic tensors</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-gpu-distributed-training">Multi-GPU distributed training</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#affinities">Affinities</a><ul class="nav section-nav flex-column">

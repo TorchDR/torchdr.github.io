@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>ExactIncrementalPCA &#8212; TorchDR 0.3.dev59+g30e467780 documentation</title>
+    <title>ExactIncrementalPCA &#8212; TorchDR 0.3.dev60+g1e4985fc0 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=8cfecf69"></script>
+    <script src="../_static/documentation_options.js?v=5598e80b"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'gen_modules/torchdr.ExactIncrementalPCA';</script>
@@ -120,8 +120,8 @@
       
     
     
-    <img src="../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev59+g30e467780 documentation - Home"/>
-    <img src="../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev59+g30e467780 documentation - Home"/>
+    <img src="../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev60+g1e4985fc0 documentation - Home"/>
+    <img src="../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev60+g1e4985fc0 documentation - Home"/>
   
   
 </a></div>
@@ -658,8 +658,9 @@ through the data.</p></li>
 <dd><p>Compute the mean from batches of data (first pass).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>X_batches</strong> (<em>iterable</em><em> of </em><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)"><em>torch.Tensor</em></a><em> or </em><em>single torch.Tensor</em>) – Either an iterable yielding batches of data, or a single tensor.
-Each batch should have shape (n_samples, n_features).</p>
+<dd class="field-odd"><p><strong>X_batches</strong> (<em>iterable</em><em> of </em><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)"><em>torch.Tensor</em></a><em> or </em><em>single torch.Tensor</em>) – Either an iterable yielding batches of data, a DataLoader, or a single tensor.
+Each batch should have shape (n_samples, n_features).
+DataLoader batches can be tuples (X, y) - only X will be used.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>self</strong> – Returns the instance itself.</p>
@@ -679,8 +680,9 @@ If mean is not computed, it will compute it first (requiring two passes).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X_batches</strong> (<em>iterable</em><em> of </em><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)"><em>torch.Tensor</em></a><em> or </em><em>single torch.Tensor</em>) – Either an iterable yielding batches of data, or a single tensor.
-Each batch should have shape (n_samples, n_features).</p></li>
+<li><p><strong>X_batches</strong> (<em>iterable</em><em> of </em><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)"><em>torch.Tensor</em></a><em>, </em><em>DataLoader</em><em>, or </em><em>single torch.Tensor</em>) – Either an iterable yielding batches of data, a DataLoader, or a single
+tensor. Each batch should have shape (n_samples, n_features).
+DataLoader batches can be tuples (X, y) - only X will be used.</p></li>
 <li><p><strong>y</strong> (<em>None</em>) – Ignored. Present for API consistency.</p></li>
 </ul>
 </dd>

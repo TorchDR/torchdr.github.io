@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>User Guide &#8212; TorchDR 0.3.dev60+g1e4985fc0 documentation</title>
+    <title>User Guide &#8212; TorchDR 0.3.dev61+gf675bab2f documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=5598e80b"></script>
+    <script src="_static/documentation_options.js?v=2cca6383"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>window.MathJax = {"tex": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}}</script>
@@ -122,8 +122,8 @@
       
     
     
-    <img src="_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev60+g1e4985fc0 documentation - Home"/>
-    <img src="_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev60+g1e4985fc0 documentation - Home"/>
+    <img src="_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev61+gf675bab2f documentation - Home"/>
+    <img src="_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev61+gf675bab2f documentation - Home"/>
   
   
 </a></div>
@@ -756,6 +756,32 @@ torchrun<span class="w"> </span>--nproc_per_node<span class="o">=</span><span cl
 <li><p><a class="reference internal" href="gen_modules/torchdr.LargeVis.html#torchdr.LargeVis" title="torchdr.LargeVis"><code class="xref py py-class docutils literal notranslate"><span class="pre">LargeVis</span></code></a></p></li>
 </ul>
 </section>
+<section id="dataloader-for-streaming-data">
+<h3>DataLoader for Streaming Data<a class="headerlink" href="#dataloader-for-streaming-data" title="Link to this heading">#</a></h3>
+<p>For datasets too large to fit in RAM, TorchDR supports passing a PyTorch <code class="docutils literal notranslate"><span class="pre">DataLoader</span></code> directly to <code class="docutils literal notranslate"><span class="pre">fit_transform</span></code> instead of a tensor. This enables streaming computation where data is processed batch-by-batch.</p>
+<p><strong>How it works:</strong></p>
+<ol class="arabic simple">
+<li><p><strong>Incremental index building</strong>: The FAISS index is built incrementally from batches</p></li>
+<li><p><strong>Batch-by-batch k-NN queries</strong>: Neighbor queries are performed as each batch arrives</p></li>
+<li><p><strong>Automatic PCA initialization</strong>: When <code class="docutils literal notranslate"><span class="pre">init=&quot;pca&quot;</span></code>, <a class="reference internal" href="gen_modules/torchdr.IncrementalPCA.html#torchdr.IncrementalPCA" title="torchdr.IncrementalPCA"><code class="xref py py-class docutils literal notranslate"><span class="pre">IncrementalPCA</span></code></a> is used automatically</p></li>
+</ol>
+<p><strong>Usage:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span><span class="p">,</span> <span class="n">TensorDataset</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torchdr</span>
+
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">TensorDataset</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>  <span class="c1"># X is your large tensor</span>
+<span class="n">dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">torchdr</span><span class="o">.</span><span class="n">UMAP</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;faiss&quot;</span><span class="p">)</span>
+<span class="n">embedding</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">dataloader</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Requirements:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">backend=&quot;faiss&quot;</span></code> must be used</p></li>
+<li><p>The DataLoader must yield tensors (or tuples where the first element is the data tensor)</p></li>
+</ul>
+</section>
 </section>
 </section>
 
@@ -828,6 +854,7 @@ torchrun<span class="w"> </span>--nproc_per_node<span class="o">=</span><span cl
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scalability-backends">Scalability &amp; Backends</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#handling-the-quadratic-cost-via-sparsity-or-symbolic-tensors">Handling the quadratic cost via sparsity or symbolic tensors</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-gpu-distributed-training">Multi-GPU distributed training</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dataloader-for-streaming-data">DataLoader for Streaming Data</a></li>
 </ul>
 </li>
 </ul>

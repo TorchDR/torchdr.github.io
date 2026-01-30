@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Torch Dimensionality Reduction &#8212; TorchDR 0.3.dev60+g1e4985fc0 documentation</title>
+    <title>Torch Dimensionality Reduction &#8212; TorchDR 0.3.dev61+gf675bab2f documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=5598e80b"></script>
+    <script src="_static/documentation_options.js?v=2cca6383"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>window.MathJax = {"tex": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}}</script>
@@ -121,8 +121,8 @@
       
     
     
-    <img src="_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev60+g1e4985fc0 documentation - Home"/>
-    <img src="_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev60+g1e4985fc0 documentation - Home"/>
+    <img src="_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev61+gf675bab2f documentation - Home"/>
+    <img src="_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev61+gf675bab2f documentation - Home"/>
   
   
 </a></div>
@@ -461,7 +461,7 @@
 <td><p>Every component is designed to be easily customized, extended, or replaced to fit your specific needs.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Memory-Efficient</strong></p></td>
-<td><p>Natively handles sparsity and memory-efficient symbolic operations to process massive datasets without memory overflows.</p></td>
+<td><p>Natively handles sparsity and memory-efficient symbolic operations. Supports PyTorch DataLoader for streaming large datasets.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Seamless Integration</strong></p></td>
 <td><p>Fully compatible with the scikit-learn and PyTorch ecosystems. Use familiar APIs and integrate effortlessly into your existing workflows.</p></td>
@@ -484,33 +484,43 @@
 <span class="n">z</span> <span class="o">=</span> <span class="n">UMAP</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </pre></div>
 </div>
-<section id="gpu-acceleration">
-<h3>GPU Acceleration<a class="headerlink" href="#gpu-acceleration" title="Link to this heading">#</a></h3>
-<p><strong>TorchDR</strong> is fully <strong>GPU compatible</strong>, enabling <strong>significant speed-ups</strong> when a GPU is available. To run computations on the GPU, simply set <code class="docutils literal notranslate"><span class="pre">device=&quot;cuda&quot;</span></code> as shown in the example below:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z_gpu</span> <span class="o">=</span> <span class="n">UMAP</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<p><strong>GPU Acceleration</strong>: Set <code class="docutils literal notranslate"><span class="pre">device=&quot;cuda&quot;</span></code> to run on GPU. By default (<code class="docutils literal notranslate"><span class="pre">device=&quot;auto&quot;</span></code>), TorchDR uses the input data’s device.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span> <span class="o">=</span> <span class="n">UMAP</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><strong>Device Management</strong>: By default (<code class="docutils literal notranslate"><span class="pre">device=&quot;auto&quot;</span></code>), computations use the input data’s device. For optimal memory management, you can keep input data on CPU while specifying <code class="docutils literal notranslate"><span class="pre">device=&quot;cuda&quot;</span></code> to perform computations on GPU - TorchDR will handle transfers automatically.</p>
-<p><strong>Multi-GPU Execution</strong>: Use the <code class="docutils literal notranslate"><span class="pre">torchdr</span></code> CLI to run your script across multiple GPUs:</p>
+<p><strong>Multi-GPU</strong>: Use the <code class="docutils literal notranslate"><span class="pre">torchdr</span></code> CLI to parallelize across GPUs with no code changes:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>torchdr<span class="w"> </span>my_script.py<span class="w">            </span><span class="c1"># Use all available GPUs</span>
 torchdr<span class="w"> </span>--gpus<span class="w"> </span><span class="m">4</span><span class="w"> </span>my_script.py<span class="w">   </span><span class="c1"># Use 4 GPUs</span>
 </pre></div>
 </div>
-<p>No code changes required - TorchDR automatically parallelizes compatible operations across GPUs.</p>
-<p><strong>torch.compile Support</strong>: For an additional performance boost on PyTorch 2.0+, enable compilation with <code class="docutils literal notranslate"><span class="pre">compile=True</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span> <span class="o">=</span> <span class="n">UMAP</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="nb">compile</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<p><strong>torch.compile</strong>: Enable <code class="docutils literal notranslate"><span class="pre">compile=True</span></code> for additional speed on PyTorch 2.0+.</p>
+<p><strong>Backends</strong>: The <code class="docutils literal notranslate"><span class="pre">backend</span></code> parameter controls k-NN and memory-efficient computations:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Backend</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;faiss&quot;</span></code></p></td>
+<td><p>Fast approximate k-NN via <a class="reference external" href="https://github.com/facebookresearch/faiss">Faiss</a> <strong>(Recommended)</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;keops&quot;</span></code></p></td>
+<td><p>Exact symbolic computation via <a class="reference external" href="https://www.kernel-operations.io/keops/index.html">KeOps</a> with linear memory</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>Raw PyTorch</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>DataLoader for Large Datasets</strong>: Pass a PyTorch <code class="docutils literal notranslate"><span class="pre">DataLoader</span></code> instead of a tensor to stream data batch-by-batch. <strong>Requires <code class="docutils literal notranslate"><span class="pre">backend=&quot;faiss&quot;</span></code></strong>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span><span class="p">,</span> <span class="n">TensorDataset</span>
+
+<span class="n">dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">TensorDataset</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">UMAP</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;faiss&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">dataloader</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
-<section id="backends">
-<h3>Backends<a class="headerlink" href="#backends" title="Link to this heading">#</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">backend</span></code> keyword specifies which tool to use for handling kNN computations and memory-efficient symbolic computations.</p>
-<ul class="simple">
-<li><p>Set <code class="docutils literal notranslate"><span class="pre">backend=&quot;faiss&quot;</span></code> to rely on <a class="reference external" href="https://github.com/facebookresearch/faiss">Faiss</a> for fast kNN computations <strong>(Recommended)</strong>.</p></li>
-<li><p>To perform exact symbolic tensor computations on the GPU without memory limitations, you can leverage the <a class="reference external" href="https://www.kernel-operations.io/keops/index.html">KeOps</a> library. This library also allows computing kNN graphs. To enable KeOps, set <code class="docutils literal notranslate"><span class="pre">backend=&quot;keops&quot;</span></code>.</p></li>
-<li><p>Finally, setting <code class="docutils literal notranslate"><span class="pre">backend=None</span></code> will use raw PyTorch for all computations.</p></li>
-</ul>
-</section>
 </section>
 <section id="methods">
 <h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">#</a></h2>
@@ -693,11 +703,7 @@ Visualizing the CIFAR100 dataset using DINO features and <code class="docutils l
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-features">Key Features</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-started">Getting Started</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gpu-acceleration">GPU Acceleration</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#backends">Backends</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-started">Getting Started</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#neighbor-embedding">Neighbor Embedding</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spectral-embedding">Spectral Embedding</a></li>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>NormalizedGaussianAffinity &#8212; TorchDR 0.3.dev65+g59eeaa13e documentation</title>
+    <title>DistributedPCA &#8212; TorchDR 0.3.dev65+g59eeaa13e documentation</title>
   
   
   
@@ -45,15 +45,13 @@
     <script src="../_static/documentation_options.js?v=1e6d9ecb"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script>window.MathJax = {"tex": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'gen_modules/torchdr.NormalizedGaussianAffinity';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'gen_modules/torchdr.DistributedPCA';</script>
     <script src="../_static/pypi-icon.js?v=3850e9a1"></script>
     <link rel="icon" href="../_static/logo.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="NormalizedStudentAffinity" href="torchdr.NormalizedStudentAffinity.html" />
-    <link rel="prev" title="PHATEAffinity" href="torchdr.PHATEAffinity.html" />
+    <link rel="next" title="IncrementalPCA" href="torchdr.IncrementalPCA.html" />
+    <link rel="prev" title="PCA" href="torchdr.PCA.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -410,9 +408,9 @@
 <li class="toctree-l1"><a class="reference internal" href="torchdr.COSNE.html">COSNE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchdr.PACMAP.html">PACMAP</a></li>
 </ul>
-<ul class="nav bd-sidenav">
+<ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="torchdr.PCA.html">PCA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torchdr.DistributedPCA.html">DistributedPCA</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">DistributedPCA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchdr.IncrementalPCA.html">IncrementalPCA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchdr.ExactIncrementalPCA.html">ExactIncrementalPCA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchdr.KernelPCA.html">KernelPCA</a></li>
@@ -427,8 +425,8 @@
 <li class="toctree-l1"><a class="reference internal" href="torchdr.MAGICAffinity.html">MAGICAffinity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchdr.PHATEAffinity.html">PHATEAffinity</a></li>
 </ul>
-<ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">NormalizedGaussianAffinity</a></li>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="torchdr.NormalizedGaussianAffinity.html">NormalizedGaussianAffinity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchdr.NormalizedStudentAffinity.html">NormalizedStudentAffinity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchdr.SinkhornAffinity.html">SinkhornAffinity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchdr.DoublyStochasticQuadraticAffinity.html">DoublyStochasticQuadraticAffinity</a></li>
@@ -496,7 +494,7 @@
     
     <li class="breadcrumb-item"><a href="../all.html" class="nav-link">API and Modules</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">NormalizedGaussianAffinity</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">DistributedPCA</span></li>
   </ul>
 </nav>
 </div>
@@ -513,51 +511,115 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="normalizedgaussianaffinity">
-<h1>NormalizedGaussianAffinity<a class="headerlink" href="#normalizedgaussianaffinity" title="Link to this heading">#</a></h1>
+  <section id="distributedpca">
+<h1>DistributedPCA<a class="headerlink" href="#distributedpca" title="Link to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="torchdr.NormalizedGaussianAffinity">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchdr.</span></span><span class="sig-name descname"><span class="pre">NormalizedGaussianAffinity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'sqeuclidean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zero_diag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">FaissConfig</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalization_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.14)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(0,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_pre_processed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/affinity/entropic.html#NormalizedGaussianAffinity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.NormalizedGaussianAffinity" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../stubs/torchdr.LogAffinity.html#torchdr.LogAffinity" title="torchdr.affinity.base.LogAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">LogAffinity</span></code></a></p>
-<p>Compute the Gaussian affinity matrix which can be normalized along a dimension.</p>
-<p>The algorithm computes <span class="math notranslate nohighlight">\(\exp( - \mathbf{C} / \sigma)\)</span>
-where <span class="math notranslate nohighlight">\(\mathbf{C}\)</span> is the pairwise distance matrix and
-<span class="math notranslate nohighlight">\(\sigma\)</span> is the bandwidth parameter. The affinity can be normalized
-according to the specified normalization dimension.</p>
+<dt class="sig sig-object py" id="torchdr.DistributedPCA">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchdr.</span></span><span class="sig-name descname"><span class="pre">DistributedPCA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_components</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/spectral_embedding/distributed_pca.html#DistributedPCA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.DistributedPCA" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../stubs/torchdr.DRModule.html#torchdr.DRModule" title="torchdr.base.DRModule"><code class="xref py py-class docutils literal notranslate"><span class="pre">DRModule</span></code></a></p>
+<p>Distributed Principal Component Analysis for multi-GPU training.</p>
+<p>Uses the distributed covariance approach where each GPU:</p>
+<ol class="arabic simple">
+<li><p>Computes local statistics (sum for mean, centered X.T &#64; X for covariance)</p></li>
+<li><p>Communicates via all-reduce (O(d²) communication)</p></li>
+<li><p>Computes final PCA on aggregated statistics</p></li>
+</ol>
+<p>This approach is communication-efficient when the number of samples is much
+larger than the number of features (n &gt;&gt; d), which is typical in
+dimensionality reduction.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sigma</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Bandwidth parameter.</p></li>
-<li><p><strong>metric</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Metric to use for pairwise distances computation.</p></li>
-<li><p><strong>zero_diag</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to set the diagonal of the affinity matrix to zero.</p></li>
-<li><p><strong>device</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Device to use for computations.</p></li>
-<li><p><strong>backend</strong> (<em>{&quot;keops&quot;</em><em>, </em><em>&quot;faiss&quot;</em><em>, </em><em>None}</em><em> or </em><em>FaissConfig</em><em>, </em><em>optional</em>) – Which backend to use for handling sparsity and memory efficiency.
-Can be:
-- “keops”: Use KeOps for memory-efficient symbolic computations
-- “faiss”: Use FAISS for fast k-NN computations with default settings
-- None: Use standard PyTorch operations
-- FaissConfig object: Use FAISS with custom configuration
-Default is None.</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – Verbosity.</p></li>
-<li><p><strong>normalization_dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> or </em><em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em><em>, </em><em>optional</em>) – Dimension along which to normalize the affinity matrix. Default is (0, 1)</p></li>
-<li><p><strong>compile</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, use torch compile. Default is False.</p></li>
-<li><p><strong>_pre_processed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, assumes inputs are already torch tensors on the correct device
-and skips the <cite>to_torch</cite> conversion. Default is False.</p></li>
+<li><p><strong>n_components</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default=2</em>) – Number of principal components to keep.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>default=False</em>) – Whether to print progress information.</p></li>
+<li><p><strong>random_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Random seed for reproducibility.</p></li>
 </ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchdr.DistributedPCA.mean_">
+<span class="sig-name descname"><span class="pre">mean_</span></span><a class="headerlink" href="#torchdr.DistributedPCA.mean_" title="Link to this definition">#</a></dt>
+<dd><p>Per-feature empirical mean, estimated from the training set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)">torch.Tensor</a> of shape (1, n_features)</p>
 </dd>
 </dl>
 </dd></dl>
 
-<section id="examples-using-normalizedgaussianaffinity">
-<span id="sphx-glr-backref-torchdr-normalizedgaussianaffinity"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">NormalizedGaussianAffinity</span></code>:<a class="headerlink" href="#examples-using-normalizedgaussianaffinity" title="Link to this heading">#</a></h2>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="We show the adaptivity property of entropic affinities on a toy simulated dataset with heteroscedastic noise."><img alt="" src="../_images/sphx_glr_demo_ea_adaptivity_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/affinities/demo_ea_adaptivity.html"><span class="doc">Entropic Affinities can adapt to varying noise levels</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Entropic Affinities can adapt to varying noise levels</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="We illustrate the basic usage of TorchDR with different neighbor embedding methods on the SNARE-seq gene expression dataset with given cell type labels."><img alt="" src="../_images/sphx_glr_demo_ne_methods_affinity_matcher_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/basics/demo_ne_methods_affinity_matcher.html"><span class="doc">Neighbor Embedding on genomics &amp; equivalent affinity matcher formulation</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Neighbor Embedding on genomics & equivalent affinity matcher formulation</div>
-</div></div></section>
-</section>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchdr.DistributedPCA.components_">
+<span class="sig-name descname"><span class="pre">components_</span></span><a class="headerlink" href="#torchdr.DistributedPCA.components_" title="Link to this definition">#</a></dt>
+<dd><p>Principal axes in feature space, representing the directions of
+maximum variance in the data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)">torch.Tensor</a> of shape (n_components, n_features)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchdr.DistributedPCA.embedding_">
+<span class="sig-name descname"><span class="pre">embedding_</span></span><a class="headerlink" href="#torchdr.DistributedPCA.embedding_" title="Link to this definition">#</a></dt>
+<dd><p>The transformed local data chunk after calling fit_transform.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)">torch.Tensor</a> of shape (n_local_samples, n_components)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Requires torch.distributed to be initialized (use torchrun or TorchDR CLI)</p></li>
+<li><p>Automatically uses local_rank for GPU assignment</p></li>
+<li><p>Each GPU only needs its data chunk in memory</p></li>
+<li><p>For single-GPU workloads, use regular <a class="reference internal" href="torchdr.PCA.html#torchdr.PCA" title="torchdr.PCA"><code class="xref py py-class docutils literal notranslate"><span class="pre">PCA</span></code></a> instead</p></li>
+<li><p>Falls back to non-distributed mode if torch.distributed is not initialized</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Script launched with: torchdr train.py --gpus 4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># or: torchrun --nproc_per_node=4 train.py</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">torchdr</span><span class="w"> </span><span class="kn">import</span> <span class="n">DistributedPCA</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Each GPU loads its chunk of the data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rank</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">get_rank</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">world_size</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">get_world_size</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chunk_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">full_data</span><span class="p">)</span> <span class="o">//</span> <span class="n">world_size</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X_local</span> <span class="o">=</span> <span class="n">full_data</span><span class="p">[</span><span class="n">rank</span> <span class="o">*</span> <span class="n">chunk_size</span><span class="p">:(</span><span class="n">rank</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">chunk_size</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Distributed PCA - handles communication automatically</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pca</span> <span class="o">=</span> <span class="n">DistributedPCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X_transformed</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_local</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># X_transformed contains this GPU&#39;s transformed chunk</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="torchdr.DistributedPCA.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)"><span class="pre">Tensor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)"><span class="pre">Tensor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="../_modules/torchdr/spectral_embedding/distributed_pca.html#DistributedPCA.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.DistributedPCA.transform" title="Link to this definition">#</a></dt>
+<dd><p>Project input data onto the PCA components.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>X</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)"><em>torch.Tensor</em></a><em> or </em><em>np.ndarray</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – Data to project onto the PCA components.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>X_new</strong> – Projected data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)">torch.Tensor</a> or np.ndarray of shape (n_samples, n_components)</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If the model has not been fitted yet.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="sphx-glr-backref-torchdr-distributedpca"></span></section>
 
 
                 </article>
@@ -570,20 +632,20 @@ and skips the <cite>to_torch</cite> conversion. Default is False.</p></li>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="torchdr.PHATEAffinity.html"
+       href="torchdr.PCA.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">PHATEAffinity</p>
+        <p class="prev-next-title">PCA</p>
       </div>
     </a>
     <a class="right-next"
-       href="torchdr.NormalizedStudentAffinity.html"
+       href="torchdr.IncrementalPCA.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">NormalizedStudentAffinity</p>
+        <p class="prev-next-title">IncrementalPCA</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -606,8 +668,13 @@ and skips the <cite>to_torch</cite> conversion. Default is False.</p></li>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#torchdr.NormalizedGaussianAffinity"><code class="docutils literal notranslate"><span class="pre">NormalizedGaussianAffinity</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples-using-normalizedgaussianaffinity">Examples using <code class="docutils literal notranslate"><span class="pre">NormalizedGaussianAffinity</span></code>:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#torchdr.DistributedPCA"><code class="docutils literal notranslate"><span class="pre">DistributedPCA</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchdr.DistributedPCA.mean_"><code class="docutils literal notranslate"><span class="pre">DistributedPCA.mean_</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchdr.DistributedPCA.components_"><code class="docutils literal notranslate"><span class="pre">DistributedPCA.components_</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchdr.DistributedPCA.embedding_"><code class="docutils literal notranslate"><span class="pre">DistributedPCA.embedding_</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchdr.DistributedPCA.transform"><code class="docutils literal notranslate"><span class="pre">DistributedPCA.transform()</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 
@@ -615,7 +682,7 @@ and skips the <cite>to_torch</cite> conversion. Default is False.</p></li>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/gen_modules/torchdr.NormalizedGaussianAffinity.rst.txt"
+      <li><a href="../_sources/gen_modules/torchdr.DistributedPCA.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div></div>

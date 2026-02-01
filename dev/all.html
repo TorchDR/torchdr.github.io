@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>API and Modules &#8212; TorchDR 0.3.dev64+g15f8c5d23 documentation</title>
+    <title>API and Modules &#8212; TorchDR 0.3.dev65+g59eeaa13e documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=612b688b"></script>
+    <script src="_static/documentation_options.js?v=1e6d9ecb"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>window.MathJax = {"tex": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}}</script>
@@ -122,8 +122,8 @@
       
     
     
-    <img src="_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev64+g15f8c5d23 documentation - Home"/>
-    <img src="_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev64+g15f8c5d23 documentation - Home"/>
+    <img src="_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev65+g59eeaa13e documentation - Home"/>
+    <img src="_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev65+g59eeaa13e documentation - Home"/>
   
   
 </a></div>
@@ -412,6 +412,7 @@
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.PCA.html">PCA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.DistributedPCA.html">DistributedPCA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.IncrementalPCA.html">IncrementalPCA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.ExactIncrementalPCA.html">ExactIncrementalPCA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.KernelPCA.html">KernelPCA</a></li>
@@ -555,16 +556,19 @@ For conceptual background, see the <a class="reference internal" href="torchdr.u
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.PCA.html#torchdr.PCA" title="torchdr.PCA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PCA</span></code></a>([n_components, device, verbose, ...])</p></td>
 <td><p>Principal Component Analysis module.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.IncrementalPCA.html#torchdr.IncrementalPCA" title="torchdr.IncrementalPCA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IncrementalPCA</span></code></a>([n_components, copy, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.DistributedPCA.html#torchdr.DistributedPCA" title="torchdr.DistributedPCA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DistributedPCA</span></code></a>([n_components, verbose, ...])</p></td>
+<td><p>Distributed Principal Component Analysis for multi-GPU training.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.IncrementalPCA.html#torchdr.IncrementalPCA" title="torchdr.IncrementalPCA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IncrementalPCA</span></code></a>([n_components, copy, ...])</p></td>
 <td><p>Incremental Principal Components Analysis (IPCA) leveraging PyTorch for GPU acceleration.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.ExactIncrementalPCA.html#torchdr.ExactIncrementalPCA" title="torchdr.ExactIncrementalPCA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExactIncrementalPCA</span></code></a>([n_components, device, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.ExactIncrementalPCA.html#torchdr.ExactIncrementalPCA" title="torchdr.ExactIncrementalPCA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExactIncrementalPCA</span></code></a>([n_components, device, ...])</p></td>
 <td><p>Exact Incremental Principal Component Analysis.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.KernelPCA.html#torchdr.KernelPCA" title="torchdr.KernelPCA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">KernelPCA</span></code></a>([affinity, n_components, device, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.KernelPCA.html#torchdr.KernelPCA" title="torchdr.KernelPCA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">KernelPCA</span></code></a>([affinity, n_components, device, ...])</p></td>
 <td><p>Kernel Principal Component Analysis module.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.PHATE.html#torchdr.PHATE" title="torchdr.PHATE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PHATE</span></code></a>([k, n_components, t, alpha, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.PHATE.html#torchdr.PHATE" title="torchdr.PHATE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PHATE</span></code></a>([k, n_components, t, alpha, ...])</p></td>
 <td><p>Implementation of PHATE introduced in <span id="id11">[<a class="reference internal" href="torchdr.bibliography.html#id24" title="Kevin R Moon, David Van Dijk, Zheng Wang, Scott Gigante, Daniel B Burkhardt, William S Chen, Kristina Yim, Antonia van den Elzen, Matthew J Hirn, Ronald R Coifman, and others. Visualizing structure and transitions in high-dimensional biological data. Nature biotechnology, 37(12):1482–1492, 2019.">Moon <em>et al.</em>, 2019</a>]</span>.</p></td>
 </tr>
 </tbody>

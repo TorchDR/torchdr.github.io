@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.spectral_embedding.incremental_pca &#8212; TorchDR 0.3.dev65+g59eeaa13e documentation</title>
+    <title>torchdr.spectral_embedding.incremental_pca &#8212; TorchDR 0.3.dev66+g0231f5d69 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=1e6d9ecb"></script>
+    <script src="../../../_static/documentation_options.js?v=b371380c"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchdr/spectral_embedding/incremental_pca';</script>
@@ -117,8 +117,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev65+g59eeaa13e documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev65+g59eeaa13e documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev66+g0231f5d69 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev66+g0231f5d69 documentation - Home"/>
   
   
 </a></div>
@@ -451,13 +451,16 @@
 <span class="c1"># License: BSD 3-Clause License</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.distributed</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dist</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">DRModule</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_distributed</span><span class="p">,</span> <span class="n">get_rank</span><span class="p">,</span> <span class="n">get_world_size</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">handle_input_output</span><span class="p">,</span>
     <span class="n">svd_flip</span><span class="p">,</span>
@@ -1072,6 +1075,18 @@
 <span class="sd">        Number of components to keep.</span>
 <span class="sd">    device : str, default=&quot;auto&quot;</span>
 <span class="sd">        Device on which the computations are performed.</span>
+<span class="sd">    distributed : str or bool, default=&quot;auto&quot;</span>
+<span class="sd">        Whether to use distributed mode for multi-GPU training.</span>
+
+<span class="sd">        - &quot;auto&quot;: Automatically detect if torch.distributed is initialized and</span>
+<span class="sd">          use distributed mode if available.</span>
+<span class="sd">        - True: Force distributed mode (requires torch.distributed to be initialized).</span>
+<span class="sd">        - False: Disable distributed mode.</span>
+
+<span class="sd">        In distributed mode, each GPU computes local statistics which are then</span>
+<span class="sd">        aggregated using all-reduce operations. This is communication-efficient</span>
+<span class="sd">        when the number of samples is much larger than the number of features</span>
+<span class="sd">        (n &gt;&gt; d).</span>
 <span class="sd">    verbose : bool, default=False</span>
 <span class="sd">        Whether to print information during the computations.</span>
 <span class="sd">    random_state : float, default=None</span>
@@ -1102,6 +1117,14 @@
 <span class="sd">    - **ExactIncrementalPCA**: Use when you need exact PCA results, have</span>
 <span class="sd">      low-dimensional data (small n_features), and can afford two passes</span>
 <span class="sd">      through the data.</span>
+
+<span class="sd">    In distributed mode:</span>
+
+<span class="sd">    - Requires torch.distributed to be initialized (use torchrun or TorchDR CLI)</span>
+<span class="sd">    - Automatically uses local_rank for GPU assignment</span>
+<span class="sd">    - Each GPU only needs its data chunk in memory</span>
+<span class="sd">    - Uses covariance aggregation: O(d) communication for mean, O(d^2) for covariance</span>
+<span class="sd">    - Mathematically equivalent to running on concatenated data from all GPUs</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1155,12 +1178,34 @@
 <span class="sd">        # Transform new data</span>
 <span class="sd">        X_new = torch.randn(100, 50)</span>
 <span class="sd">        X_transformed = pca.transform(X_new)</span>
+
+<span class="sd">    Multi-GPU distributed usage (launch with torchrun --nproc_per_node=4)::</span>
+
+<span class="sd">        import torch</span>
+<span class="sd">        from torchdr import ExactIncrementalPCA</span>
+
+<span class="sd">        # Each GPU loads its chunk of the data</span>
+<span class="sd">        rank = torch.distributed.get_rank()</span>
+<span class="sd">        world_size = torch.distributed.get_world_size()</span>
+<span class="sd">        chunk_size = len(full_data) // world_size</span>
+<span class="sd">        X_local = full_data[rank * chunk_size:(rank + 1) * chunk_size]</span>
+
+<span class="sd">        # Create batches for incremental processing</span>
+<span class="sd">        batch_size = 1000</span>
+<span class="sd">        batches = [X_local[i:i+batch_size] for i in range(0, len(X_local), batch_size)]</span>
+
+<span class="sd">        # Distributed PCA - handles communication automatically</span>
+<span class="sd">        pca = ExactIncrementalPCA(n_components=50, distributed=&quot;auto&quot;)</span>
+<span class="sd">        pca.compute_mean(batches)  # First pass: compute global mean</span>
+<span class="sd">        pca.fit(batches)           # Second pass: build global covariance</span>
+<span class="sd">        X_transformed = pca.transform(X_local)  # Transform local data</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n_components</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">distributed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
@@ -1172,6 +1217,7 @@
             <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span> <span class="o">=</span> <span class="n">distributed</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">components_</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">explained_variance_</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1179,10 +1225,32 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">n_features_in_</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_XtX</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Accumulated X.T @ X matrix</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_should_use_distributed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if distributed mode should be used.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            True if distributed mode should be used, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">is_distributed</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">distributed</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_device</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the device for this rank in distributed mode.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_should_use_distributed</span><span class="p">()</span> <span class="ow">and</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+            <span class="n">local_rank</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LOCAL_RANK&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cuda:</span><span class="si">{</span><span class="n">local_rank</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+
 <div class="viewcode-block" id="ExactIncrementalPCA.compute_mean">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.ExactIncrementalPCA.html#torchdr.ExactIncrementalPCA.compute_mean">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_mean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_batches</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the mean from batches of data (first pass).</span>
+
+<span class="sd">        In distributed mode, each GPU computes its local sum and sample count,</span>
+<span class="sd">        then all-reduce is used to compute the global mean.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1196,6 +1264,13 @@
 <span class="sd">        self : ExactIncrementalPCA</span>
 <span class="sd">            Returns the instance itself.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_should_use_distributed</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_mean_distributed</span><span class="p">(</span><span class="n">X_batches</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_mean_standard</span><span class="p">(</span><span class="n">X_batches</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_mean_standard</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_batches</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Standard (non-distributed) mean computation.&quot;&quot;&quot;</span>
         <span class="n">total_sum</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">n_samples_seen</span> <span class="o">=</span> <span class="mi">0</span>
 
@@ -1227,8 +1302,56 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Computed mean from </span><span class="si">{</span><span class="n">n_samples_seen</span><span class="si">}</span><span class="s2"> samples&quot;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">self</span></div>
+        <span class="k">return</span> <span class="bp">self</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_mean_distributed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_batches</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Distributed mean computation using all-reduce.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_distributed</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;torch.distributed is not initialized but distributed=True. &quot;</span>
+                <span class="s2">&quot;Falling back to standard compute_mean.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_mean_standard</span><span class="p">(</span><span class="n">X_batches</span><span class="p">)</span>
+
+        <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_device</span><span class="p">()</span>
+        <span class="n">local_sum</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">n_local</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Handle single tensor input</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X_batches</span><span class="p">,</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+            <span class="n">X_batches</span> <span class="o">=</span> <span class="p">[</span><span class="n">X_batches</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">X_batches</span><span class="p">:</span>
+            <span class="c1"># Handle DataLoader tuple batches (X, y)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                <span class="n">batch</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">batch</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">local_sum</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_features_in_</span> <span class="o">=</span> <span class="n">batch</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">local_sum</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">n_features_in_</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">batch</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
+                <span class="p">)</span>
+
+            <span class="n">local_sum</span> <span class="o">+=</span> <span class="n">batch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">n_local</span> <span class="o">+=</span> <span class="n">batch</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># All-reduce to get global sum and count</span>
+        <span class="n">n_local_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">n_local</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">local_sum</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">dist</span><span class="o">.</span><span class="n">all_reduce</span><span class="p">(</span><span class="n">local_sum</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="n">dist</span><span class="o">.</span><span class="n">ReduceOp</span><span class="o">.</span><span class="n">SUM</span><span class="p">)</span>
+        <span class="n">dist</span><span class="o">.</span><span class="n">all_reduce</span><span class="p">(</span><span class="n">n_local_tensor</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="n">dist</span><span class="o">.</span><span class="n">ReduceOp</span><span class="o">.</span><span class="n">SUM</span><span class="p">)</span>
+
+        <span class="n">n_total</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_local_tensor</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_seen_</span> <span class="o">=</span> <span class="n">n_total</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span> <span class="o">=</span> <span class="n">local_sum</span> <span class="o">/</span> <span class="n">n_total</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="ow">and</span> <span class="n">get_rank</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Computed global mean from </span><span class="si">{</span><span class="n">n_total</span><span class="si">}</span><span class="s2"> samples across &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">get_world_size</span><span class="p">()</span><span class="si">}</span><span class="s2"> GPUs&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span>
 
 <div class="viewcode-block" id="ExactIncrementalPCA.partial_fit">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.ExactIncrementalPCA.html#torchdr.ExactIncrementalPCA.partial_fit">[docs]</a>
@@ -1236,6 +1359,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Incrementally fit the model with a batch of samples.</span>
 
 <span class="sd">        This method assumes the mean has already been computed using compute_mean().</span>
+<span class="sd">        Accumulates X_centered.T @ X_centered for one batch.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1250,6 +1374,13 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Mean must be computed first using compute_mean()&quot;</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_should_use_distributed</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_partial_fit_distributed</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_partial_fit_standard</span><span class="p">(</span><span class="n">X</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_partial_fit_standard</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Standard (non-distributed) partial fit.&quot;&quot;&quot;</span>
         <span class="c1"># Handle DataLoader tuple batches (X, y)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
             <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -1271,8 +1402,34 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_XtX</span> <span class="o">+=</span> <span class="n">X_centered</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">X_centered</span>
 
-        <span class="k">return</span> <span class="bp">self</span></div>
+        <span class="k">return</span> <span class="bp">self</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_partial_fit_distributed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Distributed partial fit - accumulates local covariance.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_distributed</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_partial_fit_standard</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+        <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_device</span><span class="p">()</span>
+
+        <span class="c1"># Handle DataLoader tuple batches (X, y)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="c1"># Center the data using global mean</span>
+        <span class="n">X_centered</span> <span class="o">=</span> <span class="n">X</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span>
+
+        <span class="c1"># Initialize or update X.T @ X</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_XtX</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_XtX</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_features_in_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_features_in_</span><span class="p">),</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+                <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_XtX</span> <span class="o">+=</span> <span class="n">X_centered</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">X_centered</span>
+
+        <span class="k">return</span> <span class="bp">self</span>
 
 <div class="viewcode-block" id="ExactIncrementalPCA.fit">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.ExactIncrementalPCA.html#torchdr.ExactIncrementalPCA.fit">[docs]</a>
@@ -1281,6 +1438,10 @@
 
 <span class="sd">        This method assumes the mean has already been computed using compute_mean().</span>
 <span class="sd">        If mean is not computed, it will compute it first (requiring two passes).</span>
+
+<span class="sd">        In distributed mode, each GPU computes its local covariance contribution,</span>
+<span class="sd">        then all-reduce is used to compute the global covariance matrix before</span>
+<span class="sd">        eigendecomposition.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1313,7 +1474,10 @@
 
         <span class="c1"># Compute mean if not already done</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="n">should_log</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="ow">and</span> <span class="p">(</span>
+                <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_should_use_distributed</span><span class="p">()</span> <span class="ow">or</span> <span class="n">get_rank</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">should_log</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Computing mean (first pass through data)&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">compute_mean</span><span class="p">(</span><span class="n">X_batches_iter</span><span class="p">)</span>
 
@@ -1321,44 +1485,84 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_XtX</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># Build covariance matrix (second pass)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+        <span class="n">should_log</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_should_use_distributed</span><span class="p">()</span> <span class="ow">or</span> <span class="n">get_rank</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">should_log</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Building covariance matrix (second pass through data)&quot;</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">X_batches_iter</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
 
-        <span class="c1"># Compute eigendecomposition</span>
+        <span class="c1"># Compute eigendecomposition (with all-reduce in distributed mode)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_compute_components</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="bp">self</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute principal components from the accumulated covariance matrix.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute principal components from the accumulated covariance matrix.</span>
+
+<span class="sd">        In distributed mode, performs all-reduce on the covariance matrix first,</span>
+<span class="sd">        then computes eigendecomposition on rank 0 and broadcasts to all GPUs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_XtX</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No data has been fitted yet&quot;</span><span class="p">)</span>
+
+        <span class="n">use_distributed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_should_use_distributed</span><span class="p">()</span> <span class="ow">and</span> <span class="n">is_distributed</span><span class="p">()</span>
+
+        <span class="c1"># In distributed mode, all-reduce covariance matrices</span>
+        <span class="k">if</span> <span class="n">use_distributed</span><span class="p">:</span>
+            <span class="n">dist</span><span class="o">.</span><span class="n">all_reduce</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_XtX</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="n">dist</span><span class="o">.</span><span class="n">ReduceOp</span><span class="o">.</span><span class="n">SUM</span><span class="p">)</span>
 
         <span class="c1"># Compute covariance matrix</span>
         <span class="n">covariance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_XtX</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_seen_</span>
 
-        <span class="c1"># Compute eigendecomposition</span>
-        <span class="c1"># eigh returns eigenvalues in ascending order</span>
-        <span class="n">eigenvalues</span><span class="p">,</span> <span class="n">eigenvectors</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">covariance</span><span class="p">)</span>
-
-        <span class="c1"># Select top n_components (reverse order for descending eigenvalues)</span>
         <span class="n">n_components</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_features_in_</span><span class="p">)</span>
-        <span class="n">idx</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">eigenvalues</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)[:</span><span class="n">n_components</span><span class="p">]</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="n">covariance</span><span class="o">.</span><span class="n">device</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">covariance</span><span class="o">.</span><span class="n">dtype</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">explained_variance_</span> <span class="o">=</span> <span class="n">eigenvalues</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">components_</span> <span class="o">=</span> <span class="n">eigenvectors</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+        <span class="c1"># Initialize output tensors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">explained_variance_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n_components</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">components_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+            <span class="n">n_components</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_features_in_</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
+        <span class="p">)</span>
 
-        <span class="c1"># Ensure deterministic output using svd_flip convention</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_components</span><span class="p">):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">components_</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">components_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="c1"># Compute eigendecomposition on rank 0 only (or all ranks if not distributed)</span>
+        <span class="c1"># This guarantees identical components across all GPUs</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">use_distributed</span> <span class="ow">or</span> <span class="n">get_rank</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">eigenvalues</span><span class="p">,</span> <span class="n">eigenvectors</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">covariance</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Computed </span><span class="si">{</span><span class="n">n_components</span><span class="si">}</span><span class="s2"> principal components&quot;</span><span class="p">)</span>
+            <span class="c1"># Select top n_components (reverse order for descending eigenvalues)</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">True</span><span class="p">)[:</span><span class="n">n_components</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">explained_variance_</span> <span class="o">=</span> <span class="n">eigenvalues</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">components_</span> <span class="o">=</span> <span class="n">eigenvectors</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
+
+            <span class="c1"># Apply deterministic sign flip (same convention as distributed PCA)</span>
+            <span class="c1"># Use the sign of the largest absolute value in each row</span>
+            <span class="n">max_abs_idx</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">components_</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">signs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">components_</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_components</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">),</span> <span class="n">max_abs_idx</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">components_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">components_</span> <span class="o">*</span> <span class="n">signs</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Broadcast components and explained variance to all GPUs</span>
+        <span class="k">if</span> <span class="n">use_distributed</span><span class="p">:</span>
+            <span class="n">dist</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">components_</span><span class="p">,</span> <span class="n">src</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">dist</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">explained_variance_</span><span class="p">,</span> <span class="n">src</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">should_log</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_should_use_distributed</span><span class="p">()</span> <span class="ow">or</span> <span class="n">get_rank</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">should_log</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_should_use_distributed</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Computed </span><span class="si">{</span><span class="n">n_components</span><span class="si">}</span><span class="s2"> principal components from &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_seen_</span><span class="si">}</span><span class="s2"> samples across </span><span class="si">{</span><span class="n">get_world_size</span><span class="p">()</span><span class="si">}</span><span class="s2"> GPUs&quot;</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Computed </span><span class="si">{</span><span class="n">n_components</span><span class="si">}</span><span class="s2"> principal components&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_batches</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Internal fit_transform without decorator.</span>

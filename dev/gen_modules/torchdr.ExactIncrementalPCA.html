@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>ExactIncrementalPCA &#8212; TorchDR 0.3.dev65+g59eeaa13e documentation</title>
+    <title>ExactIncrementalPCA &#8212; TorchDR 0.3.dev66+g0231f5d69 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=1e6d9ecb"></script>
+    <script src="../_static/documentation_options.js?v=b371380c"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'gen_modules/torchdr.ExactIncrementalPCA';</script>
@@ -120,8 +120,8 @@
       
     
     
-    <img src="../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev65+g59eeaa13e documentation - Home"/>
-    <img src="../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev65+g59eeaa13e documentation - Home"/>
+    <img src="../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3.dev66+g0231f5d69 documentation - Home"/>
+    <img src="../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3.dev66+g0231f5d69 documentation - Home"/>
   
   
 </a></div>
@@ -410,7 +410,6 @@
 </ul>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="torchdr.PCA.html">PCA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torchdr.DistributedPCA.html">DistributedPCA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchdr.IncrementalPCA.html">IncrementalPCA</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">ExactIncrementalPCA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="torchdr.KernelPCA.html">KernelPCA</a></li>
@@ -515,7 +514,7 @@
 <h1>ExactIncrementalPCA<a class="headerlink" href="#exactincrementalpca" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="torchdr.ExactIncrementalPCA">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchdr.</span></span><span class="sig-name descname"><span class="pre">ExactIncrementalPCA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_components</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/spectral_embedding/incremental_pca.html#ExactIncrementalPCA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.ExactIncrementalPCA" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchdr.</span></span><span class="sig-name descname"><span class="pre">ExactIncrementalPCA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_components</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distributed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/spectral_embedding/incremental_pca.html#ExactIncrementalPCA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.ExactIncrementalPCA" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../stubs/torchdr.DRModule.html#torchdr.DRModule" title="torchdr.base.DRModule"><code class="xref py py-class docutils literal notranslate"><span class="pre">DRModule</span></code></a></p>
 <p>Exact Incremental Principal Component Analysis.</p>
 <p>This implementation computes the exact PCA solution by incrementally building
@@ -530,6 +529,18 @@ the data: one to compute the mean, and one to build the covariance matrix.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n_components</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default=2</em>) – Number of components to keep.</p></li>
 <li><p><strong>device</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>default=&quot;auto&quot;</em>) – Device on which the computations are performed.</p></li>
+<li><p><strong>distributed</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>default=&quot;auto&quot;</em>) – <p>Whether to use distributed mode for multi-GPU training.</p>
+<ul>
+<li><p>”auto”: Automatically detect if torch.distributed is initialized and
+use distributed mode if available.</p></li>
+<li><p>True: Force distributed mode (requires torch.distributed to be initialized).</p></li>
+<li><p>False: Disable distributed mode.</p></li>
+</ul>
+<p>In distributed mode, each GPU computes local statistics which are then
+aggregated using all-reduce operations. This is communication-efficient
+when the number of samples is much larger than the number of features
+(n &gt;&gt; d).</p>
+</p></li>
 <li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>default=False</em>) – Whether to print information during the computations.</p></li>
 <li><p><strong>random_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>default=None</em>) – Random seed for reproducibility.</p></li>
 </ul>
@@ -601,6 +612,14 @@ covariance matrix would be prohibitive.</p></li>
 low-dimensional data (small n_features), and can afford two passes
 through the data.</p></li>
 </ul>
+<p>In distributed mode:</p>
+<ul class="simple">
+<li><p>Requires torch.distributed to be initialized (use torchrun or TorchDR CLI)</p></li>
+<li><p>Automatically uses local_rank for GPU assignment</p></li>
+<li><p>Each GPU only needs its data chunk in memory</p></li>
+<li><p>Uses covariance aggregation: O(d) communication for mean, O(d^2) for covariance</p></li>
+<li><p>Mathematically equivalent to running on concatenated data from all GPUs</p></li>
+</ul>
 <p class="rubric">Examples</p>
 <p>Using with PyTorch DataLoader for large datasets:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span><span class="p">,</span> <span class="n">TensorDataset</span>
@@ -653,10 +672,33 @@ through the data.</p></li>
 <span class="n">X_transformed</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_new</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Multi-GPU distributed usage (launch with torchrun –nproc_per_node=4):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExactIncrementalPCA</span>
+
+<span class="c1"># Each GPU loads its chunk of the data</span>
+<span class="n">rank</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">get_rank</span><span class="p">()</span>
+<span class="n">world_size</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">get_world_size</span><span class="p">()</span>
+<span class="n">chunk_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">full_data</span><span class="p">)</span> <span class="o">//</span> <span class="n">world_size</span>
+<span class="n">X_local</span> <span class="o">=</span> <span class="n">full_data</span><span class="p">[</span><span class="n">rank</span> <span class="o">*</span> <span class="n">chunk_size</span><span class="p">:(</span><span class="n">rank</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">chunk_size</span><span class="p">]</span>
+
+<span class="c1"># Create batches for incremental processing</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">batches</span> <span class="o">=</span> <span class="p">[</span><span class="n">X_local</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">batch_size</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">X_local</span><span class="p">),</span> <span class="n">batch_size</span><span class="p">)]</span>
+
+<span class="c1"># Distributed PCA - handles communication automatically</span>
+<span class="n">pca</span> <span class="o">=</span> <span class="n">ExactIncrementalPCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">distributed</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+<span class="n">pca</span><span class="o">.</span><span class="n">compute_mean</span><span class="p">(</span><span class="n">batches</span><span class="p">)</span>  <span class="c1"># First pass: compute global mean</span>
+<span class="n">pca</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">batches</span><span class="p">)</span>           <span class="c1"># Second pass: build global covariance</span>
+<span class="n">X_transformed</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_local</span><span class="p">)</span>  <span class="c1"># Transform local data</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="torchdr.ExactIncrementalPCA.compute_mean">
 <span class="sig-name descname"><span class="pre">compute_mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_batches</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/spectral_embedding/incremental_pca.html#ExactIncrementalPCA.compute_mean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.ExactIncrementalPCA.compute_mean" title="Link to this definition">#</a></dt>
 <dd><p>Compute the mean from batches of data (first pass).</p>
+<p>In distributed mode, each GPU computes its local sum and sample count,
+then all-reduce is used to compute the global mean.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>X_batches</strong> (<em>iterable</em><em> of </em><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)"><em>torch.Tensor</em></a><em> or </em><em>single torch.Tensor</em>) – Either an iterable yielding batches of data, a DataLoader, or a single tensor.
@@ -678,6 +720,9 @@ DataLoader batches can be tuples (X, y) - only X will be used.</p>
 <dd><p>Fit the model with batches of samples.</p>
 <p>This method assumes the mean has already been computed using compute_mean().
 If mean is not computed, it will compute it first (requiring two passes).</p>
+<p>In distributed mode, each GPU computes its local covariance contribution,
+then all-reduce is used to compute the global covariance matrix before
+eigendecomposition.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -720,7 +765,8 @@ DataLoader batches can be tuples (X, y) - only X will be used.</p></li>
 <dt class="sig sig-object py" id="torchdr.ExactIncrementalPCA.partial_fit">
 <span class="sig-name descname"><span class="pre">partial_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/spectral_embedding/incremental_pca.html#ExactIncrementalPCA.partial_fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.ExactIncrementalPCA.partial_fit" title="Link to this definition">#</a></dt>
 <dd><p>Incrementally fit the model with a batch of samples.</p>
-<p>This method assumes the mean has already been computed using compute_mean().</p>
+<p>This method assumes the mean has already been computed using compute_mean().
+Accumulates X_centered.T &#64; X_centered for one batch.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>X</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.10)"><em>torch.Tensor</em></a><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – Training batch.</p>

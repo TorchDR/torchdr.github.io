@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>TSNE vs COSNE : Euclidean vs Hyperbolic &#8212; TorchDR 0.3 documentation</title>
+    <title>TSNE vs COSNE : Euclidean vs Hyperbolic &#8212; TorchDR 0.4 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=b489f392"></script>
+    <script src="../../_static/documentation_options.js?v=7f00635f"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/basics/demo_tsne_vs_cosne';</script>
@@ -120,8 +120,8 @@
       
     
     
-    <img src="../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3 documentation - Home"/>
-    <img src="../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3 documentation - Home"/>
+    <img src="../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.4 documentation - Home"/>
+    <img src="../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.4 documentation - Home"/>
   
   
 </a></div>
@@ -400,6 +400,7 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../affinities/demo_ea_adaptivity.html">Entropic Affinities can adapt to varying noise levels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../affinities/single_vs_multi_gpu_umap_affinity.html">Single vs Multi-GPU UMAPAffinity Comparison</a></li>
 </ul>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="demo_pca_via_affinity_matcher.html">PCA via SVD and via AffinityMatcher</a></li>
@@ -481,7 +482,7 @@ Euclidean space while the second one operates in the Hyperbolic
 Poincaré Ball model.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils.visu</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_disk</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">TSNE</span></a><span class="p">,</span> <a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">COSNE</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">TSNE</span></a><span class="p">,</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">COSNE</span></a>
 <span class="kn">import</span><span class="w"> </span><span class="nn">urllib.request</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pylab</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 </pre></div>
@@ -504,7 +505,7 @@ Poincaré Ball model.</p>
 <span class="sd">    numpy.ndarray</span>
 <span class="sd">        Loaded data as a numpy array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">response</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/urllib.request.html#urllib.request.urlopen" title="urllib.request.urlopen" class="sphx-glr-backref-module-urllib-request sphx-glr-backref-type-py-function"><span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span></a><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/urllib.request.html#urllib.request.urlopen" title="urllib.request.urlopen" class="sphx-glr-backref-module-urllib-request sphx-glr-backref-type-py-function"><span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span></a><span class="p">(</span><span class="n">url</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">delimiter</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data</span> <span class="k">if</span> <span class="n">row</span><span class="p">]</span>
@@ -512,11 +513,11 @@ Poincaré Ball model.</p>
     <span class="k">return</span> <span class="n">numpy_array</span>
 
 
-<a href="https://docs.python.org/3.4/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">url_x</span></a> <span class="o">=</span> <span class="s2">&quot;https://rsinghlab.github.io/SCOT/data/snare_rna.txt&quot;</span>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">snare_data</span></a> <span class="o">=</span> <span class="n">load_numpy_from_url</span><span class="p">(</span><a href="https://docs.python.org/3.4/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">url_x</span></a><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">url_x</span></a> <span class="o">=</span> <span class="s2">&quot;https://rsinghlab.github.io/SCOT/data/snare_rna.txt&quot;</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">snare_data</span></a> <span class="o">=</span> <span class="n">load_numpy_from_url</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">url_x</span></a><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span>
 
-<a href="https://docs.python.org/3.4/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">url_y</span></a> <span class="o">=</span> <span class="s2">&quot;https://rsinghlab.github.io/SCOT/data/SNAREseq_types.txt&quot;</span>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">snare_labels</span></a> <span class="o">=</span> <span class="n">load_numpy_from_url</span><span class="p">(</span><a href="https://docs.python.org/3.4/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">url_y</span></a><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">url_y</span></a> <span class="o">=</span> <span class="s2">&quot;https://rsinghlab.github.io/SCOT/data/SNAREseq_types.txt&quot;</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">snare_labels</span></a> <span class="o">=</span> <span class="n">load_numpy_from_url</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">url_y</span></a><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -524,10 +525,10 @@ Poincaré Ball model.</p>
 <h2>Computing TSNE and COSNE on SNARE-seq data<a class="headerlink" href="#computing-tsne-and-cosne-on-snare-seq-data" title="Link to this heading">#</a></h2>
 <p>We can now proceed to computing the two DR methods and visualizing
 the results on the SNARE-seq dataset.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">tsne_model</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">TSNE</span></a><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">tsne_model</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">TSNE</span></a><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
 <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">out_tsne</span></a> <span class="o">=</span> <span class="n">tsne_model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">snare_data</span></a><span class="p">)</span>
 
-<span class="n">cosne_model</span> <span class="o">=</span> <a href="https://docs.python.org/3.4/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">COSNE</span></a><span class="p">(</span><span class="n">lr</span><span class="o">=</span><span class="mf">1e-1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">lambda1</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+<span class="n">cosne_model</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">COSNE</span></a><span class="p">(</span><span class="n">lr</span><span class="o">=</span><span class="mf">1e-1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">lambda1</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
 <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">out_cosne</span></a> <span class="o">=</span> <span class="n">cosne_model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">snare_data</span></a><span class="p">)</span>
 
 
@@ -545,21 +546,21 @@ the results on the SNARE-seq dataset.</p>
 </div>
 <img src="../../_images/sphx_glr_demo_tsne_vs_cosne_001.png" srcset="../../_images/sphx_glr_demo_tsne_vs_cosne_001.png" alt="T-SNE, CO-SNE" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[TorchDR] COSNE: ----- Computing the input affinity matrix with EntropicAffinity -----
 [TorchDR] COSNE: ----- Optimizing the embedding -----
-[TorchDR] COSNE: [0/500] Loss: 3.46e+01 | Grad norm: nan | LR: 1.00e-01
+[TorchDR] COSNE: [0/500] Loss: 3.47e+01 | Grad norm: nan | LR: 1.00e-01
 [TorchDR] COSNE: [50/500] Loss: 6.11e+00 | Grad norm: 1.86e-01 | LR: 1.00e-01
-[TorchDR] COSNE: [100/500] Loss: 5.64e+00 | Grad norm: 1.20e-01 | LR: 1.00e-01
-[TorchDR] COSNE: [150/500] Loss: 5.62e+00 | Grad norm: 9.17e-03 | LR: 1.00e-01
-[TorchDR] COSNE: [200/500] Loss: 5.62e+00 | Grad norm: 1.33e-03 | LR: 1.00e-01
-[TorchDR] COSNE: [250/500] Loss: 5.62e+00 | Grad norm: 8.95e-04 | LR: 1.00e-01
-[TorchDR] COSNE: [300/500] Loss: 1.22e+01 | Grad norm: 2.67e-04 | LR: 1.00e-01
-[TorchDR] COSNE: [350/500] Loss: 1.22e+01 | Grad norm: 7.43e-04 | LR: 1.00e-01
-[TorchDR] COSNE: [400/500] Loss: 1.22e+01 | Grad norm: 7.86e-05 | LR: 1.00e-01
-[TorchDR] COSNE: [450/500] Loss: 1.22e+01 | Grad norm: 7.77e-06 | LR: 1.00e-01
+[TorchDR] COSNE: [100/500] Loss: 5.65e+00 | Grad norm: 1.20e-01 | LR: 1.00e-01
+[TorchDR] COSNE: [150/500] Loss: 5.63e+00 | Grad norm: 9.17e-03 | LR: 1.00e-01
+[TorchDR] COSNE: [200/500] Loss: 5.62e+00 | Grad norm: 1.32e-03 | LR: 1.00e-01
+[TorchDR] COSNE: [250/500] Loss: 5.62e+00 | Grad norm: 9.80e-04 | LR: 1.00e-01
+[TorchDR] COSNE: [300/500] Loss: 1.23e+01 | Grad norm: 2.71e-04 | LR: 1.00e-01
+[TorchDR] COSNE: [350/500] Loss: 1.22e+01 | Grad norm: 7.87e-04 | LR: 1.00e-01
+[TorchDR] COSNE: [400/500] Loss: 1.22e+01 | Grad norm: 1.48e-04 | LR: 1.00e-01
+[TorchDR] COSNE: [450/500] Loss: 1.22e+01 | Grad norm: 2.43e-05 | LR: 1.00e-01
 /home/circleci/project/torchdr/utils/visu.py:29: RuntimeWarning: invalid value encountered in arccosh
   hypDistance = np.arccosh(1 + 2 * (distance) / (1 - distance + 1e-10))
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (5 minutes 43.694 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (6 minutes 24.118 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-basics-demo-tsne-vs-cosne-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/271414b1fa4debf5462bca305fe3fb76/demo_tsne_vs_cosne.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">demo_tsne_vs_cosne.ipynb</span></code></a></p>

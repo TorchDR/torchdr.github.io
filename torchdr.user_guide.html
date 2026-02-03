@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>User Guide &#8212; TorchDR 0.3 documentation</title>
+    <title>User Guide &#8212; TorchDR 0.4 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=b489f392"></script>
+    <script src="_static/documentation_options.js?v=7f00635f"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>window.MathJax = {"tex": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}}</script>
@@ -52,7 +52,7 @@
     <link rel="icon" href="_static/logo.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Affinity" href="stubs/torchdr.Affinity.html" />
+    <link rel="next" title="DRModule" href="stubs/torchdr.DRModule.html" />
     <link rel="prev" title="Torch Dimensionality Reduction" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -122,8 +122,8 @@
       
     
     
-    <img src="_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.3 documentation - Home"/>
-    <img src="_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.3 documentation - Home"/>
+    <img src="_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.4 documentation - Home"/>
+    <img src="_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.4 documentation - Home"/>
   
   
 </a></div>
@@ -401,16 +401,16 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="stubs/torchdr.Affinity.html">Affinity</a></li>
-</ul>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="stubs/torchdr.LogAffinity.html">LogAffinity</a></li>
-</ul>
-<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="stubs/torchdr.DRModule.html">DRModule</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="stubs/torchdr.AffinityMatcher.html">AffinityMatcher</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="stubs/torchdr.Affinity.html">Affinity</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="stubs/torchdr.LogAffinity.html">LogAffinity</a></li>
 </ul>
 </div>
 </nav></div>
@@ -474,8 +474,9 @@
 <p class="topic-title">Table of Contents</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#overview" id="id9">Overview</a></p></li>
-<li><p><a class="reference internal" href="#affinities" id="id10">Affinities</a></p></li>
-<li><p><a class="reference internal" href="#dimensionality-reduction-modules" id="id11">Dimensionality Reduction Modules</a></p></li>
+<li><p><a class="reference internal" href="#dimensionality-reduction-methods" id="id10">Dimensionality Reduction Methods</a></p></li>
+<li><p><a class="reference internal" href="#affinities" id="id11">Affinities</a></p></li>
+<li><p><a class="reference internal" href="#scalability-backends" id="id12">Scalability &amp; Backends</a></p></li>
 </ul>
 </nav>
 <section id="overview">
@@ -485,41 +486,112 @@
 <p>DR aims to construct a low-dimensional representation (or embedding) <span class="math notranslate nohighlight">\(\mathbf{Z} = (\mathbf{z}_1, ..., \mathbf{z}_n)^\top\)</span> of an input dataset <span class="math notranslate nohighlight">\(\mathbf{X} = (\mathbf{x}_1, ..., \mathbf{x}_n)^\top\)</span> that best preserves its geometry, encoded via a pairwise affinity matrix <span class="math notranslate nohighlight">\(\mathbf{P}\)</span>. To this end, DR methods optimize <span class="math notranslate nohighlight">\(\mathbf{Z}\)</span> such that a pairwise affinity matrix in the embedding space (denoted <span class="math notranslate nohighlight">\(\mathbf{Q}\)</span>) matches <span class="math notranslate nohighlight">\(\mathbf{P}\)</span>. This general problem is as follows</p>
 <div class="math notranslate nohighlight">
 \[\min_{\mathbf{Z}} \: \mathcal{L}( \mathbf{P}, \mathbf{Q}) \quad \text{(DR)}\]</div>
-<p>where <span class="math notranslate nohighlight">\(\mathcal{L}\)</span> is typically the <span class="math notranslate nohighlight">\(\ell_2\)</span> or cross-entropy loss.
-Each DR method is thus characterized by a triplet <span class="math notranslate nohighlight">\((\mathcal{L}, \mathbf{P}, \mathbf{Q})\)</span>.</p>
+<p>where <span class="math notranslate nohighlight">\(\mathcal{L}\)</span> is typically the <span class="math notranslate nohighlight">\(\ell_2\)</span> or cross-entropy loss.</p>
 <p>TorchDR is structured around the above formulation <span class="math notranslate nohighlight">\(\text{(DR)}\)</span>.
-Defining a DR algorithm solely requires providing an <a class="reference internal" href="stubs/torchdr.Affinity.html#torchdr.Affinity" title="torchdr.Affinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Affinity</span></code></a> object for both input and embedding as well as a loss function <span class="math notranslate nohighlight">\(\mathcal{L}\)</span>.</p>
+The input affinity <span class="math notranslate nohighlight">\(\mathbf{P}\)</span> is constructed using an <a class="reference internal" href="stubs/torchdr.Affinity.html#torchdr.Affinity" title="torchdr.Affinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Affinity</span></code></a> object.
+For the embedding affinity <span class="math notranslate nohighlight">\(\mathbf{Q}\)</span>, TorchDR offers flexibility: it can be defined as a separate <a class="reference internal" href="stubs/torchdr.Affinity.html#torchdr.Affinity" title="torchdr.Affinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Affinity</span></code></a> object or, more commonly, the embedding kernel is integrated directly into the loss function for efficiency.</p>
 <p>All modules follow the <code class="docutils literal notranslate"><span class="pre">sklearn</span></code> <span id="id2">[<a class="reference internal" href="torchdr.bibliography.html#id18" title="Fabian Pedregosa, Gaël Varoquaux, Alexandre Gramfort, Vincent Michel, Bertrand Thirion, Olivier Grisel, Mathieu Blondel, Peter Prettenhofer, Ron Weiss, Vincent Dubourg, and others. Scikit-learn: machine learning in python. the Journal of machine Learning research, 12:2825–2830, 2011.">Pedregosa <em>et al.</em>, 2011</a>]</span> API and can be used in <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html">sklearn pipelines</a>.</p>
 </section>
-<section id="torch-gpu-support-and-automatic-differentiation">
-<h3>Torch GPU support and automatic differentiation<a class="headerlink" href="#torch-gpu-support-and-automatic-differentiation" title="Link to this heading">#</a></h3>
-<p>TorchDR is built on top of <code class="docutils literal notranslate"><span class="pre">torch</span></code> <span id="id3">[<a class="reference internal" href="torchdr.bibliography.html#id17" title="Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca Antiga, and others. Pytorch: an imperative style, high-performance deep learning library. Advances in neural information processing systems, 2019.">Paszke <em>et al.</em>, 2019</a>]</span>, offering GPU support and automatic differentiation. This foundation enables efficient computations and straightforward implementation of new DR methods.</p>
-<p>To utilize GPU support, set <code class="xref py py-attr docutils literal notranslate"><span class="pre">device=&quot;cuda&quot;</span></code> when initializing any module. For CPU computations, set <code class="xref py py-attr docutils literal notranslate"><span class="pre">device=&quot;cpu&quot;</span></code>.</p>
+<section id="gpu-support">
+<h3>GPU Support<a class="headerlink" href="#gpu-support" title="Link to this heading">#</a></h3>
+<p>TorchDR is built on top of <code class="docutils literal notranslate"><span class="pre">torch</span></code> <span id="id3">[<a class="reference internal" href="torchdr.bibliography.html#id17" title="Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca Antiga, and others. Pytorch: an imperative style, high-performance deep learning library. Advances in neural information processing systems, 2019.">Paszke <em>et al.</em>, 2019</a>]</span>, offering GPU support and automatic differentiation. To utilize GPU support, set <code class="xref py py-attr docutils literal notranslate"><span class="pre">device=&quot;cuda&quot;</span></code> when initializing any module; for CPU computations, set <code class="xref py py-attr docutils literal notranslate"><span class="pre">device=&quot;cpu&quot;</span></code>. DR particularly benefits from GPU acceleration as most computations involve matrix reductions that are highly parallelizable.</p>
+<p>The following sections cover the available DR methods, the affinity building blocks, and advanced scalability options.</p>
+</section>
+</section>
+<section id="dimensionality-reduction-methods">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">Dimensionality Reduction Methods</a><a class="headerlink" href="#dimensionality-reduction-methods" title="Link to this heading">#</a></h2>
+<p>TorchDR provides a wide range of dimensionality reduction (DR) methods. All DR estimators inherit the structure of the <a class="reference internal" href="stubs/torchdr.DRModule.html#torchdr.DRModule" title="torchdr.DRModule"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DRModule()</span></code></a> class:</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="stubs/torchdr.DRModule.html#torchdr.DRModule" title="torchdr.DRModule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchdr.DRModule</span></code></a></p></td>
+<td><p>Base class for DR methods.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>They are <code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.base.BaseEstimator</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.base.TransformerMixin</span></code> classes which can be called with the <code class="docutils literal notranslate"><span class="pre">fit_transform</span></code> method.</p>
+<p>Outside of <a class="reference internal" href="#spectral-section"><span class="std std-ref">Spectral Methods</span></a>, a closed-form solution to the DR problem is typically not available. The problem can then be solved using <a class="reference external" href="https://pytorch.org/docs/stable/optim.html">gradient-based optimizers</a>.</p>
+<p>For users who want full control over both input and output affinities, the <a class="reference internal" href="stubs/torchdr.AffinityMatcher.html#torchdr.AffinityMatcher" title="torchdr.AffinityMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">AffinityMatcher</span></code></a> class provides a flexible base that accepts separate <code class="xref py py-attr docutils literal notranslate"><span class="pre">affinity_in</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">affinity_out</span></code> objects.</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="stubs/torchdr.AffinityMatcher.html#torchdr.AffinityMatcher" title="torchdr.AffinityMatcher"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchdr.AffinityMatcher</span></code></a></p></td>
+<td><p>Perform dimensionality reduction by matching two affinity matrices.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>In what follows we briefly present two families of DR algorithms: neighbor embedding methods and spectral methods.</p>
+<section id="neighbor-embedding">
+<span id="neighbor-embedding-section"></span><h3>Neighbor Embedding<a class="headerlink" href="#neighbor-embedding" title="Link to this heading">#</a></h3>
+<p>TorchDR aims to implement most popular <strong>neighbor embedding (NE)</strong> algorithms.
+In these methods, <span class="math notranslate nohighlight">\(\mathbf{P}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{Q}\)</span> can be viewed as <strong>soft neighborhood graphs</strong>, hence the term <em>neighbor embedding</em>.</p>
+<p>NE objectives share a common structure: they minimize a weighted sum of an attractive term and a repulsive term. The attractive term is often the cross-entropy between the input and output affinities, while the repulsive term is typically a function of the output affinities only. Thus, the NE problem can be formulated as:</p>
+<div class="math notranslate nohighlight">
+\[\min_{\mathbf{Z}} \: - \lambda \sum_{ij} P_{ij} \log Q_{ij} + \mathcal{L}_{\mathrm{rep}}(\mathbf{Q}) \:.\]</div>
+<p>In the above, <span class="math notranslate nohighlight">\(\mathcal{L}_{\mathrm{rep}}(\mathbf{Q})\)</span> represents the repulsive part of the loss function while <span class="math notranslate nohighlight">\(\lambda\)</span> is a hyperparameter that controls the balance between attraction and repulsion. The latter is called <code class="xref py py-attr docutils literal notranslate"><span class="pre">early_exaggeration_coeff</span></code> in TorchDR because it is often set to a value larger than one at the beginning of the optimization.</p>
+<p>Many NE methods can be represented within this framework. See below for some examples.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>Method</strong></p></th>
+<th class="head"><p><strong>Repulsive term</strong> <span class="math notranslate nohighlight">\(\mathcal{L}_{\mathrm{rep}}\)</span></p></th>
+<th class="head"><p><strong>Input affinity</strong> <span class="math notranslate nohighlight">\(\mathbf{P}\)</span></p></th>
+<th class="head"><p><strong>Embedding kernel</strong> <span class="math notranslate nohighlight">\(\mathbf{Q}\)</span></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.SNE.html#torchdr.SNE" title="torchdr.SNE"><code class="xref py py-class docutils literal notranslate"><span class="pre">SNE</span></code></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(\sum_{i} \log(\sum_j Q_{ij})\)</span></p></td>
+<td><p><a class="reference internal" href="gen_modules/torchdr.EntropicAffinity.html#torchdr.EntropicAffinity" title="torchdr.EntropicAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">EntropicAffinity</span></code></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(Q_{ij} = \exp(- \| \mathbf{z}_i - \mathbf{z}_j \|^2)\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.TSNE.html#torchdr.TSNE" title="torchdr.TSNE"><code class="xref py py-class docutils literal notranslate"><span class="pre">TSNE</span></code></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(\log(\sum_{ij} Q_{ij})\)</span></p></td>
+<td><p><a class="reference internal" href="gen_modules/torchdr.EntropicAffinity.html#torchdr.EntropicAffinity" title="torchdr.EntropicAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">EntropicAffinity</span></code></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(Q_{ij} = (1 + \| \mathbf{z}_i - \mathbf{z}_j \|^2)^{-1}\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.TSNEkhorn.html#torchdr.TSNEkhorn" title="torchdr.TSNEkhorn"><code class="xref py py-class docutils literal notranslate"><span class="pre">TSNEkhorn</span></code></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(\sum_{ij} Q_{ij}\)</span></p></td>
+<td><p><a class="reference internal" href="gen_modules/torchdr.SymmetricEntropicAffinity.html#torchdr.SymmetricEntropicAffinity" title="torchdr.SymmetricEntropicAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">SymmetricEntropicAffinity</span></code></a></p></td>
+<td><p><a class="reference internal" href="gen_modules/torchdr.SinkhornAffinity.html#torchdr.SinkhornAffinity" title="torchdr.SinkhornAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">SinkhornAffinity(base_kernel=&quot;student&quot;)</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.InfoTSNE.html#torchdr.InfoTSNE" title="torchdr.InfoTSNE"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoTSNE</span></code></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(\sum_i \log(\sum_{j \in \mathrm{Neg}(i)} Q_{ij})\)</span></p></td>
+<td><p><a class="reference internal" href="gen_modules/torchdr.EntropicAffinity.html#torchdr.EntropicAffinity" title="torchdr.EntropicAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">EntropicAffinity</span></code></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(Q_{ij} = (1 + \| \mathbf{z}_i - \mathbf{z}_j \|^2)^{-1}\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.UMAP.html#torchdr.UMAP" title="torchdr.UMAP"><code class="xref py py-class docutils literal notranslate"><span class="pre">UMAP</span></code></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(- \sum_{i, j \in \mathrm{Neg}(i)} \log (1 - Q_{ij})\)</span></p></td>
+<td><p><a class="reference internal" href="gen_modules/torchdr.UMAPAffinity.html#torchdr.UMAPAffinity" title="torchdr.UMAPAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">UMAPAffinity</span></code></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(Q_{ij} = (1 + a \| \mathbf{z}_i - \mathbf{z}_j \|^{2b})^{-1}\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.LargeVis.html#torchdr.LargeVis" title="torchdr.LargeVis"><code class="xref py py-class docutils literal notranslate"><span class="pre">LargeVis</span></code></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(- \sum_{i, j \in \mathrm{Neg}(i)} \log (1 - Q_{ij})\)</span></p></td>
+<td><p><a class="reference internal" href="gen_modules/torchdr.EntropicAffinity.html#torchdr.EntropicAffinity" title="torchdr.EntropicAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">EntropicAffinity</span></code></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(Q_{ij} = (1 + \| \mathbf{z}_i - \mathbf{z}_j \|^2)^{-1}\)</span></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>In the above table, <span class="math notranslate nohighlight">\(\mathrm{Neg}(i)\)</span> denotes the set of negative samples
+for point <span class="math notranslate nohighlight">\(i\)</span>. They are usually sampled uniformly at random from the dataset.</p>
+</section>
+<section id="spectral-methods">
+<span id="spectral-section"></span><h3>Spectral Methods<a class="headerlink" href="#spectral-methods" title="Link to this heading">#</a></h3>
+<p>Spectral methods correspond to choosing the scalar product affinity <span class="math notranslate nohighlight">\(P_{ij} = \langle \mathbf{z}_i, \mathbf{z}_j \rangle\)</span> for the embeddings and the <span class="math notranslate nohighlight">\(\ell_2\)</span> loss.</p>
+<div class="math notranslate nohighlight">
+\[\min_{\mathbf{Z}} \: \sum_{ij} ( P_{ij} - \langle \mathbf{z}_i, \mathbf{z}_j \rangle )^{2}\]</div>
+<p>When <span class="math notranslate nohighlight">\(\mathbf{P}\)</span> is positive semi-definite, this problem is commonly known as kernel Principal Component Analysis <span id="id4">[<a class="reference internal" href="torchdr.bibliography.html#id11" title="Jihun Ham, Daniel D Lee, Sebastian Mika, and Bernhard Schölkopf. A kernel view of the dimensionality reduction of manifolds. In Proceedings of the twenty-first international conference on Machine learning, 47. 2004.">Ham <em>et al.</em>, 2004</a>]</span> and an optimal solution is given by</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{Z}^{\star} = (\sqrt{\lambda_1} \mathbf{v}_1, ..., \sqrt{\lambda_d} \mathbf{v}_d)^\top\]</div>
+<p>where <span class="math notranslate nohighlight">\(\lambda_1, ..., \lambda_d\)</span> are the largest eigenvalues of the centered kernel matrix <span class="math notranslate nohighlight">\(\mathbf{P}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{v}_1, ..., \mathbf{v}_d\)</span> are the corresponding eigenvectors.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>DR particularly benefits from GPU acceleration as most computations, including affinity calculations and the DR objective, involve matrix reductions that are highly parallelizable.</p>
+<p>PCA (available at <a class="reference internal" href="gen_modules/torchdr.PCA.html#torchdr.PCA" title="torchdr.PCA"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.PCA</span></code></a>) corresponds to choosing <span class="math notranslate nohighlight">\(P_{ij} = \langle \mathbf{x}_i, \mathbf{x}_j \rangle\)</span>.</p>
 </div>
-</section>
-<section id="handling-the-quadratic-cost-via-sparsity-or-symbolic-tensors">
-<h3>Handling the quadratic cost via sparsity or symbolic tensors<a class="headerlink" href="#handling-the-quadratic-cost-via-sparsity-or-symbolic-tensors" title="Link to this heading">#</a></h3>
-<p>Affinities naturally incur a quadratic memory cost, which can be particularly
-problematic when dealing with large numbers of samples, especially when using GPUs.</p>
-<p>Many affinity metrics only require computing distances to each point’s k nearest neighbors.
-For large datasets (typically when <span class="math notranslate nohighlight">\(n &gt; 10^4\)</span>) where the full pairwise-distance matrix won’t fit in GPU memory,
-TorchDR can offload these computations to the GPU-compatible kNN library <a class="reference external" href="https://github.com/facebookresearch/faiss">Faiss</a>.
-Simply set <code class="xref py py-attr docutils literal notranslate"><span class="pre">backend</span></code> to <code class="docutils literal notranslate"><span class="pre">faiss</span></code> to leverage Faiss’s efficient implementations.</p>
-<p>Alternatively, for exact computations or affinities that can’t be limited to kNNs, you can use symbolic (lazy) tensors to avoid memory overflows.
-TorchDR integrates with <code class="docutils literal notranslate"><span class="pre">pykeops</span></code><span id="id4">[<a class="reference internal" href="torchdr.bibliography.html#id16" title="Benjamin Charlier, Jean Feydy, Joan Alexis Glaunes, François-David Collin, and Ghislain Durif. Kernel operations on the gpu, with autodiff, without memory overflows. Journal of Machine Learning Research, 22(74):1–6, 2021.">Charlier <em>et al.</em>, 2021</a>]</span>, representing tensors as mathematical expressions evaluated directly on your data samples.
-By computing on-the-fly formulas instead of storing full matrices, this approach removes memory constraints entirely.
-However, for very large datasets (typically when <span class="math notranslate nohighlight">\(n &gt; 10^5\)</span>), the computational cost becomes prohibitive.
-Simply set <code class="xref py py-attr docutils literal notranslate"><span class="pre">backend</span></code> to <code class="docutils literal notranslate"><span class="pre">keops</span></code> in any module to enable it.</p>
-<a class="reference internal image-reference" href="_images/symbolic_matrix.svg"><img alt="_images/symbolic_matrix.svg" class="align-center" src="_images/symbolic_matrix.svg" style="width: 800px;" />
-</a>
-<p>The above figure is taken from <a class="reference external" href="https://github.com/getkeops/keops/blob/main/doc/_static/symbolic_matrix.svg">here</a>.</p>
 </section>
 </section>
 <section id="affinities">
-<h2><a class="toc-backref" href="#id10" role="doc-backlink">Affinities</a><a class="headerlink" href="#affinities" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id11" role="doc-backlink">Affinities</a><a class="headerlink" href="#affinities" title="Link to this heading">#</a></h2>
 <p>Affinities are the essential building blocks of dimensionality reduction methods.
 TorchDR provides a wide range of affinities. See <a class="reference internal" href="all.html#api-and-modules"><span class="std std-ref">API and Modules</span></a> for a complete list.</p>
 <section id="base-structure">
@@ -543,12 +615,12 @@ TorchDR provides a wide range of affinities. See <a class="reference internal" h
 </table>
 </div>
 <p>Affinities are objects that can directly be called. The outputted affinity matrix is a <strong>square matrix of size (n, n)</strong> where n is the number of input samples.</p>
-<p>Here is an example with the <a class="reference internal" href="gen_modules/torchdr.GaussianAffinity.html#torchdr.GaussianAffinity" title="torchdr.GaussianAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">GaussianAffinity</span></code></a>:</p>
+<p>Here is an example with the <a class="reference internal" href="gen_modules/torchdr.NormalizedGaussianAffinity.html#torchdr.NormalizedGaussianAffinity" title="torchdr.NormalizedGaussianAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">NormalizedGaussianAffinity</span></code></a>:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span><span class="o">,</span><span class="w"> </span><span class="nn">torchdr</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">n</span> <span class="o">=</span> <span class="mi">100</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">affinity</span> <span class="o">=</span> <span class="n">torchdr</span><span class="o">.</span><span class="n">GaussianAffinity</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">affinity</span> <span class="o">=</span> <span class="n">torchdr</span><span class="o">.</span><span class="n">NormalizedGaussianAffinity</span><span class="p">(</span><span class="n">normalization_dim</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">affinity_matrix</span> <span class="o">=</span> <span class="n">affinity</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">affinity_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 <span class="go">(100, 100)</span>
@@ -558,8 +630,8 @@ TorchDR provides a wide range of affinities. See <a class="reference internal" h
 <section id="spotlight-on-affinities-based-on-entropic-projections">
 <h3>Spotlight on affinities based on entropic projections<a class="headerlink" href="#spotlight-on-affinities-based-on-entropic-projections" title="Link to this heading">#</a></h3>
 <p>A widely used family of affinities focuses on <strong>controlling the entropy</strong> of the affinity matrix. It is notably a crucial component of Neighbor-Embedding methods (see <a class="reference internal" href="#neighbor-embedding-section"><span class="std std-ref">Neighbor Embedding</span></a>).</p>
-<p>These affinities are normalized such that each row sums to one, allowing the affinity matrix to be viewed as a <strong>Markov transition matrix</strong>. An <strong>adaptive bandwidth</strong> parameter then determines how the mass from each point spreads to its neighbors. The bandwidth is based on the <code class="xref py py-attr docutils literal notranslate"><span class="pre">perplexity</span></code> hyperparameter which controls the <strong>number of effective neighbors</strong> for each point.</p>
-<p>The resulting affinities can be viewed as a <strong>soft approximation of a k-nearest neighbor graph</strong>, where <code class="xref py py-attr docutils literal notranslate"><span class="pre">perplexity</span></code> takes the role of k. This allows for capturing more nuances than binary weights, as closer neighbors receive a higher weight compared to those farther away. Ultimately, <code class="xref py py-attr docutils literal notranslate"><span class="pre">perplexity</span></code> is an interpretable hyperparameter that governs the scale of dependencies represented in the affinity.</p>
+<p>These affinities are normalized such that each row sums to one, allowing the affinity matrix to be viewed as a <strong>Markov transition matrix</strong>. An adaptive bandwidth parameter then determines how the mass from each point spreads to its neighbors. The bandwidth is based on the <code class="xref py py-attr docutils literal notranslate"><span class="pre">perplexity</span></code> hyperparameter which controls the number of effective neighbors for each point.</p>
+<p>The resulting affinities can be viewed as a soft approximation of a k-nearest neighbor graph, where <code class="xref py py-attr docutils literal notranslate"><span class="pre">perplexity</span></code> takes the role of k. This allows for capturing more nuances than binary weights, as closer neighbors receive a higher weight compared to those farther away. Ultimately, <code class="xref py py-attr docutils literal notranslate"><span class="pre">perplexity</span></code> is an interpretable hyperparameter that governs the scale of dependencies represented in the affinity.</p>
 <p>The following table outlines the aspects controlled by different formulations of entropic affinities. <strong>Marginal</strong> indicates whether each row of the affinity matrix has a controlled sum. <strong>Symmetry</strong> indicates whether the affinity matrix is symmetric. <strong>Entropy</strong> indicates whether each row of the affinity matrix has controlled entropy, dictated by the <code class="xref py py-attr docutils literal notranslate"><span class="pre">perplexity</span></code> hyperparameter.</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
@@ -572,7 +644,7 @@ TorchDR provides a wide range of affinities. See <a class="reference internal" h
 <tbody>
 <tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.NormalizedGaussianAffinity.html#torchdr.NormalizedGaussianAffinity" title="torchdr.NormalizedGaussianAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">NormalizedGaussianAffinity</span></code></a></p></td>
 <td><p>✅</p></td>
-<td><p>✅</p></td>
+<td><p>❌</p></td>
 <td><p>❌</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.SinkhornAffinity.html#torchdr.SinkhornAffinity" title="torchdr.SinkhornAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">SinkhornAffinity</span></code></a></p></td>
@@ -598,10 +670,10 @@ TorchDR provides a wide range of affinities. See <a class="reference internal" h
 <section id="examples-using-entropicaffinity">
 <h3>Examples using <code class="docutils literal notranslate"><span class="pre">EntropicAffinity</span></code>:<a class="headerlink" href="#examples-using-entropicaffinity" title="Link to this heading">#</a></h3>
 <div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="We show the adaptivity property of entropic affinities on a toy simulated dataset with heteroscedastic noise."><img alt="" src="_images/sphx_glr_demo_ea_adaptivity_thumb.png" />
-<p><a class="reference internal" href="auto_examples/affinities/demo_ea_adaptivity.html#sphx-glr-auto-examples-affinities-demo-ea-adaptivity-py"><span class="std std-ref">Entropic Affinities can adapt to varying noise levels</span></a></p>
+<p><a class="reference internal" href="auto_examples/affinities/demo_ea_adaptivity.html"><span class="doc">Entropic Affinities can adapt to varying noise levels</span></a></p>
   <div class="sphx-glr-thumbnail-title">Entropic Affinities can adapt to varying noise levels</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="We illustrate the basic usage of TorchDR with different neighbor embedding methods on the SNARE-seq gene expression dataset with given cell type labels."><img alt="" src="_images/sphx_glr_demo_ne_methods_affinity_matcher_thumb.png" />
-<p><a class="reference internal" href="auto_examples/basics/demo_ne_methods_affinity_matcher.html#sphx-glr-auto-examples-basics-demo-ne-methods-affinity-matcher-py"><span class="std std-ref">Neighbor Embedding on genomics &amp; equivalent affinity matcher formulation</span></a></p>
+<p><a class="reference internal" href="auto_examples/basics/demo_ne_methods_affinity_matcher.html"><span class="doc">Neighbor Embedding on genomics &amp; equivalent affinity matcher formulation</span></a></p>
   <div class="sphx-glr-thumbnail-title">Neighbor Embedding on genomics & equivalent affinity matcher formulation</div>
 </div></div></section>
 <section id="other-various-affinities">
@@ -613,96 +685,104 @@ TorchDR provides a wide range of affinities. See <a class="reference internal" h
 It is available at <a class="reference internal" href="gen_modules/torchdr.DoublyStochasticQuadraticAffinity.html#torchdr.DoublyStochasticQuadraticAffinity" title="torchdr.DoublyStochasticQuadraticAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">DoublyStochasticQuadraticAffinity</span></code></a>.</p>
 </section>
 </section>
-<section id="dimensionality-reduction-modules">
-<h2><a class="toc-backref" href="#id11" role="doc-backlink">Dimensionality Reduction Modules</a><a class="headerlink" href="#dimensionality-reduction-modules" title="Link to this heading">#</a></h2>
-<p>TorchDR provides a wide range of dimensionality reduction (DR) methods. All DR estimators inherit the structure of the <a class="reference internal" href="stubs/torchdr.DRModule.html#torchdr.DRModule" title="torchdr.DRModule"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DRModule()</span></code></a> class:</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="stubs/torchdr.DRModule.html#torchdr.DRModule" title="torchdr.DRModule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchdr.DRModule</span></code></a></p></td>
-<td><p>Base class for DR methods.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>They are <code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.base.BaseEstimator</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.base.TransformerMixin</span></code> classes which can be called with the <code class="docutils literal notranslate"><span class="pre">fit_transform</span></code> method.</p>
-<p>Outside of <a class="reference internal" href="#spectral-section"><span class="std std-ref">Spectral methods</span></a>, a closed-form solution to the DR problem is typically not available. The problem can then be solved using <a class="reference external" href="https://pytorch.org/docs/stable/optim.html">gradient-based optimizers</a>.</p>
-<p>The following classes serve as parent classes for this approach, requiring the user to provide affinity objects for the input and output spaces, referred to as <code class="xref py py-attr docutils literal notranslate"><span class="pre">affinity_in</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">affinity_out</span></code>.</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="stubs/torchdr.AffinityMatcher.html#torchdr.AffinityMatcher" title="torchdr.AffinityMatcher"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchdr.AffinityMatcher</span></code></a></p></td>
-<td><p>Perform dimensionality reduction by matching two affinity matrices.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>In what follows we briefly present two families of DR algorithms: neighbor embedding methods and spectral methods.</p>
-<section id="spectral-methods">
-<span id="spectral-section"></span><h3>Spectral methods<a class="headerlink" href="#spectral-methods" title="Link to this heading">#</a></h3>
-<p>Spectral methods correspond to choosing the scalar product affinity <span class="math notranslate nohighlight">\(P_{ij} = \langle \mathbf{z}_i, \mathbf{z}_j \rangle\)</span> for the embeddings and the <span class="math notranslate nohighlight">\(\ell_2\)</span> loss.</p>
-<div class="math notranslate nohighlight">
-\[\min_{\mathbf{Z}} \: \sum_{ij} ( P_{ij} - \langle \mathbf{z}_i, \mathbf{z}_j \rangle )^{2}\]</div>
-<p>When <span class="math notranslate nohighlight">\(\mathbf{P}\)</span> is positive semi-definite, this problem is commonly known as kernel Principal Component Analysis <span id="id8">[<a class="reference internal" href="torchdr.bibliography.html#id11" title="Jihun Ham, Daniel D Lee, Sebastian Mika, and Bernhard Schölkopf. A kernel view of the dimensionality reduction of manifolds. In Proceedings of the twenty-first international conference on Machine learning, 47. 2004.">Ham <em>et al.</em>, 2004</a>]</span> and an optimal solution is given by</p>
-<div class="math notranslate nohighlight">
-\[\mathbf{Z}^{\star} = (\sqrt{\lambda_1} \mathbf{v}_1, ..., \sqrt{\lambda_d} \mathbf{v}_d)^\top\]</div>
-<p>where <span class="math notranslate nohighlight">\(\lambda_1, ..., \lambda_d\)</span> are the largest eigenvalues of the centered kernel matrix <span class="math notranslate nohighlight">\(\mathbf{P}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{v}_1, ..., \mathbf{v}_d\)</span> are the corresponding eigenvectors.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>PCA (available at <a class="reference internal" href="gen_modules/torchdr.PCA.html#torchdr.PCA" title="torchdr.PCA"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.PCA</span></code></a>) corresponds to choosing <span class="math notranslate nohighlight">\(P_{ij} = \langle \mathbf{x}_i, \mathbf{x}_j \rangle\)</span>.</p>
-</div>
+<section id="scalability-backends">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">Scalability &amp; Backends</a><a class="headerlink" href="#scalability-backends" title="Link to this heading">#</a></h2>
+<p>For large datasets, TorchDR provides several features to scale computations.</p>
+<section id="handling-the-quadratic-cost-via-sparsity-or-symbolic-tensors">
+<h3>Handling the quadratic cost via sparsity or symbolic tensors<a class="headerlink" href="#handling-the-quadratic-cost-via-sparsity-or-symbolic-tensors" title="Link to this heading">#</a></h3>
+<p>Affinities naturally incur a quadratic memory cost, which can be particularly
+problematic when dealing with large numbers of samples, especially when using GPUs.</p>
+<p>Many affinity metrics only require computing distances to each point’s k nearest neighbors.
+For large datasets (typically when <span class="math notranslate nohighlight">\(n &gt; 10^4\)</span>) where the full pairwise-distance matrix won’t fit in GPU memory,
+TorchDR can offload these computations to the GPU-compatible kNN library <a class="reference external" href="https://github.com/facebookresearch/faiss">Faiss</a>.
+Simply set <code class="xref py py-attr docutils literal notranslate"><span class="pre">backend</span></code> to <code class="docutils literal notranslate"><span class="pre">faiss</span></code> to leverage Faiss’s efficient implementations.</p>
+<p>Alternatively, for exact computations or affinities that can’t be limited to kNNs, you can use symbolic (lazy) tensors to avoid memory overflows.
+TorchDR integrates with <code class="docutils literal notranslate"><span class="pre">pykeops</span></code><span id="id8">[<a class="reference internal" href="torchdr.bibliography.html#id16" title="Benjamin Charlier, Jean Feydy, Joan Alexis Glaunes, François-David Collin, and Ghislain Durif. Kernel operations on the gpu, with autodiff, without memory overflows. Journal of Machine Learning Research, 22(74):1–6, 2021.">Charlier <em>et al.</em>, 2021</a>]</span>, representing tensors as mathematical expressions evaluated directly on your data samples.
+By computing on-the-fly formulas instead of storing full matrices, this approach removes memory constraints entirely.
+However, for very large datasets (typically when <span class="math notranslate nohighlight">\(n &gt; 10^5\)</span>), the computational cost becomes prohibitive.
+Simply set <code class="xref py py-attr docutils literal notranslate"><span class="pre">backend</span></code> to <code class="docutils literal notranslate"><span class="pre">keops</span></code> in any module to enable it.</p>
+<a class="reference internal image-reference" href="_images/symbolic_matrix.svg"><img alt="_images/symbolic_matrix.svg" class="align-center" src="_images/symbolic_matrix.svg" style="width: 800px;" />
+</a>
+<p>The above figure is taken from <a class="reference external" href="https://github.com/getkeops/keops/blob/main/doc/_static/symbolic_matrix.svg">here</a>.</p>
 </section>
-<section id="neighbor-embedding">
-<span id="neighbor-embedding-section"></span><h3>Neighbor Embedding<a class="headerlink" href="#neighbor-embedding" title="Link to this heading">#</a></h3>
-<p>TorchDR aims to implement most popular <strong>neighbor embedding (NE)</strong> algorithms.
-In these methods, <span class="math notranslate nohighlight">\(\mathbf{P}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{Q}\)</span> can be viewed as <strong>soft neighborhood graphs</strong>, hence the term <em>neighbor embedding</em>.</p>
-<p>NE objectives share a common structure: they aim to <strong>minimize</strong> the <strong>weighted sum</strong> of an <strong>attractive term</strong> and a <strong>repulsive term</strong>. Interestingly, the <strong>attractive term</strong> is often the <strong>cross-entropy</strong> between the input and output affinities. Additionally, the <strong>repulsive term</strong> is typically a <strong>function of the output affinities only</strong>. Thus, the NE problem can be formulated as the following minimization problem:</p>
-<div class="math notranslate nohighlight">
-\[\min_{\mathbf{Z}} \: - \lambda \sum_{ij} P_{ij} \log Q_{ij} + \mathcal{L}_{\mathrm{rep}}(\mathbf{Q}) \:.\]</div>
-<p>In the above, <span class="math notranslate nohighlight">\(\mathcal{L}_{\mathrm{rep}}(\mathbf{Q})\)</span> represents the repulsive part of the loss function while <span class="math notranslate nohighlight">\(\lambda\)</span> is a hyperparameter that controls the balance between attraction and repulsion. The latter is called <code class="xref py py-attr docutils literal notranslate"><span class="pre">early_exaggeration_coeff</span></code> in TorchDR because it is often set to a value larger than one at the beginning of the optimization.</p>
-<p>Many NE methods can be represented within this framework. See below for some examples.</p>
-<div class="pst-scrollable-table-container"><table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p><strong>Method</strong></p></th>
-<th class="head"><p><strong>Repulsive term</strong> <span class="math notranslate nohighlight">\(\mathcal{L}_{\mathrm{rep}}\)</span></p></th>
-<th class="head"><p><strong>Affinity input</strong> <span class="math notranslate nohighlight">\(\mathbf{P}\)</span></p></th>
-<th class="head"><p><strong>Affinity output</strong> <span class="math notranslate nohighlight">\(\mathbf{Q}\)</span></p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.SNE.html#torchdr.SNE" title="torchdr.SNE"><code class="xref py py-class docutils literal notranslate"><span class="pre">SNE</span></code></a></p></td>
-<td><p><span class="math notranslate nohighlight">\(\sum_{i} \log(\sum_j Q_{ij})\)</span></p></td>
-<td><p><a class="reference internal" href="gen_modules/torchdr.EntropicAffinity.html#torchdr.EntropicAffinity" title="torchdr.EntropicAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">EntropicAffinity</span></code></a></p></td>
-<td><p><a class="reference internal" href="gen_modules/torchdr.GaussianAffinity.html#torchdr.GaussianAffinity" title="torchdr.GaussianAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">GaussianAffinity</span></code></a></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.TSNE.html#torchdr.TSNE" title="torchdr.TSNE"><code class="xref py py-class docutils literal notranslate"><span class="pre">TSNE</span></code></a></p></td>
-<td><p><span class="math notranslate nohighlight">\(\log(\sum_{ij} Q_{ij})\)</span></p></td>
-<td><p><a class="reference internal" href="gen_modules/torchdr.EntropicAffinity.html#torchdr.EntropicAffinity" title="torchdr.EntropicAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">EntropicAffinity</span></code></a></p></td>
-<td><p><a class="reference internal" href="gen_modules/torchdr.StudentAffinity.html#torchdr.StudentAffinity" title="torchdr.StudentAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StudentAffinity</span></code></a></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.TSNEkhorn.html#torchdr.TSNEkhorn" title="torchdr.TSNEkhorn"><code class="xref py py-class docutils literal notranslate"><span class="pre">TSNEkhorn</span></code></a></p></td>
-<td><p><span class="math notranslate nohighlight">\(\sum_{ij} Q_{ij}\)</span></p></td>
-<td><p><a class="reference internal" href="gen_modules/torchdr.SymmetricEntropicAffinity.html#torchdr.SymmetricEntropicAffinity" title="torchdr.SymmetricEntropicAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">SymmetricEntropicAffinity</span></code></a></p></td>
-<td><p><a class="reference internal" href="gen_modules/torchdr.SinkhornAffinity.html#torchdr.SinkhornAffinity" title="torchdr.SinkhornAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">SinkhornAffinity(base_kernel=&quot;student&quot;)</span></code></a></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.InfoTSNE.html#torchdr.InfoTSNE" title="torchdr.InfoTSNE"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoTSNE</span></code></a></p></td>
-<td><p><span class="math notranslate nohighlight">\(\sum_i \log(\sum_{j \in \mathrm{Neg}(i)} Q_{ij})\)</span></p></td>
-<td><p><a class="reference internal" href="gen_modules/torchdr.EntropicAffinity.html#torchdr.EntropicAffinity" title="torchdr.EntropicAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">EntropicAffinity</span></code></a></p></td>
-<td><p><a class="reference internal" href="gen_modules/torchdr.StudentAffinity.html#torchdr.StudentAffinity" title="torchdr.StudentAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StudentAffinity</span></code></a></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.UMAP.html#torchdr.UMAP" title="torchdr.UMAP"><code class="xref py py-class docutils literal notranslate"><span class="pre">UMAP</span></code></a></p></td>
-<td><p><span class="math notranslate nohighlight">\(- \sum_{i, j \in \mathrm{Neg}(i)} \log (1 - Q_{ij})\)</span></p></td>
-<td><p><a class="reference internal" href="gen_modules/torchdr.UMAPAffinity.html#torchdr.UMAPAffinity" title="torchdr.UMAPAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">UMAPAffinity</span></code></a></p></td>
-<td><p>None</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.LargeVis.html#torchdr.LargeVis" title="torchdr.LargeVis"><code class="xref py py-class docutils literal notranslate"><span class="pre">LargeVis</span></code></a></p></td>
-<td><p><span class="math notranslate nohighlight">\(- \sum_{i, j \in \mathrm{Neg}(i)} \log (1 - Q_{ij})\)</span></p></td>
-<td><p><a class="reference internal" href="gen_modules/torchdr.EntropicAffinity.html#torchdr.EntropicAffinity" title="torchdr.EntropicAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">EntropicAffinity</span></code></a></p></td>
-<td><p><a class="reference internal" href="gen_modules/torchdr.StudentAffinity.html#torchdr.StudentAffinity" title="torchdr.StudentAffinity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StudentAffinity</span></code></a></p></td>
-</tr>
-</tbody>
-</table>
+<section id="multi-gpu-distributed-training">
+<h3>Multi-GPU distributed training<a class="headerlink" href="#multi-gpu-distributed-training" title="Link to this heading">#</a></h3>
+<p>For very large datasets, TorchDR supports <strong>multi-GPU distributed training</strong> to parallelize computations across multiple GPUs. This is particularly useful when the affinity matrix is too large to compute on a single GPU or when faster computation is needed.</p>
+<p><strong>How it works:</strong></p>
+<ol class="arabic simple">
+<li><p><strong>Data partitioning</strong>: The full dataset <span class="math notranslate nohighlight">\(\mathbf{X} \in \mathbb{R}^{N \times d}\)</span> is split into chunks across GPUs. Each GPU handles a subset of <span class="math notranslate nohighlight">\(n_i\)</span> samples.</p></li>
+<li><p><strong>Shared neighbor index</strong>: A FAISS index is built on the full dataset and shared across all GPUs, enabling efficient k-nearest neighbor queries.</p></li>
+<li><p><strong>Parallel affinity computation</strong>: Each GPU computes the affinity rows for its chunk by querying the shared index. GPU <span class="math notranslate nohighlight">\(i\)</span> computes rows <span class="math notranslate nohighlight">\([\text{start}_i, \text{end}_i)\)</span> of the affinity matrix.</p></li>
+<li><p><strong>Distributed gradient computation</strong>: During optimization, each GPU:</p>
+<ul class="simple">
+<li><p>Computes gradients <span class="math notranslate nohighlight">\(\nabla \mathcal{L}_i\)</span> for its local chunk</p></li>
+<li><p>Maintains a full copy of the embedding <span class="math notranslate nohighlight">\(\mathbf{Z} \in \mathbb{R}^{N \times q}\)</span></p></li>
+<li><p>Synchronizes gradients via <strong>all-reduce</strong> across GPUs</p></li>
+</ul>
+</li>
+<li><p><strong>Synchronized updates</strong>: After all-reduce, each GPU has identical aggregated gradients and applies the same optimizer step, keeping embeddings synchronized.</p></li>
+</ol>
+<a class="reference internal image-reference" href="_images/multi_gpu_dr_extended.png"><img alt="_images/multi_gpu_dr_extended.png" class="align-center" src="_images/multi_gpu_dr_extended.png" style="width: 800px;" />
+</a>
+<p><em>Multi-GPU dimensionality reduction pipeline. The dataset is split into chunks across GPUs. Each GPU performs neighbor search using a shared index, computes its affinity chunk, and generates local gradients. Gradients are synchronized via all-reduce and used to update the embedding copies maintained on each device.</em></p>
+<p><strong>Usage:</strong></p>
+<p>Multi-GPU mode is enabled automatically when launching with <code class="docutils literal notranslate"><span class="pre">torchrun</span></code> or the TorchDR CLI:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Using the TorchDR CLI (recommended)</span>
+torchdr<span class="w"> </span>--gpus<span class="w"> </span><span class="m">4</span><span class="w"> </span>your_script.py
+
+<span class="c1"># Or using torchrun directly</span>
+torchrun<span class="w"> </span>--nproc_per_node<span class="o">=</span><span class="m">4</span><span class="w"> </span>your_script.py
+</pre></div>
 </div>
-<p>In the above table, <span class="math notranslate nohighlight">\(\mathrm{Neg}(i)\)</span> denotes the set of negative samples
-for point <span class="math notranslate nohighlight">\(i\)</span>. They are usually sampled uniformly at random from the dataset.</p>
+<p>In your script, simply use TorchDR as usual:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torchdr</span>
+
+<span class="c1"># Distributed mode is auto-detected when launched with torchrun</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">torchdr</span><span class="o">.</span><span class="n">UMAP</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">embedding</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Requirements:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">backend=&quot;faiss&quot;</span></code> (default for most methods)</p></li>
+<li><p>Multiple CUDA GPUs available</p></li>
+<li><p>Launch with <code class="docutils literal notranslate"><span class="pre">torchdr</span></code> CLI or <code class="docutils literal notranslate"><span class="pre">torchrun</span></code></p></li>
+</ul>
+<p><strong>Supported methods:</strong></p>
+<p>Currently, the following methods support multi-GPU:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="gen_modules/torchdr.PCA.html#torchdr.PCA" title="torchdr.PCA"><code class="xref py py-class docutils literal notranslate"><span class="pre">PCA</span></code></a> (with <code class="docutils literal notranslate"><span class="pre">distributed=&quot;auto&quot;</span></code>)</p></li>
+<li><p><a class="reference internal" href="gen_modules/torchdr.ExactIncrementalPCA.html#torchdr.ExactIncrementalPCA" title="torchdr.ExactIncrementalPCA"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExactIncrementalPCA</span></code></a> (with <code class="docutils literal notranslate"><span class="pre">distributed=&quot;auto&quot;</span></code>)</p></li>
+<li><p><a class="reference internal" href="gen_modules/torchdr.UMAP.html#torchdr.UMAP" title="torchdr.UMAP"><code class="xref py py-class docutils literal notranslate"><span class="pre">UMAP</span></code></a></p></li>
+<li><p><a class="reference internal" href="gen_modules/torchdr.InfoTSNE.html#torchdr.InfoTSNE" title="torchdr.InfoTSNE"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoTSNE</span></code></a></p></li>
+<li><p><a class="reference internal" href="gen_modules/torchdr.LargeVis.html#torchdr.LargeVis" title="torchdr.LargeVis"><code class="xref py py-class docutils literal notranslate"><span class="pre">LargeVis</span></code></a></p></li>
+</ul>
+</section>
+<section id="dataloader-for-streaming-data">
+<h3>DataLoader for Streaming Data<a class="headerlink" href="#dataloader-for-streaming-data" title="Link to this heading">#</a></h3>
+<p>For datasets too large to fit in RAM, TorchDR supports passing a PyTorch <code class="docutils literal notranslate"><span class="pre">DataLoader</span></code> directly to <code class="docutils literal notranslate"><span class="pre">fit_transform</span></code> instead of a tensor. This enables streaming computation where data is processed batch-by-batch.</p>
+<p><strong>How it works:</strong></p>
+<ol class="arabic simple">
+<li><p><strong>Incremental index building</strong>: The FAISS index is built incrementally from batches</p></li>
+<li><p><strong>Batch-by-batch k-NN queries</strong>: Neighbor queries are performed as each batch arrives</p></li>
+<li><p><strong>Automatic PCA initialization</strong>: When <code class="docutils literal notranslate"><span class="pre">init=&quot;pca&quot;</span></code>, <a class="reference internal" href="gen_modules/torchdr.IncrementalPCA.html#torchdr.IncrementalPCA" title="torchdr.IncrementalPCA"><code class="xref py py-class docutils literal notranslate"><span class="pre">IncrementalPCA</span></code></a> is used automatically</p></li>
+</ol>
+<p><strong>Usage:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span><span class="p">,</span> <span class="n">TensorDataset</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torchdr</span>
+
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">TensorDataset</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>  <span class="c1"># X is your large tensor</span>
+<span class="n">dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">torchdr</span><span class="o">.</span><span class="n">UMAP</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;faiss&quot;</span><span class="p">)</span>
+<span class="n">embedding</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">dataloader</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Requirements:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">backend=&quot;faiss&quot;</span></code> must be used</p></li>
+<li><p>The DataLoader must yield tensors (or tuples where the first element is the data tensor)</p></li>
+</ul>
 </section>
 </section>
 </section>
@@ -727,11 +807,11 @@ for point <span class="math notranslate nohighlight">\(i\)</span>. They are usua
       </div>
     </a>
     <a class="right-next"
-       href="stubs/torchdr.Affinity.html"
+       href="stubs/torchdr.DRModule.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Affinity</p>
+        <p class="prev-next-title">DRModule</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -756,8 +836,12 @@ for point <span class="math notranslate nohighlight">\(i\)</span>. They are usua
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#general-formulation-of-dimensionality-reduction">General Formulation of Dimensionality Reduction</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torch-gpu-support-and-automatic-differentiation">Torch GPU support and automatic differentiation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#handling-the-quadratic-cost-via-sparsity-or-symbolic-tensors">Handling the quadratic cost via sparsity or symbolic tensors</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gpu-support">GPU Support</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dimensionality-reduction-methods">Dimensionality Reduction Methods</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#neighbor-embedding">Neighbor Embedding</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spectral-methods">Spectral Methods</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#affinities">Affinities</a><ul class="nav section-nav flex-column">
@@ -769,9 +853,10 @@ for point <span class="math notranslate nohighlight">\(i\)</span>. They are usua
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#other-various-affinities">Other various affinities</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dimensionality-reduction-modules">Dimensionality Reduction Modules</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spectral-methods">Spectral methods</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#neighbor-embedding">Neighbor Embedding</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scalability-backends">Scalability &amp; Backends</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#handling-the-quadratic-cost-via-sparsity-or-symbolic-tensors">Handling the quadratic cost via sparsity or symbolic tensors</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-gpu-distributed-training">Multi-GPU distributed training</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dataloader-for-streaming-data">DataLoader for Streaming Data</a></li>
 </ul>
 </li>
 </ul>

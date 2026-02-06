@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.neighbor_embedding.base &#8212; TorchDR 0.5.dev3+g813a39f31 documentation</title>
+    <title>torchdr.neighbor_embedding.base &#8212; TorchDR 0.5.dev4+g45c51441f documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=e3d9042c"></script>
+    <script src="../../../_static/documentation_options.js?v=8d6f24a6"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchdr/neighbor_embedding/base';</script>
@@ -117,8 +117,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev3+g813a39f31 documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev3+g813a39f31 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev4+g45c51441f documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev4+g45c51441f documentation - Home"/>
   
   
 </a></div>
@@ -794,6 +794,8 @@
 <span class="sd">        Whether to use torch.compile for faster computation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
 
+    <span class="n">_supports_mini_batch</span> <span class="o">=</span> <span class="kc">False</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">affinity_in</span><span class="p">:</span> <span class="n">Affinity</span><span class="p">,</span>
@@ -994,6 +996,8 @@
 <span class="sd">        Default is &quot;auto&quot;.</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
 
+    <span class="n">_supports_mini_batch</span> <span class="o">=</span> <span class="kc">True</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">affinity_in</span><span class="p">:</span> <span class="n">Affinity</span><span class="p">,</span>
@@ -1151,6 +1155,11 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sample negatives using a unified path for single- and multi-GPU.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_training_step_start</span><span class="p">()</span>
 
+        <span class="c1"># In mini-batch mode, negatives are sampled per batch in</span>
+        <span class="c1"># _sample_negatives_for_batch — skip full-data sampling here.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_mini_batch</span><span class="p">:</span>
+            <span class="k">return</span>
+
         <span class="n">chunk_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span><span class="p">)</span>
         <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">device</span>
 
@@ -1203,7 +1212,126 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">requires_grad_</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_init_embedding</span><span class="p">(</span><span class="n">X</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_init_embedding</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+    <span class="c1"># --- Mini-batch training ---</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_run_mini_batch_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run one optimization step consisting of a full pass over mini-batches.&quot;&quot;&quot;</span>
+        <span class="c1"># Refresh cached embedding from encoder (no grad)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_cached_embedding</span><span class="p">()</span>
+
+        <span class="c1"># Save full-data attributes</span>
+        <span class="n">full_chunk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span>
+        <span class="n">full_nn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span>
+        <span class="n">full_affinity</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;affinity_in_&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="c1"># Step-level hooks (early exaggeration, UMAP edge scheduling)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">on_training_step_start</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_mini_batch_epoch</span><span class="p">()</span>
+
+        <span class="c1"># Shuffle sample order</span>
+        <span class="n">perm</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randperm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device_</span><span class="p">)</span>
+
+        <span class="n">total_loss</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">n_batches</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">b_start</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">):</span>
+            <span class="n">batch_idx</span> <span class="o">=</span> <span class="n">perm</span><span class="p">[</span><span class="n">b_start</span> <span class="p">:</span> <span class="n">b_start</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">]</span><span class="o">.</span><span class="n">sort</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">batch_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mini_batch_training_step</span><span class="p">(</span>
+                <span class="n">batch_idx</span><span class="p">,</span> <span class="n">full_nn</span><span class="p">,</span> <span class="n">full_affinity</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">batch_loss</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">total_loss</span> <span class="o">+=</span> <span class="n">batch_loss</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+                <span class="n">n_batches</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># Restore full-data attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span> <span class="o">=</span> <span class="n">full_chunk</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span> <span class="o">=</span> <span class="n">full_nn</span>
+        <span class="k">if</span> <span class="n">full_affinity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span> <span class="o">=</span> <span class="n">full_affinity</span>
+
+        <span class="c1"># Set embedding from incrementally-updated cache for NaN check</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_cached_</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">on_training_step_end</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">total_loss</span> <span class="o">/</span> <span class="n">n_batches</span><span class="p">)</span> <span class="k">if</span> <span class="n">n_batches</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_mini_batch_training_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">full_nn</span><span class="p">,</span> <span class="n">full_affinity</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;One mini-batch: encoder forward + loss + backward + optimizer step.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">(</span><span class="n">set_to_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># 1. Forward encoder on batch only (with grad)</span>
+        <span class="n">z_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_train_</span><span class="p">[</span><span class="n">batch_idx</span><span class="p">])</span>
+
+        <span class="c1"># 2. Build hybrid embedding: cached (detached) + live at batch positions</span>
+        <span class="n">embedding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_cached_</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+        <span class="n">embedding</span><span class="p">[</span><span class="n">batch_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">z_batch</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span> <span class="o">=</span> <span class="n">embedding</span>
+
+        <span class="c1"># 3. Override chunk-level state for existing loss functions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span> <span class="o">=</span> <span class="n">batch_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span> <span class="o">=</span> <span class="n">full_nn</span><span class="p">[</span><span class="n">batch_idx</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">full_affinity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span> <span class="o">=</span> <span class="n">full_affinity</span><span class="p">[</span><span class="n">batch_idx</span><span class="p">]</span>
+
+        <span class="c1"># 4. Sample negatives for this batch</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sample_negatives_for_batch</span><span class="p">(</span><span class="n">batch_idx</span><span class="p">)</span>
+
+        <span class="c1"># 5. Prepare method-specific batch state (e.g. UMAP edge mask)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_mini_batch_step</span><span class="p">(</span><span class="n">batch_idx</span><span class="p">)</span>
+
+        <span class="c1"># 6. Compute loss/gradients using existing methods (unchanged!)</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_use_direct_gradients&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="n">gradients</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_gradients</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">gradients</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">z_batch</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">gradient</span><span class="o">=</span><span class="n">gradients</span><span class="p">)</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_loss</span><span class="p">()</span>
+            <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+        <span class="c1"># Update cache in-place so subsequent batches see fresher context</span>
+        <span class="c1"># and we avoid a second full encoder forward pass at end of step.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embedding_cached_</span><span class="p">[</span><span class="n">batch_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">z_batch</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">loss</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sample_negatives_for_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sample negatives for a mini-batch.&quot;&quot;&quot;</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">batch_idx</span><span class="p">)</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_cached_</span><span class="o">.</span><span class="n">device</span>
+        <span class="n">exclusion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative_exclusion_indices_</span><span class="p">[</span><span class="n">batch_idx</span><span class="p">]</span>
+        <span class="n">excl_width</span> <span class="o">=</span> <span class="n">exclusion</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">excl_width</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">negatives</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
+                <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span><span class="p">),</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
+            <span class="p">)</span>
+            <span class="n">self_idx</span> <span class="o">=</span> <span class="n">batch_idx</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">neg_indices</span> <span class="o">=</span> <span class="n">negatives</span> <span class="o">+</span> <span class="p">(</span><span class="n">negatives</span> <span class="o">&gt;=</span> <span class="n">self_idx</span><span class="p">)</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">negatives</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
+                <span class="mi">1</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">-</span> <span class="n">excl_width</span><span class="p">,</span>
+                <span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span><span class="p">),</span>
+                <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">shifts</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">exclusion</span><span class="p">,</span> <span class="n">negatives</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">neg_indices</span> <span class="o">=</span> <span class="n">negatives</span> <span class="o">+</span> <span class="n">shifts</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">neg_indices_</span> <span class="o">=</span> <span class="n">neg_indices</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_mini_batch_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called once per epoch before mini-batch loop. Override in subclass.&quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_mini_batch_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called per mini-batch before loss computation. Override in subclass.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
 
 </pre></div>
 

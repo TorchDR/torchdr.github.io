@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.neighbor_embedding.umap &#8212; TorchDR 0.5.dev3+g813a39f31 documentation</title>
+    <title>torchdr.neighbor_embedding.umap &#8212; TorchDR 0.5.dev4+g45c51441f documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=e3d9042c"></script>
+    <script src="../../../_static/documentation_options.js?v=8d6f24a6"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchdr/neighbor_embedding/umap';</script>
@@ -117,8 +117,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev3+g813a39f31 documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev3+g813a39f31 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev4+g45c51441f documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev4+g45c51441f documentation - Home"/>
   
   
 </a></div>
@@ -572,6 +572,15 @@
 <span class="sd">        - True: Force distributed mode (requires torchrun)</span>
 <span class="sd">        - False: Disable distributed mode</span>
 <span class="sd">        Default is &quot;auto&quot;.</span>
+<span class="sd">    encoder : torch.nn.Module, optional</span>
+<span class="sd">        A neural network that maps input data to the embedding space.</span>
+<span class="sd">        When provided, optimizes encoder parameters instead of a raw</span>
+<span class="sd">        embedding matrix. Default is None.</span>
+<span class="sd">    batch_size : int, optional</span>
+<span class="sd">        Mini-batch size for encoder-based training. When set with</span>
+<span class="sd">        ``encoder``, each step processes a random subset through the</span>
+<span class="sd">        encoder while using a cached full embedding for context.</span>
+<span class="sd">        Default is None (full-batch).</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -604,6 +613,8 @@
         <span class="n">discard_NNs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">distributed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">encoder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;torch.nn.Module&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span> <span class="o">=</span> <span class="n">n_neighbors</span>
@@ -657,6 +668,8 @@
             <span class="nb">compile</span><span class="o">=</span><span class="nb">compile</span><span class="p">,</span>
             <span class="n">n_negatives</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span><span class="p">,</span>
             <span class="n">distributed</span><span class="o">=</span><span class="n">distributed</span><span class="p">,</span>
+            <span class="n">encoder</span><span class="o">=</span><span class="n">encoder</span><span class="p">,</span>
+            <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -684,6 +697,19 @@
         <span class="p">)</span></div>
 
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_mini_batch_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pre-compute which edges to update this epoch (full dataset).&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_epoch_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">epoch_of_next_sample</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">epoch_of_next_sample</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_epoch_mask</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs_per_sample</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_epoch_mask</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_mini_batch_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set batch-level edge mask for gradient computation.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span>
+            <span class="s2">&quot;mask_affinity_in_&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_epoch_mask</span><span class="p">[</span><span class="n">batch_idx</span><span class="p">],</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_attractive_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">D</span> <span class="o">=</span> <span class="n">pairwise_distances_indexed</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span>
@@ -697,13 +723,16 @@
         <span class="n">D</span><span class="o">.</span><span class="n">mul_</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_a</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="p">)</span><span class="o">.</span><span class="n">div_</span><span class="p">(</span><span class="n">D_</span><span class="p">)</span>
         <span class="n">D</span><span class="o">.</span><span class="n">masked_fill_</span><span class="p">(</span><span class="o">~</span><span class="n">positive_edges</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># prevent infinities when b &lt; 1</span>
 
-        <span class="c1"># UMAP keeps a per-edge counter (epoch_of_next_sample) so that stronger edges</span>
-        <span class="c1"># (higher affinity → smaller epochs_per_sample) get updated more often.</span>
-        <span class="n">mask_affinity_in</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">epoch_of_next_sample</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span> <span class="o">+</span> <span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;mask_affinity_in_&quot;</span><span class="p">,</span> <span class="n">mask_affinity_in</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">epoch_of_next_sample</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mask_affinity_in_</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs_per_sample</span><span class="p">[</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">mask_affinity_in_</span>
-        <span class="p">]</span>
+        <span class="c1"># In mini-batch mode, mask_affinity_in_ is pre-set by _prepare_mini_batch_step.</span>
+        <span class="c1"># In full-batch mode, compute it here from the edge scheduling counters.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_mini_batch</span><span class="p">:</span>
+            <span class="n">mask_affinity_in</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">epoch_of_next_sample</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span>
+                <span class="s2">&quot;mask_affinity_in_&quot;</span><span class="p">,</span> <span class="n">mask_affinity_in</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">epoch_of_next_sample</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mask_affinity_in_</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs_per_sample</span><span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mask_affinity_in_</span>
+            <span class="p">]</span>
         <span class="n">D</span><span class="o">.</span><span class="n">masked_fill_</span><span class="p">(</span><span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">mask_affinity_in_</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
         <span class="n">diff</span> <span class="o">=</span> <span class="p">(</span>

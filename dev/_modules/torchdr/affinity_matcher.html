@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.affinity_matcher &#8212; TorchDR 0.5.dev4+g8f8833d6c documentation</title>
+    <title>torchdr.affinity_matcher &#8212; TorchDR 0.5.dev5+gab7512974 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=b30b0668"></script>
+    <script src="../../_static/documentation_options.js?v=a7daf1ca"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchdr/affinity_matcher';</script>
@@ -117,8 +117,8 @@
       
     
     
-    <img src="../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev4+g8f8833d6c documentation - Home"/>
-    <img src="../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev4+g8f8833d6c documentation - Home"/>
+    <img src="../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev5+gab7512974 documentation - Home"/>
+    <img src="../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev5+gab7512974 documentation - Home"/>
   
   
 </a></div>
@@ -444,7 +444,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for torchdr.affinity_matcher</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Affinity matcher base classes.&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;Affinity matcher module.&quot;&quot;&quot;</span>
 
 <span class="c1"># Author: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
 <span class="c1">#         Titouan Vayer &lt;titouan.vayer@inria.fr&gt;</span>
@@ -487,9 +487,9 @@
 <div class="viewcode-block" id="AffinityMatcher">
 <a class="viewcode-back" href="../../stubs/torchdr.AffinityMatcher.html#torchdr.AffinityMatcher">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">AffinityMatcher</span><span class="p">(</span><span class="n">DRModule</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Perform dimensionality reduction by matching two affinity matrices.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Dimensionality reduction by matching two affinity matrices.</span>
 
-<span class="sd">    It amounts to solving a problem of the form:</span>
+<span class="sd">    Solves an optimization problem of the form:</span>
 
 <span class="sd">    .. math::</span>
 
@@ -499,68 +499,67 @@
 <span class="sd">    input affinity matrix and :math:`\mathbf{Q}` is the affinity matrix of the</span>
 <span class="sd">    embedding.</span>
 
-<span class="sd">    The embedding optimization is performed using a first-order optimization method, with gradients calculated via PyTorch&#39;s automatic differentiation.</span>
+<span class="sd">    The embedding is optimized via first-order methods, with gradients computed</span>
+<span class="sd">    either through PyTorch autograd or manually (when</span>
+<span class="sd">    :attr:`_use_closed_form_gradients` is ``True``).</span>
+
+<span class="sd">    When an :attr:`encoder` (neural network) is provided, its parameters are</span>
+<span class="sd">    optimized instead of a raw embedding matrix, enabling out-of-sample</span>
+<span class="sd">    extension via :meth:`transform`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    affinity_in : Affinity</span>
 <span class="sd">        The affinity object for the input space.</span>
 <span class="sd">    affinity_out : Affinity, optional</span>
-<span class="sd">        The affinity object for the output embedding space. Default is None.</span>
-<span class="sd">        When None, a custom _loss method must be implemented.</span>
+<span class="sd">        The affinity object for the output embedding space.</span>
+<span class="sd">        When None, a custom :meth:`_compute_loss` method must be implemented.</span>
 <span class="sd">    kwargs_affinity_out : dict, optional</span>
 <span class="sd">        Additional keyword arguments for the affinity_out method.</span>
 <span class="sd">    n_components : int, optional</span>
 <span class="sd">        Number of dimensions for the embedding. Default is 2.</span>
 <span class="sd">    loss_fn : str, optional</span>
-<span class="sd">        Loss function to use for the optimization. Default is &quot;square_loss&quot;.</span>
+<span class="sd">        Loss function for optimization. Default is &quot;square_loss&quot;.</span>
 <span class="sd">    kwargs_loss : dict, optional</span>
 <span class="sd">        Additional keyword arguments for the loss function.</span>
 <span class="sd">    optimizer : str or torch.optim.Optimizer, optional</span>
-<span class="sd">        Name of an optimizer from torch.optim or an optimizer class.</span>
+<span class="sd">        Optimizer name from ``torch.optim`` or an optimizer class.</span>
 <span class="sd">        Default is &quot;Adam&quot;.</span>
 <span class="sd">    optimizer_kwargs : dict, optional</span>
 <span class="sd">        Additional keyword arguments for the optimizer.</span>
 <span class="sd">    lr : float or &#39;auto&#39;, optional</span>
-<span class="sd">        Learning rate for the optimizer. Default is 1e0.</span>
+<span class="sd">        Learning rate. Default is 1e0.</span>
 <span class="sd">    scheduler : str or torch.optim.lr_scheduler.LRScheduler, optional</span>
-<span class="sd">        Name of a scheduler from torch.optim.lr_scheduler or a scheduler class.</span>
+<span class="sd">        Scheduler name from ``torch.optim.lr_scheduler`` or a scheduler class.</span>
 <span class="sd">        Default is None (no scheduler).</span>
 <span class="sd">    scheduler_kwargs : dict, optional</span>
 <span class="sd">        Additional keyword arguments for the scheduler.</span>
 <span class="sd">    min_grad_norm : float, optional</span>
-<span class="sd">        Tolerance for stopping criterion. Default is 1e-7.</span>
+<span class="sd">        Gradient norm threshold for convergence. Default is 1e-7.</span>
 <span class="sd">    max_iter : int, optional</span>
 <span class="sd">        Maximum number of iterations. Default is 1000.</span>
 <span class="sd">    init : str, torch.Tensor, or np.ndarray, optional</span>
-<span class="sd">        Initialization method for the embedding. Default is &quot;pca&quot;.</span>
+<span class="sd">        Initialization for the embedding. Default is &quot;pca&quot;.</span>
 <span class="sd">    init_scaling : float, optional</span>
 <span class="sd">        Scaling factor for the initial embedding. Default is 1e-4.</span>
 <span class="sd">    device : str, optional</span>
-<span class="sd">        Device to use for computations. Default is &quot;auto&quot;.</span>
+<span class="sd">        Device for computations. Default is &quot;auto&quot;.</span>
 <span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None} or FaissConfig, optional</span>
-<span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
-<span class="sd">        Can be:</span>
-<span class="sd">        - &quot;keops&quot;: Use KeOps for memory-efficient symbolic computations</span>
-<span class="sd">        - &quot;faiss&quot;: Use FAISS for fast k-NN computations with default settings</span>
-<span class="sd">        - None: Use standard PyTorch operations</span>
-<span class="sd">        - FaissConfig object: Use FAISS with custom configuration</span>
-<span class="sd">        Default is None.</span>
+<span class="sd">        Backend for handling sparsity and memory efficiency.</span>
+<span class="sd">        Default is None (standard PyTorch).</span>
 <span class="sd">    verbose : bool, optional</span>
-<span class="sd">        Verbosity of the optimization process. Default is False.</span>
+<span class="sd">        Verbosity. Default is False.</span>
 <span class="sd">    random_state : float, optional</span>
 <span class="sd">        Random seed for reproducibility. Default is None.</span>
 <span class="sd">    check_interval : int, optional</span>
-<span class="sd">        Number of iterations between two checks for convergence. Default is 50.</span>
+<span class="sd">        Iterations between convergence checks. Default is 50.</span>
 <span class="sd">    compile : bool, default=False</span>
-<span class="sd">        Whether to use torch.compile for faster computation.</span>
+<span class="sd">        Whether to use ``torch.compile`` for faster computation.</span>
 <span class="sd">    encoder : torch.nn.Module, optional</span>
-<span class="sd">        A neural network that maps input data to the embedding space.</span>
-<span class="sd">        When provided, the model optimizes the encoder parameters instead of</span>
-<span class="sd">        a raw embedding matrix. This enables out-of-sample extension via</span>
-<span class="sd">        ``transform(X_new)``. The encoder output dimension must match</span>
-<span class="sd">        ``n_components``. Default is None (standard embedding optimization).</span>
-<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
+<span class="sd">        Neural network mapping input data to the embedding space.</span>
+<span class="sd">        Output dimension must match :attr:`n_components`.</span>
+<span class="sd">        Default is None (optimize a raw embedding matrix).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -619,7 +618,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="o">=</span> <span class="n">init</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_scaling</span> <span class="o">=</span> <span class="n">init_scaling</span>
 
-        <span class="c1"># --- check affinity_in ---</span>
+        <span class="c1"># --- Validate affinity_in ---</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">affinity_in</span><span class="p">,</span> <span class="n">Affinity</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">affinity_in</span> <span class="o">==</span> <span class="s2">&quot;precomputed&quot;</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s1">&#39;[TorchDR] affinity_in must be an Affinity instance or &quot;precomputed&quot;.&#39;</span>
@@ -629,11 +628,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="o">.</span><span class="n">_pre_processed</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="o">.</span><span class="n">compile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compile</span>
 
-        <span class="c1"># --- check affinity_out ---</span>
+        <span class="c1"># --- Validate affinity_out ---</span>
         <span class="k">if</span> <span class="n">affinity_out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">affinity_out</span><span class="p">,</span> <span class="n">Affinity</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;[TorchDR] ERROR : affinity_out must be an Affinity instance when not None.&quot;</span>
+                    <span class="s2">&quot;[TorchDR] ERROR : affinity_out must be an Affinity instance &quot;</span>
+                    <span class="s2">&quot;when not None.&quot;</span>
                 <span class="p">)</span>
             <span class="n">affinity_out</span><span class="o">.</span><span class="n">_pre_processed</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -644,24 +644,26 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
 
+    <span class="c1"># --- Fitting and optimization loop ---</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit the model from data in X.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the input affinity and optimize the embedding.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        X : torch.Tensor of shape (n_samples, n_features)</span>
-<span class="sd">            or (n_samples, n_samples) if precomputed is True</span>
-<span class="sd">            Input data.</span>
+<span class="sd">            Input data (or ``(n_samples, n_samples)`` when</span>
+<span class="sd">            ``affinity_in=&quot;precomputed&quot;``).</span>
 <span class="sd">        y : None</span>
 <span class="sd">            Ignored.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        embedding_ : torch.Tensor</span>
-<span class="sd">            The embedding of the input data.</span>
+<span class="sd">        embedding_ : torch.Tensor of shape (n_samples, n_components)</span>
+<span class="sd">            The optimized embedding.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># --- Resolve metadata and device ---</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">DataLoader</span><span class="p">):</span>
-            <span class="c1"># Extract all metadata from first batch in ONE pass</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
@@ -675,7 +677,6 @@
                     <span class="s2">&quot;[TorchDR] DataLoader is empty, cannot determine metadata. &quot;</span>
                     <span class="s2">&quot;Ensure DataLoader yields at least one batch.&quot;</span>
                 <span class="p">)</span>
-            <span class="c1"># Resolve device</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">device_</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_dataloader_device_</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span>
             <span class="p">)</span>
@@ -683,7 +684,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_features_in_</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">device_</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">device</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span>
 
-        <span class="c1"># --- Encoder validation ---</span>
+        <span class="c1"># --- Validate encoder ---</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;[TorchDR] encoder must be an nn.Module instance.&quot;</span><span class="p">)</span>
@@ -699,18 +700,17 @@
                         <span class="sa">f</span><span class="s2">&quot; != n_components (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="si">}</span><span class="s2">).&quot;</span>
                     <span class="p">)</span>
 
-        <span class="c1"># --- Input affinity computation ---</span>
+        <span class="c1"># --- Compute input affinity ---</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">on_affinity_computation_start</span><span class="p">()</span>
 
-        <span class="c1"># check if affinity_in is precomputed else compute it</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span> <span class="o">==</span> <span class="s2">&quot;precomputed&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;----- Using precomputed affinity matrix -----&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_features_in_</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s1">&#39;[TorchDR] ERROR : When affinity_in=&quot;precomputed&quot; the input X &#39;</span>
-                    <span class="s2">&quot;in fit must be a tensor of lazy tensor of shape &quot;</span>
+                    <span class="s1">&#39;[TorchDR] ERROR : When affinity_in=&quot;precomputed&quot; the input &#39;</span>
+                    <span class="s2">&quot;X in fit must be a tensor of lazy tensor of shape &quot;</span>
                     <span class="s2">&quot;(n_samples, n_samples).&quot;</span>
                 <span class="p">)</span>
             <span class="n">check_nonnegativity</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
@@ -718,7 +718,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;----- Computing the input affinity matrix with </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> -----&quot;</span>
+                    <span class="s2">&quot;----- Computing the input affinity matrix with &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> -----&quot;</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="p">,</span> <span class="n">SparseAffinity</span><span class="p">):</span>
                 <span class="n">affinity_matrix</span><span class="p">,</span> <span class="n">nn_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -726,7 +727,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">affinity_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
-            <span class="c1"># LazyTensors (from keops backend) can&#39;t be registered as buffers</span>
+            <span class="c1"># LazyTensors (keops) cannot be registered as buffers</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="o">.</span><span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;keops&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span> <span class="o">=</span> <span class="n">affinity_matrix</span>
             <span class="k">else</span><span class="p">:</span>
@@ -734,7 +735,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">on_affinity_computation_end</span><span class="p">()</span>
 
-        <span class="c1"># --- Embedding optimization ---</span>
+        <span class="c1"># --- Optimize embedding ---</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;----- Optimizing the embedding -----&quot;</span><span class="p">)</span>
@@ -745,9 +746,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_configure_optimizer</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_configure_scheduler</span><span class="p">()</span>
 
-        <span class="c1"># Drop local reference to input data (no longer needed after initialization).</span>
-        <span class="c1"># Memory is freed only if the caller doesn&#39;t hold another reference.</span>
-        <span class="c1"># Keep X when encoder is used (stored as X_train_ for forward pass).</span>
+        <span class="c1"># Free input data (not needed after init, unless encoder stores X_train_)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span> <span class="o">!=</span> <span class="s2">&quot;precomputed&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">del</span> <span class="n">X</span>
             <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
@@ -769,18 +768,15 @@
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_interval</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
                 <span class="n">lr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_</span><span class="o">.</span><span class="n">param_groups</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;lr&quot;</span><span class="p">]</span>
-
                 <span class="n">msg_parts</span> <span class="o">=</span> <span class="p">[]</span>
                 <span class="k">if</span> <span class="n">loss</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">msg_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loss: </span><span class="si">{</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">msg_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Grad norm: </span><span class="si">{</span><span class="n">grad_norm</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">msg_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LR: </span><span class="si">{</span><span class="n">lr</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
                 <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot; | &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">msg_parts</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-            <span class="n">check_convergence</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_interval</span> <span class="o">==</span> <span class="mi">0</span>
-            <span class="k">if</span> <span class="n">check_convergence</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_interval</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">grad_norm</span> <span class="o">=</span> <span class="p">(</span>
                         <span class="nb">sum</span><span class="p">(</span>
@@ -795,26 +791,43 @@
                 <span class="k">if</span> <span class="n">grad_norm</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_grad_norm</span><span class="p">:</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;Convergence reached at iter </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span><span class="si">}</span><span class="s2"> with grad norm: &quot;</span>
-                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">grad_norm</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">.&quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;Convergence reached at iter </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span><span class="si">}</span><span class="s2"> &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;with grad norm: </span><span class="si">{</span><span class="n">grad_norm</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">.&quot;</span>
                         <span class="p">)</span>
                     <span class="k">break</span>
 
-        <span class="c1"># Always clear memory after training</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clear_memory</span><span class="p">()</span>
-
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span>
 
     <span class="nd">@compile_if_requested</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_training_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform one optimization step (zero grad, loss/gradients, update).</span>
+
+<span class="sd">        Two gradient modes are supported:</span>
+
+<span class="sd">        **Closed-form gradients** (``_use_closed_form_gradients = True``):</span>
+<span class="sd">        subclasses (e.g. UMAP) implement :meth:`_compute_gradients` which</span>
+<span class="sd">        returns analytically derived embedding gradients. No loss scalar is</span>
+<span class="sd">        computed. This is faster when a closed-form gradient expression is</span>
+<span class="sd">        available.</span>
+
+<span class="sd">        **Autograd** (default): :meth:`_compute_loss` returns a scalar loss</span>
+<span class="sd">        and ``loss.backward()`` computes gradients via PyTorch autograd.</span>
+<span class="sd">        Used by TSNE, LargeVis, InfoTSNE, etc.</span>
+
+<span class="sd">        In both modes the optimizer then steps using the accumulated gradients.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">(</span><span class="n">set_to_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="c1"># When using an encoder, recompute embedding via forward pass each step</span>
+        <span class="c1"># When an encoder is used, the embedding is the encoder&#39;s output.</span>
+        <span class="c1"># Gradients will flow back through the encoder via autograd (autograd</span>
+        <span class="c1"># mode) or via embedding_.backward(gradient=...) (direct mode).</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_train_</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_use_direct_gradients&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-            <span class="c1"># Direct gradients: _compute_gradients() returns only the chunk&#39;s gradients [chunk_size, dim].</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_use_closed_form_gradients&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="c1"># --- Closed-form gradient mode ---</span>
+            <span class="c1"># Subclass computes analytical gradients w.r.t. the embedding.</span>
             <span class="n">gradients</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_gradients</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">gradients</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -823,16 +836,21 @@
                             <span class="s2">&quot;[TorchDR] encoder with distributed direct &quot;</span>
                             <span class="s2">&quot;gradients is not yet supported.&quot;</span>
                         <span class="p">)</span>
-                    <span class="c1"># Chain rule: propagate manual gradients through encoder</span>
+                    <span class="c1"># Backprop through the encoder: embedding_ is the output</span>
+                    <span class="c1"># of encoder(X), so .backward(gradient=...) applies the</span>
+                    <span class="c1"># chain rule to update the encoder&#39;s parameters.</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">gradient</span><span class="o">=</span><span class="n">gradients</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;world_size&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="c1"># Multi-GPU: Place chunk gradients in full-sized tensor and combine across GPUs</span>
+                    <span class="c1"># Distributed: each rank computes gradients for its chunk</span>
+                    <span class="c1"># of the embedding. Assemble into full-size tensor and</span>
+                    <span class="c1"># all-reduce so every rank has the complete gradient.</span>
                     <span class="n">expected_chunk_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">gradients</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">expected_chunk_size</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
                             <span class="sa">f</span><span class="s2">&quot;Gradient size mismatch in distributed mode: &quot;</span>
-                            <span class="sa">f</span><span class="s2">&quot;expected </span><span class="si">{</span><span class="n">expected_chunk_size</span><span class="si">}</span><span class="s2"> gradients for chunk &quot;</span>
-                            <span class="sa">f</span><span class="s2">&quot;but _compute_gradients() returned </span><span class="si">{</span><span class="n">gradients</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;expected </span><span class="si">{</span><span class="n">expected_chunk_size</span><span class="si">}</span><span class="s2"> gradients for &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;chunk but _compute_gradients() returned &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">gradients</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
                         <span class="p">)</span>
                     <span class="n">full_gradients</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">)</span>
                     <span class="n">chunk_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
@@ -842,16 +860,16 @@
                     <span class="n">dist</span><span class="o">.</span><span class="n">all_reduce</span><span class="p">(</span><span class="n">full_gradients</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="n">dist</span><span class="o">.</span><span class="n">ReduceOp</span><span class="o">.</span><span class="n">SUM</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">grad</span> <span class="o">=</span> <span class="n">full_gradients</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="c1"># Single-GPU: Directly assign chunk gradients</span>
+                    <span class="c1"># Single-process, no encoder: assign gradients directly.</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">grad</span> <span class="o">=</span> <span class="n">gradients</span>
             <span class="n">loss</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># Autograd: backward() automatically computes gradients for ALL points in embedding_ [n_samples, dim]</span>
-            <span class="c1"># that participated in the loss computation (chunk points, their neighbors, and sampled negatives).</span>
+            <span class="c1"># --- Autograd mode ---</span>
+            <span class="c1"># Compute a scalar loss and let PyTorch differentiate it.</span>
             <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_loss</span><span class="p">()</span>
             <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+            <span class="c1"># Distributed: sum gradients across ranks.</span>
             <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;world_size&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">grad</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="c1"># Multi-GPU: Combine full-sized sparse gradients across GPUs</span>
                 <span class="n">dist</span><span class="o">.</span><span class="n">all_reduce</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">grad</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="n">dist</span><span class="o">.</span><span class="n">ReduceOp</span><span class="o">.</span><span class="n">SUM</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
@@ -859,23 +877,25 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">loss</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;[TorchDR] ERROR : _compute_gradients method must be implemented when &quot;</span>
-            <span class="s2">&quot;_use_direct_gradients is True.&quot;</span>
-        <span class="p">)</span>
+    <span class="c1"># --- Loss and gradient computation ---</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the loss between input and output affinities.</span>
+
+<span class="sd">        Uses :attr:`loss_fn` to compare :attr:`affinity_in_` and the output</span>
+<span class="sd">        affinity computed from :attr:`embedding_`. Subclasses can override</span>
+<span class="sd">        this for custom loss structures.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;[TorchDR] ERROR : affinity_out is not set. Set it or implement _compute_loss method.&quot;</span>
+                <span class="s2">&quot;[TorchDR] ERROR : affinity_out is not set. &quot;</span>
+                <span class="s2">&quot;Set it or implement _compute_loss method.&quot;</span>
             <span class="p">)</span>
 
-        <span class="c1"># Use local copies to avoid mutating self.kwargs_affinity_out/self.kwargs_loss</span>
         <span class="n">kwargs_affinity_out</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs_affinity_out</span> <span class="ow">or</span> <span class="p">{})</span>
         <span class="n">kwargs_loss</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs_loss</span> <span class="ow">or</span> <span class="p">{})</span>
 
-        <span class="c1"># If cross entropy loss and affinity_out is LogAffinity, use log domain</span>
+        <span class="c1"># Cross-entropy with LogAffinity: use log domain for numerical stability</span>
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span> <span class="o">==</span> <span class="s2">&quot;cross_entropy_loss&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="p">,</span> <span class="n">LogAffinity</span>
         <span class="p">):</span>
@@ -883,100 +903,59 @@
             <span class="n">kwargs_loss</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
         <span class="n">Q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_out</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs_affinity_out</span><span class="p">)</span>
-
         <span class="n">loss</span> <span class="o">=</span> <span class="n">LOSS_DICT</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs_loss</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">loss</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">on_affinity_computation_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute closed-form embedding gradients.</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">on_affinity_computation_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">on_training_step_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">on_training_step_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_set_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">params_</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="o">.</span><span class="n">parameters</span><span class="p">()}]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">params_</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">}]</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_configure_optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="c1"># Try to get the optimizer from torch.optim</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">optimizer_class</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;[TorchDR] ERROR: Optimizer &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="si">}</span><span class="s2">&#39; not found in torch.optim.&quot;</span>
-                <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;[TorchDR] ERROR: optimizer must be a string (name of an optimizer in &quot;</span>
-                    <span class="s2">&quot;torch.optim) or a subclass of torch.optim.Optimizer.&quot;</span>
-                <span class="p">)</span>
-            <span class="n">optimizer_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_</span> <span class="o">=</span> <span class="n">optimizer_class</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">params_</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lr_</span><span class="p">),</span> <span class="o">**</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer_kwargs</span> <span class="ow">or</span> <span class="p">{})</span>
+<span class="sd">        Must be implemented by subclasses that set</span>
+<span class="sd">        ``_use_closed_form_gradients = True``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;[TorchDR] ERROR : _compute_gradients method must be implemented &quot;</span>
+            <span class="s2">&quot;when _use_closed_form_gradients is True.&quot;</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_set_learning_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="s2">&quot;lr set to &#39;auto&#39; without &quot;</span>
-                    <span class="s2">&quot;any implemented rule. Setting lr=1.0 by default.&quot;</span>
-                <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">lr_</span> <span class="o">=</span> <span class="mf">1.0</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">lr_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr</span>
+    <span class="c1"># --- Lifecycle hooks ---</span>
+    <span class="c1"># Override in subclasses to inject logic at specific stages of fitting.</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_configure_scheduler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_iter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="n">n_iter</span> <span class="o">=</span> <span class="n">n_iter</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span>
+<div class="viewcode-block" id="AffinityMatcher.on_affinity_computation_start">
+<a class="viewcode-back" href="../../stubs/torchdr.AffinityMatcher.html#torchdr.AffinityMatcher.on_affinity_computation_start">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_affinity_computation_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called before computing the input affinity matrix.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;optimizer_&quot;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;[TorchDR] ERROR : optimizer not set. &quot;</span>
-                <span class="s2">&quot;Please call _configure_optimizer before _configure_scheduler.&quot;</span>
-            <span class="p">)</span>
 
-        <span class="c1"># If scheduler is None, don&#39;t create a scheduler</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_</span>
+<div class="viewcode-block" id="AffinityMatcher.on_affinity_computation_end">
+<a class="viewcode-back" href="../../stubs/torchdr.AffinityMatcher.html#torchdr.AffinityMatcher.on_affinity_computation_end">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_affinity_computation_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called after computing the input affinity matrix.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
 
-        <span class="n">scheduler_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="c1"># Try to get the scheduler from torch.optim.lr_scheduler</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">scheduler_class</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_</span> <span class="o">=</span> <span class="n">scheduler_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer_</span><span class="p">,</span> <span class="o">**</span><span class="n">scheduler_kwargs</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;[TorchDR] ERROR: Scheduler &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="si">}</span><span class="s2">&#39; not found in torch.optim.lr_scheduler.&quot;</span>
-                <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># Check if the scheduler is a subclass of LRScheduler</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">LRScheduler</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;[TorchDR] ERROR: scheduler must be a string (name of a scheduler in &quot;</span>
-                    <span class="s2">&quot;torch.optim.lr_scheduler) or a subclass of torch.optim.lr_scheduler.LRScheduler.&quot;</span>
-                <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer_</span><span class="p">,</span> <span class="o">**</span><span class="n">scheduler_kwargs</span><span class="p">)</span>
+<div class="viewcode-block" id="AffinityMatcher.on_training_step_start">
+<a class="viewcode-back" href="../../stubs/torchdr.AffinityMatcher.html#torchdr.AffinityMatcher.on_training_step_start">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_training_step_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called at the beginning of each optimization step.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_</span>
+
+<div class="viewcode-block" id="AffinityMatcher.on_training_step_end">
+<a class="viewcode-back" href="../../stubs/torchdr.AffinityMatcher.html#torchdr.AffinityMatcher.on_training_step_end">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_training_step_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called at the end of each optimization step.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+    <span class="c1"># --- Embedding initialization ---</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_init_embedding</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
-        <span class="c1"># Ensure device_ is set (for backward compatibility when called directly)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the embedding from the :attr:`init` strategy or encoder.</span>
+
+<span class="sd">        Supports ``&quot;pca&quot;``, ``&quot;normal&quot;``/``&quot;random&quot;``, ``&quot;hyperbolic&quot;``,</span>
+<span class="sd">        or a user-provided tensor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;device_&quot;</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">DataLoader</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
@@ -985,7 +964,7 @@
                 <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">device_</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">device</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span>
 
-        <span class="c1"># Encoder path: store training data and compute initial embedding</span>
+        <span class="c1"># Encoder: store training data and compute initial embedding</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;X_train_&quot;</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device_</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
@@ -993,7 +972,6 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_train_</span><span class="p">)</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span>
 
-        <span class="c1"># Get n_samples and dtype (use cached values for DataLoader)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">DataLoader</span><span class="p">):</span>
             <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span>
             <span class="n">X_dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataloader_dtype_</span>
@@ -1003,11 +981,10 @@
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">,</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
             <span class="n">embedding_</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">)</span>
-            <span class="n">target_device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_</span>
-            <span class="n">embedding_</span> <span class="o">=</span> <span class="n">embedding_</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">target_device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X_dtype</span><span class="p">)</span>
+            <span class="n">embedding_</span> <span class="o">=</span> <span class="n">embedding_</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device_</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X_dtype</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_scaling</span> <span class="o">*</span> <span class="n">embedding_</span> <span class="o">/</span> <span class="n">embedding_</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
 
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="o">==</span> <span class="s2">&quot;normal&quot;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="o">==</span> <span class="s2">&quot;random&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;normal&quot;</span><span class="p">,</span> <span class="s2">&quot;random&quot;</span><span class="p">):</span>
             <span class="n">embedding_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span>
                 <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">),</span>
                 <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device_</span><span class="p">,</span>
@@ -1017,7 +994,6 @@
 
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="o">==</span> <span class="s2">&quot;pca&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">DataLoader</span><span class="p">):</span>
-                <span class="c1"># Use IncrementalPCA for DataLoader input (2 passes: fit + transform)</span>
                 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.spectral_embedding</span><span class="w"> </span><span class="kn">import</span> <span class="n">IncrementalPCA</span>
 
                 <span class="n">embedding_</span> <span class="o">=</span> <span class="n">IncrementalPCA</span><span class="p">(</span>
@@ -1029,16 +1005,15 @@
                 <span class="n">embedding_</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">(</span>
                     <span class="n">n_components</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span>
                 <span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-            <span class="n">target_device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_</span>
-            <span class="k">if</span> <span class="n">embedding_</span><span class="o">.</span><span class="n">device</span> <span class="o">!=</span> <span class="n">target_device</span><span class="p">:</span>
-                <span class="n">embedding_</span> <span class="o">=</span> <span class="n">embedding_</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">target_device</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">embedding_</span><span class="o">.</span><span class="n">device</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_</span><span class="p">:</span>
+                <span class="n">embedding_</span> <span class="o">=</span> <span class="n">embedding_</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device_</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_scaling</span> <span class="o">*</span> <span class="n">embedding_</span> <span class="o">/</span> <span class="n">embedding_</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
 
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="o">==</span> <span class="s2">&quot;hyperbolic&quot;</span><span class="p">:</span>
             <span class="n">embedding_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span>
                 <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">),</span>
                 <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device_</span><span class="p">,</span>
-                <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>  <span class="c1"># better double precision on hyperbolic manifolds</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">poincare_ball</span> <span class="o">=</span> <span class="n">PoincareBallManifold</span><span class="p">()</span>
             <span class="n">embedding_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_scaling</span> <span class="o">*</span> <span class="n">embedding_</span>
@@ -1057,13 +1032,99 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">requires_grad_</span><span class="p">()</span>
 
+    <span class="c1"># --- Optimizer and scheduler configuration ---</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the parameters to optimize (encoder weights or embedding).&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params_</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="o">.</span><span class="n">parameters</span><span class="p">()}]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params_</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">}]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_learning_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve the learning rate (handles ``lr=&#39;auto&#39;``).&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;lr set to &#39;auto&#39; without &quot;</span>
+                    <span class="s2">&quot;any implemented rule. Setting lr=1.0 by default.&quot;</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lr_</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lr_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_configure_optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Instantiate the optimizer from :attr:`optimizer`.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">optimizer_class</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;[TorchDR] ERROR: Optimizer &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="si">}</span><span class="s2">&#39; not found &quot;</span>
+                    <span class="s2">&quot;in torch.optim.&quot;</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;[TorchDR] ERROR: optimizer must be a string (name of an &quot;</span>
+                    <span class="s2">&quot;optimizer in torch.optim) or a subclass of &quot;</span>
+                    <span class="s2">&quot;torch.optim.Optimizer.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">optimizer_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_</span> <span class="o">=</span> <span class="n">optimizer_class</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params_</span><span class="p">,</span>
+            <span class="n">lr</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lr_</span><span class="p">),</span>
+            <span class="o">**</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer_kwargs</span> <span class="ow">or</span> <span class="p">{}),</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_configure_scheduler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_iter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Instantiate the learning rate scheduler from :attr:`scheduler`.&quot;&quot;&quot;</span>
+        <span class="n">n_iter</span> <span class="o">=</span> <span class="n">n_iter</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;optimizer_&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;[TorchDR] ERROR : optimizer not set. &quot;</span>
+                <span class="s2">&quot;Please call _configure_optimizer before _configure_scheduler.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_</span>
+
+        <span class="n">scheduler_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">scheduler_class</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_</span> <span class="o">=</span> <span class="n">scheduler_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer_</span><span class="p">,</span> <span class="o">**</span><span class="n">scheduler_kwargs</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;[TorchDR] ERROR: Scheduler &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="si">}</span><span class="s2">&#39; not found &quot;</span>
+                    <span class="s2">&quot;in torch.optim.lr_scheduler.&quot;</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">LRScheduler</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;[TorchDR] ERROR: scheduler must be a string (name of a &quot;</span>
+                    <span class="s2">&quot;scheduler in torch.optim.lr_scheduler) or a subclass of &quot;</span>
+                    <span class="s2">&quot;torch.optim.lr_scheduler.LRScheduler.&quot;</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer_</span><span class="p">,</span> <span class="o">**</span><span class="n">scheduler_kwargs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_</span>
+
+    <span class="c1"># --- Memory management ---</span>
+
 <div class="viewcode-block" id="AffinityMatcher.clear_memory">
 <a class="viewcode-back" href="../../stubs/torchdr.AffinityMatcher.html#torchdr.AffinityMatcher.clear_memory">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">clear_memory</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear all training-related memory including buffers and optimizer state.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear training-related state (affinities, optimizer, scheduler).&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">clear_memory</span><span class="p">()</span>
 
-        <span class="c1"># Clear affinity_in_ if it&#39;s a LazyTensor (from keops backend)</span>
+        <span class="c1"># LazyTensors (keops) are not buffers and must be deleted explicitly</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;affinity_in_&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="p">,</span> <span class="n">Affinity</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="o">.</span><span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;keops&quot;</span><span class="p">:</span>
                 <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;affinity_in_&quot;</span><span class="p">)</span>

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.neighbor_embedding.base &#8212; TorchDR 0.5.dev4+g8f8833d6c documentation</title>
+    <title>torchdr.neighbor_embedding.base &#8212; TorchDR 0.5.dev5+gab7512974 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=b30b0668"></script>
+    <script src="../../../_static/documentation_options.js?v=a7daf1ca"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchdr/neighbor_embedding/base';</script>
@@ -117,8 +117,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev4+g8f8833d6c documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev4+g8f8833d6c documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev5+gab7512974 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev5+gab7512974 documentation - Home"/>
   
   
 </a></div>
@@ -484,7 +484,7 @@
 
 <span class="sd">    - **Loss decomposition**: By default, the loss is decomposed into an</span>
 <span class="sd">      attractive term and a repulsive term via :meth:`_compute_attractive_loss`</span>
-<span class="sd">      and :meth:`_compute_repulsive_loss`. When :attr:`_use_direct_gradients` is</span>
+<span class="sd">      and :meth:`_compute_repulsive_loss`. When :attr:`_use_closed_form_gradients` is</span>
 <span class="sd">      ``True``, subclasses implement :meth:`_compute_attractive_gradients` and</span>
 <span class="sd">      :meth:`_compute_repulsive_gradients` instead. Subclasses that need a</span>
 <span class="sd">      different loss structure can override :meth:`_compute_loss` directly.</span>
@@ -682,7 +682,7 @@
 
     <span class="nd">@torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">()</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute gradients directly (used when _use_direct_gradients is True).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute gradients directly (used when _use_closed_form_gradients is True).&quot;&quot;&quot;</span>
         <span class="n">gradients</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff_</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_attractive_gradients</span><span class="p">()</span>
             <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">repulsion_strength</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_repulsive_gradients</span><span class="p">()</span>
@@ -692,13 +692,13 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_attractive_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;[TorchDR] ERROR : _compute_attractive_gradients method must be implemented &quot;</span>
-            <span class="s2">&quot;when _use_direct_gradients is True.&quot;</span>
+            <span class="s2">&quot;when _use_closed_form_gradients is True.&quot;</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_repulsive_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;[TorchDR] ERROR : _compute_repulsive_gradients method must be implemented &quot;</span>
-            <span class="s2">&quot;when _use_direct_gradients is True.&quot;</span>
+            <span class="s2">&quot;when _use_closed_form_gradients is True.&quot;</span>
         <span class="p">)</span>
 
     <span class="c1"># --- Input validation and fit ---</span>

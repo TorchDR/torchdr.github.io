@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.neighbor_embedding.base &#8212; TorchDR 0.5.dev3+g813a39f31 documentation</title>
+    <title>torchdr.neighbor_embedding.base &#8212; TorchDR 0.5.dev4+g8f8833d6c documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=e3d9042c"></script>
+    <script src="../../../_static/documentation_options.js?v=b30b0668"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchdr/neighbor_embedding/base';</script>
@@ -117,8 +117,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev3+g813a39f31 documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev3+g813a39f31 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev4+g8f8833d6c documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev4+g8f8833d6c documentation - Home"/>
   
   
 </a></div>
@@ -458,10 +458,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch.distributed</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dist</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">Affinity</span><span class="p">,</span>
-    <span class="n">SparseAffinity</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity</span><span class="w"> </span><span class="kn">import</span> <span class="n">Affinity</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distance</span><span class="w"> </span><span class="kn">import</span> <span class="n">FaissConfig</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity_matcher</span><span class="w"> </span><span class="kn">import</span> <span class="n">AffinityMatcher</span>
 
@@ -469,22 +466,50 @@
 <div class="viewcode-block" id="NeighborEmbedding">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.NeighborEmbedding.html#torchdr.NeighborEmbedding">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">NeighborEmbedding</span><span class="p">(</span><span class="n">AffinityMatcher</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Solves the neighbor embedding problem.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Base class for neighbor embedding methods.</span>
 
-<span class="sd">    It amounts to solving:</span>
+<span class="sd">    All neighbor embedding methods solve an optimization problem of the form:</span>
 
 <span class="sd">    .. math::</span>
 
-<span class="sd">        \min_{\mathbf{Z}} \: - \lambda \sum_{ij} P_{ij} \log Q_{ij} + \mathcal{L}_{\mathrm{rep}}(\mathbf{Q})</span>
+<span class="sd">        \min_{\mathbf{Z}} \: - \lambda \sum_{ij} P_{ij} \log Q_{ij} + \rho \cdot \mathcal{L}_{\mathrm{rep}}(\mathbf{Q})</span>
 
 <span class="sd">    where :math:`\mathbf{P}` is the input affinity matrix, :math:`\mathbf{Q}` is the</span>
-<span class="sd">    output affinity matrix, :math:`\mathcal{L}_{\mathrm{rep}}` is the repulsive</span>
-<span class="sd">    term of the loss function, :math:`\lambda` is the :attr:`early_exaggeration_coeff`</span>
-<span class="sd">    parameter.</span>
+<span class="sd">    output affinity matrix, :math:`\lambda` is the early exaggeration coefficient,</span>
+<span class="sd">    :math:`\rho` is :attr:`repulsion_strength`, and</span>
+<span class="sd">    :math:`\mathcal{L}_{\mathrm{rep}}` is a repulsive term that prevents collapse.</span>
 
-<span class="sd">    Note that the early exaggeration coefficient :math:`\lambda` is set to</span>
-<span class="sd">    :math:`1` after the early exaggeration phase which duration is controlled by the</span>
-<span class="sd">    :attr:`early_exaggeration_iter` parameter.</span>
+<span class="sd">    This class extends :class:`~torchdr.AffinityMatcher` with functionality</span>
+<span class="sd">    specific to neighbor embedding:</span>
+
+<span class="sd">    - **Loss decomposition**: By default, the loss is decomposed into an</span>
+<span class="sd">      attractive term and a repulsive term via :meth:`_compute_attractive_loss`</span>
+<span class="sd">      and :meth:`_compute_repulsive_loss`. When :attr:`_use_direct_gradients` is</span>
+<span class="sd">      ``True``, subclasses implement :meth:`_compute_attractive_gradients` and</span>
+<span class="sd">      :meth:`_compute_repulsive_gradients` instead. Subclasses that need a</span>
+<span class="sd">      different loss structure can override :meth:`_compute_loss` directly.</span>
+<span class="sd">    - **Early exaggeration**: The attraction term is scaled by</span>
+<span class="sd">      :attr:`early_exaggeration_coeff` (:math:`\lambda`) for the first</span>
+<span class="sd">      :attr:`early_exaggeration_iter` iterations to encourage cluster formation.</span>
+<span class="sd">    - **Auto learning rate**: When ``lr=&#39;auto&#39;``, the learning rate is set</span>
+<span class="sd">      adaptively based on the number of samples.</span>
+<span class="sd">    - **Auto optimizer tuning**: When ``optimizer_kwargs=&#39;auto&#39;`` with SGD,</span>
+<span class="sd">      momentum is adjusted between the early exaggeration and normal phases.</span>
+<span class="sd">    - **Distributed multi-GPU training**: When launched with ``torchrun``,</span>
+<span class="sd">      this class partitions the input affinity across GPUs, broadcasts the</span>
+<span class="sd">      embedding, and synchronizes gradients via all-reduce. Set</span>
+<span class="sd">      ``distributed=&#39;auto&#39;`` (default) to auto-detect.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        The default values for ``lr=&#39;auto&#39;``, ``optimizer_kwargs=&#39;auto&#39;``, and</span>
+<span class="sd">        early exaggeration are based on the t-SNE paper</span>
+<span class="sd">        :cite:`van2008visualizing` and its scikit-learn implementation. These</span>
+<span class="sd">        defaults work well for t-SNE but may need tuning for other methods.</span>
+
+<span class="sd">    **Direct subclasses**: :class:`TSNE`, :class:`SNE`, :class:`COSNE`</span>
+<span class="sd">    (compute the repulsive term exactly), :class:`TSNEkhorn` (overrides the</span>
+<span class="sd">    full loss), :class:`NegativeSamplingNeighborEmbedding` (approximates</span>
+<span class="sd">    the repulsive term via sampling).</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -534,13 +559,21 @@
 <span class="sd">        Random seed for reproducibility. Default is None.</span>
 <span class="sd">    early_exaggeration_coeff : float, optional</span>
 <span class="sd">        Coefficient for the attraction term during the early exaggeration phase.</span>
-<span class="sd">        Default is None.</span>
+<span class="sd">        Default is None (no early exaggeration).</span>
 <span class="sd">    early_exaggeration_iter : int, optional</span>
 <span class="sd">        Number of iterations for early exaggeration. Default is None.</span>
+<span class="sd">    repulsion_strength: float, optional</span>
+<span class="sd">        Strength of the repulsive term. Default is 1.0.</span>
 <span class="sd">    check_interval : int, optional</span>
 <span class="sd">        Number of iterations between two checks for convergence. Default is 50.</span>
 <span class="sd">    compile : bool, default=False</span>
 <span class="sd">        Whether to use torch.compile for faster computation.</span>
+<span class="sd">    distributed : bool or &#39;auto&#39;, optional</span>
+<span class="sd">        Whether to use distributed computation across multiple GPUs.</span>
+<span class="sd">        - &quot;auto&quot;: Automatically detect if running with torchrun (default)</span>
+<span class="sd">        - True: Force distributed mode (requires torchrun)</span>
+<span class="sd">        - False: Disable distributed mode</span>
+<span class="sd">        Default is &quot;auto&quot;.</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -566,8 +599,10 @@
         <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">early_exaggeration_coeff</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">early_exaggeration_iter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">repulsion_strength</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">check_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">distributed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_iter</span> <span class="o">=</span> <span class="n">early_exaggeration_iter</span>
@@ -577,11 +612,13 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff</span> <span class="o">=</span> <span class="mi">1</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">repulsion_strength</span> <span class="o">=</span> <span class="n">repulsion_strength</span>
+
         <span class="c1"># improve consistency with the sklearn API</span>
         <span class="k">if</span> <span class="s2">&quot;learning_rate&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">lr</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;learning_rate&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lr</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;learning_rate&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="s2">&quot;early_exaggeration&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;early_exaggeration&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;early_exaggeration&quot;</span><span class="p">)</span>
 
         <span class="c1"># by default, the linear scheduler goes from 1 to 0</span>
         <span class="n">_scheduler_kwargs</span> <span class="o">=</span> <span class="n">scheduler_kwargs</span>
@@ -615,23 +652,60 @@
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">on_training_step_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="p">(</span>  <span class="c1"># stop early exaggeration phase</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff_</span> <span class="o">&gt;</span> <span class="mi">1</span>
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_iter</span>
-        <span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff_</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="c1"># reinitialize optim</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_set_learning_rate</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_configure_optimizer</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_configure_scheduler</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_distributed</span><span class="p">(</span><span class="n">distributed</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">self</span>
+    <span class="c1"># --- Loss decomposition (attractive + repulsive) ---</span>
+    <span class="c1"># Subclasses must implement _compute_attractive_loss and _compute_repulsive_loss.</span>
+    <span class="c1"># Alternatively, subclasses can override _compute_loss directly (e.g. TSNEkhorn).</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_attractive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;[TorchDR] ERROR : _compute_attractive_loss method must be implemented.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_repulsive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;[TorchDR] ERROR : _compute_repulsive_loss method must be implemented.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the total loss as early_exag * attractive + repulsion_strength * repulsive.</span>
+
+<span class="sd">        Subclasses that need a different loss structure (e.g. :class:`TSNEkhorn`)</span>
+<span class="sd">        can override this method entirely.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff_</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_attractive_loss</span><span class="p">()</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">repulsion_strength</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_repulsive_loss</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">loss</span>
+
+    <span class="nd">@torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute gradients directly (used when _use_direct_gradients is True).&quot;&quot;&quot;</span>
+        <span class="n">gradients</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff_</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_attractive_gradients</span><span class="p">()</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">repulsion_strength</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_repulsive_gradients</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">gradients</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_attractive_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;[TorchDR] ERROR : _compute_attractive_gradients method must be implemented &quot;</span>
+            <span class="s2">&quot;when _use_direct_gradients is True.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_repulsive_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;[TorchDR] ERROR : _compute_repulsive_gradients method must be implemented &quot;</span>
+            <span class="s2">&quot;when _use_direct_gradients is True.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># --- Input validation and fit ---</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_n_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-        <span class="n">param_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;perplexity&quot;</span><span class="p">,</span> <span class="s2">&quot;n_neighbors&quot;</span><span class="p">]</span>
-
-        <span class="k">for</span> <span class="n">param_name</span> <span class="ow">in</span> <span class="n">param_list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate that the number of samples exceeds perplexity / n_neighbors.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">param_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;perplexity&quot;</span><span class="p">,</span> <span class="s2">&quot;n_neighbors&quot;</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_name</span><span class="p">):</span>
                 <span class="n">param_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_name</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="n">param_value</span><span class="p">:</span>
@@ -645,22 +719,33 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">DataLoader</span><span class="p">)</span> <span class="k">else</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_n_neighbors</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff_</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff</span>
-        <span class="p">)</span>  <span class="c1"># early_exaggeration_ may change during the optimization</span>
+        <span class="c1"># Initialize the mutable exaggeration coefficient (may be reset to 1 during</span>
+        <span class="c1"># optimization when the early exaggeration phase ends).</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff</span>
 
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;[TorchDR] ERROR : _compute_loss method must be implemented.&quot;</span>
-        <span class="p">)</span>
+    <span class="c1"># --- Early exaggeration ---</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;[TorchDR] ERROR : _compute_gradients method must be implemented &quot;</span>
-            <span class="s2">&quot;when _use_direct_gradients is True.&quot;</span>
-        <span class="p">)</span>
+<div class="viewcode-block" id="NeighborEmbedding.on_training_step_end">
+<a class="viewcode-back" href="../../../gen_modules/torchdr.NeighborEmbedding.html#torchdr.NeighborEmbedding.on_training_step_end">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_training_step_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;End early exaggeration phase when the iteration threshold is reached.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff_</span> <span class="o">&gt;</span> <span class="mi">1</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_iter</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff_</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="c1"># Reinitialize optimizer with post-exaggeration hyperparameters</span>
+            <span class="c1"># (higher momentum, adjusted learning rate).</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set_learning_rate</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_configure_optimizer</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_configure_scheduler</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="c1"># --- Auto learning rate and optimizer ---</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_set_learning_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
@@ -713,217 +798,114 @@
             <span class="n">n_iter</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_iter</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">n_iter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_iter</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_configure_scheduler</span><span class="p">(</span><span class="n">n_iter</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_configure_scheduler</span><span class="p">(</span><span class="n">n_iter</span><span class="p">)</span>
 
+    <span class="c1"># --- Distributed initialization ---</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_distributed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">distributed</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Configure distributed training state from the ``distributed`` parameter.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">distributed</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">distributed</span><span class="p">)</span>
 
-<div class="viewcode-block" id="SparseNeighborEmbedding">
-<a class="viewcode-back" href="../../../gen_modules/torchdr.SparseNeighborEmbedding.html#torchdr.SparseNeighborEmbedding">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">SparseNeighborEmbedding</span><span class="p">(</span><span class="n">NeighborEmbedding</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Solves the neighbor embedding problem with a sparse input affinity matrix.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">dist</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="s2">&quot;[TorchDR] distributed=True requires launching with torchrun. &quot;</span>
+                    <span class="s2">&quot;Example: torchrun --nproc_per_node=4 your_script.py&quot;</span>
+                <span class="p">)</span>
 
-<span class="sd">    It amounts to solving:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">get_rank</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">world_size</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">get_world_size</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_multi_gpu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">world_size</span> <span class="o">&gt;</span> <span class="mi">1</span>
 
-<span class="sd">    .. math::</span>
+            <span class="n">local_rank</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LOCAL_RANK&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">set_device</span><span class="p">(</span><span class="n">local_rank</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">==</span> <span class="s2">&quot;cpu&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;[TorchDR] Distributed mode requires GPU (device cannot be &#39;cpu&#39;)&quot;</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cuda:</span><span class="si">{</span><span class="n">local_rank</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">world_size</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_multi_gpu</span> <span class="o">=</span> <span class="kc">False</span>
 
-<span class="sd">        \min_{\mathbf{Z}} \: - \lambda \sum_{ij} P_{ij} \log Q_{ij} + \mathcal{L}_{\mathrm{rep}}( \mathbf{Q})</span>
+<div class="viewcode-block" id="NeighborEmbedding.on_affinity_computation_end">
+<a class="viewcode-back" href="../../../gen_modules/torchdr.NeighborEmbedding.html#torchdr.NeighborEmbedding.on_affinity_computation_end">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_affinity_computation_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set up chunk_indices_ for the local GPU&#39;s portion of the data.</span>
 
-<span class="sd">    where :math:`\mathbf{P}` is the input affinity matrix, :math:`\mathbf{Q}` is the</span>
-<span class="sd">    output affinity matrix, :math:`\mathcal{L}_{\mathrm{rep}}` is the repulsive</span>
-<span class="sd">    term of the loss function, :math:`\lambda` is the :attr:`early_exaggeration_coeff`</span>
-<span class="sd">    parameter.</span>
-
-<span class="sd">    **Fast attraction.** This class should be used when the input affinity matrix is sparse. In such cases, the attractive term can be computed with linear complexity.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    affinity_in : Affinity</span>
-<span class="sd">        The affinity object for the input space.</span>
-<span class="sd">    affinity_out : Affinity, optional</span>
-<span class="sd">        The affinity object for the output embedding space. Default is None.</span>
-<span class="sd">    kwargs_affinity_out : dict, optional</span>
-<span class="sd">        Additional keyword arguments for the affinity_out method.</span>
-<span class="sd">    n_components : int, optional</span>
-<span class="sd">        Number of dimensions for the embedding. Default is 2.</span>
-<span class="sd">    lr : float or &#39;auto&#39;, optional</span>
-<span class="sd">        Learning rate for the optimizer. Default is 1e0.</span>
-<span class="sd">    optimizer : str or torch.optim.Optimizer, optional</span>
-<span class="sd">        Name of an optimizer from torch.optim or an optimizer class.</span>
-<span class="sd">        Default is &quot;SGD&quot;. For best results, we recommend using &quot;SGD&quot; with &#39;auto&#39; learning rate.</span>
-<span class="sd">    optimizer_kwargs : dict or &#39;auto&#39;, optional</span>
-<span class="sd">        Additional keyword arguments for the optimizer. Default is &#39;auto&#39;,</span>
-<span class="sd">        which sets appropriate momentum values for SGD based on early exaggeration phase.</span>
-<span class="sd">    scheduler : str or torch.optim.lr_scheduler.LRScheduler, optional</span>
-<span class="sd">        Name of a scheduler from torch.optim.lr_scheduler or a scheduler class.</span>
-<span class="sd">        Default is None (no scheduler).</span>
-<span class="sd">    scheduler_kwargs : dict, optional</span>
-<span class="sd">        Additional keyword arguments for the scheduler.</span>
-<span class="sd">        Default is &quot;auto&quot;, which corresponds to a linear decay from the learning rate to 0 for `LinearLR`.</span>
-<span class="sd">    min_grad_norm : float, optional</span>
-<span class="sd">        Tolerance for stopping criterion. Default is 1e-7.</span>
-<span class="sd">    max_iter : int, optional</span>
-<span class="sd">        Maximum number of iterations. Default is 2000.</span>
-<span class="sd">    init : str or torch.Tensor or np.ndarray, optional</span>
-<span class="sd">        Initialization method for the embedding. Default is &quot;pca&quot;.</span>
-<span class="sd">    init_scaling : float, optional</span>
-<span class="sd">        Scaling factor for the initial embedding. Default is 1e-4.</span>
-<span class="sd">    device : str, optional</span>
-<span class="sd">        Device to use for computations. Default is &quot;auto&quot;.</span>
-<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None} or FaissConfig, optional</span>
-<span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
-<span class="sd">        Can be:</span>
-<span class="sd">        - &quot;keops&quot;: Use KeOps for memory-efficient symbolic computations</span>
-<span class="sd">        - &quot;faiss&quot;: Use FAISS for fast k-NN computations with default settings</span>
-<span class="sd">        - None: Use standard PyTorch operations</span>
-<span class="sd">        - FaissConfig object: Use FAISS with custom configuration</span>
-<span class="sd">        Default is None.</span>
-<span class="sd">    verbose : bool, optional</span>
-<span class="sd">        Verbosity of the optimization process. Default is False.</span>
-<span class="sd">    random_state : float, optional</span>
-<span class="sd">        Random seed for reproducibility. Default is None.</span>
-<span class="sd">    early_exaggeration_coeff : float, optional</span>
-<span class="sd">        Coefficient for the attraction term during the early exaggeration phase.</span>
-<span class="sd">        Default is 1.0.</span>
-<span class="sd">    early_exaggeration_iter : int, optional</span>
-<span class="sd">        Number of iterations for early exaggeration. Default is None.</span>
-<span class="sd">    repulsion_strength: float, optional</span>
-<span class="sd">        Strength of the repulsive term. Default is 1.0.</span>
-<span class="sd">    check_interval : int, optional</span>
-<span class="sd">        Number of iterations between two checks for convergence. Default is 50.</span>
-<span class="sd">    compile : bool, default=False</span>
-<span class="sd">        Whether to use torch.compile for faster computation.</span>
-<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">affinity_in</span><span class="p">:</span> <span class="n">Affinity</span><span class="p">,</span>
-        <span class="n">affinity_out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Affinity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">kwargs_affinity_out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">n_components</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
-        <span class="n">lr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1e0</span><span class="p">,</span>
-        <span class="n">optimizer</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;SGD&quot;</span><span class="p">,</span>
-        <span class="n">optimizer_kwargs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-        <span class="n">scheduler</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
-            <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">LRScheduler</span><span class="p">]]</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">scheduler_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-        <span class="n">min_grad_norm</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-7</span><span class="p">,</span>
-        <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2000</span><span class="p">,</span>
-        <span class="n">init</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;pca&quot;</span><span class="p">,</span>
-        <span class="n">init_scaling</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-4</span><span class="p">,</span>
-        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-        <span class="n">backend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">early_exaggeration_coeff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
-        <span class="n">early_exaggeration_iter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">repulsion_strength</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
-        <span class="n">check_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
-        <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="c1"># check affinity affinity_in</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">affinity_in</span><span class="p">,</span> <span class="n">SparseAffinity</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="s2">&quot;[TorchDR] ERROR : when using SparseNeighborEmbedding, affinity_in &quot;</span>
-                <span class="s2">&quot;must be a sparse affinity.&quot;</span>
+<span class="sd">        In distributed mode, the affinity provides chunk bounds (chunk_start_,</span>
+<span class="sd">        chunk_size_) so each GPU processes a different slice of rows.</span>
+<span class="sd">        In single-GPU mode, the chunk covers all samples.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_affinity_computation_end</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="p">,</span> <span class="s2">&quot;chunk_start_&quot;</span><span class="p">):</span>
+            <span class="n">chunk_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="o">.</span><span class="n">chunk_start_</span>
+            <span class="n">chunk_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="o">.</span><span class="n">chunk_size_</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">world_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;[TorchDR] ERROR: Distributed mode is enabled but affinity_in &quot;</span>
+                <span class="s2">&quot;does not have chunk bounds. Make sure affinity_in has &quot;</span>
+                <span class="s2">&quot;distributed=True.&quot;</span>
             <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">chunk_start</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">chunk_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">repulsion_strength</span> <span class="o">=</span> <span class="n">repulsion_strength</span>
-
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">affinity_in</span><span class="o">=</span><span class="n">affinity_in</span><span class="p">,</span>
-            <span class="n">affinity_out</span><span class="o">=</span><span class="n">affinity_out</span><span class="p">,</span>
-            <span class="n">kwargs_affinity_out</span><span class="o">=</span><span class="n">kwargs_affinity_out</span><span class="p">,</span>
-            <span class="n">n_components</span><span class="o">=</span><span class="n">n_components</span><span class="p">,</span>
-            <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span>
-            <span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span>
-            <span class="n">optimizer_kwargs</span><span class="o">=</span><span class="n">optimizer_kwargs</span><span class="p">,</span>
-            <span class="n">scheduler</span><span class="o">=</span><span class="n">scheduler</span><span class="p">,</span>
-            <span class="n">scheduler_kwargs</span><span class="o">=</span><span class="n">scheduler_kwargs</span><span class="p">,</span>
-            <span class="n">min_grad_norm</span><span class="o">=</span><span class="n">min_grad_norm</span><span class="p">,</span>
-            <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span>
-            <span class="n">init</span><span class="o">=</span><span class="n">init</span><span class="p">,</span>
-            <span class="n">init_scaling</span><span class="o">=</span><span class="n">init_scaling</span><span class="p">,</span>
-            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
-            <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-            <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
-            <span class="n">early_exaggeration_coeff</span><span class="o">=</span><span class="n">early_exaggeration_coeff</span><span class="p">,</span>
-            <span class="n">early_exaggeration_iter</span><span class="o">=</span><span class="n">early_exaggeration_iter</span><span class="p">,</span>
-            <span class="n">check_interval</span><span class="o">=</span><span class="n">check_interval</span><span class="p">,</span>
-            <span class="nb">compile</span><span class="o">=</span><span class="nb">compile</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-        <span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_attractive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;[TorchDR] ERROR : _compute_attractive_loss method must be implemented.&quot;</span>
-        <span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_repulsive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;[TorchDR] ERROR : _compute_repulsive_loss method must be implemented.&quot;</span>
-        <span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">loss</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff_</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_attractive_loss</span><span class="p">()</span>
-            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">repulsion_strength</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_repulsive_loss</span><span class="p">()</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">loss</span>
-
-    <span class="nd">@torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">()</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># triggered when _use_direct_gradients is True</span>
-        <span class="n">gradients</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff_</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_attractive_gradients</span><span class="p">()</span>
-            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">repulsion_strength</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_repulsive_gradients</span><span class="p">()</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">gradients</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_attractive_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;[TorchDR] ERROR : _compute_attractive_gradients method must be implemented &quot;</span>
-            <span class="s2">&quot;when _use_direct_gradients is True.&quot;</span>
-        <span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_repulsive_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;[TorchDR] ERROR : _compute_repulsive_gradients method must be implemented &quot;</span>
-            <span class="s2">&quot;when _use_direct_gradients is True.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
+            <span class="n">chunk_start</span><span class="p">,</span> <span class="n">chunk_start</span> <span class="o">+</span> <span class="n">chunk_size</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device_</span>
         <span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_embedding</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize embedding across ranks (broadcast from rank 0).&quot;&quot;&quot;</span>
+        <span class="c1"># All ranks must run _init_embedding to avoid NCCL deadlocks</span>
+        <span class="c1"># (e.g., PCA init may trigger distributed ops internally).</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_init_embedding</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">world_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># Update data in-place to preserve Parameter/ManifoldParameter type.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">is_contiguous</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
+
+            <span class="n">dist</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">src</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span></div>
 
 
 
 <div class="viewcode-block" id="NegativeSamplingNeighborEmbedding">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.NegativeSamplingNeighborEmbedding.html#torchdr.NegativeSamplingNeighborEmbedding">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">NegativeSamplingNeighborEmbedding</span><span class="p">(</span><span class="n">SparseNeighborEmbedding</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Solves the neighbor embedding problem with both sparsity and sampling.</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NegativeSamplingNeighborEmbedding</span><span class="p">(</span><span class="n">NeighborEmbedding</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Neighbor embedding that approximates the repulsive term via negative sampling.</span>
 
-<span class="sd">    It amounts to solving:</span>
+<span class="sd">    This class extends :class:`NeighborEmbedding` for methods that</span>
+<span class="sd">    avoid the :math:`O(n^2)` cost of computing the repulsive term over all</span>
+<span class="sd">    point pairs. Instead, a fixed number of *negative samples*</span>
+<span class="sd">    (:attr:`n_negatives`) are drawn uniformly per point at each iteration,</span>
+<span class="sd">    reducing the repulsive cost to :math:`O(n)`.</span>
 
-<span class="sd">    .. math::</span>
+<span class="sd">    **Negative sampling details:**</span>
 
-<span class="sd">        \min_{\mathbf{Z}} \: - \lambda \sum_{ij} P_{ij} \log Q_{ij} + \mathcal{L}_{\mathrm{rep}}( \mathbf{Q})</span>
+<span class="sd">    - At each iteration, :attr:`n_negatives` indices are sampled uniformly</span>
+<span class="sd">      (excluding the point itself) for each point in the local chunk.</span>
+<span class="sd">    - When :attr:`discard_NNs` is ``True``, nearest neighbors are also</span>
+<span class="sd">      excluded from the negative samples to avoid conflicting gradients.</span>
+<span class="sd">    - The sampled indices are stored in :attr:`neg_indices_` and refreshed</span>
+<span class="sd">      every iteration via :meth:`on_training_step_start`.</span>
 
-<span class="sd">    where :math:`\mathbf{P}` is the input affinity matrix, :math:`\mathbf{Q}` is the</span>
-<span class="sd">    output affinity matrix, :math:`\mathcal{L}_{\mathrm{rep}}` is the repulsive</span>
-<span class="sd">    term of the loss function, :math:`\lambda` is the :attr:`early_exaggeration_coeff`</span>
-<span class="sd">    parameter.</span>
+<span class="sd">    **Inherits** distributed multi-GPU support from</span>
+<span class="sd">    :class:`NeighborEmbedding`.</span>
 
-<span class="sd">    **Fast attraction.** This class should be used when the input affinity matrix is sparse.</span>
-<span class="sd">    In such cases, the attractive term can be computed with linear complexity.</span>
+<span class="sd">    **Subclasses** must implement :meth:`_compute_attractive_loss` and</span>
+<span class="sd">    :meth:`_compute_repulsive_loss` (or the gradient equivalents).</span>
 
-<span class="sd">    **Fast repulsion.** A stochastic estimation of the repulsive term is used</span>
-<span class="sd">    to reduce its complexity to linear.</span>
-<span class="sd">    This is done by sampling a fixed number of negative samples</span>
-<span class="sd">    :attr:`n_negatives` for each point.</span>
-
-<span class="sd">    **Multi-GPU training.** When launched with torchrun, this class supports</span>
-<span class="sd">    distributed multi-GPU training. Each rank processes its chunk of the input</span>
-<span class="sd">    affinity, the embedding is replicated across ranks, and gradients are</span>
-<span class="sd">    synchronized during optimization.</span>
+<span class="sd">    **Direct subclasses**: :class:`UMAP`, :class:`LargeVis`,</span>
+<span class="sd">    :class:`InfoTSNE`, :class:`PACMAP`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -986,12 +968,9 @@
 <span class="sd">        Whether to discard nearest neighbors from negative sampling. Default is False.</span>
 <span class="sd">    compile : bool, default=False</span>
 <span class="sd">        Whether to use torch.compile for faster computation.</span>
-<span class="sd">    distributed : bool or &#39;auto&#39;, optional</span>
-<span class="sd">        Whether to use distributed computation across multiple GPUs.</span>
-<span class="sd">        - &quot;auto&quot;: Automatically detect if running with torchrun (default)</span>
-<span class="sd">        - True: Force distributed mode (requires torchrun)</span>
-<span class="sd">        - False: Disable distributed mode</span>
-<span class="sd">        Default is &quot;auto&quot;.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        All other parameters (including ``distributed``) are forwarded to</span>
+<span class="sd">        :class:`NeighborEmbedding`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -1022,7 +1001,6 @@
         <span class="n">check_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
         <span class="n">discard_NNs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">distributed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -1054,63 +1032,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span> <span class="o">=</span> <span class="n">n_negatives</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">discard_NNs</span> <span class="o">=</span> <span class="n">discard_NNs</span>
 
-        <span class="k">if</span> <span class="n">distributed</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">distributed</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">dist</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">():</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                    <span class="s2">&quot;[TorchDR] distributed=True requires launching with torchrun. &quot;</span>
-                    <span class="s2">&quot;Example: torchrun --nproc_per_node=4 your_script.py&quot;</span>
-                <span class="p">)</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">get_rank</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">world_size</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">get_world_size</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">is_multi_gpu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">world_size</span> <span class="o">&gt;</span> <span class="mi">1</span>
-
-            <span class="c1"># Bind to local CUDA device</span>
-            <span class="n">local_rank</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LOCAL_RANK&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-            <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
-                <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">set_device</span><span class="p">(</span><span class="n">local_rank</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">==</span> <span class="s2">&quot;cpu&quot;</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;[TorchDR] Distributed mode requires GPU (device cannot be &#39;cpu&#39;)&quot;</span>
-                <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cuda:</span><span class="si">{</span><span class="n">local_rank</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">world_size</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">is_multi_gpu</span> <span class="o">=</span> <span class="kc">False</span>
-
 <div class="viewcode-block" id="NegativeSamplingNeighborEmbedding.on_affinity_computation_end">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.NegativeSamplingNeighborEmbedding.html#torchdr.NegativeSamplingNeighborEmbedding.on_affinity_computation_end">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_affinity_computation_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare for negative sampling by building per-row exclusion indices.</span>
-
-<span class="sd">        Unified logic for single- and multi-GPU using chunk bounds.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build per-row exclusion indices for negative sampling.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_affinity_computation_end</span><span class="p">()</span>
 
-        <span class="c1"># Get chunk bounds from affinity (stored during _distance_matrix call)</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="p">,</span> <span class="s2">&quot;chunk_start_&quot;</span><span class="p">):</span>
-            <span class="n">chunk_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="o">.</span><span class="n">chunk_start_</span>
-            <span class="n">chunk_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="o">.</span><span class="n">chunk_size_</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">world_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;[TorchDR] ERROR: Distributed mode is enabled but affinity_in does not &quot;</span>
-                    <span class="s2">&quot;have chunk bounds. Make sure affinity_in has distributed=True.&quot;</span>
-                <span class="p">)</span>
-            <span class="n">chunk_start</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="n">chunk_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
-            <span class="n">chunk_start</span><span class="p">,</span> <span class="n">chunk_start</span> <span class="o">+</span> <span class="n">chunk_size</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device_</span>
-        <span class="p">)</span>
+        <span class="n">chunk_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span><span class="p">)</span>
         <span class="n">global_self_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">chunk_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">global_self_idx</span><span class="p">)</span>
 
         <span class="c1"># Optionally include NN indices (rows aligned with local slice)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">discard_NNs</span><span class="p">:</span>
@@ -1180,30 +1109,7 @@
             <span class="n">neg_indices</span> <span class="o">=</span> <span class="n">negatives</span> <span class="o">+</span> <span class="n">shifts</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;neg_indices_&quot;</span><span class="p">,</span> <span class="n">neg_indices</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
-
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_init_embedding</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize embedding across ranks (broadcast from rank 0).&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">world_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_init_embedding</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">n</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
-                    <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">),</span>
-                    <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device_</span><span class="p">,</span>
-                    <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
-                    <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="p">)</span>
-
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">is_contiguous</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
-
-            <span class="n">dist</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">src</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">requires_grad_</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_init_embedding</span><span class="p">(</span><span class="n">X</span><span class="p">)</span></div>
+</div>
 
 </pre></div>
 

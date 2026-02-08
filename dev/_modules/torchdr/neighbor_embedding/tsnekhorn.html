@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.neighbor_embedding.tsnekhorn &#8212; TorchDR 0.5.dev3+g813a39f31 documentation</title>
+    <title>torchdr.neighbor_embedding.tsnekhorn &#8212; TorchDR 0.5.dev4+g8f8833d6c documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=e3d9042c"></script>
+    <script src="../../../_static/documentation_options.js?v=b30b0668"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchdr/neighbor_embedding/tsnekhorn';</script>
@@ -117,8 +117,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev3+g813a39f31 documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev3+g813a39f31 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev4+g8f8833d6c documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev4+g8f8833d6c documentation - Home"/>
   
   
 </a></div>
@@ -496,13 +496,14 @@
 <span class="sd">    n_components : int, optional</span>
 <span class="sd">        Dimension of the embedding space.</span>
 <span class="sd">    lr : float or &#39;auto&#39;, optional</span>
-<span class="sd">        Learning rate for the algorithm. By default &#39;auto&#39;.</span>
+<span class="sd">        Learning rate for the algorithm. By default &#39;auto&#39;, which sets the</span>
+<span class="sd">        learning rate based on the number of samples.</span>
 <span class="sd">    optimizer : str or torch.optim.Optimizer, optional</span>
 <span class="sd">        Name of an optimizer from torch.optim or an optimizer class.</span>
 <span class="sd">        Default is &quot;SGD&quot;.</span>
 <span class="sd">    optimizer_kwargs : dict or &#39;auto&#39;, optional</span>
 <span class="sd">        Additional keyword arguments for the optimizer. Default is &#39;auto&#39;,</span>
-<span class="sd">        which sets appropriate momentum values for SGD based on early exaggeration phase.</span>
+<span class="sd">        which sets momentum to 0.8 for SGD.</span>
 <span class="sd">    scheduler : str or torch.optim.lr_scheduler.LRScheduler, optional</span>
 <span class="sd">        Name of a scheduler from torch.optim.lr_scheduler or a scheduler class.</span>
 <span class="sd">        Default is None (no scheduler).</span>
@@ -530,11 +531,6 @@
 <span class="sd">        Verbosity, by default False.</span>
 <span class="sd">    random_state : float, optional</span>
 <span class="sd">        Random seed for reproducibility, by default None.</span>
-<span class="sd">    early_exaggeration_coeff : float, optional</span>
-<span class="sd">        Coefficient for the attraction term during the early exaggeration phase.</span>
-<span class="sd">        By default 12.0 for early exaggeration.</span>
-<span class="sd">    early_exaggeration_iter : int, optional</span>
-<span class="sd">        Number of iterations for early exaggeration, by default 250.</span>
 <span class="sd">    lr_affinity_in : float, optional</span>
 <span class="sd">        Learning rate used to update dual variables for the symmetric entropic</span>
 <span class="sd">        affinity computation.</span>
@@ -578,8 +574,6 @@
         <span class="n">backend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">early_exaggeration_coeff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">12.0</span><span class="p">,</span>
-        <span class="n">early_exaggeration_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">250</span><span class="p">,</span>
         <span class="n">lr_affinity_in</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-1</span><span class="p">,</span>
         <span class="n">eps_square_affinity_in</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">tol_affinity_in</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
@@ -589,8 +583,14 @@
         <span class="n">symmetric_affinity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">check_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">distributed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
+        <span class="k">if</span> <span class="n">distributed</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;[TorchDR] ERROR : TSNEkhorn does not support distributed.&quot;</span>
+            <span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">metric</span> <span class="o">=</span> <span class="n">metric</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span> <span class="o">=</span> <span class="n">perplexity</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lr_affinity_in</span> <span class="o">=</span> <span class="n">lr_affinity_in</span>
@@ -649,10 +649,9 @@
             <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
-            <span class="n">early_exaggeration_coeff</span><span class="o">=</span><span class="n">early_exaggeration_coeff</span><span class="p">,</span>
-            <span class="n">early_exaggeration_iter</span><span class="o">=</span><span class="n">early_exaggeration_iter</span><span class="p">,</span>
             <span class="n">check_interval</span><span class="o">=</span><span class="n">check_interval</span><span class="p">,</span>
             <span class="nb">compile</span><span class="o">=</span><span class="nb">compile</span><span class="p">,</span>
+            <span class="n">distributed</span><span class="o">=</span><span class="n">distributed</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -675,7 +674,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">repulsive_term</span> <span class="o">=</span> <span class="n">logsumexp_red</span><span class="p">(</span><span class="n">log_Q</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
 
-        <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff_</span> <span class="o">*</span> <span class="n">attractive_term</span> <span class="o">+</span> <span class="n">repulsive_term</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">attractive_term</span> <span class="o">+</span> <span class="n">repulsive_term</span>
         <span class="k">return</span> <span class="n">loss</span></div>
 
 </pre></div>

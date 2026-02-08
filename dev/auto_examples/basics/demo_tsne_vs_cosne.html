@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>TSNE vs COSNE : Euclidean vs Hyperbolic &#8212; TorchDR 0.5.dev3+g813a39f31 documentation</title>
+    <title>TSNE vs COSNE : Euclidean vs Hyperbolic &#8212; TorchDR 0.5.dev4+g8f8833d6c documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=e3d9042c"></script>
+    <script src="../../_static/documentation_options.js?v=b30b0668"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/basics/demo_tsne_vs_cosne';</script>
@@ -120,8 +120,8 @@
       
     
     
-    <img src="../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev3+g813a39f31 documentation - Home"/>
-    <img src="../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev3+g813a39f31 documentation - Home"/>
+    <img src="../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev4+g8f8833d6c documentation - Home"/>
+    <img src="../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev4+g8f8833d6c documentation - Home"/>
   
   
 </a></div>
@@ -528,7 +528,9 @@ the results on the SNARE-seq dataset.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">tsne_model</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">TSNE</span></a><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
 <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">out_tsne</span></a> <span class="o">=</span> <span class="n">tsne_model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">snare_data</span></a><span class="p">)</span>
 
-<span class="n">cosne_model</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">COSNE</span></a><span class="p">(</span><span class="n">lr</span><span class="o">=</span><span class="mf">1e-1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">lambda1</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+<span class="n">cosne_model</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">COSNE</span></a><span class="p">(</span>
+    <span class="n">lr</span><span class="o">=</span><span class="mf">1e-1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">learning_rate_for_h_loss</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">500</span>
+<span class="p">)</span>
 <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">out_cosne</span></a> <span class="o">=</span> <span class="n">cosne_model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">snare_data</span></a><span class="p">)</span>
 
 
@@ -546,21 +548,21 @@ the results on the SNARE-seq dataset.</p>
 </div>
 <img src="../../_images/sphx_glr_demo_tsne_vs_cosne_001.png" srcset="../../_images/sphx_glr_demo_tsne_vs_cosne_001.png" alt="T-SNE, CO-SNE" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[TorchDR] COSNE: ----- Computing the input affinity matrix with EntropicAffinity -----
 [TorchDR] COSNE: ----- Optimizing the embedding -----
-[TorchDR] COSNE: [0/500] Loss: 3.47e+01 | Grad norm: nan | LR: 1.00e-01
-[TorchDR] COSNE: [50/500] Loss: 6.11e+00 | Grad norm: 1.86e-01 | LR: 1.00e-01
-[TorchDR] COSNE: [100/500] Loss: 5.65e+00 | Grad norm: 1.20e-01 | LR: 1.00e-01
-[TorchDR] COSNE: [150/500] Loss: 5.63e+00 | Grad norm: 9.17e-03 | LR: 1.00e-01
-[TorchDR] COSNE: [200/500] Loss: 5.62e+00 | Grad norm: 1.32e-03 | LR: 1.00e-01
-[TorchDR] COSNE: [250/500] Loss: 5.62e+00 | Grad norm: 9.80e-04 | LR: 1.00e-01
-[TorchDR] COSNE: [300/500] Loss: 1.23e+01 | Grad norm: 2.71e-04 | LR: 1.00e-01
-[TorchDR] COSNE: [350/500] Loss: 1.22e+01 | Grad norm: 7.87e-04 | LR: 1.00e-01
-[TorchDR] COSNE: [400/500] Loss: 1.22e+01 | Grad norm: 1.48e-04 | LR: 1.00e-01
-[TorchDR] COSNE: [450/500] Loss: 1.22e+01 | Grad norm: 2.43e-05 | LR: 1.00e-01
+[TorchDR] COSNE: [0/500] Loss: 1.45e+01 | Grad norm: nan | LR: 1.00e-01
+[TorchDR] COSNE: [50/500] Loss: 1.29e+01 | Grad norm: 8.38e-03 | LR: 1.00e-01
+[TorchDR] COSNE: [100/500] Loss: 1.26e+01 | Grad norm: 4.25e-03 | LR: 1.00e-01
+[TorchDR] COSNE: [150/500] Loss: 1.24e+01 | Grad norm: 2.42e-03 | LR: 1.00e-01
+[TorchDR] COSNE: [200/500] Loss: 1.24e+01 | Grad norm: 1.30e-03 | LR: 1.00e-01
+[TorchDR] COSNE: [250/500] Loss: 1.24e+01 | Grad norm: 5.03e-04 | LR: 1.00e-01
+[TorchDR] COSNE: [300/500] Loss: 1.24e+01 | Grad norm: 5.47e-04 | LR: 1.00e-01
+[TorchDR] COSNE: [350/500] Loss: 1.24e+01 | Grad norm: 1.50e-04 | LR: 1.00e-01
+[TorchDR] COSNE: [400/500] Loss: 1.24e+01 | Grad norm: 7.95e-05 | LR: 1.00e-01
+[TorchDR] COSNE: [450/500] Loss: 1.24e+01 | Grad norm: 1.46e-05 | LR: 1.00e-01
 /home/circleci/project/torchdr/utils/visu.py:29: RuntimeWarning: invalid value encountered in arccosh
   hypDistance = np.arccosh(1 + 2 * (distance) / (1 - distance + 1e-10))
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (6 minutes 33.633 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (7 minutes 7.424 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-basics-demo-tsne-vs-cosne-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/271414b1fa4debf5462bca305fe3fb76/demo_tsne_vs_cosne.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">demo_tsne_vs_cosne.ipynb</span></code></a></p>

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.neighbor_embedding.cosne &#8212; TorchDR 0.5.dev3+g813a39f31 documentation</title>
+    <title>torchdr.neighbor_embedding.cosne &#8212; TorchDR 0.5.dev4+g8f8833d6c documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=e3d9042c"></script>
+    <script src="../../../_static/documentation_options.js?v=b30b0668"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchdr/neighbor_embedding/cosne';</script>
@@ -117,8 +117,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev3+g813a39f31 documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev3+g813a39f31 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev4+g8f8833d6c documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev4+g8f8833d6c documentation - Home"/>
   
   
 </a></div>
@@ -454,7 +454,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Any</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.neighbor_embedding.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">SparseNeighborEmbedding</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.neighbor_embedding.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">NeighborEmbedding</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity</span><span class="w"> </span><span class="kn">import</span> <span class="n">EntropicAffinity</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distance</span><span class="w"> </span><span class="kn">import</span> <span class="n">FaissConfig</span><span class="p">,</span> <span class="n">pairwise_distances</span><span class="p">,</span> <span class="n">pairwise_distances_indexed</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logsumexp_red</span><span class="p">,</span> <span class="n">RiemannianAdam</span><span class="p">,</span> <span class="n">cross_entropy_loss</span>
@@ -462,12 +462,22 @@
 
 <div class="viewcode-block" id="COSNE">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.COSNE.html#torchdr.COSNE">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">COSNE</span><span class="p">(</span><span class="n">SparseNeighborEmbedding</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">COSNE</span><span class="p">(</span><span class="n">NeighborEmbedding</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Implementation of the CO-Stochastic Neighbor Embedding (CO-SNE) introduced in :cite:`guo2022co`.</span>
 
 <span class="sd">    This algorithm is a variant of SNE that uses a hyperbolic space for the embedding.</span>
 <span class="sd">    It uses a :class:`~torchdr.EntropicAffinity` as input affinity :math:`\mathbf{P}`</span>
 <span class="sd">    and a Cauchy kernel in hyperbolic space as output affinity :math:`Q_{ij} = \gamma / (d_H(\mathbf{z}_i, \mathbf{z}_j) + \gamma^2)` where :math:`d_H` is the hyperbolic distance.</span>
+
+<span class="sd">    The loss function is defined as:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        -\sum_{ij} P_{ij} \log Q_{ij} + \log \Big( \sum_{ij} Q_{ij} \Big) + \lambda_1 \cdot \frac{1}{n} \sum_i \Big( \| \mathbf{x}_i \|^2 - d_H(\mathbf{z}_i, \mathbf{0})^2 \Big)^2</span>
+
+<span class="sd">    where the first two terms form the KL divergence between :math:`\mathbf{P}` and</span>
+<span class="sd">    :math:`\mathbf{Q}` (up to a constant) and the third term regularizes the embedding</span>
+<span class="sd">    to preserve the norms of the input data in hyperbolic space.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -475,9 +485,10 @@
 <span class="sd">        Number of &#39;effective&#39; nearest neighbors.</span>
 <span class="sd">        Consider selecting a value between 2 and the number of samples.</span>
 <span class="sd">        Different values can result in significantly different results.</span>
-<span class="sd">    lambda1 : float</span>
-<span class="sd">        Coefficient for the loss enforcing equal norms between input samples</span>
-<span class="sd">        and embedded samples.</span>
+<span class="sd">    learning_rate_for_h_loss : float</span>
+<span class="sd">        Coefficient for the distance preservation loss enforcing that the</span>
+<span class="sd">        hyperbolic distance to the origin of each embedded point matches</span>
+<span class="sd">        the squared Euclidean norm of the corresponding input sample.</span>
 <span class="sd">    gamma : float</span>
 <span class="sd">        Gamma parameter of the Cauchy distribution used for affinity, by default 2.</span>
 <span class="sd">    n_components : int, optional</span>
@@ -512,11 +523,6 @@
 <span class="sd">        Verbosity, by default False.</span>
 <span class="sd">    random_state : float, optional</span>
 <span class="sd">        Random seed for reproducibility, by default None.</span>
-<span class="sd">    early_exaggeration_coeff : float, optional</span>
-<span class="sd">        Coefficient for the attraction term during the early exaggeration phase.</span>
-<span class="sd">        By default 12.0 for early exaggeration.</span>
-<span class="sd">    early_exaggeration_iter : int, optional</span>
-<span class="sd">        Number of iterations for early exaggeration, by default 250.</span>
 <span class="sd">    max_iter_affinity : int, optional</span>
 <span class="sd">        Number of maximum iterations for the entropic affinity root search.</span>
 <span class="sd">    metric : {&#39;sqeuclidean&#39;, &#39;manhattan&#39;}, optional</span>
@@ -525,12 +531,18 @@
 <span class="sd">        Whether to use sparsity mode for the input affinity. Default is True.</span>
 <span class="sd">    check_interval : int, optional</span>
 <span class="sd">        Number of iterations between checks for convergence, by default 50.</span>
+<span class="sd">    distributed : bool or &#39;auto&#39;, optional</span>
+<span class="sd">        Whether to use distributed computation across multiple GPUs.</span>
+<span class="sd">        - &quot;auto&quot;: Automatically detect if running with torchrun (default)</span>
+<span class="sd">        - True: Force distributed mode (requires torchrun)</span>
+<span class="sd">        - False: Disable distributed mode</span>
+<span class="sd">        Default is &quot;auto&quot;.</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">perplexity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
-        <span class="n">lambda1</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">learning_rate_for_h_loss</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
         <span class="n">n_components</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
         <span class="n">lr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
@@ -547,18 +559,17 @@
         <span class="n">backend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">early_exaggeration_coeff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">12.0</span><span class="p">,</span>
-        <span class="n">early_exaggeration_iter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">250</span><span class="p">,</span>
         <span class="n">max_iter_affinity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
         <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
         <span class="n">sparsity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">check_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">distributed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metric</span> <span class="o">=</span> <span class="n">metric</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span> <span class="o">=</span> <span class="n">perplexity</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lambda1</span> <span class="o">=</span> <span class="n">lambda1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">learning_rate_for_h_loss</span> <span class="o">=</span> <span class="n">learning_rate_for_h_loss</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="n">gamma</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_iter_affinity</span> <span class="o">=</span> <span class="n">max_iter_affinity</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparsity</span> <span class="o">=</span> <span class="n">sparsity</span>
@@ -571,6 +582,7 @@
             <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="n">sparsity</span><span class="o">=</span><span class="n">sparsity</span><span class="p">,</span>
+            <span class="n">distributed</span><span class="o">=</span><span class="n">distributed</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">affinity_in</span><span class="o">=</span><span class="n">affinity_in</span><span class="p">,</span>
@@ -589,10 +601,9 @@
             <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
-            <span class="n">early_exaggeration_coeff</span><span class="o">=</span><span class="n">early_exaggeration_coeff</span><span class="p">,</span>
-            <span class="n">early_exaggeration_iter</span><span class="o">=</span><span class="n">early_exaggeration_iter</span><span class="p">,</span>
             <span class="n">check_interval</span><span class="o">=</span><span class="n">check_interval</span><span class="p">,</span>
             <span class="nb">compile</span><span class="o">=</span><span class="nb">compile</span><span class="p">,</span>
+            <span class="n">distributed</span><span class="o">=</span><span class="n">distributed</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -604,6 +615,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_attractive_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">distances_hyperbolic</span> <span class="o">=</span> <span class="n">pairwise_distances_indexed</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span>
+            <span class="n">query_indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span><span class="p">,</span>
             <span class="n">key_indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span><span class="p">,</span>
             <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;sqhyperbolic&quot;</span><span class="p">,</span>
         <span class="p">)</span>
@@ -616,10 +628,17 @@
         <span class="p">)</span>
         <span class="n">log_Q</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">/</span> <span class="p">(</span><span class="n">distances_hyperbolic</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">log</span><span class="p">()</span>
         <span class="n">rep_loss</span> <span class="o">=</span> <span class="n">logsumexp_red</span><span class="p">(</span><span class="n">log_Q</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+        <span class="c1"># Distance preservation: hyperbolic distance to origin should match</span>
+        <span class="c1"># the squared Euclidean norm of the input data.</span>
         <span class="n">Y_norm</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">Y_norm</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arccosh</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">Y_norm</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">Y_norm</span><span class="p">))</span> <span class="o">+</span> <span class="mf">1e-8</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
-        <span class="n">distance_term</span> <span class="o">=</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">X_norm</span> <span class="o">-</span> <span class="n">Y_norm</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">rep_loss</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambda1</span> <span class="o">*</span> <span class="n">distance_term</span></div>
+        <span class="n">distance_term</span> <span class="o">=</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">X_norm</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">Y_norm</span><span class="o">.</span><span class="n">device</span><span class="p">)</span> <span class="o">-</span> <span class="n">Y_norm</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">rep_loss</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">learning_rate_for_h_loss</span> <span class="o">*</span> <span class="n">distance_term</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;world_size&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">world_size</span>
+        <span class="k">return</span> <span class="n">loss</span></div>
 
 </pre></div>
 

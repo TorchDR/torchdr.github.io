@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>API and Modules &#8212; TorchDR 0.5.dev3+g813a39f31 documentation</title>
+    <title>API and Modules &#8212; TorchDR 0.5.dev4+g8f8833d6c documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=e3d9042c"></script>
+    <script src="_static/documentation_options.js?v=b30b0668"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>window.MathJax = {"tex": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}}</script>
@@ -122,8 +122,8 @@
       
     
     
-    <img src="_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev3+g813a39f31 documentation - Home"/>
-    <img src="_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev3+g813a39f31 documentation - Home"/>
+    <img src="_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev4+g8f8833d6c documentation - Home"/>
+    <img src="_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev4+g8f8833d6c documentation - Home"/>
   
   
 </a></div>
@@ -438,7 +438,6 @@
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.NeighborEmbedding.html">NeighborEmbedding</a></li>
-<li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.SparseNeighborEmbedding.html">SparseNeighborEmbedding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gen_modules/torchdr.NegativeSamplingNeighborEmbedding.html">NegativeSamplingNeighborEmbedding</a></li>
 </ul>
 <ul class="nav bd-sidenav">
@@ -538,7 +537,7 @@ For conceptual background, see the <a class="reference internal" href="torchdr.u
 <tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.TSNEkhorn.html#torchdr.TSNEkhorn" title="torchdr.TSNEkhorn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TSNEkhorn</span></code></a>([perplexity, n_components, lr, ...])</p></td>
 <td><p>TSNEkhorn algorithm introduced in <span id="id8">[<a class="reference internal" href="torchdr.bibliography.html#id4" title="Hugues Van Assel, Titouan Vayer, Rémi Flamary, and Nicolas Courty. Snekhorn: dimension reduction with symmetric entropic affinities. Advances in Neural Information Processing Systems, 2024.">Van Assel <em>et al.</em>, 2024</a>]</span>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.COSNE.html#torchdr.COSNE" title="torchdr.COSNE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">COSNE</span></code></a>([perplexity, lambda1, gamma, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.COSNE.html#torchdr.COSNE" title="torchdr.COSNE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">COSNE</span></code></a>([perplexity, ...])</p></td>
 <td><p>Implementation of the CO-Stochastic Neighbor Embedding (CO-SNE) introduced in <span id="id9">[<a class="reference internal" href="torchdr.bibliography.html#id22" title="Yunhui Guo, Haoran Guo, and Stella X Yu. Co-sne: dimensionality reduction and visualization for hyperbolic data. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, 21–30. 2022.">Guo <em>et al.</em>, 2022</a>]</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.PACMAP.html#torchdr.PACMAP" title="torchdr.PACMAP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PACMAP</span></code></a>([n_neighbors, n_components, lr, ...])</p></td>
@@ -647,17 +646,14 @@ See <a class="reference internal" href="torchdr.user_guide.html#user-guide"><spa
 </section>
 <section id="neighbor-embedding-base-classes">
 <h3>Neighbor Embedding Base Classes<a class="headerlink" href="#neighbor-embedding-base-classes" title="Link to this heading">#</a></h3>
-<p>Base classes for neighbor embedding methods. <a class="reference internal" href="gen_modules/torchdr.SparseNeighborEmbedding.html#torchdr.SparseNeighborEmbedding" title="torchdr.SparseNeighborEmbedding"><code class="xref py py-class docutils literal notranslate"><span class="pre">SparseNeighborEmbedding</span></code></a> leverages input affinity sparsity for efficient attractive term computation. <a class="reference internal" href="gen_modules/torchdr.NegativeSamplingNeighborEmbedding.html#torchdr.NegativeSamplingNeighborEmbedding" title="torchdr.NegativeSamplingNeighborEmbedding"><code class="xref py py-class docutils literal notranslate"><span class="pre">NegativeSamplingNeighborEmbedding</span></code></a> adds approximate repulsive term computation via negative sampling.</p>
+<p>Base classes for neighbor embedding methods. <a class="reference internal" href="gen_modules/torchdr.NeighborEmbedding.html#torchdr.NeighborEmbedding" title="torchdr.NeighborEmbedding"><code class="xref py py-class docutils literal notranslate"><span class="pre">NeighborEmbedding</span></code></a> leverages input affinity sparsity for efficient attractive term computation. <a class="reference internal" href="gen_modules/torchdr.NegativeSamplingNeighborEmbedding.html#torchdr.NegativeSamplingNeighborEmbedding" title="torchdr.NegativeSamplingNeighborEmbedding"><code class="xref py py-class docutils literal notranslate"><span class="pre">NegativeSamplingNeighborEmbedding</span></code></a> adds approximate repulsive term computation via negative sampling.</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.NeighborEmbedding.html#torchdr.NeighborEmbedding" title="torchdr.NeighborEmbedding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NeighborEmbedding</span></code></a>(affinity_in[, ...])</p></td>
-<td><p>Solves the neighbor embedding problem.</p></td>
+<td><p>Base class for neighbor embedding methods.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.SparseNeighborEmbedding.html#torchdr.SparseNeighborEmbedding" title="torchdr.SparseNeighborEmbedding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SparseNeighborEmbedding</span></code></a>(affinity_in[, ...])</p></td>
-<td><p>Solves the neighbor embedding problem with a sparse input affinity matrix.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gen_modules/torchdr.NegativeSamplingNeighborEmbedding.html#torchdr.NegativeSamplingNeighborEmbedding" title="torchdr.NegativeSamplingNeighborEmbedding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NegativeSamplingNeighborEmbedding</span></code></a>(affinity_in)</p></td>
-<td><p>Solves the neighbor embedding problem with both sparsity and sampling.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gen_modules/torchdr.NegativeSamplingNeighborEmbedding.html#torchdr.NegativeSamplingNeighborEmbedding" title="torchdr.NegativeSamplingNeighborEmbedding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NegativeSamplingNeighborEmbedding</span></code></a>(affinity_in)</p></td>
+<td><p>Neighbor embedding that approximates the repulsive term via negative sampling.</p></td>
 </tr>
 </tbody>
 </table>

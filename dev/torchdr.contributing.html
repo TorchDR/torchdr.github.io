@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Contributing &#8212; TorchDR 0.5.dev8+g9a213ab3d documentation</title>
+    <title>Contributing &#8212; TorchDR 0.5.dev9+gba2cdf483 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=ec0f3be9"></script>
+    <script src="_static/documentation_options.js?v=1f043051"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'torchdr.contributing';</script>
@@ -120,8 +120,8 @@
       
     
     
-    <img src="_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev8+g9a213ab3d documentation - Home"/>
-    <img src="_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev8+g9a213ab3d documentation - Home"/>
+    <img src="_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev9+gba2cdf483 documentation - Home"/>
+    <img src="_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev9+gba2cdf483 documentation - Home"/>
   
   
 </a></div>
@@ -481,11 +481,11 @@ $ cd TorchDR
 </pre></div>
 </div>
 </li>
-<li><p>Create a <code class="docutils literal notranslate"><span class="pre">feature</span></code> branch to hold your development changes:</p>
+<li><p>Create a branch to hold your development changes:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git checkout -b my-feature
 </pre></div>
 </div>
-<p>Always use a <code class="docutils literal notranslate"><span class="pre">feature</span></code> branch. It’s good practice to never work on the <code class="docutils literal notranslate"><span class="pre">master</span></code> branch!</p>
+<p>Always use a dedicated branch. It’s good practice to never work on the <code class="docutils literal notranslate"><span class="pre">main</span></code> branch!</p>
 </li>
 <li><p>Develop the feature on your feature branch. Add changed files using <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">add</span></code> and then commit the changes using <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git add modified_files
@@ -510,15 +510,18 @@ check the following points:</p>
 <li><p>If your pull request addresses an issue, please use the pull request title to describe the issue and mention the issue number in the pull request description. This will make sure a link back to the original issue is created.</p></li>
 <li><p>The documentation is updated if necessary. You can edit the documentation using any text editor and then generate the HTML output by typing <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">html</span></code> from the <code class="docutils literal notranslate"><span class="pre">docs/</span></code> directory. The resulting HTML files will be placed in <code class="docutils literal notranslate"><span class="pre">docs/build/html/</span></code> and are viewable in a web browser.</p></li>
 </ul>
-<p>When creating a pull request (PR), use the appropriate prefix to indicate its status:</p>
+<p>Use a <code class="docutils literal notranslate"><span class="pre">[Type]</span> <span class="pre">Description</span></code> format for your PR title, where type is one of:
+<code class="docutils literal notranslate"><span class="pre">Feature</span></code>, <code class="docutils literal notranslate"><span class="pre">Fix</span></code>, <code class="docutils literal notranslate"><span class="pre">Refactor</span></code>, <code class="docutils literal notranslate"><span class="pre">Doc</span></code>, <code class="docutils literal notranslate"><span class="pre">Test</span></code>, <code class="docutils literal notranslate"><span class="pre">Chore</span></code>.
+For example: <code class="docutils literal notranslate"><span class="pre">[Fix]</span> <span class="pre">Resolve</span> <span class="pre">NaN</span> <span class="pre">in</span> <span class="pre">PHATE</span> <span class="pre">potential</span> <span class="pre">distance</span></code>.</p>
+<p>If your PR is not yet ready for review, open it as a
+<a class="reference external" href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests#draft-pull-requests">Draft Pull Request</a>.
+Draft PRs are useful to:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">[MRG]</span></code> <strong>(Ready for Merge)</strong>: Use this prefix if your contribution is complete and ready for a detailed review. A core maintainer will review your code and approve it for merging if it meets the required standards.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">[WIP]</span></code> <strong>(Work in Progress)</strong>: Use this prefix for an incomplete contribution where further work is planned before seeking a full review. Consider including a <a class="reference external" href="https://github.com/blog/1375-task-lists-in-gfm-issues-pulls-comments">task list</a> in your PR description to outline planned work or track progress. Change the prefix to <cite>[MRG]</cite> once the PR is mature and ready for detailed review.</p></li>
+<li><p>Indicate that you are actively working on something to prevent duplicated efforts.</p></li>
+<li><p>Request early feedback on functionality, design, or API.</p></li>
+<li><p>Seek collaborators to assist with development.</p></li>
 </ul>
-<p>A <code class="docutils literal notranslate"><span class="pre">[WIP]</span></code> PR can serve multiple purposes:
-1- Indicate that you are actively working on something to prevent duplicated efforts by others.
-2- Request early feedback on functionality, design, or API.
-3- Seek collaborators to assist with development.</p>
+<p>When your work is ready for review, click <strong>Ready for review</strong> to convert the draft into a regular PR.</p>
 </section>
 <section id="new-contributor-tips">
 <h2>New contributor tips<a class="headerlink" href="#new-contributor-tips" title="Link to this heading">#</a></h2>

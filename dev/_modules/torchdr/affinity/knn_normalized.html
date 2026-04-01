@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.affinity.knn_normalized &#8212; TorchDR 0.5.dev6+g70b936e59 documentation</title>
+    <title>torchdr.affinity.knn_normalized &#8212; TorchDR 0.5.dev7+g9829b57fd documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=fd21acc7"></script>
+    <script src="../../../_static/documentation_options.js?v=e3d9c0cc"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchdr/affinity/knn_normalized';</script>
@@ -117,8 +117,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev6+g70b936e59 documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev6+g70b936e59 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev7+g9829b57fd documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev7+g9829b57fd documentation - Home"/>
   
   
 </a></div>
@@ -776,10 +776,14 @@
         <span class="n">affinity</span> <span class="o">=</span> <span class="p">(</span><span class="n">affinity</span> <span class="o">+</span> <span class="n">matrix_transpose</span><span class="p">(</span><span class="n">affinity</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span>
         <span class="n">affinity</span> <span class="o">=</span> <span class="n">affinity</span> <span class="o">/</span> <span class="n">sum_red</span><span class="p">(</span><span class="n">affinity</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">affinity</span> <span class="o">=</span> <span class="n">matrix_power</span><span class="p">(</span><span class="n">affinity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">)</span>
+        <span class="c1"># Upcast to float64 to avoid catastrophic cancellation in the</span>
+        <span class="c1"># x² + y² - 2xy Euclidean distance on near-constant potential rows.</span>
         <span class="n">affinity</span> <span class="o">=</span> <span class="o">-</span><span class="n">pairwise_distances</span><span class="p">(</span>
-            <span class="o">-</span><span class="n">affinity</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">)</span><span class="o">.</span><span class="n">log</span><span class="p">(),</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend</span>
+            <span class="o">-</span><span class="n">affinity</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">)</span><span class="o">.</span><span class="n">log</span><span class="p">(),</span>
+            <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
+            <span class="n">backend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">affinity</span></div>
+        <span class="k">return</span> <span class="n">affinity</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span></div>
 
 
 

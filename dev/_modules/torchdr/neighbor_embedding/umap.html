@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.neighbor_embedding.umap &#8212; TorchDR 0.5.dev19+g4c26528d0 documentation</title>
+    <title>torchdr.neighbor_embedding.umap &#8212; TorchDR 0.5.dev18+g0001a785e documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../../_static/documentation_options.js?v=949efcdd"></script>
+    <script src="../../../_static/documentation_options.js?v=5ff14479"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -125,8 +125,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev19+g4c26528d0 documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev19+g4c26528d0 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev18+g0001a785e documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev18+g0001a785e documentation - Home"/>
   
   
 </a></div>
@@ -473,10 +473,8 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity</span><span class="w"> </span><span class="kn">import</span> <span class="n">UMAPAffinity</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity.knn_normalized</span><span class="w"> </span><span class="kn">import</span> <span class="n">_log_P_UMAP</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.neighbor_embedding.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">NegativeSamplingNeighborEmbedding</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distance</span><span class="w"> </span><span class="kn">import</span> <span class="n">pairwise_distances_indexed</span><span class="p">,</span> <span class="n">FaissConfig</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">binary_search</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">curve_fit</span>
 
@@ -522,8 +520,6 @@
 <span class="sd">    ----</span>
 <span class="sd">    This implementation supports multi-GPU training when launched with ``torchrun``.</span>
 <span class="sd">    Set ``distributed='auto'`` (default) to automatically detect and use multiple GPUs.</span>
-<span class="sd">    It also supports the shared non-parametric transform path implemented in</span>
-<span class="sd">    :class:`NegativeSamplingNeighborEmbedding`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -583,11 +579,9 @@
 <span class="sd">        Number of negative samples for the noise-contrastive loss, by default 10.</span>
 <span class="sd">    check_interval : int, optional</span>
 <span class="sd">        Check interval for the algorithm, by default 50.</span>
-<span class="sd">    exclude_neighbors_from_negative_sampling : bool, optional</span>
-<span class="sd">        Whether to exclude nearest neighbors from negative sampling.</span>
-<span class="sd">        Default is False.</span>
 <span class="sd">    discard_NNs : bool, optional</span>
-<span class="sd">        Deprecated alias for ``exclude_neighbors_from_negative_sampling``.</span>
+<span class="sd">        Whether to discard the nearest neighbors from the negative sampling.</span>
+<span class="sd">        Default is False.</span>
 <span class="sd">    compile : bool, optional</span>
 <span class="sd">        Whether to compile the algorithm using torch.compile. Default is False.</span>
 <span class="sd">    distributed : bool or 'auto', optional</span>
@@ -625,8 +619,7 @@
         <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"sqeuclidean"</span><span class="p">,</span>
         <span class="n">negative_sample_rate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
         <span class="n">check_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
-        <span class="n">exclude_neighbors_from_negative_sampling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">discard_NNs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">discard_NNs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">distributed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"auto"</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
@@ -678,7 +671,6 @@
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
             <span class="n">check_interval</span><span class="o">=</span><span class="n">check_interval</span><span class="p">,</span>
-            <span class="n">exclude_neighbors_from_negative_sampling</span><span class="o">=</span><span class="n">exclude_neighbors_from_negative_sampling</span><span class="p">,</span>
             <span class="n">discard_NNs</span><span class="o">=</span><span class="n">discard_NNs</span><span class="p">,</span>
             <span class="nb">compile</span><span class="o">=</span><span class="nb">compile</span><span class="p">,</span>
             <span class="n">n_negatives</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span><span class="p">,</span>
@@ -766,116 +758,7 @@
         <span class="p">)</span>
         <span class="n">grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">"ijk,ij-&gt;ik"</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span>
         <span class="n">grad</span><span class="o">.</span><span class="n">clamp_</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>  <span class="c1"># clamp as in umap repo</span>
-        <span class="k">return</span> <span class="n">grad</span>
-
-    <span class="c1"># --- Non-parametric transform ---</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_bipartite_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">indices</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Build the UMAP bipartite affinity used during transform.</span>
-
-<span class="sd">        This is the UMAP-specific hook for the shared non-parametric transform</span>
-<span class="sd">        pipeline in :class:`NegativeSamplingNeighborEmbedding`. It mirrors the</span>
-<span class="sd">        unsymmetrized UMAP neighbor graph construction on the bipartite graph</span>
-<span class="sd">        from new points to the fitted training set.</span>
-<span class="sd">        """</span>
-        <span class="c1"># umap-learn reduces local_connectivity by one for transform.  With</span>
-        <span class="c1"># UMAP's default local_connectivity=1 this means rho=0, unlike fit-time</span>
-        <span class="c1"># graph construction.  Taking the nearest distance here would force one</span>
-        <span class="c1"># affinity to 1 for every query and make every point look like an exact</span>
-        <span class="c1"># match during initialization.</span>
-        <span class="n">rho</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-
-        <span class="n">log_n_neighbors</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span>
-            <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-        <span class="p">)</span>
-
-        <span class="k">def</span><span class="w"> </span><span class="nf">marginal_gap</span><span class="p">(</span><span class="n">eps</span><span class="p">):</span>
-            <span class="c1"># Match smooth_knn_dist's bipartite transform convention: the</span>
-            <span class="c1"># closest edge participates in the graph but is omitted from the</span>
-            <span class="c1"># bandwidth calibration sum.</span>
-            <span class="n">log_marg</span> <span class="o">=</span> <span class="n">_log_P_UMAP</span><span class="p">(</span><span class="n">C</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:],</span> <span class="n">rho</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span><span class="o">.</span><span class="n">logsumexp</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">log_marg</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">log_n_neighbors</span>
-
-        <span class="n">eps</span> <span class="o">=</span> <span class="n">binary_search</span><span class="p">(</span>
-            <span class="n">f</span><span class="o">=</span><span class="n">marginal_gap</span><span class="p">,</span>
-            <span class="n">n</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-            <span class="n">max_iter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter_affinity</span><span class="p">,</span>
-            <span class="n">dtype</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
-            <span class="n">device</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">_log_P_UMAP</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_make_transform_epochs_per_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">affinity</span><span class="p">,</span> <span class="n">n_epochs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Convert transform edge strengths into UMAP's epoch schedule.</span>
-
-<span class="sd">        This keeps the transform path aligned with UMAP's usual edge-sampling</span>
-<span class="sd">        logic while still using TorchDR's vectorized, mask-based optimizer.</span>
-<span class="sd">        """</span>
-        <span class="n">epochs_per_sample</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">affinity</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"inf"</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">n_epochs</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">epochs_per_sample</span>
-
-        <span class="n">max_affinity</span> <span class="o">=</span> <span class="n">affinity</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">max_affinity</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">epochs_per_sample</span>
-
-        <span class="n">threshold</span> <span class="o">=</span> <span class="n">max_affinity</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">n_epochs</span><span class="p">)</span>
-        <span class="n">active_edges</span> <span class="o">=</span> <span class="n">affinity</span> <span class="o">&gt;=</span> <span class="n">threshold</span>
-        <span class="n">eps</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">affinity</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">tiny</span>
-        <span class="n">epochs_per_sample</span><span class="p">[</span><span class="n">active_edges</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_affinity</span> <span class="o">/</span> <span class="n">affinity</span><span class="p">[</span><span class="n">active_edges</span><span class="p">]</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span>
-            <span class="nb">min</span><span class="o">=</span><span class="n">eps</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">epochs_per_sample</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_initialize_transform_embedding</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">affinity</span><span class="p">,</span> <span class="n">nn_indices</span><span class="p">,</span> <span class="n">train_emb</span><span class="p">,</span> <span class="n">neighbor_distances</span><span class="o">=</span><span class="kc">None</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Match UMAP's transform initialization when exact matches exist.</span>
-
-<span class="sd">        The default weighted-average initialization from the base class is kept,</span>
-<span class="sd">        except that rows containing a zero-distance neighbor are snapped to the</span>
-<span class="sd">        corresponding training embedding exactly, as in ``umap-learn``.</span>
-<span class="sd">        """</span>
-        <span class="n">embedding_new</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_initialize_transform_embedding</span><span class="p">(</span>
-            <span class="n">affinity</span><span class="p">,</span>
-            <span class="n">nn_indices</span><span class="p">,</span>
-            <span class="n">train_emb</span><span class="p">,</span>
-            <span class="n">neighbor_distances</span><span class="o">=</span><span class="n">neighbor_distances</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="n">neighbor_distances</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">embedding_new</span>
-
-        <span class="n">exact_match</span> <span class="o">=</span> <span class="n">neighbor_distances</span> <span class="o">==</span> <span class="mi">0</span>
-        <span class="k">if</span> <span class="n">exact_match</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-            <span class="n">exact_rows</span> <span class="o">=</span> <span class="n">exact_match</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">exact_cols</span> <span class="o">=</span> <span class="n">exact_match</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">embedding_new</span><span class="p">[</span><span class="n">exact_rows</span><span class="p">]</span> <span class="o">=</span> <span class="n">train_emb</span><span class="p">[</span>
-                <span class="n">nn_indices</span><span class="p">[</span><span class="n">exact_rows</span><span class="p">,</span> <span class="n">exact_cols</span><span class="p">[</span><span class="n">exact_rows</span><span class="p">]]</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
-            <span class="p">]</span>
-        <span class="k">return</span> <span class="n">embedding_new</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_enter_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">embedding_new</span><span class="p">,</span> <span class="n">train_emb</span><span class="p">,</span> <span class="n">affinity</span><span class="p">,</span> <span class="n">nn_indices</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Set up UMAP edge-sampling state for transform.</span>
-
-<span class="sd">        Reuses the same edge-sampling schedule as fit, but on the bipartite</span>
-<span class="sd">        graph between new points and the frozen training embedding. The actual</span>
-<span class="sd">        optimization still runs through TorchDR's vectorized mask-based update</span>
-<span class="sd">        path rather than ``umap-learn``'s edge-wise CPU loop.</span>
-<span class="sd">        """</span>
-        <span class="n">epochs_per_sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_transform_epochs_per_sample</span><span class="p">(</span>
-            <span class="n">affinity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_max_iter_transform</span><span class="p">()</span>
-        <span class="p">)</span>
-        <span class="n">saved</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_enter_transform</span><span class="p">(</span><span class="n">embedding_new</span><span class="p">,</span> <span class="n">train_emb</span><span class="p">,</span> <span class="n">affinity</span><span class="p">,</span> <span class="n">nn_indices</span><span class="p">)</span>
-
-        <span class="c1"># Save UMAP-specific state</span>
-        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"epochs_per_sample"</span><span class="p">,</span> <span class="s2">"epoch_of_next_sample"</span><span class="p">,</span> <span class="s2">"mask_affinity_in_"</span><span class="p">):</span>
-            <span class="n">saved</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">),</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">epochs_per_sample</span> <span class="o">=</span> <span class="n">epochs_per_sample</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">epoch_of_next_sample</span> <span class="o">=</span> <span class="n">epochs_per_sample</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
-
-        <span class="k">return</span> <span class="n">saved</span></div>
+        <span class="k">return</span> <span class="n">grad</span></div>
 
 </pre></div>
 

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>User Guide &#8212; TorchDR 0.5.dev19+g4c26528d0 documentation</title>
+    <title>User Guide &#8212; TorchDR 0.5.dev18+g0001a785e documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="_static/documentation_options.js?v=949efcdd"></script>
+    <script src="_static/documentation_options.js?v=5ff14479"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/sg-tags.js?v=d80f6fa4"></script>
@@ -130,8 +130,8 @@
       
     
     
-    <img src="_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev19+g4c26528d0 documentation - Home"/>
-    <img src="_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev19+g4c26528d0 documentation - Home"/>
+    <img src="_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev18+g0001a785e documentation - Home"/>
+    <img src="_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev18+g0001a785e documentation - Home"/>
   
   
 </a></div>
@@ -600,54 +600,6 @@ In these methods, <span class="math notranslate nohighlight">\(\mathbf{P}\)</spa
 <p>In the above table, <span class="math notranslate nohighlight">\(\mathrm{Neg}(i)\)</span> denotes the set of negative samples
 for point <span class="math notranslate nohighlight">\(i\)</span>. They are usually sampled uniformly at random from the dataset.</p>
 </section>
-<section id="transforming-new-data-with-a-frozen-reference-embedding">
-<span id="non-parametric-transform-section"></span><h3>Transforming New Data with a Frozen Reference Embedding<a class="headerlink" href="#transforming-new-data-with-a-frozen-reference-embedding" title="Link to this heading">#</a></h3>
-<p><a class="reference internal" href="gen_modules/torchdr.UMAP.html#torchdr.UMAP" title="torchdr.UMAP"><code class="xref py py-class docutils literal notranslate"><span class="pre">UMAP</span></code></a>, <a class="reference internal" href="gen_modules/torchdr.LargeVis.html#torchdr.LargeVis" title="torchdr.LargeVis"><code class="xref py py-class docutils literal notranslate"><span class="pre">LargeVis</span></code></a>, and
-<a class="reference internal" href="gen_modules/torchdr.InfoTSNE.html#torchdr.InfoTSNE" title="torchdr.InfoTSNE"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfoTSNE</span></code></a> support out-of-sample transformation. This makes it
-possible to fit a reference embedding once and then place unseen observations in
-the same low-dimensional space without moving the reference points:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torchdr</span><span class="w"> </span><span class="kn">import</span> <span class="n">UMAP</span>
-
-<span class="n">model</span> <span class="o">=</span> <span class="n">UMAP</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">"cuda"</span><span class="p">)</span>
-<span class="n">Z_reference</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_reference</span><span class="p">)</span>
-<span class="n">Z_query</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_query</span><span class="p">,</span> <span class="n">X_train</span><span class="o">=</span><span class="n">X_reference</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>These methods are non-parametric: fitting does not learn an encoder that can be
-directly evaluated on <code class="docutils literal notranslate"><span class="pre">X_query</span></code>. Instead, <code class="docutils literal notranslate"><span class="pre">transform</span></code> constructs a bipartite
-neighborhood graph between the query and reference observations. For every
-query observation, TorchDR:</p>
-<ol class="arabic simple">
-<li><p>finds its nearest neighbors in <code class="docutils literal notranslate"><span class="pre">X_train</span></code>;</p></li>
-<li><p>converts their input-space distances into method-specific affinity weights;</p></li>
-<li><p>initializes its position from the weighted average of the corresponding
-reference embedding coordinates; and</p></li>
-<li><p>optimizes only the query coordinate, using the fitted reference embedding as
-a frozen set of attractive neighbors and repulsive negative samples.</p></li>
-</ol>
-<p>Only the fitted reference embedding is retained by the estimator. The original
-input features are not stored, which avoids keeping another potentially large
-copy of the training data. Consequently, <code class="docutils literal notranslate"><span class="pre">X_train</span></code> passed to <code class="docutils literal notranslate"><span class="pre">transform</span></code>
-must contain the exact samples used during fitting, in the same row order. The
-query and reference arrays must also have the same number of features and must
-use the same preprocessing. For example, when using a fitted scaler or PCA
-model, apply its <code class="docutils literal notranslate"><span class="pre">transform</span></code> method to both arrays before passing them to
-TorchDR.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Non-parametric transformation still performs nearest-neighbor search and a
-short iterative optimization. It is therefore more expensive than applying
-a learned encoder, but cheaper than fitting a new joint embedding. The
-result is also not equivalent to calling <code class="docutils literal notranslate"><span class="pre">fit_transform</span></code> on the
-concatenation of the reference and query data: reference coordinates remain
-fixed, and the bipartite graph contains no query-to-query edges. This
-transform path is intended for a single process and device rather than
-distributed multi-GPU inference.</p>
-</div>
-<p>For a complete reference/query workflow with preprocessing, visualization, and
-label-transfer evaluation, see
-<a class="reference internal" href="auto_examples/basics/demo_non_parametric_transform_digits.html#sphx-glr-auto-examples-basics-demo-non-parametric-transform-digits-py"><span class="std std-ref">UMAP Non-Parametric Transform on Handwritten Digits</span></a>.</p>
-</section>
 <section id="spectral-methods">
 <span id="spectral-section"></span><h3>Spectral Methods<a class="headerlink" href="#spectral-methods" title="Link to this heading">#</a></h3>
 <p>Spectral methods correspond to choosing the scalar product affinity <span class="math notranslate nohighlight">\(P_{ij} = \langle \mathbf{z}_i, \mathbf{z}_j \rangle\)</span> for the embeddings and the <span class="math notranslate nohighlight">\(\ell_2\)</span> loss.</p>
@@ -917,7 +869,6 @@ torchrun<span class="w"> </span>--nproc_per_node<span class="o">=</span><span cl
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dimensionality-reduction-methods">Dimensionality Reduction Methods</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#neighbor-embedding">Neighbor Embedding</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#transforming-new-data-with-a-frozen-reference-embedding">Transforming New Data with a Frozen Reference Embedding</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spectral-methods">Spectral Methods</a></li>
 </ul>
 </li>

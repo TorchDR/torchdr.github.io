@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.neighbor_embedding.base &#8212; TorchDR 0.5.dev19+g4c26528d0 documentation</title>
+    <title>torchdr.neighbor_embedding.base &#8212; TorchDR 0.5.dev18+g0001a785e documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../../_static/documentation_options.js?v=949efcdd"></script>
+    <script src="../../../_static/documentation_options.js?v=5ff14479"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -125,8 +125,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev19+g4c26528d0 documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev19+g4c26528d0 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev18+g0001a785e documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev18+g0001a785e documentation - Home"/>
   
   
 </a></div>
@@ -477,16 +477,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity</span><span class="w"> </span><span class="kn">import</span> <span class="n">Affinity</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity.entropic</span><span class="w"> </span><span class="kn">import</span> <span class="n">_log_Pe</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distance</span><span class="w"> </span><span class="kn">import</span> <span class="n">FaissConfig</span><span class="p">,</span> <span class="n">pairwise_distances</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distance</span><span class="w"> </span><span class="kn">import</span> <span class="n">FaissConfig</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity_matcher</span><span class="w"> </span><span class="kn">import</span> <span class="n">AffinityMatcher</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">binary_search</span><span class="p">,</span>
-    <span class="n">entropy</span><span class="p">,</span>
-    <span class="n">logsumexp_red</span><span class="p">,</span>
-    <span class="n">to_torch</span><span class="p">,</span>
-    <span class="n">validate_tensor</span><span class="p">,</span>
-<span class="p">)</span>
 
 
 <div class="viewcode-block" id="NeighborEmbedding">
@@ -919,38 +911,16 @@
 
 <span class="sd">    - At each iteration, :attr:`n_negatives` indices are sampled uniformly</span>
 <span class="sd">      (excluding the point itself) for each point in the local chunk.</span>
-<span class="sd">    - When :attr:`exclude_neighbors_from_negative_sampling` is ``True``,</span>
-<span class="sd">      nearest neighbors are also excluded from the negative samples to avoid</span>
-<span class="sd">      conflicting gradients.</span>
+<span class="sd">    - When :attr:`discard_NNs` is ``True``, nearest neighbors are also</span>
+<span class="sd">      excluded from the negative samples to avoid conflicting gradients.</span>
 <span class="sd">    - The sampled indices are stored in :attr:`neg_indices_` and refreshed</span>
 <span class="sd">      every iteration via :meth:`on_training_step_start`.</span>
-
-<span class="sd">    **Non-parametric transform support:**</span>
-
-<span class="sd">    This family also provides the shared machinery for *out-of-sample*</span>
-<span class="sd">    non-parametric transform. The base implementation handles the generic</span>
-<span class="sd">    transform lifecycle:</span>
-
-<span class="sd">    - find nearest neighbors from new points to the reference training set;</span>
-<span class="sd">    - build a bipartite affinity from new points to training points;</span>
-<span class="sd">    - initialize new embeddings from that bipartite graph;</span>
-<span class="sd">    - optimize only the new points while keeping the fitted training</span>
-<span class="sd">      embedding frozen.</span>
-
-<span class="sd">    The design is intentionally split so the base class owns the generic</span>
-<span class="sd">    transform pipeline, while each algorithm only provides the</span>
-<span class="sd">    method-specific bipartite affinity through</span>
-<span class="sd">    :meth:`_compute_bipartite_affinity`. This keeps the out-of-sample logic</span>
-<span class="sd">    centralized and prevents each subclass from reimplementing the same</span>
-<span class="sd">    transform scaffolding.</span>
 
 <span class="sd">    **Inherits** distributed multi-GPU support from</span>
 <span class="sd">    :class:`NeighborEmbedding`.</span>
 
 <span class="sd">    **Subclasses** must implement :meth:`_compute_attractive_loss` and</span>
 <span class="sd">    :meth:`_compute_repulsive_loss` (or the gradient equivalents).</span>
-<span class="sd">    Subclasses that support non-parametric transform must additionally</span>
-<span class="sd">    implement :meth:`_compute_bipartite_affinity`.</span>
 
 <span class="sd">    **Direct subclasses**: :class:`UMAP`, :class:`LargeVis`,</span>
 <span class="sd">    :class:`InfoTSNE`, :class:`PACMAP`.</span>
@@ -1012,11 +982,8 @@
 <span class="sd">        Number of negative samples to use. Default is 5.</span>
 <span class="sd">    check_interval : int, optional</span>
 <span class="sd">        Number of iterations between two checks for convergence. Default is 50.</span>
-<span class="sd">    exclude_neighbors_from_negative_sampling : bool, optional</span>
-<span class="sd">        Whether to exclude nearest neighbors from negative sampling.</span>
-<span class="sd">        Default is False.</span>
 <span class="sd">    discard_NNs : bool, optional</span>
-<span class="sd">        Deprecated alias for ``exclude_neighbors_from_negative_sampling``.</span>
+<span class="sd">        Whether to discard nearest neighbors from negative sampling. Default is False.</span>
 <span class="sd">    compile : bool, default=False</span>
 <span class="sd">        Whether to use torch.compile for faster computation.</span>
 <span class="sd">    **kwargs</span>
@@ -1050,8 +1017,7 @@
         <span class="n">repulsion_strength</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">n_negatives</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
         <span class="n">check_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
-        <span class="n">exclude_neighbors_from_negative_sampling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">discard_NNs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">discard_NNs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
@@ -1081,48 +1047,8 @@
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="n">exclude_neighbors_from_negative_sampling</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="ow">and</span> <span class="n">discard_NNs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="ow">and</span> <span class="nb">bool</span><span class="p">(</span><span class="n">exclude_neighbors_from_negative_sampling</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">discard_NNs</span><span class="p">)</span>
-        <span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">"[TorchDR] Conflicting values were provided for "</span>
-                <span class="s2">"exclude_neighbors_from_negative_sampling and its deprecated "</span>
-                <span class="s2">"alias discard_NNs."</span>
-            <span class="p">)</span>
-        <span class="k">if</span> <span class="n">discard_NNs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">"`discard_NNs` is deprecated; use "</span>
-                <span class="s2">"`exclude_neighbors_from_negative_sampling` instead."</span><span class="p">,</span>
-                <span class="ne">FutureWarning</span><span class="p">,</span>
-                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-            <span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span> <span class="o">=</span> <span class="n">n_negatives</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">discard_NNs</span> <span class="o">=</span> <span class="n">discard_NNs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">exclude_neighbors_from_negative_sampling</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span>
-            <span class="n">discard_NNs</span>
-            <span class="k">if</span> <span class="n">exclude_neighbors_from_negative_sampling</span> <span class="ow">is</span> <span class="kc">None</span>
-            <span class="k">else</span> <span class="n">exclude_neighbors_from_negative_sampling</span>
-        <span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Fit and keep a CPU copy of the embedding only when transform is supported.</span>
-
-<span class="sd">        The transform path needs access to the fitted reference embedding, but</span>
-<span class="sd">        storing that extra CPU copy for every estimator would be wasteful.</span>
-<span class="sd">        The copy is therefore created only for subclasses that opt into the</span>
-<span class="sd">        non-parametric transform pipeline.</span>
-<span class="sd">        """</span>
-        <span class="n">embedding</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_supports_non_parametric_transform</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">embedding_train_</span> <span class="o">=</span> <span class="n">embedding</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"embedding_train_"</span><span class="p">):</span>
-            <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"embedding_train_"</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">embedding</span>
 
 <div class="viewcode-block" id="NegativeSamplingNeighborEmbedding.on_affinity_computation_end">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.NegativeSamplingNeighborEmbedding.html#torchdr.NegativeSamplingNeighborEmbedding.on_affinity_computation_end">[docs]</a>
@@ -1134,11 +1060,10 @@
         <span class="n">global_self_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
         <span class="c1"># Optionally include NN indices (rows aligned with local slice)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude_neighbors_from_negative_sampling</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">discard_NNs</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"NN_indices_"</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="s2">"NN_indices_ not found. Cannot exclude neighbors from "</span>
-                    <span class="s2">"negative sampling."</span>
+                    <span class="s2">"NN_indices_ not found. Cannot discard NNs from negative sampling."</span>
                 <span class="p">)</span>
                 <span class="n">exclude</span> <span class="o">=</span> <span class="n">global_self_idx</span>
             <span class="k">else</span><span class="p">:</span>
@@ -1158,73 +1083,14 @@
             <span class="s2">"negative_exclusion_indices_"</span><span class="p">,</span> <span class="n">exclude_sorted</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
 
-        <span class="n">adjusted_exclusion</span><span class="p">,</span> <span class="n">n_available</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_exclusion_sampling</span><span class="p">(</span>
-            <span class="n">exclude_sorted</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span>
-            <span class="s2">"negative_adjusted_exclusion_"</span><span class="p">,</span> <span class="n">adjusted_exclusion</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span>
-            <span class="s2">"negative_available_counts_"</span><span class="p">,</span> <span class="n">n_available</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">)</span></div>
-
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_exclusion_sampling</span><span class="p">(</span><span class="n">exclusion</span><span class="p">,</span> <span class="n">n_candidates</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Prepare row-wise exclusions for uniform compressed-index sampling.</span>
-
-<span class="sd">        Invalid padding indices and duplicate exclusions are ignored.  The</span>
-<span class="sd">        returned adjusted values map a uniform draw in the compressed range</span>
-<span class="sd">        back into ``[0, n_candidates)`` with ``torch.searchsorted``.</span>
-<span class="sd">        """</span>
-        <span class="n">exclusion</span> <span class="o">=</span> <span class="n">exclusion</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">exclusion</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"[TorchDR] exclusion indices must be a 2D tensor."</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">n_candidates</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"[TorchDR] negative sampling requires candidates."</span><span class="p">)</span>
-
-        <span class="nb">sentinel</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">exclusion</span><span class="p">,</span> <span class="n">n_candidates</span><span class="p">)</span>
-        <span class="n">valid</span> <span class="o">=</span> <span class="p">(</span><span class="n">exclusion</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">exclusion</span> <span class="o">&lt;</span> <span class="n">n_candidates</span><span class="p">)</span>
-        <span class="n">exclusion</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">valid</span><span class="p">,</span> <span class="n">exclusion</span><span class="p">,</span> <span class="nb">sentinel</span><span class="p">)</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
-        <span class="n">valid</span> <span class="o">=</span> <span class="n">exclusion</span> <span class="o">&lt;</span> <span class="n">n_candidates</span>
-
-        <span class="n">unique</span> <span class="o">=</span> <span class="n">valid</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">exclusion</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">unique</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">&amp;=</span> <span class="n">exclusion</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">!=</span> <span class="n">exclusion</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-
-        <span class="n">n_excluded</span> <span class="o">=</span> <span class="n">unique</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">n_available</span> <span class="o">=</span> <span class="n">n_candidates</span> <span class="o">-</span> <span class="n">n_excluded</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">n_available</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="c1"># Safety check on number of available negatives</span>
+        <span class="n">n_possible</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative_exclusion_indices_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span> <span class="o">&gt;</span> <span class="n">n_possible</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">"[TorchDR] No candidates remain after applying negative-sampling "</span>
-                <span class="s2">"exclusions."</span>
-            <span class="p">)</span>
+                <span class="sa">f</span><span class="s2">"[TorchDR] ERROR : requested </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span><span class="si">}</span><span class="s2"> negatives but "</span>
+                <span class="sa">f</span><span class="s2">"only </span><span class="si">{</span><span class="n">n_possible</span><span class="si">}</span><span class="s2"> available."</span>
+            <span class="p">)</span></div>
 
-        <span class="n">width</span> <span class="o">=</span> <span class="n">exclusion</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">columns</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">exclusion</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
-        <span class="n">compact</span> <span class="o">=</span> <span class="p">(</span><span class="n">n_candidates</span> <span class="o">+</span> <span class="n">columns</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">expand_as</span><span class="p">(</span><span class="n">exclusion</span><span class="p">)</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
-        <span class="n">compact_positions</span> <span class="o">=</span> <span class="n">unique</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
-        <span class="n">rows</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">exclusion</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">device</span><span class="o">=</span><span class="n">exclusion</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-        <span class="n">rows</span> <span class="o">=</span> <span class="n">rows</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">expand_as</span><span class="p">(</span><span class="n">exclusion</span><span class="p">)</span>
-        <span class="n">compact</span><span class="p">[</span><span class="n">rows</span><span class="p">[</span><span class="n">unique</span><span class="p">],</span> <span class="n">compact_positions</span><span class="p">[</span><span class="n">unique</span><span class="p">]]</span> <span class="o">=</span> <span class="n">exclusion</span><span class="p">[</span><span class="n">unique</span><span class="p">]</span>
-
-        <span class="c1"># For the j-th sorted exclusion e_j, compare compressed indices against</span>
-        <span class="c1"># e_j - j.  Sentinel entries become n_candidates and remain at the end.</span>
-        <span class="n">adjusted_exclusion</span> <span class="o">=</span> <span class="p">(</span><span class="n">compact</span> <span class="o">-</span> <span class="n">columns</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">adjusted_exclusion</span><span class="p">,</span> <span class="n">n_available</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_draw_with_exclusions</span><span class="p">(</span><span class="n">adjusted_exclusion</span><span class="p">,</span> <span class="n">n_available</span><span class="p">,</span> <span class="n">n_draws</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Draw uniformly with replacement from row-wise allowed indices."""</span>
-        <span class="n">compressed</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span>
-                <span class="p">(</span><span class="n">adjusted_exclusion</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n_draws</span><span class="p">),</span>
-                <span class="n">device</span><span class="o">=</span><span class="n">adjusted_exclusion</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="o">*</span> <span class="n">n_available</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
-        <span class="n">shifts</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">adjusted_exclusion</span><span class="p">,</span> <span class="n">compressed</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">compressed</span> <span class="o">+</span> <span class="n">shifts</span> <span class="o">+</span> <span class="n">offset</span>
 
 <div class="viewcode-block" id="NegativeSamplingNeighborEmbedding.on_training_step_start">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.NegativeSamplingNeighborEmbedding.html#torchdr.NegativeSamplingNeighborEmbedding.on_training_step_start">[docs]</a>
@@ -1232,416 +1098,36 @@
 <span class="w">        </span><span class="sd">"""Sample negatives using a unified path for single- and multi-GPU."""</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_training_step_start</span><span class="p">()</span>
 
-        <span class="n">neg_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_draw_with_exclusions</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">negative_adjusted_exclusion_</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">negative_available_counts_</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="n">chunk_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span><span class="p">)</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">device</span>
+
+        <span class="n">exclusion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative_exclusion_indices_</span>
+        <span class="n">excl_width</span> <span class="o">=</span> <span class="n">exclusion</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># Only excluding self-indices</span>
+        <span class="k">if</span> <span class="n">excl_width</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">negatives</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="p">(</span><span class="n">chunk_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span><span class="p">),</span>
+                <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">self_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">neg_indices</span> <span class="o">=</span> <span class="n">negatives</span> <span class="o">+</span> <span class="p">(</span><span class="n">negatives</span> <span class="o">&gt;=</span> <span class="n">self_idx</span><span class="p">)</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
+
+        <span class="c1"># Excluding self-indices and NNs indices (computed in on_affinity_computation_end)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">negatives</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
+                <span class="mi">1</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">-</span> <span class="n">excl_width</span><span class="p">,</span>
+                <span class="p">(</span><span class="n">chunk_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span><span class="p">),</span>
+                <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">shifts</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">exclusion</span><span class="p">,</span> <span class="n">negatives</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">neg_indices</span> <span class="o">=</span> <span class="n">negatives</span> <span class="o">+</span> <span class="n">shifts</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">"neg_indices_"</span><span class="p">,</span> <span class="n">neg_indices</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
-
-
-    <span class="c1"># --- Non-parametric transform ---</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_n_neighbors_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_train</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Return a valid support size for the transform kNN search.</span>
-
-<span class="sd">        UMAP uses its configured neighborhood size.  Entropic methods need a</span>
-<span class="sd">        support larger than their effective perplexity; this mirrors the</span>
-<span class="sd">        ``3 * perplexity`` sparse support used by :class:`EntropicAffinity`.</span>
-<span class="sd">        """</span>
-        <span class="k">if</span> <span class="n">n_train</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">"[TorchDR] At least 3 training samples are required for transform."</span>
-            <span class="p">)</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"n_neighbors"</span><span class="p">):</span>
-            <span class="n">requested</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"perplexity"</span><span class="p">):</span>
-            <span class="n">requested</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"[TorchDR] Cannot determine n_neighbors for transform."</span><span class="p">)</span>
-
-        <span class="c1"># The dense distance helper reserves k &gt;= n_train for a full matrix and</span>
-        <span class="c1"># does not return indices, so keep a proper k-NN result on every backend.</span>
-        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">requested</span><span class="p">,</span> <span class="n">n_train</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_bipartite_entropic_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">C</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Build a fit-scaled entropic affinity on a bipartite distance graph."""</span>
-        <span class="n">support_size</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span> <span class="o">&gt;</span> <span class="n">support_size</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"[TorchDR] Transform perplexity (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span><span class="si">}</span><span class="s2">) exceeds "</span>
-                <span class="sa">f</span><span class="s2">"the available neighbor support (</span><span class="si">{</span><span class="n">support_size</span><span class="si">}</span><span class="s2">). Use a larger "</span>
-                <span class="s2">"training reference set or a smaller perplexity."</span>
-            <span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span> <span class="o">==</span> <span class="n">support_size</span><span class="p">:</span>
-            <span class="c1"># The only distribution attaining maximal entropy log(k) is the</span>
-            <span class="c1"># uniform distribution. Avoid sending this boundary root toward an</span>
-            <span class="c1"># effectively infinite bandwidth.</span>
-            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">support_size</span><span class="p">))</span>
-
-        <span class="n">perplexity</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">perplexity</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-        <span class="n">target_entropy</span> <span class="o">=</span> <span class="n">perplexity</span><span class="o">.</span><span class="n">log</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span>
-
-        <span class="k">def</span><span class="w"> </span><span class="nf">entropy_gap</span><span class="p">(</span><span class="n">eps</span><span class="p">):</span>
-            <span class="n">log_P</span> <span class="o">=</span> <span class="n">_log_Pe</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span>
-            <span class="n">log_P_normalized</span> <span class="o">=</span> <span class="n">log_P</span> <span class="o">-</span> <span class="n">logsumexp_red</span><span class="p">(</span><span class="n">log_P</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">entropy</span><span class="p">(</span><span class="n">log_P_normalized</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">target_entropy</span>
-
-        <span class="n">eps</span> <span class="o">=</span> <span class="n">binary_search</span><span class="p">(</span>
-            <span class="n">f</span><span class="o">=</span><span class="n">entropy_gap</span><span class="p">,</span>
-            <span class="n">n</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-            <span class="n">max_iter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter_affinity</span><span class="p">,</span>
-            <span class="n">dtype</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
-            <span class="n">device</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="n">log_P</span> <span class="o">=</span> <span class="n">_log_Pe</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span>
-        <span class="n">log_P</span> <span class="o">-=</span> <span class="n">logsumexp_red</span><span class="p">(</span><span class="n">log_P</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-
-        <span class="c1"># Fit-time EntropicAffinity gives every row mass 1 / n so the complete</span>
-        <span class="c1"># attractive distribution has unit mass.  Preserve that invariant for</span>
-        <span class="c1"># the n_new bipartite query rows.</span>
-        <span class="n">log_P</span> <span class="o">-=</span> <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">device</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">log_P</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_bipartite_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">indices</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Compute bipartite affinity from new points to training points.</span>
-
-<span class="sd">        This hook is the method-specific part of the shared non-parametric</span>
-<span class="sd">        transform pipeline. The base class handles neighbor search,</span>
-<span class="sd">        initialization, and optimization; subclasses only need to define how</span>
-<span class="sd">        distances from new points to training neighbors are converted into</span>
-<span class="sd">        affinity weights.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        C : torch.Tensor of shape (n_new, k)</span>
-<span class="sd">            Distances from new points to their k nearest training neighbors.</span>
-<span class="sd">        indices : torch.Tensor of shape (n_new, k)</span>
-<span class="sd">            Indices of k nearest training neighbors.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        affinity : torch.Tensor of shape (n_new, k)</span>
-<span class="sd">            Bipartite affinity weights (non-negative, not symmetrized).</span>
-<span class="sd">        """</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> does not implement "</span>
-            <span class="s2">"_compute_bipartite_affinity for transform."</span>
-        <span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_supports_non_parametric_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Return whether the subclass opted into non-parametric transform.</span>
-
-<span class="sd">        Support is explicit: a subclass enables the shared transform pipeline</span>
-<span class="sd">        by overriding :meth:`_compute_bipartite_affinity`.</span>
-<span class="sd">        """</span>
-        <span class="k">return</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_compute_bipartite_affinity</span>
-            <span class="ow">is</span> <span class="ow">not</span> <span class="n">NegativeSamplingNeighborEmbedding</span><span class="o">.</span><span class="n">_compute_bipartite_affinity</span>
-        <span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_fit_learning_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Return the learning rate configured at the start of fit."""</span>
-        <span class="n">saved_lr</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"lr_"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">had_lr</span> <span class="o">=</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"lr_"</span><span class="p">)</span>
-        <span class="n">saved_early_exaggeration</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"early_exaggeration_coeff_"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">had_early_exaggeration</span> <span class="o">=</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"early_exaggeration_coeff_"</span><span class="p">)</span>
-
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_set_learning_rate</span><span class="p">()</span>
-            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lr_</span><span class="p">)</span>
-        <span class="k">finally</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">had_lr</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">lr_</span> <span class="o">=</span> <span class="n">saved_lr</span>
-            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"lr_"</span><span class="p">):</span>
-                <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"lr_"</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">had_early_exaggeration</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff_</span> <span class="o">=</span> <span class="n">saved_early_exaggeration</span>
-            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"early_exaggeration_coeff_"</span><span class="p">):</span>
-                <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"early_exaggeration_coeff_"</span><span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_transform_learning_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Return the transform learning rate as 1/4 of the fit-time LR."""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_fit_learning_rate</span><span class="p">()</span> <span class="o">/</span> <span class="mf">4.0</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_max_iter_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Return the number of optimization steps used during transform."""</span>
-        <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">//</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_sample_transform_neg_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_new</span><span class="p">,</span> <span class="n">n_train</span><span class="p">,</span> <span class="n">nn_indices</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Sample transform negatives from the frozen training embedding.</span>
-
-<span class="sd">        During non-parametric transform, repulsive negatives are drawn only</span>
-<span class="sd">        from the reference training points. When</span>
-<span class="sd">        :attr:`exclude_neighbors_from_negative_sampling` is enabled, the</span>
-<span class="sd">        positive training neighbors of each new point are removed from that</span>
-<span class="sd">        negative pool.</span>
-<span class="sd">        """</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude_neighbors_from_negative_sampling</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
-                <span class="n">n_new</span><span class="p">,</span>
-                <span class="n">n_new</span> <span class="o">+</span> <span class="n">n_train</span><span class="p">,</span>
-                <span class="p">(</span><span class="n">n_new</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span><span class="p">),</span>
-                <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device_</span><span class="p">,</span>
-            <span class="p">)</span>
-
-        <span class="n">adjusted_exclusion</span><span class="p">,</span> <span class="n">n_available</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_exclusion_sampling</span><span class="p">(</span>
-            <span class="n">nn_indices</span><span class="p">,</span> <span class="n">n_train</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_draw_with_exclusions</span><span class="p">(</span>
-            <span class="n">adjusted_exclusion</span><span class="p">,</span> <span class="n">n_available</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">n_new</span>
-        <span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_initialize_transform_embedding</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">affinity</span><span class="p">,</span> <span class="n">nn_indices</span><span class="p">,</span> <span class="n">train_emb</span><span class="p">,</span> <span class="n">neighbor_distances</span><span class="o">=</span><span class="kc">None</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Initialize transformed points from the bipartite neighbor graph.</span>
-
-<span class="sd">        The default initialization is the affinity-weighted average of the</span>
-<span class="sd">        training neighbors' fitted embeddings. Subclasses can override this to</span>
-<span class="sd">        match algorithm-specific initialization rules while still reusing the</span>
-<span class="sd">        shared transform pipeline.</span>
-<span class="sd">        """</span>
-        <span class="n">weights</span> <span class="o">=</span> <span class="n">affinity</span> <span class="o">/</span> <span class="n">affinity</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">)</span>
-        <span class="n">neighbor_emb</span> <span class="o">=</span> <span class="n">train_emb</span><span class="p">[</span><span class="n">nn_indices</span><span class="o">.</span><span class="n">long</span><span class="p">()]</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">weights</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">neighbor_emb</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_new</span><span class="p">,</span> <span class="n">X_train</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Transform new data using non-parametric neighbor embedding.</span>
-
-<span class="sd">        Finds nearest neighbors in the training data, builds a bipartite</span>
-<span class="sd">        affinity graph, initializes positions from that graph, and optimizes</span>
-<span class="sd">        only the new points while keeping the fitted training embedding</span>
-<span class="sd">        frozen.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        X_new : array-like of shape (n_new, n_features)</span>
-<span class="sd">            New data to transform.</span>
-<span class="sd">        X_train : array-like of shape (n_train, n_features)</span>
-<span class="sd">            Training data used during fit, with the same samples and row order.</span>
-<span class="sd">            Required because training features are not stored to avoid memory</span>
-<span class="sd">            overhead.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        embedding_new : torch.Tensor of shape (n_new, n_components)</span>
-<span class="sd">            Embedding of the new data.</span>
-<span class="sd">        """</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_supports_non_parametric_transform</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> does not support non-parametric transform."</span>
-            <span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">X_train</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">"[TorchDR] X_train is required for non-parametric transform. "</span>
-                <span class="s2">"Pass the training data: model.transform(X_new, X_train=X_train)"</span>
-            <span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"embedding_train_"</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="s2">"[TorchDR] Training embedding not available. "</span>
-                <span class="s2">"Call fit() or fit_transform() first."</span>
-            <span class="p">)</span>
-
-        <span class="n">X_new</span> <span class="o">=</span> <span class="n">validate_tensor</span><span class="p">(</span><span class="n">to_torch</span><span class="p">(</span><span class="n">X_new</span><span class="p">))</span>
-        <span class="n">X_train</span> <span class="o">=</span> <span class="n">validate_tensor</span><span class="p">(</span><span class="n">to_torch</span><span class="p">(</span><span class="n">X_train</span><span class="p">))</span>
-
-        <span class="k">if</span> <span class="n">X_new</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_features_in_</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"[TorchDR] X_new has </span><span class="si">{</span><span class="n">X_new</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> features, but the model "</span>
-                <span class="sa">f</span><span class="s2">"was fitted with </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_features_in_</span><span class="si">}</span><span class="s2">."</span>
-            <span class="p">)</span>
-        <span class="k">if</span> <span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_features_in_</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"[TorchDR] X_train has </span><span class="si">{</span><span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> features, but the model "</span>
-                <span class="sa">f</span><span class="s2">"was fitted with </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_features_in_</span><span class="si">}</span><span class="s2">."</span>
-            <span class="p">)</span>
-        <span class="k">if</span> <span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_train_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"[TorchDR] X_train has </span><span class="si">{</span><span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> samples, but the fitted "</span>
-                <span class="sa">f</span><span class="s2">"reference embedding has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_train_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">. Pass "</span>
-                <span class="s2">"the same training samples, in the same order, that were used in fit."</span>
-            <span class="p">)</span>
-
-        <span class="n">compute_dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_train_</span><span class="o">.</span><span class="n">dtype</span>
-        <span class="n">X_new</span> <span class="o">=</span> <span class="n">X_new</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device_</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">compute_dtype</span><span class="p">)</span>
-        <span class="n">X_train</span> <span class="o">=</span> <span class="n">X_train</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device_</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">compute_dtype</span><span class="p">)</span>
-
-        <span class="c1"># Step 1: kNN from new points to training points</span>
-        <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_n_neighbors_transform</span><span class="p">(</span><span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="n">C</span><span class="p">,</span> <span class="n">nn_indices</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span>
-            <span class="n">X</span><span class="o">=</span><span class="n">X_new</span><span class="p">,</span>
-            <span class="n">Y</span><span class="o">=</span><span class="n">X_train</span><span class="p">,</span>
-            <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span>
-            <span class="n">backend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span>
-            <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
-            <span class="n">return_indices</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device_</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">metric</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"euclidean"</span><span class="p">,</span> <span class="s2">"sqeuclidean"</span><span class="p">,</span> <span class="s2">"manhattan"</span><span class="p">}:</span>
-            <span class="c1"># Round-off in the quadratic squared-distance formula can produce</span>
-            <span class="c1"># tiny negative values, including for exact cross-set matches.</span>
-            <span class="n">C</span><span class="o">.</span><span class="n">clamp_min_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-
-        <span class="c1"># Step 2: bipartite affinity (subclass-specific)</span>
-        <span class="n">affinity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_bipartite_affinity</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">nn_indices</span><span class="p">)</span>
-
-        <span class="n">train_emb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_train_</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device_</span><span class="p">)</span>
-
-        <span class="c1"># Step 3: initialize from the bipartite graph</span>
-        <span class="n">embedding_new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_transform_embedding</span><span class="p">(</span>
-            <span class="n">affinity</span><span class="p">,</span> <span class="n">nn_indices</span><span class="p">,</span> <span class="n">train_emb</span><span class="p">,</span> <span class="n">neighbor_distances</span><span class="o">=</span><span class="n">C</span>
-        <span class="p">)</span>
-
-        <span class="c1"># Step 4: optimize with frozen training embeddings</span>
-        <span class="n">embedding_new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_optimize_transform</span><span class="p">(</span>
-            <span class="n">embedding_new</span><span class="p">,</span> <span class="n">affinity</span><span class="p">,</span> <span class="n">nn_indices</span><span class="p">,</span> <span class="n">train_emb</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">embedding_new</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_enter_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">embedding_new</span><span class="p">,</span> <span class="n">train_emb</span><span class="p">,</span> <span class="n">affinity</span><span class="p">,</span> <span class="n">nn_indices</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Save fit-time state and set up for transform.</span>
-
-<span class="sd">        Builds a combined embedding ``[embedding_new, train_emb]`` so that</span>
-<span class="sd">        the existing ``_compute_loss`` / ``_compute_gradients`` methods</span>
-<span class="sd">        work unmodified — queries index into the new part and keys index</span>
-<span class="sd">        into the training part. This is the key design choice that keeps the</span>
-<span class="sd">        transform code small: the transform path reuses the usual objective</span>
-<span class="sd">        implementation instead of introducing a second optimization codepath.</span>
-
-<span class="sd">        Subclasses can override to set up additional state (e.g. UMAP's</span>
-<span class="sd">        edge-sampling buffers). Must call ``super()._enter_transform(...)``.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        saved : dict</span>
-<span class="sd">            State to restore in :meth:`_exit_transform`.</span>
-<span class="sd">        """</span>
-        <span class="n">n_new</span> <span class="o">=</span> <span class="n">embedding_new</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-
-        <span class="n">saved</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span>
-            <span class="s2">"embedding_"</span><span class="p">,</span>
-            <span class="s2">"chunk_indices_"</span><span class="p">,</span>
-            <span class="s2">"NN_indices_"</span><span class="p">,</span>
-            <span class="s2">"affinity_in_"</span><span class="p">,</span>
-            <span class="s2">"n_samples_in_"</span><span class="p">,</span>
-            <span class="s2">"early_exaggeration_coeff_"</span><span class="p">,</span>
-            <span class="s2">"n_iter_"</span><span class="p">,</span>
-            <span class="s2">"neg_indices_"</span><span class="p">,</span>
-        <span class="p">):</span>
-            <span class="n">saved</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">),</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
-
-        <span class="n">chunk_indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_new</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device_</span><span class="p">)</span>
-        <span class="n">transform_nn_indices</span> <span class="o">=</span> <span class="n">nn_indices</span> <span class="o">+</span> <span class="n">n_new</span>
-        <span class="n">transform_n_iter</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device_</span><span class="p">)</span>
-
-        <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># Most embeddings are leaf tensors, but hyperbolic initialization</span>
-            <span class="c1"># uses an nn.Parameter. Remove its registration before assigning a</span>
-            <span class="c1"># temporary concatenated tensor in the optimization loop.</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">):</span>
-                <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"embedding_"</span><span class="p">)</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span> <span class="o">=</span> <span class="n">chunk_indices</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span> <span class="o">=</span> <span class="n">transform_nn_indices</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span> <span class="o">=</span> <span class="n">affinity</span>
-            <span class="c1"># Existing objectives normalize over query rows. The concatenated</span>
-            <span class="c1"># embedding contains reference rows for indexing, but only new rows</span>
-            <span class="c1"># are optimized and must contribute to this normalization.</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">=</span> <span class="n">n_new</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">early_exaggeration_coeff_</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span> <span class="o">=</span> <span class="n">transform_n_iter</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_exit_transform</span><span class="p">(</span><span class="n">saved</span><span class="p">)</span>
-            <span class="k">raise</span>
-
-        <span class="k">return</span> <span class="n">saved</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_exit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">saved</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Restore fit-time state after transform."""</span>
-        <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="p">(</span><span class="n">existed</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="ow">in</span> <span class="n">saved</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">existed</span><span class="p">:</span>
-                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
-                <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_optimize_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">embedding_new</span><span class="p">,</span> <span class="n">affinity</span><span class="p">,</span> <span class="n">nn_indices</span><span class="p">,</span> <span class="n">train_emb</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Optimize new embeddings with frozen training embeddings via SGD.</span>
-
-<span class="sd">        Uses the concatenation trick: builds</span>
-<span class="sd">        ``embedding_ = cat([embedding_new, train_emb])`` so that the</span>
-<span class="sd">        existing ``_compute_loss`` / ``_compute_gradients`` methods</span>
-<span class="sd">        can be reused without modification. Only ``embedding_new`` is a trainable</span>
-<span class="sd">        parameter; ``train_emb`` acts as the frozen reference geometry.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        embedding_new : torch.Tensor of shape (n_new, n_components)</span>
-<span class="sd">            Initial positions for new points.</span>
-<span class="sd">        affinity : torch.Tensor of shape (n_new, k)</span>
-<span class="sd">            Bipartite affinity from new to training points.</span>
-<span class="sd">        nn_indices : torch.Tensor of shape (n_new, k)</span>
-<span class="sd">            Indices of nearest training neighbors.</span>
-<span class="sd">        train_emb : torch.Tensor of shape (n_train, n_components)</span>
-<span class="sd">            Frozen training embeddings.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        embedding_new : torch.Tensor of shape (n_new, n_components)</span>
-<span class="sd">            Optimized positions.</span>
-<span class="sd">        """</span>
-        <span class="n">n_new</span> <span class="o">=</span> <span class="n">embedding_new</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">n_train</span> <span class="o">=</span> <span class="n">train_emb</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">embedding_new</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">embedding_new</span><span class="o">.</span><span class="n">clone</span><span class="p">())</span>
-
-        <span class="c1"># LR: 1/4 of fit-time LR (following umap-learn)</span>
-        <span class="n">lr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_transform_learning_rate</span><span class="p">()</span>
-        <span class="n">max_iter_transform</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_max_iter_transform</span><span class="p">()</span>
-
-        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">([</span><span class="n">embedding_new</span><span class="p">],</span> <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">)</span>
-
-        <span class="n">saved</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">saved</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enter_transform</span><span class="p">(</span>
-                <span class="n">embedding_new</span><span class="p">,</span> <span class="n">train_emb</span><span class="p">,</span> <span class="n">affinity</span><span class="p">,</span> <span class="n">nn_indices</span>
-            <span class="p">)</span>
-            <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iter_transform</span><span class="p">):</span>
-                <span class="c1"># Match the linear learning-rate decay used by UMAP's transform</span>
-                <span class="c1"># and by the default fit schedulers of these methods.</span>
-                <span class="n">optimizer</span><span class="o">.</span><span class="n">param_groups</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">"lr"</span><span class="p">]</span> <span class="o">=</span> <span class="n">lr</span> <span class="o">*</span> <span class="p">(</span>
-                    <span class="mf">1.0</span> <span class="o">-</span> <span class="n">step</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_iter_transform</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-                <span class="p">)</span>
-
-                <span class="c1"># Rebuild combined embedding each step (new points change)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">embedding_new</span><span class="p">,</span> <span class="n">train_emb</span><span class="o">.</span><span class="n">detach</span><span class="p">()],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
-
-                <span class="bp">self</span><span class="o">.</span><span class="n">neg_indices_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_transform_neg_indices</span><span class="p">(</span>
-                    <span class="n">n_new</span><span class="p">,</span> <span class="n">n_train</span><span class="p">,</span> <span class="n">nn_indices</span>
-                <span class="p">)</span>
-
-                <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">(</span><span class="n">set_to_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-                <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_use_closed_form_gradients"</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-                    <span class="n">gradients</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_gradients</span><span class="p">()</span>
-                    <span class="n">embedding_new</span><span class="o">.</span><span class="n">grad</span> <span class="o">=</span> <span class="n">gradients</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_loss</span><span class="p">()</span>
-                    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
-
-                <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
-        <span class="k">finally</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">saved</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_exit_transform</span><span class="p">(</span><span class="n">saved</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">embedding_new</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span></div>
+</div>
 
 </pre></div>
 

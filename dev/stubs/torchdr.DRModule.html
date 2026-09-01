@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>DRModule &#8212; TorchDR 0.5.dev18+g0001a785e documentation</title>
+    <title>DRModule &#8212; TorchDR 0.5.dev19+g4c26528d0 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../_static/documentation_options.js?v=5ff14479"></script>
+    <script src="../_static/documentation_options.js?v=949efcdd"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -128,8 +128,8 @@
       
     
     
-    <img src="../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev18+g0001a785e documentation - Home"/>
-    <img src="../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev18+g0001a785e documentation - Home"/>
+    <img src="../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev19+g4c26528d0 documentation - Home"/>
+    <img src="../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev19+g4c26528d0 documentation - Home"/>
   
   
 </a></div>
@@ -568,13 +568,19 @@ by <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 
 <dl class="py method">
 <dt class="sig sig-object py" id="torchdr.DRModule.transform">
-<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/torchdr/base.html#DRModule.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.DRModule.transform" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/torchdr/base.html#DRModule.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.DRModule.transform" title="Link to this definition">#</a></dt>
 <dd><p>Transform data into the learned embedding space.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">X</span></code> is None, returns the training embedding. When an encoder
-is set, new data is transformed via <code class="docutils literal notranslate"><span class="pre">encoder(X)</span></code>.</p>
+is set, new data is transformed via <code class="docutils literal notranslate"><span class="pre">encoder(X)</span></code>.
+For non-parametric neighbor embedding models (UMAP, LargeVis, …),
+pass the training data as <code class="docutils literal notranslate"><span class="pre">X_train</span></code> keyword argument.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>X</strong> (<em>ArrayLike</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em><em>, </em><em>optional</em>) – Data to transform. If None, returns the training embedding.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>ArrayLike</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em><em>, </em><em>optional</em>) – Data to transform. If None, returns the training embedding.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments passed to <code class="xref py py-meth docutils literal notranslate"><span class="pre">_transform()</span></code>.
+For non-parametric models, <code class="docutils literal notranslate"><span class="pre">X_train</span></code> is required.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>embedding_</strong> – The embedding.</p>
@@ -592,6 +598,9 @@ is set, new data is transformed via <code class="docutils literal notranslate"><
 <div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="We illustrate the basic usage of TorchDR with different neighbor embedding methods on the SNARE-seq gene expression dataset with given cell type labels."><img alt="" src="../_images/sphx_glr_demo_ne_methods_affinity_matcher_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/basics/demo_ne_methods_affinity_matcher.html"><span class="doc">Neighbor Embedding on genomics &amp; equivalent affinity matcher formulation</span></a></p>
   <div class="sphx-glr-thumbnail-title">Neighbor Embedding on genomics & equivalent affinity matcher formulation</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="We fit a reference UMAP embedding on one subset of the sklearn handwritten digits dataset and then map unseen samples with torchdr.UMAP.transform instead of refitting on the full dataset. This mimics a deployment workflow where a reference embedding is already available and new samples only arrive with their input features."><img alt="" src="../_images/sphx_glr_demo_non_parametric_transform_digits_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/basics/demo_non_parametric_transform_digits.html"><span class="doc">UMAP Non-Parametric Transform on Handwritten Digits</span></a></p>
+  <div class="sphx-glr-thumbnail-title">UMAP Non-Parametric Transform on Handwritten Digits</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="We show how to compute a PCA embedding using the closed form and using the AffinityMatcher class. Both approaches lead to the same solution."><img alt="" src="../_images/sphx_glr_demo_pca_via_affinity_matcher_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/basics/demo_pca_via_affinity_matcher.html"><span class="doc">PCA via SVD and via AffinityMatcher</span></a></p>
   <div class="sphx-glr-thumbnail-title">PCA via SVD and via AffinityMatcher</div>

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.affinity.knn_normalized &#8212; TorchDR 0.5.dev9+gba2cdf483 documentation</title>
+    <title>torchdr.affinity.knn_normalized &#8212; TorchDR 0.5.dev10+g945eeb5af documentation</title>
   
   
   
@@ -26,25 +26,27 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../../_static/documentation_options.js?v=1f043051"></script>
+    <script src="../../../_static/documentation_options.js?v=1aa7f967"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchdr/affinity/knn_normalized';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <script src="../../../_static/pypi-icon.js?v=3850e9a1"></script>
     <link rel="icon" href="../../../_static/logo.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -52,20 +54,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -91,7 +99,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -117,8 +125,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev9+gba2cdf483 documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev9+gba2cdf483 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev10+g945eeb5af documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev10+g945eeb5af documentation - Home"/>
   
   
 </a></div>
@@ -212,11 +220,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -229,8 +244,7 @@
           
           
           
-          <a href="https://github.com/TorchDR/TorchDR" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/TorchDR/TorchDR" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -241,8 +255,7 @@
           
           
           
-          <a href="https://pypi.org/project/torchdr/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-custom fa-pypi fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">PyPI</span></a>
+          <a href="https://pypi.org/project/torchdr/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-custom fa-lg" data-prefix="fa-custom" data-icon="pypi" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
         </li>
 </ul></div>
       
@@ -350,11 +363,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -367,8 +387,7 @@
           
           
           
-          <a href="https://github.com/TorchDR/TorchDR" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/TorchDR/TorchDR" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -379,8 +398,7 @@
           
           
           
-          <a href="https://pypi.org/project/torchdr/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-custom fa-pypi fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">PyPI</span></a>
+          <a href="https://pypi.org/project/torchdr/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-custom fa-lg" data-prefix="fa-custom" data-icon="pypi" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
         </li>
 </ul></div>
         
@@ -444,7 +462,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for torchdr.affinity.knn_normalized</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Affinity matrices with normalizations using nearest neighbor distances.&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""Affinity matrices with normalizations using nearest neighbor distances."""</span>
 
 <span class="c1"># Author: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
 <span class="c1">#         Cédric Vincent-Cuaz &lt;cedric.vincent-cuaz@inria.fr&gt;</span>
@@ -496,7 +514,7 @@
 <div class="viewcode-block" id="SelfTuningAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.SelfTuningAffinity.html#torchdr.SelfTuningAffinity">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SelfTuningAffinity</span><span class="p">(</span><span class="n">LogAffinity</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Self-tuning affinity introduced in :cite:`zelnik2004self`.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Self-tuning affinity introduced in :cite:`zelnik2004self`.</span>
 
 <span class="sd">    The affinity has a sample-wise bandwidth :math:`\mathbf{\sigma} \in \mathbb{R}^n`.</span>
 
@@ -504,7 +522,7 @@
 <span class="sd">        \exp \left( - \frac{C_{ij}}{\sigma_i \sigma_j} \right)</span>
 
 <span class="sd">    In the above, :math:`\mathbf{C}` is the pairwise distance matrix and</span>
-<span class="sd">    :math:`\sigma_i` is the distance from the K&#39;th nearest neighbor of data point</span>
+<span class="sd">    :math:`\sigma_i` is the distance from the K'th nearest neighbor of data point</span>
 <span class="sd">    :math:`\mathbf{x}_i`.</span>
 
 <span class="sd">    Parameters</span>
@@ -518,12 +536,12 @@
 <span class="sd">    zero_diag : bool, optional</span>
 <span class="sd">        Whether to set the diagonal of the affinity matrix to zero.</span>
 <span class="sd">    device : str, optional</span>
-<span class="sd">        Device to use for computations. Default is &quot;auto&quot;.</span>
-<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None} or FaissConfig, optional</span>
+<span class="sd">        Device to use for computations. Default is "auto".</span>
+<span class="sd">    backend : {"keops", "faiss", None} or FaissConfig, optional</span>
 <span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
 <span class="sd">        Can be:</span>
-<span class="sd">        - &quot;keops&quot;: Use KeOps for memory-efficient symbolic computations</span>
-<span class="sd">        - &quot;faiss&quot;: Use FAISS for fast k-NN computations with default settings</span>
+<span class="sd">        - "keops": Use KeOps for memory-efficient symbolic computations</span>
+<span class="sd">        - "faiss": Use FAISS for fast k-NN computations with default settings</span>
 <span class="sd">        - None: Use standard PyTorch operations</span>
 <span class="sd">        - FaissConfig object: Use FAISS with custom configuration</span>
 <span class="sd">        Default is None.</span>
@@ -534,15 +552,15 @@
 <span class="sd">    _pre_processed : bool, optional</span>
 <span class="sd">        If True, assumes inputs are already torch tensors on the correct device</span>
 <span class="sd">        and skips the `to_torch` conversion. Default is False.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">K</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span>
         <span class="n">normalization_dim</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
+        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"sqeuclidean"</span><span class="p">,</span>
         <span class="n">zero_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"auto"</span><span class="p">,</span>
         <span class="n">backend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -562,7 +580,7 @@
 
     <span class="nd">@compile_if_requested</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_log_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Fit the self-tuning affinity model to the provided data.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Fit the self-tuning affinity model to the provided data.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -573,12 +591,12 @@
 <span class="sd">        -------</span>
 <span class="sd">        log_affinity_matrix : torch.Tensor or pykeops.torch.LazyTensor</span>
 <span class="sd">            The computed affinity matrix in log domain.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">C</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_matrix</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
         <span class="n">minK_values</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">kmin</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">sigma</span> <span class="o">=</span> <span class="n">minK_values</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;sigma_&quot;</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">"sigma_"</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">log_affinity_matrix</span> <span class="o">=</span> <span class="n">_log_P_SelfTuning</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma_</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalization_dim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -586,7 +604,7 @@
                 <span class="n">log_affinity_matrix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalization_dim</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span>
-                <span class="s2">&quot;log_normalization_&quot;</span><span class="p">,</span> <span class="n">log_normalization</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span>
+                <span class="s2">"log_normalization_"</span><span class="p">,</span> <span class="n">log_normalization</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span>
             <span class="p">)</span>
             <span class="n">log_affinity_matrix</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_normalization_</span>
 
@@ -597,7 +615,7 @@
 <div class="viewcode-block" id="MAGICAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.MAGICAffinity.html#torchdr.MAGICAffinity">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MAGICAffinity</span><span class="p">(</span><span class="n">Affinity</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the MAGIC affinity with alpha-decay kernel introduced in :cite:`van2018recovering`.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Compute the MAGIC affinity with alpha-decay kernel introduced in :cite:`van2018recovering`.</span>
 
 <span class="sd">    The construction is as follows. First, it computes a generalized</span>
 <span class="sd">    kernel with sample-wise bandwidth :math:`\mathbf{\sigma} \in \mathbb{R}^n`:</span>
@@ -606,7 +624,7 @@
 <span class="sd">        P_{ij} \leftarrow \exp \left( - \frac{C_{ij}}{\sigma_i} \right)</span>
 
 <span class="sd">    In the above, :math:`\mathbf{C}` is the pairwise distance matrix and</span>
-<span class="sd">    :math:`\sigma_i` is the distance from the K&#39;th nearest neighbor of data point</span>
+<span class="sd">    :math:`\sigma_i` is the distance from the K'th nearest neighbor of data point</span>
 <span class="sd">    :math:`\mathbf{x}_i`.</span>
 
 <span class="sd">    Then it averages the affinity matrix with its transpose:</span>
@@ -629,12 +647,12 @@
 <span class="sd">    zero_diag : bool, optional</span>
 <span class="sd">        Whether to set the diagonal of the affinity matrix to zero.</span>
 <span class="sd">    device : str, optional</span>
-<span class="sd">        Device to use for computations. Default is &quot;auto&quot;.</span>
-<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None} or FaissConfig, optional</span>
+<span class="sd">        Device to use for computations. Default is "auto".</span>
+<span class="sd">    backend : {"keops", "faiss", None} or FaissConfig, optional</span>
 <span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
 <span class="sd">        Can be:</span>
-<span class="sd">        - &quot;keops&quot;: Use KeOps for memory-efficient symbolic computations</span>
-<span class="sd">        - &quot;faiss&quot;: Use FAISS for fast k-NN computations with default settings</span>
+<span class="sd">        - "keops": Use KeOps for memory-efficient symbolic computations</span>
+<span class="sd">        - "faiss": Use FAISS for fast k-NN computations with default settings</span>
 <span class="sd">        - None: Use standard PyTorch operations</span>
 <span class="sd">        - FaissConfig object: Use FAISS with custom configuration</span>
 <span class="sd">        Default is None.</span>
@@ -645,14 +663,14 @@
 <span class="sd">    _pre_processed : bool, optional</span>
 <span class="sd">        If True, assumes inputs are already torch tensors on the correct device</span>
 <span class="sd">        and skips the `to_torch` conversion. Default is False.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">K</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span>
-        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
+        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"sqeuclidean"</span><span class="p">,</span>
         <span class="n">zero_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"auto"</span><span class="p">,</span>
         <span class="n">backend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -671,7 +689,7 @@
 
     <span class="nd">@compile_if_requested</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Fit the MAGIC affinity model to the provided data.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Fit the MAGIC affinity model to the provided data.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -682,12 +700,12 @@
 <span class="sd">        -------</span>
 <span class="sd">        affinity_matrix : torch.Tensor or pykeops.torch.LazyTensor</span>
 <span class="sd">            The computed affinity matrix.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">C</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_matrix</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
         <span class="n">minK_values</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">kmin</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">sigma</span> <span class="o">=</span> <span class="n">minK_values</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;sigma_&quot;</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">"sigma_"</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">affinity_matrix</span> <span class="o">=</span> <span class="n">_log_P_MAGIC</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma_</span><span class="p">)</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
         <span class="n">affinity_matrix</span> <span class="o">=</span> <span class="p">(</span><span class="n">affinity_matrix</span> <span class="o">+</span> <span class="n">matrix_transpose</span><span class="p">(</span><span class="n">affinity_matrix</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span>
         <span class="n">affinity_matrix</span> <span class="o">=</span> <span class="n">affinity_matrix</span> <span class="o">/</span> <span class="n">sum_red</span><span class="p">(</span><span class="n">affinity_matrix</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -699,7 +717,7 @@
 <div class="viewcode-block" id="PHATEAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.PHATEAffinity.html#torchdr.PHATEAffinity">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PHATEAffinity</span><span class="p">(</span><span class="n">Affinity</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the potential affinity used in PHATE :cite:`moon2019visualizing`.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Compute the potential affinity used in PHATE :cite:`moon2019visualizing`.</span>
 
 <span class="sd">    The method follows these steps:</span>
 <span class="sd">    1. Compute pairwise distance matrix</span>
@@ -713,11 +731,11 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    metric : str, optional (default=&quot;euclidean&quot;)</span>
+<span class="sd">    metric : str, optional (default="euclidean")</span>
 <span class="sd">        Metric to use for pairwise distances computation.</span>
 <span class="sd">    device : str, optional</span>
-<span class="sd">        Device to use for computations. Default is &quot;auto&quot;.</span>
-<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None}, optional (default=None)</span>
+<span class="sd">        Device to use for computations. Default is "auto".</span>
+<span class="sd">    backend : {"keops", "faiss", None}, optional (default=None)</span>
 <span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
 <span class="sd">    verbose : bool, optional (default=False)</span>
 <span class="sd">        Whether to print verbose output during computation.</span>
@@ -732,12 +750,12 @@
 <span class="sd">    _pre_processed : bool, optional</span>
 <span class="sd">        If True, assumes inputs are already torch tensors on the correct device</span>
 <span class="sd">        and skips the `to_torch` conversion. Default is False.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
-        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"euclidean"</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"auto"</span><span class="p">,</span>
         <span class="n">backend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
@@ -746,9 +764,9 @@
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">_pre_processed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;faiss&quot;</span> <span class="ow">or</span> <span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;keops&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s2">"faiss"</span> <span class="ow">or</span> <span class="n">backend</span> <span class="o">==</span> <span class="s2">"keops"</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;[TorchDR] ERROR : </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> class does not support backend </span><span class="si">{</span><span class="n">backend</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="sa">f</span><span class="s2">"[TorchDR] ERROR : </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> class does not support backend </span><span class="si">{</span><span class="n">backend</span><span class="si">}</span><span class="s2">."</span>
             <span class="p">)</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -771,7 +789,7 @@
 
         <span class="n">minK_values</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">kmin</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">sigma</span> <span class="o">=</span> <span class="n">minK_values</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;sigma_&quot;</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">"sigma_"</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">affinity</span> <span class="o">=</span> <span class="n">_log_P_PHATE</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
         <span class="n">affinity</span> <span class="o">=</span> <span class="p">(</span><span class="n">affinity</span> <span class="o">+</span> <span class="n">matrix_transpose</span><span class="p">(</span><span class="n">affinity</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span>
         <span class="n">affinity</span> <span class="o">=</span> <span class="n">affinity</span> <span class="o">/</span> <span class="n">sum_red</span><span class="p">(</span><span class="n">affinity</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -780,7 +798,7 @@
         <span class="c1"># x² + y² - 2xy Euclidean distance on near-constant potential rows.</span>
         <span class="n">affinity</span> <span class="o">=</span> <span class="o">-</span><span class="n">pairwise_distances</span><span class="p">(</span>
             <span class="o">-</span><span class="n">affinity</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">)</span><span class="o">.</span><span class="n">log</span><span class="p">(),</span>
-            <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
+            <span class="n">metric</span><span class="o">=</span><span class="s2">"euclidean"</span><span class="p">,</span>
             <span class="n">backend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">affinity</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span></div>
@@ -790,7 +808,7 @@
 <div class="viewcode-block" id="UMAPAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.UMAPAffinity.html#torchdr.UMAPAffinity">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">UMAPAffinity</span><span class="p">(</span><span class="n">SparseAffinity</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the input affinity used in UMAP :cite:`mcinnes2018umap`.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Compute the input affinity used in UMAP :cite:`mcinnes2018umap`.</span>
 
 <span class="sd">    The algorithm computes via root search the variable</span>
 <span class="sd">    :math:`\mathbf{\sigma}^* \in \mathbb{R}^n_{&gt;0}` such that</span>
@@ -814,12 +832,12 @@
 <span class="sd">    zero_diag : bool, optional</span>
 <span class="sd">        Whether to set the diagonal of the affinity matrix to zero.</span>
 <span class="sd">    device : str, optional</span>
-<span class="sd">        Device to use for computations. Default is &quot;auto&quot;.</span>
-<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None} or FaissConfig, optional</span>
+<span class="sd">        Device to use for computations. Default is "auto".</span>
+<span class="sd">    backend : {"keops", "faiss", None} or FaissConfig, optional</span>
 <span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
 <span class="sd">        Can be:</span>
-<span class="sd">        - &quot;keops&quot;: Use KeOps for memory-efficient symbolic computations</span>
-<span class="sd">        - &quot;faiss&quot;: Use FAISS for fast k-NN computations with default settings</span>
+<span class="sd">        - "keops": Use KeOps for memory-efficient symbolic computations</span>
+<span class="sd">        - "faiss": Use FAISS for fast k-NN computations with default settings</span>
 <span class="sd">        - None: Use standard PyTorch operations</span>
 <span class="sd">        - FaissConfig object: Use FAISS with custom configuration</span>
 <span class="sd">        Default is None.</span>
@@ -829,30 +847,30 @@
 <span class="sd">        Whether to compile the computation. Default is False.</span>
 <span class="sd">    symmetrize : bool, optional</span>
 <span class="sd">        Whether to symmetrize the affinity matrix. Default is True.</span>
-<span class="sd">    distributed : bool or &#39;auto&#39;, optional</span>
+<span class="sd">    distributed : bool or 'auto', optional</span>
 <span class="sd">        Whether to use distributed computation across multiple GPUs.</span>
-<span class="sd">        - &quot;auto&quot;: Automatically detect if running with torchrun (default)</span>
+<span class="sd">        - "auto": Automatically detect if running with torchrun (default)</span>
 <span class="sd">        - True: Force distributed mode (requires torchrun)</span>
 <span class="sd">        - False: Disable distributed mode</span>
-<span class="sd">        Default is &quot;auto&quot;.</span>
+<span class="sd">        Default is "auto".</span>
 <span class="sd">    _pre_processed : bool, optional</span>
 <span class="sd">        If True, assumes inputs are already torch tensors on the correct device</span>
 <span class="sd">        and skips the `to_torch` conversion. Default is False.</span>
-<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
+<span class="sd">    """</span>  <span class="c1"># noqa: E501</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n_neighbors</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
         <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
         <span class="n">sparsity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
+        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"sqeuclidean"</span><span class="p">,</span>
         <span class="n">zero_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"auto"</span><span class="p">,</span>
         <span class="n">backend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">symmetrize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">distributed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">distributed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"auto"</span><span class="p">,</span>
         <span class="n">_pre_processed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span> <span class="o">=</span> <span class="n">n_neighbors</span>
@@ -875,7 +893,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_sparse_affinity</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the input affinity matrix of UMAP from input data X.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Compute the input affinity matrix of UMAP from input data X.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -886,14 +904,14 @@
 <span class="sd">        -------</span>
 <span class="sd">        self : UMAPAffinityIn</span>
 <span class="sd">            The fitted instance.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">n_samples_in</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_n_samples</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="n">n_neighbors</span> <span class="o">=</span> <span class="n">check_neighbor_param</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span><span class="p">,</span> <span class="n">n_samples_in</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparsity</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Sparsity mode enabled, computing </span><span class="si">{</span><span class="n">n_neighbors</span><span class="si">}</span><span class="s2"> nearest neighbors...&quot;</span>
+                    <span class="sa">f</span><span class="s2">"Sparsity mode enabled, computing </span><span class="si">{</span><span class="n">n_neighbors</span><span class="si">}</span><span class="s2"> nearest neighbors..."</span>
                 <span class="p">)</span>
             <span class="n">C_</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_matrix</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">n_neighbors</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -921,12 +939,12 @@
         <span class="n">log_affinity</span> <span class="o">=</span> <span class="n">_log_P_UMAP</span><span class="p">(</span><span class="n">C_</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span>
         <span class="n">affinity_matrix</span> <span class="o">=</span> <span class="n">log_affinity</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;rho_&quot;</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;eps_&quot;</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">"rho_"</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">"eps_"</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="c1"># symmetrize if requested : P = P + P^T - P * P^T</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">symmetrize</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Symmetrizing affinity matrix...&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Symmetrizing affinity matrix..."</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparsity</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_multi_gpu</span><span class="p">:</span>
                     <span class="c1"># Use distributed symmetrization for multi-GPU</span>
@@ -936,12 +954,12 @@
                         <span class="n">chunk_start</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_start_</span><span class="p">,</span>
                         <span class="n">chunk_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_size_</span><span class="p">,</span>
                         <span class="n">n_total</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_n_samples</span><span class="p">(</span><span class="n">X</span><span class="p">),</span>
-                        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;sum_minus_prod&quot;</span><span class="p">,</span>
+                        <span class="n">mode</span><span class="o">=</span><span class="s2">"sum_minus_prod"</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># Use local symmetrization for single GPU</span>
                     <span class="n">affinity_matrix</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">symmetrize_sparse</span><span class="p">(</span>
-                        <span class="n">affinity_matrix</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;sum_minus_prod&quot;</span>
+                        <span class="n">affinity_matrix</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"sum_minus_prod"</span>
                     <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">affinity_matrix</span> <span class="o">=</span> <span class="p">(</span>
@@ -957,7 +975,7 @@
 <div class="viewcode-block" id="PACMAPAffinity">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.PACMAPAffinity.html#torchdr.PACMAPAffinity">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PACMAPAffinity</span><span class="p">(</span><span class="n">SparseAffinity</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the input affinity used in PACMAP :cite:`wang2021understanding`.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Compute the input affinity used in PACMAP :cite:`wang2021understanding`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -970,12 +988,12 @@
 <span class="sd">    zero_diag : bool, optional</span>
 <span class="sd">        Whether to set the diagonal of the affinity matrix to zero.</span>
 <span class="sd">    device : str, optional</span>
-<span class="sd">        Device to use for computations. Default is &quot;auto&quot;.</span>
-<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None} or FaissConfig, optional</span>
+<span class="sd">        Device to use for computations. Default is "auto".</span>
+<span class="sd">    backend : {"keops", "faiss", None} or FaissConfig, optional</span>
 <span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
 <span class="sd">        Can be:</span>
-<span class="sd">        - &quot;keops&quot;: Use KeOps for memory-efficient symbolic computations</span>
-<span class="sd">        - &quot;faiss&quot;: Use FAISS for fast k-NN computations with default settings</span>
+<span class="sd">        - "keops": Use KeOps for memory-efficient symbolic computations</span>
+<span class="sd">        - "faiss": Use FAISS for fast k-NN computations with default settings</span>
 <span class="sd">        - None: Use standard PyTorch operations</span>
 <span class="sd">        - FaissConfig object: Use FAISS with custom configuration</span>
 <span class="sd">        Default is None.</span>
@@ -983,23 +1001,23 @@
 <span class="sd">        Verbosity. Default is False.</span>
 <span class="sd">    compile : bool, optional</span>
 <span class="sd">        Whether to compile the computation. Default is False.</span>
-<span class="sd">    distributed : bool or &#39;auto&#39;, optional</span>
+<span class="sd">    distributed : bool or 'auto', optional</span>
 <span class="sd">        Whether to use distributed computation across multiple GPUs.</span>
-<span class="sd">        - &quot;auto&quot;: Automatically detect if running with torchrun (default)</span>
+<span class="sd">        - "auto": Automatically detect if running with torchrun (default)</span>
 <span class="sd">        - True: Force distributed mode (requires torchrun)</span>
 <span class="sd">        - False: Disable distributed mode</span>
-<span class="sd">        Default is &quot;auto&quot;.</span>
+<span class="sd">        Default is "auto".</span>
 <span class="sd">    _pre_processed : bool, optional</span>
 <span class="sd">        If True, assumes inputs are already torch tensors on the correct device</span>
 <span class="sd">        and skips the `to_torch` conversion. Default is False.</span>
-<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
+<span class="sd">    """</span>  <span class="c1"># noqa: E501</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n_neighbors</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
+        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"sqeuclidean"</span><span class="p">,</span>
         <span class="n">zero_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"auto"</span><span class="p">,</span>
         <span class="n">backend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -1012,7 +1030,7 @@
         <span class="c1"># The current implementation has issues with index handling in distributed mode</span>
         <span class="k">if</span> <span class="n">distributed</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;[TorchDR] ERROR : PACMAPAffinity does not support distributed.&quot;</span>
+                <span class="s2">"[TorchDR] ERROR : PACMAPAffinity does not support distributed."</span>
             <span class="p">)</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -1031,7 +1049,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_sparse_affinity</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the input affinity matrix of PACMAP from input data X.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Compute the input affinity matrix of PACMAP from input data X.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1042,20 +1060,20 @@
 <span class="sd">        -------</span>
 <span class="sd">        self : PACMAPAffinityIn</span>
 <span class="sd">            The fitted instance.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">n_samples_in</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_n_samples</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="n">k</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span> <span class="o">+</span> <span class="mi">50</span><span class="p">,</span> <span class="n">n_samples_in</span><span class="p">)</span>
         <span class="n">k</span> <span class="o">=</span> <span class="n">check_neighbor_param</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">n_samples_in</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sparsity mode enabled, computing </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> nearest neighbors.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Sparsity mode enabled, computing </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> nearest neighbors."</span><span class="p">)</span>
 
         <span class="n">C_</span><span class="p">,</span> <span class="n">temp_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_matrix</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="c1"># Compute rho as the average distance between the 4th to 6th neighbors</span>
         <span class="n">sq_neighbor_distances</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">kmin</span><span class="p">(</span><span class="n">C_</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">rho</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sq_neighbor_distances</span><span class="p">)[:,</span> <span class="mi">3</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;rho_&quot;</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">"rho_"</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="n">rho_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho_</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># Shape: (n_samples, 1)</span>
         <span class="n">rho_j</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho_</span><span class="p">[</span><span class="n">temp_indices</span><span class="p">]</span>  <span class="c1"># Shape: (n_samples, k)</span>
@@ -1099,8 +1117,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1134,7 +1152,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0.
 </p></div>
       
     </div>

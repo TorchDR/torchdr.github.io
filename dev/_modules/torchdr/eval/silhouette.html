@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.eval.silhouette &#8212; TorchDR 0.5.dev9+gba2cdf483 documentation</title>
+    <title>torchdr.eval.silhouette &#8212; TorchDR 0.5.dev10+g945eeb5af documentation</title>
   
   
   
@@ -26,25 +26,27 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../../_static/documentation_options.js?v=1f043051"></script>
+    <script src="../../../_static/documentation_options.js?v=1aa7f967"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchdr/eval/silhouette';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <script src="../../../_static/pypi-icon.js?v=3850e9a1"></script>
     <link rel="icon" href="../../../_static/logo.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -52,20 +54,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -91,7 +99,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -117,8 +125,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev9+gba2cdf483 documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev9+gba2cdf483 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev10+g945eeb5af documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev10+g945eeb5af documentation - Home"/>
   
   
 </a></div>
@@ -212,11 +220,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -229,8 +244,7 @@
           
           
           
-          <a href="https://github.com/TorchDR/TorchDR" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/TorchDR/TorchDR" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -241,8 +255,7 @@
           
           
           
-          <a href="https://pypi.org/project/torchdr/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-custom fa-pypi fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">PyPI</span></a>
+          <a href="https://pypi.org/project/torchdr/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-custom fa-lg" data-prefix="fa-custom" data-icon="pypi" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
         </li>
 </ul></div>
       
@@ -350,11 +363,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -367,8 +387,7 @@
           
           
           
-          <a href="https://github.com/TorchDR/TorchDR" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/TorchDR/TorchDR" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -379,8 +398,7 @@
           
           
           
-          <a href="https://pypi.org/project/torchdr/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-custom fa-pypi fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">PyPI</span></a>
+          <a href="https://pypi.org/project/torchdr/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-custom fa-lg" data-prefix="fa-custom" data-icon="pypi" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
         </li>
 </ul></div>
         
@@ -444,7 +462,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for torchdr.eval.silhouette</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Evaluation methods for dimensionality reduction.&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""Evaluation methods for dimensionality reduction."""</span>
 
 <span class="c1"># Author: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
 <span class="c1">#         Cédric Vincent-Cuaz &lt;cedvincentcuaz@gmail.com&gt;</span>
@@ -461,7 +479,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distance</span><span class="w"> </span><span class="kn">import</span> <span class="n">pairwise_distances</span><span class="p">,</span> <span class="n">FaissConfig</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="n">admissible_LIST_METRICS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;euclidean&quot;</span><span class="p">,</span> <span class="s2">&quot;manhattan&quot;</span><span class="p">,</span> <span class="s2">&quot;hyperbolic&quot;</span><span class="p">,</span> <span class="s2">&quot;precomputed&quot;</span><span class="p">]</span>
+<span class="n">admissible_LIST_METRICS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"euclidean"</span><span class="p">,</span> <span class="s2">"manhattan"</span><span class="p">,</span> <span class="s2">"hyperbolic"</span><span class="p">,</span> <span class="s2">"precomputed"</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="silhouette_samples">
@@ -470,12 +488,12 @@
     <span class="n">X</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
     <span class="n">labels</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
     <span class="n">weights</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
+    <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"euclidean"</span><span class="p">,</span>
     <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">warn</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the silhouette coefficients for each data sample.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Compute the silhouette coefficients for each data sample.</span>
 
 <span class="sd">    Each coefficient is calculated using the mean intra-cluster</span>
 <span class="sd">    distance (:math:`a`) and the mean nearest-cluster distance (:math:`b`) of</span>
@@ -489,7 +507,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    X : torch.Tensor, np.ndarray of shape (n_samples_x, n_samples_x) if</span>
-<span class="sd">        ``metric=&quot;precomputed&quot;`` else (n_samples_x, n_features)</span>
+<span class="sd">        ``metric="precomputed"`` else (n_samples_x, n_features)</span>
 <span class="sd">        Input data as a pairwise distance matrix or a feature matrix.</span>
 <span class="sd">    labels : torch.Tensor or np.ndarray of shape (n_samples_x,)</span>
 <span class="sd">        Labels associated to X.</span>
@@ -498,14 +516,14 @@
 <span class="sd">        of samples in X. The default is None and considers uniform weights.</span>
 <span class="sd">    metric : str, optional</span>
 <span class="sd">        The distance to use for computing pairwise distances. Must be an</span>
-<span class="sd">        element of [&quot;euclidean&quot;, &quot;manhattan&quot;, &quot;hyperbolic&quot;, &quot;precomputed&quot;].</span>
-<span class="sd">        The default is &#39;euclidean&#39;.</span>
+<span class="sd">        element of ["euclidean", "manhattan", "hyperbolic", "precomputed"].</span>
+<span class="sd">        The default is 'euclidean'.</span>
 <span class="sd">    device : str, optional</span>
 <span class="sd">        Device to use for computations.</span>
-<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None} or FaissConfig, optional</span>
+<span class="sd">    backend : {"keops", "faiss", None} or FaissConfig, optional</span>
 <span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
-<span class="sd">        - &quot;keops&quot;: Memory-efficient symbolic computations</span>
-<span class="sd">        - &quot;faiss&quot;: Fast approximate nearest neighbors</span>
+<span class="sd">        - "keops": Memory-efficient symbolic computations</span>
+<span class="sd">        - "faiss": Fast approximate nearest neighbors</span>
 <span class="sd">        - None: Standard PyTorch operations</span>
 <span class="sd">        - FaissConfig object: FAISS with custom configuration</span>
 <span class="sd">        Default is None.</span>
@@ -516,17 +534,17 @@
 <span class="sd">    -------</span>
 <span class="sd">    coefficients : torch.Tensor or np.ndarray of shape (n_samples_x,)</span>
 <span class="sd">        Silhouette coefficients for each sample.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">metric</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">admissible_LIST_METRICS</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;metric = </span><span class="si">{</span><span class="n">metric</span><span class="si">}</span><span class="s2"> must be in </span><span class="si">{</span><span class="n">admissible_LIST_METRICS</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"metric = </span><span class="si">{</span><span class="n">metric</span><span class="si">}</span><span class="s2"> must be in </span><span class="si">{</span><span class="n">admissible_LIST_METRICS</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;precomputed&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">"precomputed"</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;X must be a square matrix with metric = &#39;precomputed&#39;&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;keops&quot;</span> <span class="ow">and</span> <span class="n">warn</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"X must be a square matrix with metric = 'precomputed'"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s2">"keops"</span> <span class="ow">and</span> <span class="n">warn</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;[TorchDR] WARNING : backend &#39;keops&#39; not supported &quot;</span>
-                <span class="s2">&quot;with metric = &#39;precomputed&#39;.&quot;</span><span class="p">,</span>
+                <span class="s2">"[TorchDR] WARNING : backend 'keops' not supported "</span>
+                <span class="s2">"with metric = 'precomputed'."</span><span class="p">,</span>
                 <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
             <span class="p">)</span>
 
@@ -546,7 +564,7 @@
 
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">pos_i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pos_labels</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">pos_i</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;precomputed&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">"precomputed"</span><span class="p">:</span>
                 <span class="n">intra_cluster_dists</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">pos_i</span><span class="p">,</span> <span class="p">:][:,</span> <span class="n">pos_i</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">intra_cluster_dists</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span>
@@ -578,14 +596,14 @@
             <span class="n">intra_cluster_dists</span> <span class="o">=</span> <span class="mf">0.0</span>
             <span class="k">if</span> <span class="n">warn</span><span class="p">:</span>
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                    <span class="s2">&quot;[TorchDR] WARNING : ill-defined intra-cluster mean distance &quot;</span>
-                    <span class="s2">&quot;as one cluster contains only one sample.&quot;</span><span class="p">,</span>
+                    <span class="s2">"[TorchDR] WARNING : ill-defined intra-cluster mean distance "</span>
+                    <span class="s2">"as one cluster contains only one sample."</span><span class="p">,</span>
                     <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="n">A</span><span class="p">[</span><span class="n">pos_i</span><span class="p">]</span> <span class="o">=</span> <span class="n">intra_cluster_dists</span>
 
         <span class="k">for</span> <span class="n">pos_j</span> <span class="ow">in</span> <span class="n">pos_labels</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]:</span>
-            <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;precomputed&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">"precomputed"</span><span class="p">:</span>
                 <span class="n">inter_cluster_dists</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">pos_i</span><span class="p">,</span> <span class="p">:][:,</span> <span class="n">pos_j</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">inter_cluster_dists</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span>
@@ -623,14 +641,14 @@
     <span class="n">X</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
     <span class="n">labels</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
     <span class="n">weights</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
+    <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"euclidean"</span><span class="p">,</span>
     <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">sample_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">warn</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the Silhouette score as the mean of silhouette coefficients.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Compute the Silhouette score as the mean of silhouette coefficients.</span>
 
 <span class="sd">    Each coefficient is calculated using the mean intra-cluster</span>
 <span class="sd">    distance (:math:`a`) and the mean nearest-cluster distance (:math:`b`) of</span>
@@ -644,7 +662,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    X : torch.Tensor, np.ndarray of shape (n_samples_x, n_samples_x) if</span>
-<span class="sd">        ``metric=&quot;precomputed&quot;`` else (n_samples_x, n_features)</span>
+<span class="sd">        ``metric="precomputed"`` else (n_samples_x, n_features)</span>
 <span class="sd">        Input data as a pairwise distance matrix or a feature matrix.</span>
 <span class="sd">    labels : torch.Tensor or np.ndarray of shape (n_samples_x,)</span>
 <span class="sd">        Labels associated to X.</span>
@@ -653,14 +671,14 @@
 <span class="sd">        of samples in X. The default is None and considers uniform weights.</span>
 <span class="sd">    metric : str, optional</span>
 <span class="sd">        The distance to use for computing pairwise distances. Must be an</span>
-<span class="sd">        element of [&quot;euclidean&quot;, &quot;manhattan&quot;, &quot;hyperbolic&quot;, &quot;precomputed&quot;].</span>
-<span class="sd">        The default is &#39;euclidean&#39;.</span>
+<span class="sd">        element of ["euclidean", "manhattan", "hyperbolic", "precomputed"].</span>
+<span class="sd">        The default is 'euclidean'.</span>
 <span class="sd">    device : str, optional</span>
 <span class="sd">        Device to use for computations.</span>
-<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None} or FaissConfig, optional</span>
+<span class="sd">    backend : {"keops", "faiss", None} or FaissConfig, optional</span>
 <span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
-<span class="sd">        - &quot;keops&quot;: Memory-efficient symbolic computations</span>
-<span class="sd">        - &quot;faiss&quot;: Fast approximate nearest neighbors</span>
+<span class="sd">        - "keops": Memory-efficient symbolic computations</span>
+<span class="sd">        - "faiss": Fast approximate nearest neighbors</span>
 <span class="sd">        - None: Standard PyTorch operations</span>
 <span class="sd">        - FaissConfig object: FAISS with custom configuration</span>
 <span class="sd">        Default is None.</span>
@@ -677,7 +695,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    silhouette_score : float</span>
 <span class="sd">        mean silhouette coefficients for all samples.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Track original input type</span>
     <span class="n">input_is_numpy</span> <span class="o">=</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span>
 
@@ -690,10 +708,10 @@
         <span class="n">indices</span> <span class="o">=</span> <span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">sample_size</span><span class="p">)</span>
         <span class="n">sub_weights</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">weights</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;precomputed&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">"precomputed"</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;X must be a square matrix with metric = &#39;precomputed&#39;&quot;</span>
+                    <span class="s2">"X must be a square matrix with metric = 'precomputed'"</span>
                 <span class="p">)</span>
 
             <span class="n">sub_X</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">indices</span><span class="p">,</span> <span class="p">:][:,</span> <span class="n">indices</span><span class="p">]</span>
@@ -741,8 +759,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -776,7 +794,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0.
 </p></div>
       
     </div>

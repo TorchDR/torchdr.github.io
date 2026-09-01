@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.neighbor_embedding.umap &#8212; TorchDR 0.5.dev9+gba2cdf483 documentation</title>
+    <title>torchdr.neighbor_embedding.umap &#8212; TorchDR 0.5.dev10+g945eeb5af documentation</title>
   
   
   
@@ -26,25 +26,27 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../../_static/documentation_options.js?v=1f043051"></script>
+    <script src="../../../_static/documentation_options.js?v=1aa7f967"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchdr/neighbor_embedding/umap';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <script src="../../../_static/pypi-icon.js?v=3850e9a1"></script>
     <link rel="icon" href="../../../_static/logo.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -52,20 +54,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -91,7 +99,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -117,8 +125,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev9+gba2cdf483 documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev9+gba2cdf483 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev10+g945eeb5af documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev10+g945eeb5af documentation - Home"/>
   
   
 </a></div>
@@ -212,11 +220,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -229,8 +244,7 @@
           
           
           
-          <a href="https://github.com/TorchDR/TorchDR" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/TorchDR/TorchDR" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -241,8 +255,7 @@
           
           
           
-          <a href="https://pypi.org/project/torchdr/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-custom fa-pypi fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">PyPI</span></a>
+          <a href="https://pypi.org/project/torchdr/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-custom fa-lg" data-prefix="fa-custom" data-icon="pypi" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
         </li>
 </ul></div>
       
@@ -350,11 +363,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -367,8 +387,7 @@
           
           
           
-          <a href="https://github.com/TorchDR/TorchDR" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/TorchDR/TorchDR" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -379,8 +398,7 @@
           
           
           
-          <a href="https://pypi.org/project/torchdr/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-custom fa-pypi fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">PyPI</span></a>
+          <a href="https://pypi.org/project/torchdr/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-custom fa-lg" data-prefix="fa-custom" data-icon="pypi" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
         </li>
 </ul></div>
         
@@ -444,7 +462,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for torchdr.neighbor_embedding.umap</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;UMAP algorithm.&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""UMAP algorithm."""</span>
 
 <span class="c1"># Author: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
 <span class="c1">#</span>
@@ -463,13 +481,13 @@
 
 <span class="c1"># from umap/umap/umap_.py</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">find_ab_params</span><span class="p">(</span><span class="n">spread</span><span class="p">,</span> <span class="n">min_dist</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fit a, b params as in UMAP.</span>
+<span class="w">    </span><span class="sd">"""Fit a, b params as in UMAP.</span>
 
 <span class="sd">    Fit (a, b) for the differentiable curve used in lower</span>
 <span class="sd">    dimensional fuzzy simplicial complex construction. We want the</span>
 <span class="sd">    smooth curve (from a pre-defined family with simple gradient) that</span>
 <span class="sd">    best matches an offset exponential decay.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">curve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
         <span class="k">return</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">a</span> <span class="o">*</span> <span class="n">x</span> <span class="o">**</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">b</span><span class="p">))</span>
@@ -485,7 +503,7 @@
 <div class="viewcode-block" id="UMAP">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.UMAP.html#torchdr.UMAP">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">UMAP</span><span class="p">(</span><span class="n">NegativeSamplingNeighborEmbedding</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;UMAP introduced in :cite:`mcinnes2018umap` and further studied in :cite:`damrich2021umap`.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""UMAP introduced in :cite:`mcinnes2018umap` and further studied in :cite:`damrich2021umap`.</span>
 
 <span class="sd">    It uses a :class:`~torchdr.UMAPAffinity` as input affinity :math:`\mathbf{P}`</span>
 <span class="sd">    and output affinity :math:`Q_{ij} = (1 + a \| \mathbf{z}_i - \mathbf{z}_j \|^{2b})^{-1}` where :math:`a, b` are fitted from ``min_dist`` and ``spread``.</span>
@@ -501,7 +519,7 @@
 <span class="sd">    Note</span>
 <span class="sd">    ----</span>
 <span class="sd">    This implementation supports multi-GPU training when launched with ``torchrun``.</span>
-<span class="sd">    Set ``distributed=&#39;auto&#39;`` (default) to automatically detect and use multiple GPUs.</span>
+<span class="sd">    Set ``distributed='auto'`` (default) to automatically detect and use multiple GPUs.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -521,18 +539,18 @@
 <span class="sd">        Learning rate for the algorithm, by default 1e-1.</span>
 <span class="sd">    optimizer : str or torch.optim.Optimizer, optional</span>
 <span class="sd">        Name of an optimizer from torch.optim or an optimizer class.</span>
-<span class="sd">        Default is &quot;SGD&quot;.</span>
-<span class="sd">    optimizer_kwargs : dict or &#39;auto&#39;, optional</span>
-<span class="sd">        Additional keyword arguments for the optimizer. Default is &#39;auto&#39;.</span>
+<span class="sd">        Default is "SGD".</span>
+<span class="sd">    optimizer_kwargs : dict or 'auto', optional</span>
+<span class="sd">        Additional keyword arguments for the optimizer. Default is 'auto'.</span>
 <span class="sd">        which sets appropriate momentum values for SGD based on early exaggeration phase.</span>
 <span class="sd">    scheduler : str or torch.optim.lr_scheduler.LRScheduler, optional</span>
 <span class="sd">        Name of a scheduler from torch.optim.lr_scheduler or a scheduler class.</span>
-<span class="sd">        Default is &quot;LinearLR&quot;.</span>
-<span class="sd">    scheduler_kwargs : dict, &#39;auto&#39;, or None, optional</span>
-<span class="sd">        Additional keyword arguments for the scheduler. Default is &#39;auto&#39;, which</span>
+<span class="sd">        Default is "LinearLR".</span>
+<span class="sd">    scheduler_kwargs : dict, 'auto', or None, optional</span>
+<span class="sd">        Additional keyword arguments for the scheduler. Default is 'auto', which</span>
 <span class="sd">        corresponds to a linear decay from the learning rate to 0 for `LinearLR`.</span>
-<span class="sd">    init : {&#39;normal&#39;, &#39;pca&#39;} or torch.Tensor of shape (n_samples, output_dim), optional</span>
-<span class="sd">        Initialization for the embedding Z, default &#39;pca&#39;.</span>
+<span class="sd">    init : {'normal', 'pca'} or torch.Tensor of shape (n_samples, output_dim), optional</span>
+<span class="sd">        Initialization for the embedding Z, default 'pca'.</span>
 <span class="sd">    init_scaling : float, optional</span>
 <span class="sd">        Scaling factor for the initialization, by default 1e-4.</span>
 <span class="sd">    min_grad_norm : float, optional</span>
@@ -540,23 +558,23 @@
 <span class="sd">    max_iter : int, optional</span>
 <span class="sd">        Number of maximum iterations for the descent algorithm. by default 2000.</span>
 <span class="sd">    device : str, optional</span>
-<span class="sd">        Device to use, by default &quot;auto&quot;.</span>
-<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None} or FaissConfig, optional</span>
+<span class="sd">        Device to use, by default "auto".</span>
+<span class="sd">    backend : {"keops", "faiss", None} or FaissConfig, optional</span>
 <span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
 <span class="sd">        Can be:</span>
-<span class="sd">        - &quot;keops&quot;: Use KeOps for memory-efficient symbolic computations</span>
-<span class="sd">        - &quot;faiss&quot;: Use FAISS for fast k-NN computations with default settings</span>
+<span class="sd">        - "keops": Use KeOps for memory-efficient symbolic computations</span>
+<span class="sd">        - "faiss": Use FAISS for fast k-NN computations with default settings</span>
 <span class="sd">        - None: Use standard PyTorch operations</span>
 <span class="sd">        - FaissConfig object: Use FAISS with custom configuration</span>
-<span class="sd">        Default is &quot;faiss&quot;.</span>
+<span class="sd">        Default is "faiss".</span>
 <span class="sd">    verbose : bool, optional</span>
 <span class="sd">        Verbosity, by default False.</span>
 <span class="sd">    random_state : float, optional</span>
 <span class="sd">        Random seed for reproducibility, by default None.</span>
 <span class="sd">    max_iter_affinity : int, optional</span>
 <span class="sd">        Number of maximum iterations for the input affinity computation.</span>
-<span class="sd">    metric : {&#39;euclidean&#39;, &#39;manhattan&#39;}, optional</span>
-<span class="sd">        Metric to use for the input affinity, by default &#39;sqeuclidean&#39;.</span>
+<span class="sd">    metric : {'euclidean', 'manhattan'}, optional</span>
+<span class="sd">        Metric to use for the input affinity, by default 'sqeuclidean'.</span>
 <span class="sd">    n_negatives : int, optional</span>
 <span class="sd">        Number of negative samples for the noise-contrastive loss, by default 10.</span>
 <span class="sd">    check_interval : int, optional</span>
@@ -566,13 +584,13 @@
 <span class="sd">        Default is False.</span>
 <span class="sd">    compile : bool, optional</span>
 <span class="sd">        Whether to compile the algorithm using torch.compile. Default is False.</span>
-<span class="sd">    distributed : bool or &#39;auto&#39;, optional</span>
+<span class="sd">    distributed : bool or 'auto', optional</span>
 <span class="sd">        Whether to use distributed computation across multiple GPUs.</span>
-<span class="sd">        - &quot;auto&quot;: Automatically detect if running with torchrun (default)</span>
+<span class="sd">        - "auto": Automatically detect if running with torchrun (default)</span>
 <span class="sd">        - True: Force distributed mode (requires torchrun)</span>
 <span class="sd">        - False: Disable distributed mode</span>
-<span class="sd">        Default is &quot;auto&quot;.</span>
-<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
+<span class="sd">        Default is "auto".</span>
+<span class="sd">    """</span>  <span class="c1"># noqa: E501</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -583,27 +601,27 @@
         <span class="n">a</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">b</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">lr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e0</span><span class="p">,</span>
-        <span class="n">optimizer</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;SGD&quot;</span><span class="p">,</span>
+        <span class="n">optimizer</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">"SGD"</span><span class="p">,</span>
         <span class="n">optimizer_kwargs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">scheduler</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
             <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">LRScheduler</span><span class="p">]]</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;LinearLR&quot;</span><span class="p">,</span>
-        <span class="n">scheduler_kwargs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-        <span class="n">init</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pca&quot;</span><span class="p">,</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="s2">"LinearLR"</span><span class="p">,</span>
+        <span class="n">scheduler_kwargs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"auto"</span><span class="p">,</span>
+        <span class="n">init</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"pca"</span><span class="p">,</span>
         <span class="n">init_scaling</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-4</span><span class="p">,</span>
         <span class="n">min_grad_norm</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-7</span><span class="p">,</span>
         <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
-        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-        <span class="n">backend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;faiss&quot;</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"auto"</span><span class="p">,</span>
+        <span class="n">backend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"faiss"</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">max_iter_affinity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
-        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
+        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"sqeuclidean"</span><span class="p">,</span>
         <span class="n">negative_sample_rate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
         <span class="n">check_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
         <span class="n">discard_NNs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">distributed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">distributed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"auto"</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span> <span class="o">=</span> <span class="n">n_neighbors</span>
@@ -672,15 +690,15 @@
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="n">kept_pct</span> <span class="o">=</span> <span class="p">(</span><span class="o">~</span><span class="n">small_affinity_edges</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Keeping </span><span class="si">{</span><span class="n">kept_pct</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">% of affinity edges.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Keeping </span><span class="si">{</span><span class="n">kept_pct</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">% of affinity edges."</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span><span class="o">.</span><span class="n">add_</span><span class="p">(</span><span class="mf">1e-3</span><span class="p">)</span><span class="o">.</span><span class="n">reciprocal_</span><span class="p">()</span><span class="o">.</span><span class="n">mul_</span><span class="p">(</span><span class="n">A_max</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span><span class="o">.</span><span class="n">masked_fill_</span><span class="p">(</span>
-            <span class="n">small_affinity_edges</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+            <span class="n">small_affinity_edges</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"inf"</span><span class="p">)</span>
         <span class="p">)</span>  <span class="c1"># avoid updating these edges</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;epochs_per_sample&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">"epochs_per_sample"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span>
-            <span class="s2">&quot;epoch_of_next_sample&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs_per_sample</span><span class="o">.</span><span class="n">clone</span><span class="p">(),</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span>
+            <span class="s2">"epoch_of_next_sample"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs_per_sample</span><span class="o">.</span><span class="n">clone</span><span class="p">(),</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span></div>
 
 
@@ -689,7 +707,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span>
             <span class="n">query_indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span><span class="p">,</span>
             <span class="n">key_indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span><span class="p">,</span>
-            <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
+            <span class="n">metric</span><span class="o">=</span><span class="s2">"sqeuclidean"</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">positive_edges</span> <span class="o">=</span> <span class="n">D</span> <span class="o">&gt;</span> <span class="mi">0</span>
         <span class="n">D_</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_a</span> <span class="o">*</span> <span class="n">D</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_b</span>
@@ -700,7 +718,7 @@
         <span class="c1"># UMAP keeps a per-edge counter (epoch_of_next_sample) so that stronger edges</span>
         <span class="c1"># (higher affinity → smaller epochs_per_sample) get updated more often.</span>
         <span class="n">mask_affinity_in</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">epoch_of_next_sample</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span> <span class="o">+</span> <span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;mask_affinity_in_&quot;</span><span class="p">,</span> <span class="n">mask_affinity_in</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">"mask_affinity_in_"</span><span class="p">,</span> <span class="n">mask_affinity_in</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">epoch_of_next_sample</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mask_affinity_in_</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs_per_sample</span><span class="p">[</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mask_affinity_in_</span>
         <span class="p">]</span>
@@ -710,7 +728,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
             <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="n">grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ijk,ij-&gt;ik&quot;</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span>
+        <span class="n">grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">"ijk,ij-&gt;ik"</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span>
         <span class="n">grad</span><span class="o">.</span><span class="n">clamp_</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>  <span class="c1"># clamp as in umap repo</span>
         <span class="k">return</span> <span class="n">grad</span>
 
@@ -719,14 +737,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span>
             <span class="n">query_indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span><span class="p">,</span>
             <span class="n">key_indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">neg_indices_</span><span class="p">,</span>
-            <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
+            <span class="n">metric</span><span class="o">=</span><span class="s2">"sqeuclidean"</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">D_</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_a</span> <span class="o">*</span> <span class="n">D</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_b</span>
         <span class="n">D</span><span class="o">.</span><span class="n">add_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eps</span><span class="p">)</span>
         <span class="n">D</span><span class="o">.</span><span class="n">mul_</span><span class="p">(</span><span class="n">D_</span><span class="p">)</span>
         <span class="n">D</span><span class="o">.</span><span class="n">reciprocal_</span><span class="p">()</span><span class="o">.</span><span class="n">mul_</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="p">)</span>
 
-        <span class="c1"># Filter to keep &#39;negative_sample_rate&#39; negative edges per positive edge.</span>
+        <span class="c1"># Filter to keep 'negative_sample_rate' negative edges per positive edge.</span>
         <span class="n">neg_counts</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mask_affinity_in_</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative_sample_rate</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">long</span>
         <span class="p">)</span>
@@ -738,7 +756,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
             <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">neg_indices_</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="n">grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ijk,ij-&gt;ik&quot;</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span>
+        <span class="n">grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">"ijk,ij-&gt;ik"</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span>
         <span class="n">grad</span><span class="o">.</span><span class="n">clamp_</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>  <span class="c1"># clamp as in umap repo</span>
         <span class="k">return</span> <span class="n">grad</span></div>
 
@@ -771,8 +789,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -806,7 +824,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0.
 </p></div>
       
     </div>

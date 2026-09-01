@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.neighbor_embedding.pacmap &#8212; TorchDR 0.5.dev17+g25fcc8a5b documentation</title>
+    <title>torchdr.neighbor_embedding.pacmap &#8212; TorchDR 0.5.dev19+g4c26528d0 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../../_static/documentation_options.js?v=021d2bce"></script>
+    <script src="../../../_static/documentation_options.js?v=949efcdd"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -125,8 +125,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev17+g25fcc8a5b documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev17+g25fcc8a5b documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev19+g4c26528d0 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev19+g4c26528d0 documentation - Home"/>
   
   
 </a></div>
@@ -491,6 +491,10 @@
 <span class="sd">    where :math:`\mathrm{NB}(i)`, :math:`\mathrm{MN}(i)` and :math:`\mathrm{FP}(i)` are the nearest neighbors, mid-near neighbors and far neighbors of point :math:`i` respectively,</span>
 <span class="sd">    and :math:`d_{ij} = 1 + \|\mathbf{z}_i - \mathbf{z}_j\|^2` (more details in :cite:`wang2021understanding`).</span>
 
+<span class="sd">    Unlike UMAP, LargeVis, and InfoTSNE, PACMAP does not currently implement</span>
+<span class="sd">    the bipartite affinity hook needed for the shared non-parametric transform</span>
+<span class="sd">    pipeline, so :meth:`transform` is not supported for unseen points.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    n_neighbors : int, optional</span>
@@ -542,9 +546,11 @@
 <span class="sd">        Interval for checking convergence, by default 50.</span>
 <span class="sd">    iter_per_phase : int, optional</span>
 <span class="sd">        Number of iterations for each phase of the algorithm, by default 100.</span>
-<span class="sd">    discard_NNs : bool, optional</span>
-<span class="sd">        Whether to discard the nearest neighbors from the negative sampling.</span>
+<span class="sd">    exclude_neighbors_from_negative_sampling : bool, optional</span>
+<span class="sd">        Whether to exclude nearest neighbors from negative sampling.</span>
 <span class="sd">        Default is True.</span>
+<span class="sd">    discard_NNs : bool, optional</span>
+<span class="sd">        Deprecated alias for ``exclude_neighbors_from_negative_sampling``.</span>
 <span class="sd">    compile : bool, optional</span>
 <span class="sd">        Whether to compile the algorithm using torch.compile. Default is False.</span>
 <span class="sd">    distributed : bool or 'auto', optional</span>
@@ -579,13 +585,20 @@
         <span class="n">FP_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
         <span class="n">check_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
         <span class="n">iter_per_phase</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
-        <span class="n">discard_NNs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">exclude_neighbors_from_negative_sampling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">discard_NNs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">distributed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="k">if</span> <span class="n">distributed</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"[TorchDR] ERROR : PACMAP does not support distributed."</span><span class="p">)</span>
+
+        <span class="c1"># PACMAP historically excluded neighbors by default.  ``None`` lets us</span>
+        <span class="c1"># preserve that default while still detecting whether the deprecated</span>
+        <span class="c1"># alias was supplied on its own.</span>
+        <span class="k">if</span> <span class="n">exclude_neighbors_from_negative_sampling</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">discard_NNs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">exclude_neighbors_from_negative_sampling</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span> <span class="o">=</span> <span class="n">n_neighbors</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metric</span> <span class="o">=</span> <span class="n">metric</span>
@@ -623,6 +636,7 @@
             <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
             <span class="n">check_interval</span><span class="o">=</span><span class="n">check_interval</span><span class="p">,</span>
             <span class="n">n_negatives</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_further</span><span class="p">,</span>
+            <span class="n">exclude_neighbors_from_negative_sampling</span><span class="o">=</span><span class="n">exclude_neighbors_from_negative_sampling</span><span class="p">,</span>
             <span class="n">discard_NNs</span><span class="o">=</span><span class="n">discard_NNs</span><span class="p">,</span>
             <span class="nb">compile</span><span class="o">=</span><span class="nb">compile</span><span class="p">,</span>
             <span class="n">distributed</span><span class="o">=</span><span class="n">distributed</span><span class="p">,</span>

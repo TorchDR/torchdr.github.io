@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.distance.base &#8212; TorchDR 0.5.dev31+gca45082ed documentation</title>
+    <title>torchdr.distance.base &#8212; TorchDR 0.5.dev32+g99376854e documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../../_static/documentation_options.js?v=af079f60"></script>
+    <script src="../../../_static/documentation_options.js?v=d24fed6c"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -125,8 +125,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev31+gca45082ed documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev31+gca45082ed documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev32+g99376854e documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev32+g99376854e documentation - Home"/>
   
   
 </a></div>
@@ -481,6 +481,7 @@
     <span class="n">FaissConfig</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">DistributedContext</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distributed.input_contract</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_distributed_input</span>
 
 
 <div class="viewcode-block" id="pairwise_distances">
@@ -549,6 +550,8 @@
 <span class="sd">        - Requires k to be specified (sparse computation)</span>
 <span class="sd">        - Forces backend to "faiss" if not already set</span>
 <span class="sd">        - Results remain distributed (no gathering across GPUs)</span>
+<span class="sd">        - Every rank must pass the same full dataset; detectable metadata</span>
+<span class="sd">          mismatches and sharded DataLoaders are rejected before indexing</span>
 <span class="sd">        Default is None (single GPU computation).</span>
 
 <span class="sd">    Returns</span>
@@ -557,6 +560,12 @@
 <span class="sd">        Pairwise distances.</span>
 <span class="sd">    indices : torch.Tensor, optional</span>
 <span class="sd">        Indices of the k-nearest neighbors. Only returned if k is not None.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        In distributed mode, if rank metadata differs or a DataLoader iterates</span>
+<span class="sd">        only a shard of its dataset.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -583,6 +592,11 @@
 <span class="sd">    ... )</span>
 <span class="sd">    &gt;&gt;&gt; # Each GPU gets its chunk of results</span>
 <span class="sd">    """</span>
+    <span class="c1"># Every rank must hold the same full dataset: each builds a complete index</span>
+    <span class="c1"># and returns global sample ids. Check before any index is built.</span>
+    <span class="k">if</span> <span class="n">distributed_ctx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">distributed_ctx</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">:</span>
+        <span class="n">validate_distributed_input</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">distributed_ctx</span><span class="p">)</span>
+
     <span class="c1"># Handle DataLoader input</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">DataLoader</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">k</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

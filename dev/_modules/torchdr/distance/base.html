@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.distance.base &#8212; TorchDR 0.5.dev29+gc33fedef6 documentation</title>
+    <title>torchdr.distance.base &#8212; TorchDR 0.5.dev30+gdabffe644 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../../_static/documentation_options.js?v=8282e151"></script>
+    <script src="../../../_static/documentation_options.js?v=94675697"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -125,8 +125,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev29+gc33fedef6 documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev29+gc33fedef6 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev30+gdabffe644 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev30+gdabffe644 documentation - Home"/>
   
   
 </a></div>
@@ -651,25 +651,19 @@
         <span class="n">chunk_start</span><span class="p">,</span> <span class="n">chunk_end</span> <span class="o">=</span> <span class="n">distributed_ctx</span><span class="o">.</span><span class="n">compute_chunk_bounds</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span>
         <span class="n">X_chunk</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">chunk_start</span><span class="p">:</span><span class="n">chunk_end</span><span class="p">]</span>
 
-        <span class="c1"># Compute k-NN: queries=chunk, database=full dataset</span>
-        <span class="c1"># Note: exclude_diag doesn't work since X_chunk is a subset of X</span>
-        <span class="c1"># We handle self-neighbors by searching for k+1 if needed</span>
-        <span class="n">k_search</span> <span class="o">=</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">exclude_diag</span> <span class="k">else</span> <span class="n">k</span>
-
+        <span class="c1"># Compute k-NN: queries=chunk, database=full dataset. Query row j of the</span>
+        <span class="c1"># chunk is global row chunk_start + j, which is what lets exclude_diag</span>
+        <span class="c1"># identify the self-neighbor even though X_chunk is a subset of X.</span>
         <span class="n">C</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">pairwise_distances_faiss</span><span class="p">(</span>
             <span class="n">X</span><span class="o">=</span><span class="n">X_chunk</span><span class="p">,</span>
             <span class="n">Y</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>  <span class="c1"># Full dataset as database</span>
             <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
-            <span class="n">k</span><span class="o">=</span><span class="n">k_search</span><span class="p">,</span>
-            <span class="n">exclude_diag</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># Can't use since X_chunk != X</span>
+            <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
+            <span class="n">exclude_diag</span><span class="o">=</span><span class="n">exclude_diag</span><span class="p">,</span>
             <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">query_ids</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">chunk_start</span><span class="p">,</span> <span class="n">chunk_end</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">),</span>
         <span class="p">)</span>
-
-        <span class="c1"># Remove self-distances if needed</span>
-        <span class="k">if</span> <span class="n">exclude_diag</span><span class="p">:</span>
-            <span class="n">C</span> <span class="o">=</span> <span class="n">C</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span>
-            <span class="n">indices</span> <span class="o">=</span> <span class="n">indices</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span>
 
         <span class="k">if</span> <span class="n">return_indices</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">C</span><span class="p">,</span> <span class="n">indices</span>

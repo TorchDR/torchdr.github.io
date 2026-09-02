@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>kmeans_ari &#8212; TorchDR 0.5.dev25+g689c54544 documentation</title>
+    <title>kmeans_ari &#8212; TorchDR 0.5.dev26+g4ec644e5a documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../_static/documentation_options.js?v=119ccab9"></script>
+    <script src="../_static/documentation_options.js?v=c6d7d8cb"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -128,8 +128,8 @@
       
     
     
-    <img src="../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev25+g689c54544 documentation - Home"/>
-    <img src="../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev25+g689c54544 documentation - Home"/>
+    <img src="../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev26+g4ec644e5a documentation - Home"/>
+    <img src="../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev26+g4ec644e5a documentation - Home"/>
   
   
 </a></div>
@@ -595,7 +595,9 @@ torch.Tensor if inputs are torch.</p></li>
 - Has expected value of 0 for random clusterings
 - Has maximum value of 1 for identical clusterings</p>
 <p>FAISS K-means uses Lloyd’s algorithm with optional multiple runs.
-GPU acceleration is automatically used if FAISS-GPU is installed and X is on GPU.</p>
+GPU acceleration is automatically used if FAISS-GPU is installed and X is on GPU.
+FAISS K-means computes in float32. Tensor inputs stay as tensors on the selected
+CPU or GPU when the installed FAISS build provides tensor-native clustering.</p>
 </dd></dl>
 
 </section>

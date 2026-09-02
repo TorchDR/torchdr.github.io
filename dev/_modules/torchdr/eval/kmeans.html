@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.eval.kmeans &#8212; TorchDR 0.5.dev25+g689c54544 documentation</title>
+    <title>torchdr.eval.kmeans &#8212; TorchDR 0.5.dev26+g4ec644e5a documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../../_static/documentation_options.js?v=119ccab9"></script>
+    <script src="../../../_static/documentation_options.js?v=c6d7d8cb"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -125,8 +125,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev25+g689c54544 documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev25+g689c54544 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev26+g4ec644e5a documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev26+g4ec644e5a documentation - Home"/>
   
   
 </a></div>
@@ -471,6 +471,8 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExitStack</span><span class="p">,</span> <span class="n">redirect_stdout</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">StringIO</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_torch</span>
@@ -480,6 +482,60 @@
     <span class="kn">from</span><span class="w"> </span><span class="nn">torchmetrics.clustering</span><span class="w"> </span><span class="kn">import</span> <span class="n">AdjustedRandScore</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="n">AdjustedRandScore</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_fit_faiss_kmeans_tensor</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">,</span>
+    <span class="n">n_clusters</span><span class="p">,</span>
+    <span class="n">niter</span><span class="p">,</span>
+    <span class="n">nredo</span><span class="p">,</span>
+    <span class="n">seed</span><span class="p">,</span>
+    <span class="n">use_gpu</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Fit FAISS' tensor-native K-means implementation when available."""</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">faiss.contrib.torch.clustering</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+            <span class="n">DatasetAssign</span><span class="p">,</span>
+            <span class="n">DatasetAssignGPU</span><span class="p">,</span>
+            <span class="n">kmeans</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">use_gpu</span><span class="p">:</span>
+        <span class="n">resources</span> <span class="o">=</span> <span class="n">faiss</span><span class="o">.</span><span class="n">StandardGpuResources</span><span class="p">()</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">DatasetAssignGPU</span><span class="p">(</span><span class="n">resources</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">DatasetAssign</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+    <span class="n">best_centroids</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">best_objective</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"inf"</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">use_gpu</span><span class="p">:</span>
+            <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="c1"># FAISS' contrib implementation prints one setup line unconditionally.</span>
+            <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">redirect_stdout</span><span class="p">(</span><span class="n">StringIO</span><span class="p">()))</span>
+
+        <span class="k">for</span> <span class="n">redo</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nredo</span><span class="p">):</span>
+            <span class="n">centroids</span><span class="p">,</span> <span class="n">stats</span> <span class="o">=</span> <span class="n">kmeans</span><span class="p">(</span>
+                <span class="n">n_clusters</span><span class="p">,</span>
+                <span class="n">dataset</span><span class="p">,</span>
+                <span class="n">niter</span><span class="o">=</span><span class="n">niter</span><span class="p">,</span>
+                <span class="n">seed</span><span class="o">=</span><span class="n">seed</span> <span class="o">+</span> <span class="n">redo</span><span class="p">,</span>
+                <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                <span class="n">return_stats</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">objective</span> <span class="o">=</span> <span class="n">stats</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s2">"obj"</span><span class="p">]</span> <span class="k">if</span> <span class="n">stats</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"inf"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">best_centroids</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">objective</span> <span class="o">&lt;</span> <span class="n">best_objective</span><span class="p">:</span>
+                <span class="n">best_centroids</span> <span class="o">=</span> <span class="n">centroids</span>
+                <span class="n">best_objective</span> <span class="o">=</span> <span class="n">objective</span>
+
+        <span class="n">_</span><span class="p">,</span> <span class="n">predicted_labels</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">perform_search</span><span class="p">(</span><span class="n">best_centroids</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">predicted_labels</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="kmeans_ari">
@@ -561,6 +617,8 @@
 
 <span class="sd">    FAISS K-means uses Lloyd's algorithm with optional multiple runs.</span>
 <span class="sd">    GPU acceleration is automatically used if FAISS-GPU is installed and X is on GPU.</span>
+<span class="sd">    FAISS K-means computes in float32. Tensor inputs stay as tensors on the selected</span>
+<span class="sd">    CPU or GPU when the installed FAISS build provides tensor-native clustering.</span>
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="n">faiss</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
@@ -586,13 +644,10 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
 
-    <span class="n">X_np</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-    <span class="n">labels_np</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
-
-    <span class="n">n_samples</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">X_np</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">n_samples</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span>
 
     <span class="k">if</span> <span class="n">n_clusters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">n_clusters</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels_np</span><span class="p">))</span>
+        <span class="n">n_clusters</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span><span class="o">.</span><span class="n">numel</span><span class="p">())</span>
 
     <span class="k">if</span> <span class="n">n_clusters</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"n_clusters must be at least 1, got </span><span class="si">{</span><span class="n">n_clusters</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
@@ -609,15 +664,16 @@
 
     <span class="n">use_gpu</span> <span class="o">=</span> <span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">"cuda"</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">faiss</span><span class="p">,</span> <span class="s2">"StandardGpuResources"</span><span class="p">)</span>
 
-    <span class="n">kmeans</span> <span class="o">=</span> <span class="n">faiss</span><span class="o">.</span><span class="n">Kmeans</span><span class="p">(</span>
-        <span class="n">d</span><span class="p">,</span>
-        <span class="n">n_clusters</span><span class="p">,</span>
-        <span class="n">niter</span><span class="o">=</span><span class="n">niter</span><span class="p">,</span>
-        <span class="n">nredo</span><span class="o">=</span><span class="n">nredo</span><span class="p">,</span>
-        <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-        <span class="n">gpu</span><span class="o">=</span><span class="n">use_gpu</span><span class="p">,</span>
-        <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">"[TorchDR] FAISS K-means computes in float32; input values will "</span>
+            <span class="s2">"be converted before clustering."</span><span class="p">,</span>
+            <span class="ne">UserWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="n">data_device</span> <span class="o">=</span> <span class="n">device</span> <span class="k">if</span> <span class="n">use_gpu</span> <span class="k">else</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">"cpu"</span><span class="p">)</span>
+    <span class="n">X_faiss</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">data_device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">"cuda"</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">use_gpu</span><span class="p">:</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
@@ -626,12 +682,32 @@
             <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="n">kmeans</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">X_np</span><span class="p">)</span>
+    <span class="n">predicted_labels_torch</span> <span class="o">=</span> <span class="n">_fit_faiss_kmeans_tensor</span><span class="p">(</span>
+        <span class="n">X_faiss</span><span class="p">,</span>
+        <span class="n">n_clusters</span><span class="o">=</span><span class="n">n_clusters</span><span class="p">,</span>
+        <span class="n">niter</span><span class="o">=</span><span class="n">niter</span><span class="p">,</span>
+        <span class="n">nredo</span><span class="o">=</span><span class="n">nredo</span><span class="p">,</span>
+        <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
+        <span class="n">use_gpu</span><span class="o">=</span><span class="n">use_gpu</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+    <span class="p">)</span>
 
-    <span class="n">_</span><span class="p">,</span> <span class="n">predicted_labels_np</span> <span class="o">=</span> <span class="n">kmeans</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">X_np</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">predicted_labels_np</span> <span class="o">=</span> <span class="n">predicted_labels_np</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">predicted_labels_torch</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">X_np</span> <span class="o">=</span> <span class="n">X_faiss</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="n">kmeans</span> <span class="o">=</span> <span class="n">faiss</span><span class="o">.</span><span class="n">Kmeans</span><span class="p">(</span>
+            <span class="n">d</span><span class="p">,</span>
+            <span class="n">n_clusters</span><span class="p">,</span>
+            <span class="n">niter</span><span class="o">=</span><span class="n">niter</span><span class="p">,</span>
+            <span class="n">nredo</span><span class="o">=</span><span class="n">nredo</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="n">gpu</span><span class="o">=</span><span class="n">use_gpu</span><span class="p">,</span>
+            <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">kmeans</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">X_np</span><span class="p">)</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">predicted_labels_np</span> <span class="o">=</span> <span class="n">kmeans</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">X_np</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">predicted_labels_torch</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">predicted_labels_np</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span>
 
-    <span class="n">predicted_labels_torch</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">predicted_labels_np</span><span class="p">)</span><span class="o">.</span><span class="n">long</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">predicted_labels_torch</span> <span class="o">=</span> <span class="n">predicted_labels_torch</span><span class="o">.</span><span class="n">long</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
     <span class="n">labels_torch</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">long</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
 
     <span class="n">ari_metric</span> <span class="o">=</span> <span class="n">AdjustedRandScore</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
@@ -639,7 +715,7 @@
 
     <span class="k">if</span> <span class="n">input_is_numpy</span><span class="p">:</span>
         <span class="n">ari_score</span> <span class="o">=</span> <span class="n">ari_score</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
-        <span class="n">predicted_labels</span> <span class="o">=</span> <span class="n">predicted_labels_np</span>
+        <span class="n">predicted_labels</span> <span class="o">=</span> <span class="n">predicted_labels_torch</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">predicted_labels</span> <span class="o">=</span> <span class="n">predicted_labels_torch</span>
 

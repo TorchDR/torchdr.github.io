@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>User Guide &#8212; TorchDR 0.5.dev30+gdabffe644 documentation</title>
+    <title>User Guide &#8212; TorchDR 0.5.dev31+gca45082ed documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="_static/documentation_options.js?v=94675697"></script>
+    <script src="_static/documentation_options.js?v=af079f60"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/sg-tags.js?v=d80f6fa4"></script>
@@ -130,8 +130,8 @@
       
     
     
-    <img src="_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev30+gdabffe644 documentation - Home"/>
-    <img src="_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev30+gdabffe644 documentation - Home"/>
+    <img src="_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev31+gca45082ed documentation - Home"/>
+    <img src="_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev31+gca45082ed documentation - Home"/>
   
   
 </a></div>
@@ -814,6 +814,18 @@ torchrun<span class="w"> </span>--nproc_per_node<span class="o">=</span><span cl
 <span class="n">model</span> <span class="o">=</span> <span class="n">torchdr</span><span class="o">.</span><span class="n">UMAP</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">embedding</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 </pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Importing TorchDR already creates the process group when the launcher
+provides GPUs, and destroys it at interpreter exit. Adding the usual
+<code class="docutils literal notranslate"><span class="pre">torch.distributed.init_process_group</span></code> call to your script therefore
+fails with <code class="docutils literal notranslate"><span class="pre">ValueError:</span> <span class="pre">trying</span> <span class="pre">to</span> <span class="pre">initialize</span> <span class="pre">the</span> <span class="pre">default</span> <span class="pre">process</span> <span class="pre">group</span>
+<span class="pre">twice!</span></code>. Scripts that must create the group explicitly, for example to run
+on CPU with Gloo, should call <code class="docutils literal notranslate"><span class="pre">torchdr.distributed.init_distributed()</span></code>
+instead: it reuses an existing group and is a no-op outside a distributed
+launch. The matching <code class="docutils literal notranslate"><span class="pre">torchdr.distributed.shutdown_distributed()</span></code> only
+destroys a group that TorchDR itself created.</p>
 </div>
 <p><strong>Requirements:</strong></p>
 <ul class="simple">

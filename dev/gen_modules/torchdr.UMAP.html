@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>UMAP &#8212; TorchDR 0.5.dev41+gc548e47d7 documentation</title>
+    <title>UMAP &#8212; TorchDR 0.5.dev42+g42d235caf documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../_static/documentation_options.js?v=b5147077"></script>
+    <script src="../_static/documentation_options.js?v=8cf5e0e3"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -130,8 +130,8 @@
       
     
     
-    <img src="../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev41+gc548e47d7 documentation - Home"/>
-    <img src="../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev41+gc548e47d7 documentation - Home"/>
+    <img src="../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev42+g42d235caf documentation - Home"/>
+    <img src="../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev42+g42d235caf documentation - Home"/>
   
   
 </a></div>
@@ -565,11 +565,11 @@ It also supports the shared non-parametric transform path implemented in
 <li><p><strong>spread</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – The effective scale of the embedded points. Used to configure the UMAPAffinityOut.</p></li>
 <li><p><strong>a</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Parameter for the Student t-distribution.</p></li>
 <li><p><strong>b</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Parameter for the Student t-distribution.</p></li>
-<li><p><strong>lr</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Learning rate for the algorithm, by default 1e-1.</p></li>
+<li><p><strong>lr</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Initial learning rate for the embedding optimization, by default 1.0.
+This matches the numerical default in <code class="docutils literal notranslate"><span class="pre">umap-learn</span></code>.</p></li>
 <li><p><strong>optimizer</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.pytorch.org/docs/stable/optim.html#torch.optim.Optimizer" title="(in PyTorch v2.14)"><em>torch.optim.Optimizer</em></a><em>, </em><em>optional</em>) – Name of an optimizer from torch.optim or an optimizer class.
 Default is “SGD”.</p></li>
-<li><p><strong>optimizer_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em> or </em><em>'auto'</em><em>, </em><em>optional</em>) – Additional keyword arguments for the optimizer. Default is ‘auto’.
-which sets appropriate momentum values for SGD based on early exaggeration phase.</p></li>
+<li><p><strong>optimizer_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>, </em><em>optional</em>) – Additional keyword arguments for the optimizer. Default is None.</p></li>
 <li><p><strong>scheduler</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.optim.lr_scheduler.LRScheduler.html#torch.optim.lr_scheduler.LRScheduler" title="(in PyTorch v2.14)"><em>torch.optim.lr_scheduler.LRScheduler</em></a><em>, </em><em>optional</em>) – Name of a scheduler from torch.optim.lr_scheduler or a scheduler class.
 Default is “LinearLR”.</p></li>
 <li><p><strong>scheduler_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>, </em><em>'auto'</em><em>, or </em><em>None</em><em>, </em><em>optional</em>) – Additional keyword arguments for the scheduler. Default is ‘auto’, which
@@ -604,6 +604,12 @@ Default is “auto”.</p></li>
 </ul>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>The default learning rate and its linear decay match <code class="docutils literal notranslate"><span class="pre">umap-learn</span></code>’s
+<code class="docutils literal notranslate"><span class="pre">learning_rate</span></code> and <code class="docutils literal notranslate"><span class="pre">initial_alpha</span></code> schedule, but the resulting updates
+are not step-for-step equivalent. <code class="docutils literal notranslate"><span class="pre">umap-learn</span></code> applies sampled-edge
+updates sequentially with its own optimizer, whereas TorchDR accumulates
+vectorized gradients and applies them simultaneously with PyTorch SGD.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="torchdr.UMAP.on_affinity_computation_end">
 <span class="sig-name descname"><span class="pre">on_affinity_computation_end</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchdr/neighbor_embedding/umap.html#UMAP.on_affinity_computation_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchdr.UMAP.on_affinity_computation_end" title="Link to this definition">#</a></dt>

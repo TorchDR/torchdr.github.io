@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.neighbor_embedding.umap &#8212; TorchDR 0.5.dev41+gc548e47d7 documentation</title>
+    <title>torchdr.neighbor_embedding.umap &#8212; TorchDR 0.5.dev42+g42d235caf documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../../_static/documentation_options.js?v=b5147077"></script>
+    <script src="../../../_static/documentation_options.js?v=8cf5e0e3"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -125,8 +125,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev41+gc548e47d7 documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev41+gc548e47d7 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev42+g42d235caf documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev42+g42d235caf documentation - Home"/>
   
   
 </a></div>
@@ -540,13 +540,13 @@
 <span class="sd">    b : float, optional</span>
 <span class="sd">        Parameter for the Student t-distribution.</span>
 <span class="sd">    lr : float, optional</span>
-<span class="sd">        Learning rate for the algorithm, by default 1e-1.</span>
+<span class="sd">        Initial learning rate for the embedding optimization, by default 1.0.</span>
+<span class="sd">        This matches the numerical default in ``umap-learn``.</span>
 <span class="sd">    optimizer : str or torch.optim.Optimizer, optional</span>
 <span class="sd">        Name of an optimizer from torch.optim or an optimizer class.</span>
 <span class="sd">        Default is "SGD".</span>
-<span class="sd">    optimizer_kwargs : dict or 'auto', optional</span>
-<span class="sd">        Additional keyword arguments for the optimizer. Default is 'auto'.</span>
-<span class="sd">        which sets appropriate momentum values for SGD based on early exaggeration phase.</span>
+<span class="sd">    optimizer_kwargs : dict, optional</span>
+<span class="sd">        Additional keyword arguments for the optimizer. Default is None.</span>
 <span class="sd">    scheduler : str or torch.optim.lr_scheduler.LRScheduler, optional</span>
 <span class="sd">        Name of a scheduler from torch.optim.lr_scheduler or a scheduler class.</span>
 <span class="sd">        Default is "LinearLR".</span>
@@ -596,6 +596,14 @@
 <span class="sd">        - True: Force distributed mode (requires torchrun)</span>
 <span class="sd">        - False: Disable distributed mode</span>
 <span class="sd">        Default is "auto".</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The default learning rate and its linear decay match ``umap-learn``'s</span>
+<span class="sd">    ``learning_rate`` and ``initial_alpha`` schedule, but the resulting updates</span>
+<span class="sd">    are not step-for-step equivalent. ``umap-learn`` applies sampled-edge</span>
+<span class="sd">    updates sequentially with its own optimizer, whereas TorchDR accumulates</span>
+<span class="sd">    vectorized gradients and applies them simultaneously with PyTorch SGD.</span>
 <span class="sd">    """</span>  <span class="c1"># noqa: E501</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>

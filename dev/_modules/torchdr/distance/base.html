@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.distance.base &#8212; TorchDR 0.5.dev42+g42d235caf documentation</title>
+    <title>torchdr.distance.base &#8212; TorchDR 0.5.dev43+g1834cc8c0 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../../_static/documentation_options.js?v=8cf5e0e3"></script>
+    <script src="../../../_static/documentation_options.js?v=90314f47"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -125,8 +125,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev42+g42d235caf documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev42+g42d235caf documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev43+g1834cc8c0 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev43+g1834cc8c0 documentation - Home"/>
   
   
 </a></div>
@@ -651,14 +651,11 @@
 
         <span class="c1"># Force FAISS backend for distributed mode</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">):</span>
-            <span class="n">config</span> <span class="o">=</span> <span class="n">distributed_ctx</span><span class="o">.</span><span class="n">get_faiss_config</span><span class="p">(</span><span class="n">backend</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">backend</span> <span class="o">==</span> <span class="s2">"faiss"</span><span class="p">:</span>
-            <span class="n">config</span> <span class="o">=</span> <span class="n">distributed_ctx</span><span class="o">.</span><span class="n">get_faiss_config</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="n">backend</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">config</span> <span class="o">=</span> <span class="n">distributed_ctx</span><span class="o">.</span><span class="n">get_faiss_config</span><span class="p">()</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="n">backend</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># User specified keops or other backend - override with FAISS</span>
-            <span class="n">config</span> <span class="o">=</span> <span class="n">distributed_ctx</span><span class="o">.</span><span class="n">get_faiss_config</span><span class="p">()</span>
+            <span class="c1"># Distributed search always uses FAISS. The lower-level function</span>
+            <span class="c1"># maps this base configuration to the rank-local GPU.</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="n">FaissConfig</span><span class="p">()</span>
 
         <span class="c1"># Compute chunk bounds for this rank</span>
         <span class="n">n_samples</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -677,6 +674,7 @@
             <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
             <span class="n">query_ids</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">chunk_start</span><span class="p">,</span> <span class="n">chunk_end</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">),</span>
+            <span class="n">distributed_ctx</span><span class="o">=</span><span class="n">distributed_ctx</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">return_indices</span><span class="p">:</span>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>User Guide &#8212; TorchDR 0.5.dev46+g02861d71a documentation</title>
+    <title>User Guide &#8212; TorchDR 0.5.dev47+g2306b5dff documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="_static/documentation_options.js?v=76390b3d"></script>
+    <script src="_static/documentation_options.js?v=30ad31ae"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/sg-tags.js?v=d80f6fa4"></script>
@@ -130,8 +130,8 @@
       
     
     
-    <img src="_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev46+g02861d71a documentation - Home"/>
-    <img src="_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev46+g02861d71a documentation - Home"/>
+    <img src="_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev47+g2306b5dff documentation - Home"/>
+    <img src="_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev47+g2306b5dff documentation - Home"/>
   
   
 </a></div>
@@ -769,6 +769,14 @@ problematic when dealing with large numbers of samples, especially when using GP
 For large datasets (typically when <span class="math notranslate nohighlight">\(n &gt; 10^4\)</span>) where the full pairwise-distance matrix won’t fit in GPU memory,
 TorchDR can offload these computations to the GPU-compatible kNN library <a class="reference external" href="https://github.com/facebookresearch/faiss">Faiss</a>.
 Simply set <code class="xref py py-attr docutils literal notranslate"><span class="pre">backend</span></code> to <code class="docutils literal notranslate"><span class="pre">faiss</span></code> to leverage Faiss’s efficient implementations.</p>
+<p>For finer control, pass a <code class="xref py py-class docutils literal notranslate"><span class="pre">FaissPlanConfig</span></code> as the
+<code class="docutils literal notranslate"><span class="pre">backend</span></code> to express accuracy and resource <em>intent</em> rather than low-level FAISS
+parameters. Exact search is the default (<code class="docutils literal notranslate"><span class="pre">FaissPlanConfig(mode=&quot;exact&quot;)</span></code>) and
+never silently approximates; the resolved execution plan (index, precision,
+distribution, and index-memory estimate) is available after fitting through the
+estimator’s <code class="docutils literal notranslate"><span class="pre">faiss_plan_</span></code> attribute. Experts can still supply low-level options
+through <code class="docutils literal notranslate"><span class="pre">FaissPlanConfig(expert=FaissConfig(...))</span></code> or by passing a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">FaissConfig</span></code> directly.</p>
 <p>Alternatively, for exact computations or affinities that can’t be limited to kNNs, you can use symbolic (lazy) tensors to avoid memory overflows.
 TorchDR integrates with <code class="docutils literal notranslate"><span class="pre">pykeops</span></code><span class="bibtex-citation" id="id8">[<a class="reference internal" href="torchdr.bibliography.html#id16" title="Benjamin Charlier, Jean Feydy, Joan Alexis Glaunes, François-David Collin, and Ghislain Durif. Kernel operations on the gpu, with autodiff, without memory overflows. Journal of Machine Learning Research, 22(74):1–6, 2021.">Charlier <em>et al.</em>, 2021</a>]</span>, representing tensors as mathematical expressions evaluated directly on your data samples.
 By computing on-the-fly formulas instead of storing full matrices, this approach removes memory constraints entirely.

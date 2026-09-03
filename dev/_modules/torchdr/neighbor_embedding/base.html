@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.neighbor_embedding.base &#8212; TorchDR 0.5.dev34+g0d9bfcdb9 documentation</title>
+    <title>torchdr.neighbor_embedding.base &#8212; TorchDR 0.5.dev35+g10271afce documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../../_static/documentation_options.js?v=7bedb828"></script>
+    <script src="../../../_static/documentation_options.js?v=c812db3a"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -125,8 +125,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev34+g0d9bfcdb9 documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev34+g0d9bfcdb9 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev35+g10271afce documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev35+g10271afce documentation - Home"/>
   
   
 </a></div>
@@ -882,6 +882,8 @@
             <span class="n">chunk_start</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">chunk_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span>
 
+        <span class="c1"># Keep the host offset to avoid synchronizing chunk_indices_ each step.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chunk_start_</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">chunk_start</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
             <span class="n">chunk_start</span><span class="p">,</span> <span class="n">chunk_start</span> <span class="o">+</span> <span class="n">chunk_size</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device_</span>
         <span class="p">)</span></div>
@@ -1529,6 +1531,7 @@
         <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span>
             <span class="s2">"embedding_"</span><span class="p">,</span>
             <span class="s2">"chunk_indices_"</span><span class="p">,</span>
+            <span class="s2">"chunk_start_"</span><span class="p">,</span>
             <span class="s2">"NN_indices_"</span><span class="p">,</span>
             <span class="s2">"affinity_in_"</span><span class="p">,</span>
             <span class="s2">"n_samples_in_"</span><span class="p">,</span>
@@ -1550,6 +1553,7 @@
                 <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"embedding_"</span><span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span> <span class="o">=</span> <span class="n">chunk_indices</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chunk_start_</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span> <span class="o">=</span> <span class="n">transform_nn_indices</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span> <span class="o">=</span> <span class="n">affinity</span>
             <span class="c1"># Existing objectives normalize over query rows. The concatenated</span>

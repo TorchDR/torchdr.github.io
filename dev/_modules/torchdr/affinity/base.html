@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.affinity.base &#8212; TorchDR 0.5.dev49+g88c5385ee documentation</title>
+    <title>torchdr.affinity.base &#8212; TorchDR 0.5.dev50+gd8d6ef8f9 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../../_static/documentation_options.js?v=1e68def4"></script>
+    <script src="../../../_static/documentation_options.js?v=07b72426"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -125,8 +125,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev49+g88c5385ee documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev49+g88c5385ee documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev50+gd8d6ef8f9 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev50+gd8d6ef8f9 documentation - Home"/>
   
   
 </a></div>
@@ -576,22 +576,19 @@
     <span class="c1"># --- Distance computation ---</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_plan_backend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">"""Resolve a ``FaissPlanConfig`` backend into a low-level ``FaissConfig``.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Resolve and expose diagnostics for a ``FaissPlanConfig`` backend.</span>
 
 <span class="sd">        If ``self.backend`` is a :class:`~torchdr.distance.FaissPlanConfig`,</span>
 <span class="sd">        resolve it into an immutable execution plan (stored as</span>
 <span class="sd">        ``self.faiss_plan_`` and printed on rank 0 when ``verbose=True``) and</span>
-<span class="sd">        return the corresponding low-level</span>
-<span class="sd">        :class:`~torchdr.distance.FaissConfig` to hand to ``pairwise_distances``.</span>
-<span class="sd">        Otherwise return ``self.backend`` unchanged. This keeps user-intent</span>
-<span class="sd">        configuration at the estimator boundary while the expert configuration</span>
-<span class="sd">        flows internally.</span>
+<span class="sd">        return the original high-level configuration for ``pairwise_distances``</span>
+<span class="sd">        to dispatch. Otherwise return ``self.backend`` unchanged.</span>
 <span class="sd">        """</span>
         <span class="n">backend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">FaissPlanConfig</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">backend</span>
 
-        <span class="n">plan</span><span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="n">_resolve_faiss_plan</span><span class="p">(</span>
+        <span class="n">plan</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_resolve_faiss_plan</span><span class="p">(</span>
             <span class="n">backend</span><span class="p">,</span>
             <span class="n">n_samples</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_n_samples</span><span class="p">(</span><span class="n">X</span><span class="p">),</span>
             <span class="n">n_features</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_n_features</span><span class="p">(</span><span class="n">X</span><span class="p">),</span>
@@ -600,7 +597,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">faiss_plan_</span> <span class="o">=</span> <span class="n">plan</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"rank"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Resolved FAISS execution plan: </span><span class="si">{</span><span class="n">plan</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">config</span>
+        <span class="k">return</span> <span class="n">backend</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_distance_matrix</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
@@ -982,10 +979,11 @@
 <span class="sd">        indices : torch.Tensor, optional</span>
 <span class="sd">            Indices if ``return_indices=True``.</span>
 <span class="sd">        """</span>
+        <span class="n">backend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_plan_backend</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span>
             <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>
             <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span>
-            <span class="n">backend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolve_plan_backend</span><span class="p">(</span><span class="n">X</span><span class="p">),</span>
+            <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
             <span class="n">exclude_diag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">zero_diag</span><span class="p">,</span>
             <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
             <span class="n">return_indices</span><span class="o">=</span><span class="n">return_indices</span><span class="p">,</span>

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.neighbor_embedding.umap &#8212; TorchDR 0.5.dev59+gb6dcc491f documentation</title>
+    <title>torchdr.neighbor_embedding.umap &#8212; TorchDR 0.5.dev60+g5d5f27242 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../../_static/documentation_options.js?v=053f38c3"></script>
+    <script src="../../../_static/documentation_options.js?v=7236e6af"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -125,8 +125,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev59+gb6dcc491f documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev59+gb6dcc491f documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev60+g5d5f27242 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev60+g5d5f27242 documentation - Home"/>
   
   
 </a></div>
@@ -527,8 +527,11 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    n_neighbors : float, optional</span>
-<span class="sd">        Number of nearest neighbors.</span>
+<span class="sd">    n_neighbors : int, optional</span>
+<span class="sd">        UMAP neighbor count. During fit this includes the sample itself, so the</span>
+<span class="sd">        fuzzy graph uses ``n_neighbors - 1`` other samples, matching umap-learn.</span>
+<span class="sd">        Transform is bipartite and therefore uses ``n_neighbors`` training</span>
+<span class="sd">        samples because a new query has no self-neighbor in the training set.</span>
 <span class="sd">    n_components : int, optional</span>
 <span class="sd">        Dimension of the embedding space.</span>
 <span class="sd">    min_dist : float, optional</span>
@@ -608,7 +611,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">n_neighbors</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+        <span class="n">n_neighbors</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
         <span class="n">n_components</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
         <span class="n">min_dist</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
         <span class="n">spread</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>

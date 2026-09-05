@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.neighbor_embedding.umap &#8212; TorchDR 0.5.dev64+g59770f618 documentation</title>
+    <title>torchdr.neighbor_embedding.umap &#8212; TorchDR 0.5.dev65+g568f8cb30 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../../_static/documentation_options.js?v=985cb21e"></script>
+    <script src="../../../_static/documentation_options.js?v=86c5af3a"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -125,8 +125,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev64+g59770f618 documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev64+g59770f618 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev65+g568f8cb30 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev65+g568f8cb30 documentation - Home"/>
   
   
 </a></div>
@@ -615,7 +615,11 @@
 <span class="sd">    ``learning_rate`` and ``initial_alpha`` schedule, but the resulting updates</span>
 <span class="sd">    are not step-for-step equivalent. ``umap-learn`` applies sampled-edge</span>
 <span class="sd">    updates sequentially with its own optimizer, whereas TorchDR accumulates</span>
-<span class="sd">    vectorized gradients and applies them simultaneously with PyTorch SGD.</span>
+<span class="sd">    vectorized gradients and applies them simultaneously with PyTorch SGD. For</span>
+<span class="sd">    fit-time attractive updates, the symmetric graph lets TorchDR recover the</span>
+<span class="sd">    contribution of moving both endpoints by scaling the reduced gradient;</span>
+<span class="sd">    this is intentionally disabled during transform because training points</span>
+<span class="sd">    are frozen.</span>
 <span class="sd">    """</span>  <span class="c1"># noqa: E501</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -800,6 +804,12 @@
             <span class="n">diff</span><span class="o">.</span><span class="n">mul_</span><span class="p">(</span><span class="n">D</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)),</span> <span class="s2">"sum"</span><span class="p">,</span> <span class="n">lengths</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">attractive_counts_</span>
         <span class="p">)</span>
         <span class="n">grad</span><span class="o">.</span><span class="n">clamp_</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>  <span class="c1"># clamp as in umap repo</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_is_transforming"</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="c1"># Fit-time UMAP moves both endpoints of every positive edge. The</span>
+            <span class="c1"># symmetric graph already contains the reverse edge, so scaling</span>
+            <span class="c1"># the source reduction recovers that contribution without a target</span>
+            <span class="c1"># scatter or a sequential update loop.</span>
+            <span class="n">grad</span><span class="o">.</span><span class="n">mul_</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">grad</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_repulsive_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -934,6 +944,12 @@
             <span class="n">affinity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_max_iter_transform</span><span class="p">()</span>
         <span class="p">)</span>
         <span class="n">saved</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_enter_transform</span><span class="p">(</span><span class="n">embedding_new</span><span class="p">,</span> <span class="n">train_emb</span><span class="p">,</span> <span class="n">affinity</span><span class="p">,</span> <span class="n">nn_indices</span><span class="p">)</span>
+
+        <span class="n">saved</span><span class="p">[</span><span class="s2">"_is_transforming"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_is_transforming"</span><span class="p">),</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_is_transforming"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_transforming</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="c1"># Save UMAP-specific state</span>
         <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span>

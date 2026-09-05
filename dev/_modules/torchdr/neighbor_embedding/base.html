@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.neighbor_embedding.base &#8212; TorchDR 0.5.dev66+g68cea5385 documentation</title>
+    <title>torchdr.neighbor_embedding.base &#8212; TorchDR 0.5.dev67+gf2deff871 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../../_static/documentation_options.js?v=772f22bc"></script>
+    <script src="../../../_static/documentation_options.js?v=d8138bfa"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -125,8 +125,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev66+g68cea5385 documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev66+g68cea5385 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev67+gf2deff871 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev67+gf2deff871 documentation - Home"/>
   
   
 </a></div>
@@ -755,6 +755,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_validate_sharded_input</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
             <span class="n">dist_ctx</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="p">,</span> <span class="s2">"dist_ctx"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="n">layout</span> <span class="o">=</span> <span class="n">gather_shard_layout</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">dist_ctx</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_shard_layout_</span> <span class="o">=</span> <span class="n">layout</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">n_global_</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">global_count</span>
             <span class="n">n_samples</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">global_count</span>
         <span class="k">else</span><span class="p">:</span>
@@ -906,6 +907,38 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_init_embedding</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Initialize embedding across ranks (broadcast from rank 0)."""</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"input_layout"</span><span class="p">,</span> <span class="s2">"replicated"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"sharded"</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="o">==</span> <span class="s2">"pca"</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">world_size</span> <span class="o">&gt;</span> <span class="mi">1</span>
+        <span class="p">):</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.spectral_embedding.pca</span><span class="w"> </span><span class="kn">import</span> <span class="n">PCA</span>
+
+            <span class="c1"># Distributed PCA aggregates only the feature covariance and returns</span>
+            <span class="c1"># this rank's projected rows. Gathering those small projections is</span>
+            <span class="c1"># enough to build the replicated embedding without ever gathering X.</span>
+            <span class="n">local_embedding</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">(</span>
+                <span class="n">n_components</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">,</span>
+                <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+                <span class="n">distributed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">process_duplicates</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+            <span class="n">local_embedding</span> <span class="o">=</span> <span class="n">local_embedding</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device_</span><span class="p">)</span>
+
+            <span class="n">layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shard_layout_</span>
+            <span class="n">max_count</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">layout</span><span class="o">.</span><span class="n">counts</span><span class="p">)</span>
+            <span class="n">padded</span> <span class="o">=</span> <span class="n">local_embedding</span><span class="o">.</span><span class="n">new_zeros</span><span class="p">((</span><span class="n">max_count</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">))</span>
+            <span class="n">padded</span><span class="p">[:</span> <span class="n">layout</span><span class="o">.</span><span class="n">local_count</span><span class="p">]</span> <span class="o">=</span> <span class="n">local_embedding</span>
+            <span class="n">gathered</span> <span class="o">=</span> <span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">padded</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">layout</span><span class="o">.</span><span class="n">counts</span><span class="p">]</span>
+            <span class="n">dist</span><span class="o">.</span><span class="n">all_gather</span><span class="p">(</span><span class="n">gathered</span><span class="p">,</span> <span class="n">padded</span><span class="p">)</span>
+            <span class="n">embedding</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">rows</span><span class="p">[:</span><span class="n">count</span><span class="p">]</span> <span class="k">for</span> <span class="n">rows</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">gathered</span><span class="p">,</span> <span class="n">layout</span><span class="o">.</span><span class="n">counts</span><span class="p">)]</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">init_scaling</span> <span class="o">*</span> <span class="n">embedding</span> <span class="o">/</span> <span class="n">embedding</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">requires_grad_</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span>
+
         <span class="c1"># All ranks must run _init_embedding to avoid NCCL deadlocks</span>
         <span class="c1"># (e.g., PCA init may trigger distributed ops internally).</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_init_embedding</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>

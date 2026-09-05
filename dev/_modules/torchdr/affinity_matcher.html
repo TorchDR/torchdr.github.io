@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.affinity_matcher &#8212; TorchDR 0.5.dev66+g68cea5385 documentation</title>
+    <title>torchdr.affinity_matcher &#8212; TorchDR 0.5.dev67+gf2deff871 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../_static/documentation_options.js?v=772f22bc"></script>
+    <script src="../../_static/documentation_options.js?v=d8138bfa"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -125,8 +125,8 @@
       
     
     
-    <img src="../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev66+g68cea5385 documentation - Home"/>
-    <img src="../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev66+g68cea5385 documentation - Home"/>
+    <img src="../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev67+gf2deff871 documentation - Home"/>
+    <img src="../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev67+gf2deff871 documentation - Home"/>
   
   
 </a></div>
@@ -696,7 +696,7 @@
 <span class="sd">        Input-sharding splits the *rows* of a raw feature tensor across ranks and</span>
 <span class="sd">        keeps the embedding replicated. Layouts that would make a row's global</span>
 <span class="sd">        identity ambiguous -- a DataLoader, a precomputed affinity, an encoder,</span>
-<span class="sd">        or a PCA/tensor initialization that assumes the whole input is locally</span>
+<span class="sd">        or a tensor initialization that assumes the whole input is locally</span>
 <span class="sd">        available -- are rejected with an actionable message rather than silently</span>
 <span class="sd">        producing a wrong global embedding.</span>
 <span class="sd">        """</span>
@@ -717,13 +717,12 @@
             <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
             <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"random"</span><span class="p">,</span> <span class="s2">"normal"</span><span class="p">,</span> <span class="s2">"hyperbolic"</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"random"</span><span class="p">,</span> <span class="s2">"normal"</span><span class="p">,</span> <span class="s2">"hyperbolic"</span><span class="p">,</span> <span class="s2">"pca"</span><span class="p">)</span>
         <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
                 <span class="s2">"[TorchDR] input_layout='sharded' currently supports only "</span>
-                <span class="s2">"init='random', 'normal', or 'hyperbolic'; a distributed "</span>
-                <span class="sa">f</span><span class="s2">"gather-based initialization for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="si">!r}</span><span class="s2"> is a follow-up. "</span>
-                <span class="s2">"Pass init='random'."</span>
+                <span class="s2">"init='random', 'normal', 'hyperbolic', or 'pca'; "</span>
+                <span class="sa">f</span><span class="s2">"got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="si">!r}</span><span class="s2">."</span>
             <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>

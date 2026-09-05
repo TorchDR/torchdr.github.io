@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.affinity.base &#8212; TorchDR 0.5.dev63+gde534cd0f documentation</title>
+    <title>torchdr.affinity.base &#8212; TorchDR 0.5.dev64+g59770f618 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../../_static/documentation_options.js?v=a54b7b79"></script>
+    <script src="../../../_static/documentation_options.js?v=985cb21e"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -125,8 +125,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev63+gde534cd0f documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev63+gde534cd0f documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev64+g59770f618 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev64+g59770f618 documentation - Home"/>
   
   
 </a></div>
@@ -488,7 +488,9 @@
     <span class="n">FaissConfig</span><span class="p">,</span>
     <span class="n">FaissPlanConfig</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distance.faiss</span><span class="w"> </span><span class="kn">import</span> <span class="n">input_sharded_pairwise_distances_faiss</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distance.faiss_plan</span><span class="w"> </span><span class="kn">import</span> <span class="n">_resolve_faiss_plan</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distributed.input_contract</span><span class="w"> </span><span class="kn">import</span> <span class="n">gather_shard_layout</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch.distributed</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dist</span>
 
@@ -819,6 +821,10 @@
 <span class="sd">    distributed : bool or 'auto', optional</span>
 <span class="sd">        Whether to use distributed multi-GPU computation.</span>
 <span class="sd">        ``"auto"`` detects ``torchrun`` automatically. Default is "auto".</span>
+<span class="sd">    input_layout : {'replicated', 'sharded'}, optional</span>
+<span class="sd">        Whether every rank receives the full input or one contiguous row shard.</span>
+<span class="sd">        Sharded input currently requires exact Flat FAISS search. Default is</span>
+<span class="sd">        "replicated".</span>
 <span class="sd">    _pre_processed : bool, optional</span>
 <span class="sd">        If True, skips ``to_torch`` conversion. Default is False.</span>
 <span class="sd">    """</span>
@@ -834,6 +840,7 @@
         <span class="n">sparsity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">distributed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"auto"</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">input_layout</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"replicated"</span><span class="p">,</span>
         <span class="n">_pre_processed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="c1"># --- Distributed setup ---</span>
@@ -906,6 +913,70 @@
                     <span class="sa">f</span><span class="s2">"Distributed mode enabled: rank </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">world_size</span><span class="si">}</span><span class="s2">"</span>
                 <span class="p">)</span>
 
+        <span class="c1"># --- Input layout (replicated vs row-sharded) ---</span>
+        <span class="k">if</span> <span class="n">input_layout</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"replicated"</span><span class="p">,</span> <span class="s2">"sharded"</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"[TorchDR] input_layout must be 'replicated' or 'sharded', got "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">input_layout</span><span class="si">!r}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_layout</span> <span class="o">=</span> <span class="n">input_layout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shard_layout_</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">input_layout</span> <span class="o">==</span> <span class="s2">"sharded"</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_sharded_faiss_config</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_sharded_faiss_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Validate and cache the exact Flat config used by the sharded path.</span>
+
+<span class="sd">        Input-sharding builds a per-rank Flat index over each shard and merges</span>
+<span class="sd">        the global top-k, so it composes only with exact ``Flat`` search. A</span>
+<span class="sd">        :class:`FaissPlanConfig` selects the orthogonal *index*-sharding strategy</span>
+<span class="sd">        (full input replicated on every rank, index split), which is mutually</span>
+<span class="sd">        exclusive with splitting the rows themselves.</span>
+<span class="sd">        """</span>
+        <span class="n">backend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">FaissPlanConfig</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">"[TorchDR] input_layout='sharded' cannot be combined with a "</span>
+                <span class="s2">"FaissPlanConfig: input-sharding (rows split across ranks) and "</span>
+                <span class="s2">"the FaissPlanConfig index-sharding strategy (input replicated, "</span>
+                <span class="s2">"index split) are mutually exclusive. Pass a plain FaissConfig "</span>
+                <span class="s2">"or backend='faiss'."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">backend</span><span class="o">.</span><span class="n">index_type</span> <span class="o">!=</span> <span class="s2">"Flat"</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                    <span class="s2">"[TorchDR] input_layout='sharded' currently supports only "</span>
+                    <span class="sa">f</span><span class="s2">"exact 'Flat' search, got index_type=</span><span class="si">{</span><span class="n">backend</span><span class="o">.</span><span class="n">index_type</span><span class="si">!r}</span><span class="s2">."</span>
+                    <span class="s2">" An approximate sharded index is a separate follow-up."</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sharded_faiss_config_</span> <span class="o">=</span> <span class="n">backend</span>
+        <span class="k">elif</span> <span class="n">backend</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"faiss"</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sharded_faiss_config_</span> <span class="o">=</span> <span class="n">FaissConfig</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">"[TorchDR] input_layout='sharded' requires backend='faiss' or "</span>
+                <span class="s2">"an exact-Flat FaissConfig; an explicitly selected non-FAISS "</span>
+                <span class="sa">f</span><span class="s2">"backend cannot be used, got </span><span class="si">{</span><span class="n">backend</span><span class="si">!r}</span><span class="s2">."</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_shard_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Gather (once per call) and cache this input's rank-major shard layout.</span>
+
+<span class="sd">        Also records the chunk bounds that the distributed sparse symmetrization</span>
+<span class="sd">        and the estimator's gradient partition read back, derived here from the</span>
+<span class="sd">        true shard offsets rather than the balanced split. Single-process (no</span>
+<span class="sd">        group or one rank) short-circuits to the whole input as a single shard.</span>
+<span class="sd">        """</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shard_layout_</span>
+        <span class="k">if</span> <span class="n">layout</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">layout</span> <span class="o">=</span> <span class="n">gather_shard_layout</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist_ctx</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_shard_layout_</span> <span class="o">=</span> <span class="n">layout</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_global_</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">global_count</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chunk_start_</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">local_offset</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chunk_end_</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">local_offset</span> <span class="o">+</span> <span class="n">layout</span><span class="o">.</span><span class="n">local_count</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chunk_size_</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">local_count</span>
+        <span class="k">return</span> <span class="n">layout</span>
+
     <span class="c1"># --- Sparsity property ---</span>
 
     <span class="nd">@property</span>
@@ -944,6 +1015,10 @@
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pre_processed</span><span class="p">:</span>
             <span class="n">X</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_layout</span> <span class="o">==</span> <span class="s2">"sharded"</span><span class="p">:</span>
+            <span class="c1"># Drop any layout cached by a previous call so this fit re-derives it</span>
+            <span class="c1"># from the shards actually passed here.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_shard_layout_</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_sparse_affinity</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">return_indices</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="c1"># --- Core computation (must be implemented by subclasses) ---</span>
@@ -979,6 +1054,24 @@
 <span class="sd">        indices : torch.Tensor, optional</span>
 <span class="sd">            Indices if ``return_indices=True``.</span>
 <span class="sd">        """</span>
+        <span class="c1"># Row-sharded input: each rank holds a distinct contiguous shard and the</span>
+        <span class="c1"># search returns *global* neighbor ids over the reconstructed dataset.</span>
+        <span class="c1"># The dispatcher's replicated-input contract does not apply here, so this</span>
+        <span class="c1"># path calls the input-sharded kernel directly and records the chunk</span>
+        <span class="c1"># bounds from the true shard offsets.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_layout</span> <span class="o">==</span> <span class="s2">"sharded"</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_shard_layout</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+            <span class="n">distances</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">input_sharded_pairwise_distances_faiss</span><span class="p">(</span>
+                <span class="n">X</span><span class="p">,</span>
+                <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
+                <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span>
+                <span class="n">exclude_diag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">zero_diag</span><span class="p">,</span>
+                <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sharded_faiss_config_</span><span class="p">,</span>
+                <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+                <span class="n">distributed_ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dist_ctx</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">distances</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span> <span class="k">if</span> <span class="n">return_indices</span> <span class="k">else</span> <span class="n">distances</span>
+
         <span class="n">backend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_plan_backend</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span>
             <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>

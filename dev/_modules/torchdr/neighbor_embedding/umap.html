@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.neighbor_embedding.umap &#8212; TorchDR 0.5.dev63+gde534cd0f documentation</title>
+    <title>torchdr.neighbor_embedding.umap &#8212; TorchDR 0.5.dev64+g59770f618 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../../_static/documentation_options.js?v=a54b7b79"></script>
+    <script src="../../../_static/documentation_options.js?v=985cb21e"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -125,8 +125,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev63+gde534cd0f documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev63+gde534cd0f documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev64+g59770f618 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev64+g59770f618 documentation - Home"/>
   
   
 </a></div>
@@ -599,6 +599,15 @@
 <span class="sd">        - True: Force distributed mode (requires torchrun)</span>
 <span class="sd">        - False: Disable distributed mode</span>
 <span class="sd">        Default is "auto".</span>
+<span class="sd">    input_layout : {'replicated', 'sharded'}, optional</span>
+<span class="sd">        How the input rows are laid out across distributed ranks.</span>
+<span class="sd">        - "replicated" (default): every rank holds the full input.</span>
+<span class="sd">        - "sharded": each rank holds a distinct contiguous shard whose rows</span>
+<span class="sd">          concatenate, in rank order, into the global dataset, so no rank ever</span>
+<span class="sd">          materializes the whole input. Requires an exact Flat FAISS backend and</span>
+<span class="sd">          ``init`` in {"random", "normal", "hyperbolic"}; the embedding stays</span>
+<span class="sd">          replicated (one coordinate per global point on every rank).</span>
+<span class="sd">        Default is "replicated".</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -640,6 +649,7 @@
         <span class="n">discard_NNs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">distributed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"auto"</span><span class="p">,</span>
+        <span class="n">input_layout</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"replicated"</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span> <span class="o">=</span> <span class="n">n_neighbors</span>
@@ -670,6 +680,7 @@
             <span class="n">sparsity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sparsity</span><span class="p">,</span>
             <span class="nb">compile</span><span class="o">=</span><span class="nb">compile</span><span class="p">,</span>
             <span class="n">distributed</span><span class="o">=</span><span class="n">distributed</span><span class="p">,</span>
+            <span class="n">input_layout</span><span class="o">=</span><span class="n">input_layout</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -694,6 +705,7 @@
             <span class="nb">compile</span><span class="o">=</span><span class="nb">compile</span><span class="p">,</span>
             <span class="n">n_negatives</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span><span class="p">,</span>
             <span class="n">distributed</span><span class="o">=</span><span class="n">distributed</span><span class="p">,</span>
+            <span class="n">input_layout</span><span class="o">=</span><span class="n">input_layout</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
 

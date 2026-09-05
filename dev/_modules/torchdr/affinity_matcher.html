@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.affinity_matcher &#8212; TorchDR 0.5.dev63+gde534cd0f documentation</title>
+    <title>torchdr.affinity_matcher &#8212; TorchDR 0.5.dev64+g59770f618 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../_static/documentation_options.js?v=a54b7b79"></script>
+    <script src="../../_static/documentation_options.js?v=985cb21e"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -125,8 +125,8 @@
       
     
     
-    <img src="../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev63+gde534cd0f documentation - Home"/>
-    <img src="../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev63+gde534cd0f documentation - Home"/>
+    <img src="../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev64+g59770f618 documentation - Home"/>
+    <img src="../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev64+g59770f618 documentation - Home"/>
   
   
 </a></div>
@@ -577,6 +577,10 @@
 <span class="sd">        Neural network mapping input data to the embedding space.</span>
 <span class="sd">        Output dimension must match :attr:`n_components`.</span>
 <span class="sd">        Default is None (optimize a raw embedding matrix).</span>
+<span class="sd">    input_layout : {'replicated', 'sharded'}, optional</span>
+<span class="sd">        Whether every distributed rank receives the full input or one</span>
+<span class="sd">        contiguous row shard. The layout must match ``affinity_in``. Default is</span>
+<span class="sd">        "replicated".</span>
 <span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -605,6 +609,7 @@
         <span class="n">check_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">encoder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">input_layout</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"replicated"</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -660,9 +665,66 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span> <span class="o">=</span> <span class="n">encoder</span>
 
+        <span class="c1"># --- Input layout (replicated vs row-sharded) ---</span>
+        <span class="k">if</span> <span class="n">input_layout</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"replicated"</span><span class="p">,</span> <span class="s2">"sharded"</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"[TorchDR] input_layout must be 'replicated' or 'sharded', got "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">input_layout</span><span class="si">!r}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_layout</span> <span class="o">=</span> <span class="n">input_layout</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="p">,</span> <span class="n">Affinity</span><span class="p">):</span>
+            <span class="n">affinity_layout</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="p">,</span> <span class="s2">"input_layout"</span><span class="p">,</span> <span class="s2">"replicated"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">input_layout</span> <span class="o">!=</span> <span class="n">affinity_layout</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">"[TorchDR] input_layout must match affinity_in.input_layout; "</span>
+                    <span class="sa">f</span><span class="s2">"the estimator uses </span><span class="si">{</span><span class="n">input_layout</span><span class="si">!r}</span><span class="s2"> while its affinity uses "</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">affinity_layout</span><span class="si">!r}</span><span class="s2">."</span>
+                <span class="p">)</span>
+        <span class="k">if</span> <span class="n">input_layout</span> <span class="o">==</span> <span class="s2">"sharded"</span><span class="p">:</span>
+            <span class="c1"># Each rank holds a distinct shard, so the default per-rank</span>
+            <span class="c1"># torch.unique would deduplicate within a shard and corrupt the</span>
+            <span class="c1"># global row layout. Cross-rank duplicates are the caller's contract.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">process_duplicates</span> <span class="o">=</span> <span class="kc">False</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
 
     <span class="c1"># --- Fitting and optimization loop ---</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_sharded_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Reject configurations the first sharded-input slice does not support.</span>
+
+<span class="sd">        Input-sharding splits the *rows* of a raw feature tensor across ranks and</span>
+<span class="sd">        keeps the embedding replicated. Layouts that would make a row's global</span>
+<span class="sd">        identity ambiguous -- a DataLoader, a precomputed affinity, an encoder,</span>
+<span class="sd">        or a PCA/tensor initialization that assumes the whole input is locally</span>
+<span class="sd">        available -- are rejected with an actionable message rather than silently</span>
+<span class="sd">        producing a wrong global embedding.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">DataLoader</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">"[TorchDR] input_layout='sharded' requires a raw 2-D feature "</span>
+                <span class="s2">"tensor shard per rank; DataLoader input is not supported."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span> <span class="o">==</span> <span class="s2">"precomputed"</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">"[TorchDR] input_layout='sharded' cannot be combined with "</span>
+                <span class="s2">"affinity_in='precomputed'; sharding partitions raw feature "</span>
+                <span class="s2">"rows, not a precomputed affinity."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">"[TorchDR] input_layout='sharded' does not support an encoder."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"random"</span><span class="p">,</span> <span class="s2">"normal"</span><span class="p">,</span> <span class="s2">"hyperbolic"</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">"[TorchDR] input_layout='sharded' currently supports only "</span>
+                <span class="s2">"init='random', 'normal', or 'hyperbolic'; a distributed "</span>
+                <span class="sa">f</span><span class="s2">"gather-based initialization for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="si">!r}</span><span class="s2"> is a follow-up. "</span>
+                <span class="s2">"Pass init='random'."</span>
+            <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Compute the input affinity and optimize the embedding.</span>
@@ -680,6 +742,10 @@
 <span class="sd">        embedding_ : torch.Tensor of shape (n_samples, n_components)</span>
 <span class="sd">            The optimized embedding.</span>
 <span class="sd">        """</span>
+        <span class="c1"># --- Reject inputs incompatible with a sharded layout ---</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"input_layout"</span><span class="p">,</span> <span class="s2">"replicated"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"sharded"</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_validate_sharded_input</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
         <span class="c1"># --- Resolve metadata and device ---</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">DataLoader</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
@@ -701,6 +767,11 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_features_in_</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">device_</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">device</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">==</span> <span class="s2">"auto"</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span>
+            <span class="c1"># Under a sharded input X.shape[0] is this rank's local count; adopt</span>
+            <span class="c1"># the global total (gathered early by the estimator) so all downstream</span>
+            <span class="c1"># sizing -- embedding, learning rate, negatives -- spans every rank.</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"n_global_"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_global_</span><span class="p">)</span>
 
         <span class="c1"># --- Validate encoder ---</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -750,6 +821,18 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span> <span class="o">=</span> <span class="n">affinity_matrix</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">"affinity_in_"</span><span class="p">,</span> <span class="n">affinity_matrix</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># A sharded affinity records the global sample total; adopt it so the</span>
+        <span class="c1"># embedding size, learning rate, and negative pool span all rows. The</span>
+        <span class="c1"># estimator (NeighborEmbedding) usually sets ``n_global_`` earlier; this</span>
+        <span class="c1"># also covers a bare AffinityMatcher driven by a sharded affinity.</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"n_global_"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="p">,</span> <span class="s2">"n_global_"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_global_</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="o">.</span><span class="n">n_global_</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"n_global_"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_global_</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">on_affinity_computation_end</span><span class="p">()</span>
 
@@ -996,7 +1079,12 @@
             <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_in_</span>
             <span class="n">X_dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataloader_dtype_</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">n</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># Under a sharded input X holds only this rank's rows; the replicated</span>
+            <span class="c1"># embedding is sized to the global sample total so every rank builds</span>
+            <span class="c1"># (and rank 0 broadcasts) one coordinate per global point.</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"n_global_"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">n</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">X_dtype</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">dtype</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">,</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>

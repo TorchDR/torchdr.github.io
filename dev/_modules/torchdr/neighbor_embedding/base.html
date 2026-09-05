@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.neighbor_embedding.base &#8212; TorchDR 0.5.dev63+gde534cd0f documentation</title>
+    <title>torchdr.neighbor_embedding.base &#8212; TorchDR 0.5.dev64+g59770f618 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../../_static/documentation_options.js?v=a54b7b79"></script>
+    <script src="../../../_static/documentation_options.js?v=985cb21e"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -125,8 +125,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev63+gde534cd0f documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev63+gde534cd0f documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev64+g59770f618 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev64+g59770f618 documentation - Home"/>
   
   
 </a></div>
@@ -480,6 +480,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity.entropic</span><span class="w"> </span><span class="kn">import</span> <span class="n">_log_Pe</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distance</span><span class="w"> </span><span class="kn">import</span> <span class="n">FaissConfig</span><span class="p">,</span> <span class="n">FaissPlanConfig</span><span class="p">,</span> <span class="n">pairwise_distances</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity_matcher</span><span class="w"> </span><span class="kn">import</span> <span class="n">AffinityMatcher</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distributed.input_contract</span><span class="w"> </span><span class="kn">import</span> <span class="n">gather_shard_layout</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">binary_search</span><span class="p">,</span>
     <span class="n">entropy</span><span class="p">,</span>
@@ -745,7 +746,19 @@
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-        <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">DataLoader</span><span class="p">)</span> <span class="k">else</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"input_layout"</span><span class="p">,</span> <span class="s2">"replicated"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"sharded"</span><span class="p">:</span>
+            <span class="c1"># Rows are split across ranks: reject unsupported layouts first (for a</span>
+            <span class="c1"># clean message on DataLoader/precomputed/etc.), then gather the global</span>
+            <span class="c1"># row count up front so the neighbor-count check -- and all downstream</span>
+            <span class="c1"># global-N sizing -- use the whole dataset, not this rank's shard. The</span>
+            <span class="c1"># affinity re-derives the same layout when it searches.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_validate_sharded_input</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+            <span class="n">dist_ctx</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity_in</span><span class="p">,</span> <span class="s2">"dist_ctx"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">layout</span> <span class="o">=</span> <span class="n">gather_shard_layout</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">dist_ctx</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_global_</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">global_count</span>
+            <span class="n">n_samples</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">global_count</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">DataLoader</span><span class="p">)</span> <span class="k">else</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_n_neighbors</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span>
         <span class="c1"># Initialize the mutable exaggeration coefficient (may be reset to 1 during</span>
         <span class="c1"># optimization when the early exaggeration phase ends).</span>

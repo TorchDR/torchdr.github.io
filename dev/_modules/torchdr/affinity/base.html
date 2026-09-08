@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.affinity.base &#8212; TorchDR 0.5.dev67+gf2deff871 documentation</title>
+    <title>torchdr.affinity.base &#8212; TorchDR 0.5.dev68+ga4b5fc773 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../../_static/documentation_options.js?v=d8138bfa"></script>
+    <script src="../../../_static/documentation_options.js?v=fffb09bd"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -125,8 +125,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev67+gf2deff871 documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev67+gf2deff871 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev68+ga4b5fc773 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev68+ga4b5fc773 documentation - Home"/>
   
   
 </a></div>
@@ -928,36 +928,36 @@
 <span class="w">        </span><span class="sd">"""Validate and cache the exact Flat config used by the sharded path.</span>
 
 <span class="sd">        Input-sharding builds a per-rank Flat index over each shard and merges</span>
-<span class="sd">        the global top-k, so it composes only with exact ``Flat`` search. A</span>
-<span class="sd">        :class:`FaissPlanConfig` selects the orthogonal *index*-sharding strategy</span>
-<span class="sd">        (full input replicated on every rank, index split), which is mutually</span>
-<span class="sd">        exclusive with splitting the rows themselves.</span>
+<span class="sd">        the global top-k, so it composes only with exact ``Flat`` search. A high-</span>
+<span class="sd">        level plan must explicitly request the matching sharded index topology;</span>
+<span class="sd">        replicated intent is contradictory when the caller supplies row shards.</span>
 <span class="sd">        """</span>
         <span class="n">backend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">FaissPlanConfig</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">"[TorchDR] input_layout='sharded' cannot be combined with a "</span>
-                <span class="s2">"FaissPlanConfig: input-sharding (rows split across ranks) and "</span>
-                <span class="s2">"the FaissPlanConfig index-sharding strategy (input replicated, "</span>
-                <span class="s2">"index split) are mutually exclusive. Pass a plain FaissConfig "</span>
-                <span class="s2">"or backend='faiss'."</span>
-            <span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">backend</span><span class="o">.</span><span class="n">index_type</span> <span class="o">!=</span> <span class="s2">"Flat"</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                    <span class="s2">"[TorchDR] input_layout='sharded' currently supports only "</span>
-                    <span class="sa">f</span><span class="s2">"exact 'Flat' search, got index_type=</span><span class="si">{</span><span class="n">backend</span><span class="o">.</span><span class="n">index_type</span><span class="si">!r}</span><span class="s2">."</span>
-                    <span class="s2">" An approximate sharded index is a separate follow-up."</span>
+            <span class="k">if</span> <span class="n">backend</span><span class="o">.</span><span class="n">distribution</span> <span class="o">!=</span> <span class="s2">"shard"</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">"[TorchDR] input_layout='sharded' requires "</span>
+                    <span class="s2">"FaissPlanConfig(distribution='shard'); replicated index "</span>
+                    <span class="s2">"intent contradicts a row-sharded input."</span>
                 <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_sharded_faiss_config_</span> <span class="o">=</span> <span class="n">backend</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">resolved</span> <span class="o">=</span> <span class="n">_resolve_faiss_plan</span><span class="p">(</span><span class="n">backend</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">):</span>
+            <span class="n">resolved</span> <span class="o">=</span> <span class="n">backend</span>
         <span class="k">elif</span> <span class="n">backend</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"faiss"</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_sharded_faiss_config_</span> <span class="o">=</span> <span class="n">FaissConfig</span><span class="p">()</span>
+            <span class="n">resolved</span> <span class="o">=</span> <span class="n">FaissConfig</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">"[TorchDR] input_layout='sharded' requires backend='faiss' or "</span>
                 <span class="s2">"an exact-Flat FaissConfig; an explicitly selected non-FAISS "</span>
                 <span class="sa">f</span><span class="s2">"backend cannot be used, got </span><span class="si">{</span><span class="n">backend</span><span class="si">!r}</span><span class="s2">."</span>
             <span class="p">)</span>
+        <span class="k">if</span> <span class="n">resolved</span><span class="o">.</span><span class="n">index_type</span> <span class="o">!=</span> <span class="s2">"Flat"</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">"[TorchDR] input_layout='sharded' currently supports only "</span>
+                <span class="sa">f</span><span class="s2">"exact 'Flat' search, got index_type=</span><span class="si">{</span><span class="n">resolved</span><span class="o">.</span><span class="n">index_type</span><span class="si">!r}</span><span class="s2">."</span>
+                <span class="s2">" An approximate sharded index is a separate follow-up."</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sharded_faiss_config_</span> <span class="o">=</span> <span class="n">resolved</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_shard_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Gather (once per call) and cache this input's rank-major shard layout.</span>
@@ -1060,7 +1060,19 @@
         <span class="c1"># path calls the input-sharded kernel directly and records the chunk</span>
         <span class="c1"># bounds from the true shard offsets.</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_layout</span> <span class="o">==</span> <span class="s2">"sharded"</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_shard_layout</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+            <span class="n">layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_shard_layout</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span> <span class="n">FaissPlanConfig</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">faiss_plan_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_resolve_faiss_plan</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span>
+                    <span class="n">n_samples</span><span class="o">=</span><span class="n">layout</span><span class="o">.</span><span class="n">global_count</span><span class="p">,</span>
+                    <span class="n">n_features</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="n">distributed_ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dist_ctx</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="n">max_indexed_rows</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">layout</span><span class="o">.</span><span class="n">counts</span><span class="p">),</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"Resolved FAISS execution plan: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">faiss_plan_</span><span class="si">}</span><span class="s2">"</span>
+                    <span class="p">)</span>
             <span class="n">distances</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">input_sharded_pairwise_distances_faiss</span><span class="p">(</span>
                 <span class="n">X</span><span class="p">,</span>
                 <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>

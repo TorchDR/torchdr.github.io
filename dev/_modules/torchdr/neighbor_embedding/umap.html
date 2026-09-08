@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.neighbor_embedding.umap &#8212; TorchDR 0.5.dev68+ga4b5fc773 documentation</title>
+    <title>torchdr.neighbor_embedding.umap &#8212; TorchDR 0.5.dev69+g7921268b1 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../../_static/documentation_options.js?v=fffb09bd"></script>
+    <script src="../../../_static/documentation_options.js?v=5e692afa"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -125,8 +125,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev68+ga4b5fc773 documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev68+ga4b5fc773 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev69+g7921268b1 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev69+g7921268b1 documentation - Home"/>
   
   
 </a></div>
@@ -801,10 +801,10 @@
         <span class="c1"># The edges are ordered by source row, so a segmented reduction avoids</span>
         <span class="c1"># CUDA atomics and remains deterministic without giving up the flat</span>
         <span class="c1"># representation's performance and memory savings.</span>
-        <span class="n">grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">segment_reduce</span><span class="p">(</span>
-            <span class="n">diff</span><span class="o">.</span><span class="n">mul_</span><span class="p">(</span><span class="n">D</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)),</span> <span class="s2">"sum"</span><span class="p">,</span> <span class="n">lengths</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">attractive_counts_</span>
-        <span class="p">)</span>
-        <span class="n">grad</span><span class="o">.</span><span class="n">clamp_</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>  <span class="c1"># clamp as in umap repo</span>
+        <span class="c1"># Clip each edge contribution before aggregation, as in UMAP. Keeping</span>
+        <span class="c1"># the edge contributions flat preserves the vectorized GPU update.</span>
+        <span class="n">edge_grad</span> <span class="o">=</span> <span class="n">diff</span><span class="o">.</span><span class="n">mul_</span><span class="p">(</span><span class="n">D</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">clamp_</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="n">grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">segment_reduce</span><span class="p">(</span><span class="n">edge_grad</span><span class="p">,</span> <span class="s2">"sum"</span><span class="p">,</span> <span class="n">lengths</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">attractive_counts_</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_is_transforming"</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
             <span class="c1"># Fit-time UMAP moves both endpoints of every positive edge. The</span>
             <span class="c1"># symmetric graph already contains the reverse edge, so scaling</span>
@@ -842,8 +842,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
             <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">neg_indices_</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="n">grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">"ijk,ij-&gt;ik"</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span>
-        <span class="n">grad</span><span class="o">.</span><span class="n">clamp_</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>  <span class="c1"># clamp as in umap repo</span>
+        <span class="c1"># Apply UMAP's clipping to each negative edge before summing the</span>
+        <span class="c1"># repulsive contributions for a query point.</span>
+        <span class="n">grad</span> <span class="o">=</span> <span class="n">diff</span><span class="o">.</span><span class="n">mul_</span><span class="p">(</span><span class="n">D</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">clamp_</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">grad</span>
 
     <span class="c1"># --- Non-parametric transform ---</span>

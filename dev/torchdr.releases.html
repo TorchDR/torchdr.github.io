@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Releases &#8212; TorchDR 0.5.dev73+gf0f5d67ef documentation</title>
+    <title>Releases &#8212; TorchDR 0.5.dev74+g77e61429e documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="_static/documentation_options.js?v=11631eff"></script>
+    <script src="_static/documentation_options.js?v=71811e68"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/sg-tags.js?v=d80f6fa4"></script>
@@ -128,8 +128,8 @@
       
     
     
-    <img src="_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev73+gf0f5d67ef documentation - Home"/>
-    <img src="_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev73+gf0f5d67ef documentation - Home"/>
+    <img src="_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev74+g77e61429e documentation - Home"/>
+    <img src="_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev74+g77e61429e documentation - Home"/>
   
   
 </a></div>
@@ -483,11 +483,108 @@
 <h1>Releases<a class="headerlink" href="#releases" title="Link to this heading">#</a></h1>
 <section id="release-notes">
 <span id="id1"></span><h2>Release Notes<a class="headerlink" href="#release-notes" title="Link to this heading">#</a></h2>
+<section id="version-0-5-2026-09-14">
+<h3>Version 0.5 (2026-09-14)<a class="headerlink" href="#version-0-5-2026-09-14" title="Link to this heading">#</a></h3>
+<p>Parametric and out-of-sample neighbor embeddings, memory-scalable multi-GPU
+FAISS, and more faithful and efficient UMAP optimization.</p>
+<section id="added">
+<h4>Added<a class="headerlink" href="#added" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p>Add neural-network encoder support for parametric neighbor embeddings and
+out-of-sample transforms <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/263">PR #263</a>.</p></li>
+<li><p>Add non-parametric transforms for UMAP, LargeVis, and InfoTSNE
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/276">PR #276</a>.</p></li>
+<li><p>Add immutable exact FAISS execution plans and expose the resolved plan through
+<code class="docutils literal notranslate"><span class="pre">faiss_plan_</span></code> <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/333">PR #333</a>.</p></li>
+<li><p>Add an explicit exact-Flat index-sharding topology for multi-GPU search
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/338">PR #338</a>.</p></li>
+<li><p>Add true rank-local sharded inputs for exact-Flat UMAP, including uneven
+shards, distributed PCA initialization, and explicit FAISS plan composition
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/360">PR #360</a>,
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/364">PR #364</a>,
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/365">PR #365</a>,
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/375">PR #375</a>, and
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/376">PR #376</a>.</p></li>
+</ul>
+</section>
+<section id="changed">
+<h4>Changed<a class="headerlink" href="#changed" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p>Flatten UMAP’s attractive graph so optimization processes only real edges,
+substantially reducing fit time and peak GPU memory
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/320">PR #320</a>.</p></li>
+<li><p>Reuse FAISS GPU resources with correct CUDA stream ownership
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/310">PR #310</a>.</p></li>
+<li><p>Stream DataLoader tensors directly into FAISS with automatic internal
+batching <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/311">PR #311</a>.</p></li>
+<li><p>Keep FAISS tensor inputs and FAISS K-means data on-device instead of routing
+them through host NumPy
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/291">PR #291</a> and
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/292">PR #292</a>.</p></li>
+<li><p>Train distributed IVF and IVFPQ indexes once and broadcast the trained
+template to all ranks
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/326">PR #326</a>.</p></li>
+<li><p>Make replicated and sharded FAISS distribution explicit; replication remains
+the default and sharding is an opt-in capacity strategy
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/374">PR #374</a>.</p></li>
+<li><p>Rework distributed sparse symmetrization to reduce peak GPU memory, exchange
+flat buffers, and accelerate the default device-coalescing path
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/254">PR #254</a>,
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/298">PR #298</a>, and
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/316">PR #316</a>.</p></li>
+<li><p>Require Python 3.8 or newer
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/284">PR #284</a>.</p></li>
+</ul>
+</section>
+<section id="fixed">
+<h4>Fixed<a class="headerlink" href="#fixed" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p>Align UMAP fit-time neighbor counts with umap-learn semantics
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/361">PR #361</a>.</p></li>
+<li><p>Account for both endpoints of each UMAP attractive edge
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/362">PR #362</a>.</p></li>
+<li><p>Clip UMAP attractive and repulsive contributions per edge before aggregation
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/378">PR #378</a>.</p></li>
+<li><p>Remove UMAP’s fixed per-row negative-sampling cap with a flat representation
+that realizes every scheduled draw
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/379">PR #379</a>.</p></li>
+<li><p>Match UMAP negative edge sampling periods to umap-learn
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/381">PR #381</a>.</p></li>
+<li><p>Stabilize PHATE potential-distance computation to prevent NaNs
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/274">PR #274</a>.</p></li>
+<li><p>Correct PACMAP mid-near pair selection to use global sample indices
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/277">PR #277</a>.</p></li>
+<li><p>Preserve expert IVFPQ settings and tuple outputs through distributed and
+contiguous wrappers
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/278">PR #278</a> and
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/279">PR #279</a>.</p></li>
+<li><p>Release DataLoader metadata and compiled-function cache entries when their
+owning objects are destroyed
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/281">PR #281</a> and
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/290">PR #290</a>.</p></li>
+<li><p>Preserve NumPy random state and prevent integer overflow in <code class="docutils literal notranslate"><span class="pre">kmeans_ari</span></code>
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/283">PR #283</a> and
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/332">PR #332</a>.</p></li>
+<li><p>Preserve distributed sparse index and value dtypes
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/288">PR #288</a>.</p></li>
+<li><p>Remove FAISS self-neighbors by global identity rather than result position
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/295">PR #295</a>.</p></li>
+<li><p>Validate distributed launch and input contracts early, and propagate
+rank-local sharded-search failures without deadlocks
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/296">PR #296</a>,
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/300">PR #300</a>,
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/324">PR #324</a>, and
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/349">PR #349</a>.</p></li>
+<li><p>Include every TorchDR subpackage in built distributions
+<a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/287">PR #287</a>.</p></li>
+</ul>
+</section>
+</section>
 <section id="version-0-4-2026-02-03">
 <h3>Version 0.4 (2026-02-03)<a class="headerlink" href="#version-0-4-2026-02-03" title="Link to this heading">#</a></h3>
 <p>Multi-GPU distributed training, CLI tool, and DataLoader integration.</p>
-<section id="added">
-<h4>Added<a class="headerlink" href="#added" title="Link to this heading">#</a></h4>
+<section id="id2">
+<h4>Added<a class="headerlink" href="#id2" title="Link to this heading">#</a></h4>
 <ul class="simple">
 <li><p>Add TorchDR CLI for easy multi-GPU execution <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/233">PR #233</a>.</p></li>
 <li><p>Add DistributedContext for multi-GPU distance computations <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/229">PR #229</a>.</p></li>
@@ -507,23 +604,21 @@
 <li><p>Add automatic releases via GitHub Actions <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/226">PR #226</a>.</p></li>
 <li><p>Add cross-platform CI testing for macOS and Windows <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/258">PR #258</a>.</p></li>
 <li><p>Add tests for CLI, distributed, and sparse modules <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/246">PR #246</a>.</p></li>
-<li><p>Add PHATE NaN regression test on deterministic synthetic data to cover <a class="reference external" href="https://github.com/TorchDR/TorchDR/issues/270">Issue #270</a>.</p></li>
 </ul>
 </section>
-<section id="changed">
-<h4>Changed<a class="headerlink" href="#changed" title="Link to this heading">#</a></h4>
+<section id="id3">
+<h4>Changed<a class="headerlink" href="#id3" title="Link to this heading">#</a></h4>
 <ul class="simple">
 <li><p>Rename SampledNeighborEmbedding to NegativeSamplingNeighborEmbedding <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/225">PR #225</a>.</p></li>
 <li><p>Standardize device parameter to ‘auto’ default across all modules <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/241">PR #241</a>.</p></li>
 <li><p>Refactor device management for consistency <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/211">PR #211</a>.</p></li>
 <li><p>Improve memory management with torch buffers <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/203">PR #203</a>.</p></li>
-<li><p>Optimize root_search with <a href="#id12"><span class="problematic" id="id13">masked_scatter_</span></a> <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/204">PR #204</a>.</p></li>
+<li><p>Optimize root_search with <a href="#id14"><span class="problematic" id="id15">masked_scatter_</span></a> <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/204">PR #204</a>.</p></li>
 </ul>
 </section>
-<section id="fixed">
-<h4>Fixed<a class="headerlink" href="#fixed" title="Link to this heading">#</a></h4>
+<section id="id4">
+<h4>Fixed<a class="headerlink" href="#id4" title="Link to this heading">#</a></h4>
 <ul class="simple">
-<li><p>Correct PACMAP mid-near pair selection to use global sample indices <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/277">PR #277</a>.</p></li>
 <li><p>Fix memory leak in AffinityMatcher by freeing input data after initialization <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/223">PR #223</a>.</p></li>
 <li><p>Fix PACMAP device handling <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/215">PR #215</a>.</p></li>
 <li><p>Fix AffinityMatcher kwargs mutation <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/240">PR #240</a>.</p></li>
@@ -531,7 +626,6 @@
 <li><p>Fix TSNEkhorn docstring parameter name <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/237">PR #237</a>.</p></li>
 <li><p>Fix UMAP spectral init docstring <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/207">PR #207</a>.</p></li>
 <li><p>Add warning when distributed launch detected without GPU <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/238">PR #238</a>.</p></li>
-<li><p>Fix PHATE diffusion-potential distance numerical instability to address NaNs at iter 0 from <a class="reference external" href="https://github.com/TorchDR/TorchDR/issues/270">Issue #270</a>.</p></li>
 </ul>
 </section>
 <section id="removed">
@@ -557,8 +651,8 @@
 <section id="version-0-3-2025-07-15">
 <h3>Version 0.3 (2025-07-15)<a class="headerlink" href="#version-0-3-2025-07-15" title="Link to this heading">#</a></h3>
 <p>New algorithms (PHATE, PACMAP), torch.compile support, and Python 3.8+ compatibility.</p>
-<section id="id3">
-<h4>Added<a class="headerlink" href="#id3" title="Link to this heading">#</a></h4>
+<section id="id5">
+<h4>Added<a class="headerlink" href="#id5" title="Link to this heading">#</a></h4>
 <ul class="simple">
 <li><p>Add PHATE algorithm <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/185">PR #185</a>.</p></li>
 <li><p>Add PACMAP algorithm <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/182">PR #182</a>.</p></li>
@@ -569,8 +663,8 @@
 <li><p>Add automatic duplicate handling <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/188">PR #188</a>.</p></li>
 </ul>
 </section>
-<section id="id4">
-<h4>Changed<a class="headerlink" href="#id4" title="Link to this heading">#</a></h4>
+<section id="id6">
+<h4>Changed<a class="headerlink" href="#id6" title="Link to this heading">#</a></h4>
 <ul class="simple">
 <li><p>Optimize UMAP memory via direct gradient computation and edge masking <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/198">PR #198</a>.</p></li>
 <li><p>Make affinity_out optional in AffinityMatcher <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/186">PR #186</a>.</p></li>
@@ -581,8 +675,8 @@
 <li><p>Ensure compatibility with Python 3.8+ <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/173">PR #173</a>.</p></li>
 </ul>
 </section>
-<section id="id5">
-<h4>Fixed<a class="headerlink" href="#id5" title="Link to this heading">#</a></h4>
+<section id="id7">
+<h4>Fixed<a class="headerlink" href="#id7" title="Link to this heading">#</a></h4>
 <ul class="simple">
 <li><p>Fix PyKeOps and FAISS import errors <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/177">PR #177</a>.</p></li>
 <li><p>Fix hyperbolic optimization without geoopt dependency <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/183">PR #183</a>.</p></li>
@@ -593,8 +687,8 @@
 <section id="version-0-2-2025-02-07">
 <h3>Version 0.2 (2025-02-07)<a class="headerlink" href="#version-0-2-2025-02-07" title="Link to this heading">#</a></h3>
 <p>FAISS support, incremental PCA, and improved developer tooling.</p>
-<section id="id6">
-<h4>Added<a class="headerlink" href="#id6" title="Link to this heading">#</a></h4>
+<section id="id8">
+<h4>Added<a class="headerlink" href="#id8" title="Link to this heading">#</a></h4>
 <ul class="simple">
 <li><p>Add FAISS support for k-NN <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/160">PR #160</a>.</p></li>
 <li><p>Add extensible k-NN backend system <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/159">PR #159</a>.</p></li>
@@ -608,8 +702,8 @@
 <li><p>Add pull request template <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/125">PR #125</a>.</p></li>
 </ul>
 </section>
-<section id="id7">
-<h4>Changed<a class="headerlink" href="#id7" title="Link to this heading">#</a></h4>
+<section id="id9">
+<h4>Changed<a class="headerlink" href="#id9" title="Link to this heading">#</a></h4>
 <ul class="simple">
 <li><p>Rename tol parameter to min_grad_norm <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/162">PR #162</a>.</p></li>
 <li><p>Switch to Ruff for fast linting and formatting <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/151">PR #151</a>.</p></li>
@@ -617,8 +711,8 @@
 <li><p>Set sparsity to True by default <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/156">PR #156</a>.</p></li>
 </ul>
 </section>
-<section id="id8">
-<h4>Fixed<a class="headerlink" href="#id8" title="Link to this heading">#</a></h4>
+<section id="id10">
+<h4>Fixed<a class="headerlink" href="#id10" title="Link to this heading">#</a></h4>
 <ul class="simple">
 <li><p>Fix clustering base methods <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/126">PR #126</a>.</p></li>
 <li><p>Fix documentation consistency with bibliography <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/144">PR #144</a>.</p></li>
@@ -628,8 +722,8 @@
 <section id="version-0-1-2024-09-17">
 <h3>Version 0.1 (2024-09-17)<a class="headerlink" href="#version-0-1-2024-09-17" title="Link to this heading">#</a></h3>
 <p>Initial release with core dimensionality reduction algorithms.</p>
-<section id="id9">
-<h4>Added<a class="headerlink" href="#id9" title="Link to this heading">#</a></h4>
+<section id="id11">
+<h4>Added<a class="headerlink" href="#id11" title="Link to this heading">#</a></h4>
 <ul class="simple">
 <li><p>Add basic affinities: scalar product, Gaussian, and Student kernels.</p></li>
 <li><p>Add k-NN normalized affinities: Self-tuning affinities and MAGIC.</p></li>
@@ -653,8 +747,8 @@
 <li><p>Add silhouette score evaluation metric.</p></li>
 </ul>
 </section>
-<section id="id10">
-<h4>Changed<a class="headerlink" href="#id10" title="Link to this heading">#</a></h4>
+<section id="id12">
+<h4>Changed<a class="headerlink" href="#id12" title="Link to this heading">#</a></h4>
 <ul class="simple">
 <li><p>Improve UMAP and LargeVis with stable attractive term <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/89">PR #89</a>.</p></li>
 <li><p>Support affinity initialization from precomputed arrays <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/80">PR #80</a>.</p></li>
@@ -662,8 +756,8 @@
 <li><p>Make PyKeOps an optional dependency <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/77">PR #77</a>.</p></li>
 </ul>
 </section>
-<section id="id11">
-<h4>Removed<a class="headerlink" href="#id11" title="Link to this heading">#</a></h4>
+<section id="id13">
+<h4>Removed<a class="headerlink" href="#id13" title="Link to this heading">#</a></h4>
 <ul class="simple">
 <li><p>Remove SNEkhorn in favor of TSNEkhorn <a class="reference external" href="https://github.com/TorchDR/TorchDR/pull/90">PR #90</a>.</p></li>
 </ul>
@@ -720,30 +814,36 @@
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#release-notes">Release Notes</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-4-2026-02-03">Version 0.4 (2026-02-03)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-5-2026-09-14">Version 0.5 (2026-09-14)</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#added">Added</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#changed">Changed</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#fixed">Fixed</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-4-2026-02-03">Version 0.4 (2026-02-03)</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Added</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Changed</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Fixed</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#removed">Removed</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#documentation">Documentation</a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-3-2025-07-15">Version 0.3 (2025-07-15)</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Added</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Changed</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Fixed</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Added</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Changed</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Fixed</a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-2-2025-02-07">Version 0.2 (2025-02-07)</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Added</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Changed</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Fixed</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Added</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Changed</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Fixed</a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-1-2024-09-17">Version 0.1 (2024-09-17)</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Added</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Changed</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">Removed</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">Added</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">Changed</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">Removed</a></li>
 </ul>
 </li>
 </ul>

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.neighbor_embedding.umap &#8212; TorchDR 0.4 documentation</title>
+    <title>torchdr.neighbor_embedding.umap &#8212; TorchDR 0.5 documentation</title>
   
   
   
@@ -26,25 +26,27 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../../_static/documentation_options.js?v=7f00635f"></script>
+    <script src="../../../_static/documentation_options.js?v=db78e746"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchdr/neighbor_embedding/umap';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <script src="../../../_static/pypi-icon.js?v=3850e9a1"></script>
     <link rel="icon" href="../../../_static/logo.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -52,20 +54,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -91,7 +99,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -117,8 +125,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.4 documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.4 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5 documentation - Home"/>
   
   
 </a></div>
@@ -212,11 +220,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -229,8 +244,7 @@
           
           
           
-          <a href="https://github.com/TorchDR/TorchDR" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/TorchDR/TorchDR" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -241,8 +255,7 @@
           
           
           
-          <a href="https://pypi.org/project/torchdr/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-custom fa-pypi fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">PyPI</span></a>
+          <a href="https://pypi.org/project/torchdr/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-custom fa-lg" data-prefix="fa-custom" data-icon="pypi" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
         </li>
 </ul></div>
       
@@ -350,11 +363,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -367,8 +387,7 @@
           
           
           
-          <a href="https://github.com/TorchDR/TorchDR" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/TorchDR/TorchDR" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -379,8 +398,7 @@
           
           
           
-          <a href="https://pypi.org/project/torchdr/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-custom fa-pypi fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">PyPI</span></a>
+          <a href="https://pypi.org/project/torchdr/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-custom fa-lg" data-prefix="fa-custom" data-icon="pypi" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
         </li>
 </ul></div>
         
@@ -444,7 +462,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for torchdr.neighbor_embedding.umap</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;UMAP algorithm.&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""UMAP algorithm."""</span>
 
 <span class="c1"># Author: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
 <span class="c1">#</span>
@@ -455,21 +473,23 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity</span><span class="w"> </span><span class="kn">import</span> <span class="n">UMAPAffinity</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity.knn_normalized</span><span class="w"> </span><span class="kn">import</span> <span class="n">_log_P_UMAP</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.neighbor_embedding.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">NegativeSamplingNeighborEmbedding</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distance</span><span class="w"> </span><span class="kn">import</span> <span class="n">pairwise_distances_indexed</span><span class="p">,</span> <span class="n">FaissConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">binary_search</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">curve_fit</span>
 
 
 <span class="c1"># from umap/umap/umap_.py</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">find_ab_params</span><span class="p">(</span><span class="n">spread</span><span class="p">,</span> <span class="n">min_dist</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fit a, b params as in UMAP.</span>
+<span class="w">    </span><span class="sd">"""Fit a, b params as in UMAP.</span>
 
 <span class="sd">    Fit (a, b) for the differentiable curve used in lower</span>
 <span class="sd">    dimensional fuzzy simplicial complex construction. We want the</span>
 <span class="sd">    smooth curve (from a pre-defined family with simple gradient) that</span>
 <span class="sd">    best matches an offset exponential decay.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">curve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
         <span class="k">return</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">a</span> <span class="o">*</span> <span class="n">x</span> <span class="o">**</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">b</span><span class="p">))</span>
@@ -485,7 +505,7 @@
 <div class="viewcode-block" id="UMAP">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.UMAP.html#torchdr.UMAP">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">UMAP</span><span class="p">(</span><span class="n">NegativeSamplingNeighborEmbedding</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;UMAP introduced in :cite:`mcinnes2018umap` and further studied in :cite:`damrich2021umap`.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""UMAP introduced in :cite:`mcinnes2018umap` and further studied in :cite:`damrich2021umap`.</span>
 
 <span class="sd">    It uses a :class:`~torchdr.UMAPAffinity` as input affinity :math:`\mathbf{P}`</span>
 <span class="sd">    and output affinity :math:`Q_{ij} = (1 + a \| \mathbf{z}_i - \mathbf{z}_j \|^{2b})^{-1}` where :math:`a, b` are fitted from ``min_dist`` and ``spread``.</span>
@@ -501,12 +521,17 @@
 <span class="sd">    Note</span>
 <span class="sd">    ----</span>
 <span class="sd">    This implementation supports multi-GPU training when launched with ``torchrun``.</span>
-<span class="sd">    Set ``distributed=&#39;auto&#39;`` (default) to automatically detect and use multiple GPUs.</span>
+<span class="sd">    Set ``distributed='auto'`` (default) to automatically detect and use multiple GPUs.</span>
+<span class="sd">    It also supports the shared non-parametric transform path implemented in</span>
+<span class="sd">    :class:`NegativeSamplingNeighborEmbedding`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    n_neighbors : float, optional</span>
-<span class="sd">        Number of nearest neighbors.</span>
+<span class="sd">    n_neighbors : int, optional</span>
+<span class="sd">        UMAP neighbor count. During fit this includes the sample itself, so the</span>
+<span class="sd">        fuzzy graph uses ``n_neighbors - 1`` other samples, matching umap-learn.</span>
+<span class="sd">        Transform is bipartite and therefore uses ``n_neighbors`` training</span>
+<span class="sd">        samples because a new query has no self-neighbor in the training set.</span>
 <span class="sd">    n_components : int, optional</span>
 <span class="sd">        Dimension of the embedding space.</span>
 <span class="sd">    min_dist : float, optional</span>
@@ -518,21 +543,21 @@
 <span class="sd">    b : float, optional</span>
 <span class="sd">        Parameter for the Student t-distribution.</span>
 <span class="sd">    lr : float, optional</span>
-<span class="sd">        Learning rate for the algorithm, by default 1e-1.</span>
+<span class="sd">        Initial learning rate for the embedding optimization, by default 1.0.</span>
+<span class="sd">        This matches the numerical default in ``umap-learn``.</span>
 <span class="sd">    optimizer : str or torch.optim.Optimizer, optional</span>
 <span class="sd">        Name of an optimizer from torch.optim or an optimizer class.</span>
-<span class="sd">        Default is &quot;SGD&quot;.</span>
-<span class="sd">    optimizer_kwargs : dict or &#39;auto&#39;, optional</span>
-<span class="sd">        Additional keyword arguments for the optimizer. Default is &#39;auto&#39;.</span>
-<span class="sd">        which sets appropriate momentum values for SGD based on early exaggeration phase.</span>
+<span class="sd">        Default is "SGD".</span>
+<span class="sd">    optimizer_kwargs : dict, optional</span>
+<span class="sd">        Additional keyword arguments for the optimizer. Default is None.</span>
 <span class="sd">    scheduler : str or torch.optim.lr_scheduler.LRScheduler, optional</span>
 <span class="sd">        Name of a scheduler from torch.optim.lr_scheduler or a scheduler class.</span>
-<span class="sd">        Default is &quot;LinearLR&quot;.</span>
-<span class="sd">    scheduler_kwargs : dict, &#39;auto&#39;, or None, optional</span>
-<span class="sd">        Additional keyword arguments for the scheduler. Default is &#39;auto&#39;, which</span>
+<span class="sd">        Default is "LinearLR".</span>
+<span class="sd">    scheduler_kwargs : dict, 'auto', or None, optional</span>
+<span class="sd">        Additional keyword arguments for the scheduler. Default is 'auto', which</span>
 <span class="sd">        corresponds to a linear decay from the learning rate to 0 for `LinearLR`.</span>
-<span class="sd">    init : {&#39;normal&#39;, &#39;pca&#39;} or torch.Tensor of shape (n_samples, output_dim), optional</span>
-<span class="sd">        Initialization for the embedding Z, default &#39;pca&#39;.</span>
+<span class="sd">    init : {'normal', 'pca'} or torch.Tensor of shape (n_samples, output_dim), optional</span>
+<span class="sd">        Initialization for the embedding Z, default 'pca'.</span>
 <span class="sd">    init_scaling : float, optional</span>
 <span class="sd">        Scaling factor for the initialization, by default 1e-4.</span>
 <span class="sd">    min_grad_norm : float, optional</span>
@@ -540,70 +565,96 @@
 <span class="sd">    max_iter : int, optional</span>
 <span class="sd">        Number of maximum iterations for the descent algorithm. by default 2000.</span>
 <span class="sd">    device : str, optional</span>
-<span class="sd">        Device to use, by default &quot;auto&quot;.</span>
-<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None} or FaissConfig, optional</span>
+<span class="sd">        Device to use, by default "auto".</span>
+<span class="sd">    backend : {"keops", "faiss", None} or FaissConfig, optional</span>
 <span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
 <span class="sd">        Can be:</span>
-<span class="sd">        - &quot;keops&quot;: Use KeOps for memory-efficient symbolic computations</span>
-<span class="sd">        - &quot;faiss&quot;: Use FAISS for fast k-NN computations with default settings</span>
+<span class="sd">        - "keops": Use KeOps for memory-efficient symbolic computations</span>
+<span class="sd">        - "faiss": Use FAISS for fast k-NN computations with default settings</span>
 <span class="sd">        - None: Use standard PyTorch operations</span>
 <span class="sd">        - FaissConfig object: Use FAISS with custom configuration</span>
-<span class="sd">        Default is &quot;faiss&quot;.</span>
+<span class="sd">        Default is "faiss".</span>
 <span class="sd">    verbose : bool, optional</span>
 <span class="sd">        Verbosity, by default False.</span>
 <span class="sd">    random_state : float, optional</span>
 <span class="sd">        Random seed for reproducibility, by default None.</span>
 <span class="sd">    max_iter_affinity : int, optional</span>
 <span class="sd">        Number of maximum iterations for the input affinity computation.</span>
-<span class="sd">    metric : {&#39;euclidean&#39;, &#39;manhattan&#39;}, optional</span>
-<span class="sd">        Metric to use for the input affinity, by default &#39;sqeuclidean&#39;.</span>
+<span class="sd">    metric : {'euclidean', 'manhattan'}, optional</span>
+<span class="sd">        Metric to use for the input affinity, by default 'sqeuclidean'.</span>
 <span class="sd">    n_negatives : int, optional</span>
 <span class="sd">        Number of negative samples for the noise-contrastive loss, by default 10.</span>
 <span class="sd">    check_interval : int, optional</span>
 <span class="sd">        Check interval for the algorithm, by default 50.</span>
-<span class="sd">    discard_NNs : bool, optional</span>
-<span class="sd">        Whether to discard the nearest neighbors from the negative sampling.</span>
+<span class="sd">    exclude_neighbors_from_negative_sampling : bool, optional</span>
+<span class="sd">        Whether to exclude nearest neighbors from negative sampling.</span>
 <span class="sd">        Default is False.</span>
+<span class="sd">    discard_NNs : bool, optional</span>
+<span class="sd">        Deprecated alias for ``exclude_neighbors_from_negative_sampling``.</span>
 <span class="sd">    compile : bool, optional</span>
 <span class="sd">        Whether to compile the algorithm using torch.compile. Default is False.</span>
-<span class="sd">    distributed : bool or &#39;auto&#39;, optional</span>
+<span class="sd">    distributed : bool or 'auto', optional</span>
 <span class="sd">        Whether to use distributed computation across multiple GPUs.</span>
-<span class="sd">        - &quot;auto&quot;: Automatically detect if running with torchrun (default)</span>
+<span class="sd">        - "auto": Automatically detect if running with torchrun (default)</span>
 <span class="sd">        - True: Force distributed mode (requires torchrun)</span>
 <span class="sd">        - False: Disable distributed mode</span>
-<span class="sd">        Default is &quot;auto&quot;.</span>
-<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
+<span class="sd">        Default is "auto".</span>
+<span class="sd">    input_layout : {'replicated', 'sharded'}, optional</span>
+<span class="sd">        How the input rows are laid out across distributed ranks.</span>
+<span class="sd">        - "replicated" (default): every rank holds the full input.</span>
+<span class="sd">        - "sharded": each rank holds a distinct contiguous shard whose rows</span>
+<span class="sd">          concatenate, in rank order, into the global dataset, so no rank ever</span>
+<span class="sd">          materializes the whole input. Requires an exact Flat FAISS backend and</span>
+<span class="sd">          ``init`` in {"random", "normal", "hyperbolic", "pca"}; the embedding</span>
+<span class="sd">          stays replicated (one coordinate per global point on every rank). A</span>
+<span class="sd">          high-level FAISS plan must set ``distribution="shard"``.</span>
+<span class="sd">        Default is "replicated".</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The default learning rate and its linear decay match ``umap-learn``'s</span>
+<span class="sd">    ``learning_rate`` and ``initial_alpha`` schedule, but the resulting updates</span>
+<span class="sd">    are not step-for-step equivalent. ``umap-learn`` applies sampled-edge</span>
+<span class="sd">    updates sequentially with its own optimizer, whereas TorchDR accumulates</span>
+<span class="sd">    vectorized gradients and applies them simultaneously with PyTorch SGD. For</span>
+<span class="sd">    fit-time attractive updates, the symmetric graph lets TorchDR recover the</span>
+<span class="sd">    contribution of moving both endpoints by scaling the reduced gradient;</span>
+<span class="sd">    this is intentionally disabled during transform because training points</span>
+<span class="sd">    are frozen.</span>
+<span class="sd">    """</span>  <span class="c1"># noqa: E501</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">n_neighbors</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+        <span class="n">n_neighbors</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
         <span class="n">n_components</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
         <span class="n">min_dist</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
         <span class="n">spread</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">a</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">b</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">lr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e0</span><span class="p">,</span>
-        <span class="n">optimizer</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;SGD&quot;</span><span class="p">,</span>
+        <span class="n">optimizer</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">"SGD"</span><span class="p">,</span>
         <span class="n">optimizer_kwargs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">scheduler</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
             <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">LRScheduler</span><span class="p">]]</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;LinearLR&quot;</span><span class="p">,</span>
-        <span class="n">scheduler_kwargs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-        <span class="n">init</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pca&quot;</span><span class="p">,</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="s2">"LinearLR"</span><span class="p">,</span>
+        <span class="n">scheduler_kwargs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"auto"</span><span class="p">,</span>
+        <span class="n">init</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"pca"</span><span class="p">,</span>
         <span class="n">init_scaling</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-4</span><span class="p">,</span>
         <span class="n">min_grad_norm</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-7</span><span class="p">,</span>
         <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
-        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-        <span class="n">backend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;faiss&quot;</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"auto"</span><span class="p">,</span>
+        <span class="n">backend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"faiss"</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">max_iter_affinity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
-        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
+        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"sqeuclidean"</span><span class="p">,</span>
         <span class="n">negative_sample_rate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
         <span class="n">check_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
-        <span class="n">discard_NNs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">exclude_neighbors_from_negative_sampling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">discard_NNs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">distributed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">distributed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"auto"</span><span class="p">,</span>
+        <span class="n">input_layout</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"replicated"</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span> <span class="o">=</span> <span class="n">n_neighbors</span>
@@ -614,7 +665,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">negative_sample_rate</span> <span class="o">=</span> <span class="n">negative_sample_rate</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">sparsity</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_use_direct_gradients</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_use_closed_form_gradients</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_eps</span> <span class="o">=</span> <span class="mf">1e-3</span>
 
         <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">b</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -634,6 +685,7 @@
             <span class="n">sparsity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sparsity</span><span class="p">,</span>
             <span class="nb">compile</span><span class="o">=</span><span class="nb">compile</span><span class="p">,</span>
             <span class="n">distributed</span><span class="o">=</span><span class="n">distributed</span><span class="p">,</span>
+            <span class="n">input_layout</span><span class="o">=</span><span class="n">input_layout</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -653,44 +705,117 @@
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
             <span class="n">check_interval</span><span class="o">=</span><span class="n">check_interval</span><span class="p">,</span>
+            <span class="n">exclude_neighbors_from_negative_sampling</span><span class="o">=</span><span class="n">exclude_neighbors_from_negative_sampling</span><span class="p">,</span>
             <span class="n">discard_NNs</span><span class="o">=</span><span class="n">discard_NNs</span><span class="p">,</span>
             <span class="nb">compile</span><span class="o">=</span><span class="nb">compile</span><span class="p">,</span>
             <span class="n">n_negatives</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span><span class="p">,</span>
             <span class="n">distributed</span><span class="o">=</span><span class="n">distributed</span><span class="p">,</span>
+            <span class="n">input_layout</span><span class="o">=</span><span class="n">input_layout</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_flatten_padded_edges</span><span class="p">(</span><span class="n">nn_indices</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Flatten a max-degree-padded neighbor grid to flat per-edge arrays.</span>
+
+<span class="sd">        The symmetrized UMAP affinity is delivered as a ``(chunk, max_degree)``</span>
+<span class="sd">        grid padded with ``-1`` column indices, where ``max_degree`` can be far</span>
+<span class="sd">        larger than the mean degree. This returns, in row-major order over the</span>
+<span class="sd">        real (non-padded) edges, the local ``source`` row and the global</span>
+<span class="sd">        ``target`` column of every edge, together with the boolean ``mask`` so</span>
+<span class="sd">        that aligned per-edge tensors (e.g. the affinity values) can be</span>
+<span class="sd">        flattened the same way.</span>
+<span class="sd">        """</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">nn_indices</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+        <span class="n">counts</span> <span class="o">=</span> <span class="n">mask</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">repeat_interleave</span><span class="p">(</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nn_indices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">device</span><span class="o">=</span><span class="n">nn_indices</span><span class="o">.</span><span class="n">device</span><span class="p">),</span> <span class="n">counts</span>
+        <span class="p">)</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">nn_indices</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">mask</span>
 
 <div class="viewcode-block" id="UMAP.on_affinity_computation_end">
 <a class="viewcode-back" href="../../../gen_modules/torchdr.UMAP.html#torchdr.UMAP.on_affinity_computation_end">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_affinity_computation_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_affinity_computation_end</span><span class="p">()</span>
 
-        <span class="c1"># Remove small affinity edges</span>
-        <span class="n">A_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="c1"># Flatten the max-degree-padded affinity grid to its real edges only</span>
+        <span class="c1"># (a CSR-style layout), so the closed-form attractive gradient runs over</span>
+        <span class="c1"># ``nnz`` edges instead of ``chunk * max_degree`` mostly-padded slots.</span>
+        <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">edge_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flatten_padded_edges</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span><span class="p">)</span>
+        <span class="n">edge_affinity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span><span class="p">[</span><span class="n">edge_mask</span><span class="p">]</span>
+
+        <span class="c1"># Remove small affinity edges (padded slots are already excluded).</span>
+        <span class="n">A_max</span> <span class="o">=</span> <span class="n">edge_affinity</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
         <span class="n">threshold</span> <span class="o">=</span> <span class="n">A_max</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span>
-        <span class="n">small_affinity_edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span> <span class="o">&lt;=</span> <span class="n">threshold</span>
+        <span class="n">small_affinity_edges</span> <span class="o">=</span> <span class="n">edge_affinity</span> <span class="o">&lt;=</span> <span class="n">threshold</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="n">kept_pct</span> <span class="o">=</span> <span class="p">(</span><span class="o">~</span><span class="n">small_affinity_edges</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Keeping </span><span class="si">{</span><span class="n">kept_pct</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">% of affinity edges.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Keeping </span><span class="si">{</span><span class="n">kept_pct</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">% of affinity edges."</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span><span class="o">.</span><span class="n">add_</span><span class="p">(</span><span class="mf">1e-3</span><span class="p">)</span><span class="o">.</span><span class="n">reciprocal_</span><span class="p">()</span><span class="o">.</span><span class="n">mul_</span><span class="p">(</span><span class="n">A_max</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span><span class="o">.</span><span class="n">masked_fill_</span><span class="p">(</span>
-            <span class="n">small_affinity_edges</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+        <span class="n">epochs_per_sample</span> <span class="o">=</span> <span class="n">edge_affinity</span><span class="o">.</span><span class="n">reciprocal</span><span class="p">()</span><span class="o">.</span><span class="n">mul_</span><span class="p">(</span><span class="n">A_max</span><span class="p">)</span>
+        <span class="n">epochs_per_sample</span><span class="o">.</span><span class="n">masked_fill_</span><span class="p">(</span>
+            <span class="n">small_affinity_edges</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"inf"</span><span class="p">)</span>
         <span class="p">)</span>  <span class="c1"># avoid updating these edges</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;epochs_per_sample&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span>
-            <span class="s2">&quot;epoch_of_next_sample&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs_per_sample</span><span class="o">.</span><span class="n">clone</span><span class="p">(),</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">)</span></div>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">"attractive_source_"</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">"attractive_target_"</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span>
+            <span class="s2">"attractive_counts_"</span><span class="p">,</span> <span class="n">edge_mask</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">"epochs_per_sample"</span><span class="p">,</span> <span class="n">epochs_per_sample</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span>
+            <span class="s2">"epoch_of_next_sample"</span><span class="p">,</span> <span class="n">epochs_per_sample</span><span class="o">.</span><span class="n">clone</span><span class="p">(),</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_negative_sampling_offset_</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># The padded grid is no longer needed: UMAP uses closed-form gradients</span>
+        <span class="c1"># (no loss reads ``affinity_in_``) and both gradient terms now index the</span>
+        <span class="c1"># flat edge buffers. Free it to reclaim the max-degree padding overhead.</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">affinity_in_</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span></div>
+
+
+<div class="viewcode-block" id="UMAP.on_training_step_start">
+<a class="viewcode-back" href="../../../gen_modules/torchdr.UMAP.html#torchdr.UMAP.on_training_step_start">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_training_step_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Defer negative sampling until the current positive mask is known."""</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_draw_flat_with_exclusions</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">adjusted_exclusion</span><span class="p">,</span> <span class="n">n_available</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Draw one flat target per source while bounding exclusion temporaries."""</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="n">exclusion_width</span> <span class="o">=</span> <span class="n">adjusted_exclusion</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># Indexing a row-wise exclusion table materializes ``draws * width``</span>
+        <span class="c1"># entries. Bound that temporary to roughly 64 MiB of int64 values.</span>
+        <span class="n">max_chunk</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8_388_608</span> <span class="o">//</span> <span class="nb">max</span><span class="p">(</span><span class="n">exclusion_width</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">start</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">source</span><span class="o">.</span><span class="n">numel</span><span class="p">(),</span> <span class="n">max_chunk</span><span class="p">):</span>
+            <span class="n">stop</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">start</span> <span class="o">+</span> <span class="n">max_chunk</span><span class="p">,</span> <span class="n">source</span><span class="o">.</span><span class="n">numel</span><span class="p">())</span>
+            <span class="n">chunk_source</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">stop</span><span class="p">]</span>
+            <span class="n">compressed</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">stop</span> <span class="o">-</span> <span class="n">start</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">source</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+                <span class="o">*</span> <span class="n">n_available</span><span class="p">[</span><span class="n">chunk_source</span><span class="p">]</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">exclusion_width</span><span class="p">:</span>
+                <span class="n">shifts</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span>
+                    <span class="n">adjusted_exclusion</span><span class="p">[</span><span class="n">chunk_source</span><span class="p">],</span>
+                    <span class="n">compressed</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
+                    <span class="n">right</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">compressed</span><span class="o">.</span><span class="n">add_</span><span class="p">(</span><span class="n">shifts</span><span class="p">)</span>
+            <span class="n">target</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">stop</span><span class="p">]</span> <span class="o">=</span> <span class="n">compressed</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">target</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_attractive_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">D</span> <span class="o">=</span> <span class="n">pairwise_distances_indexed</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span>
-            <span class="n">query_indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span><span class="p">,</span>
-            <span class="n">key_indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span><span class="p">,</span>
-            <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attractive_source_</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span><span class="p">[</span><span class="n">source</span><span class="p">]]</span>
+            <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">attractive_target_</span><span class="p">]</span>
         <span class="p">)</span>
+        <span class="n">D</span> <span class="o">=</span> <span class="n">diff</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">positive_edges</span> <span class="o">=</span> <span class="n">D</span> <span class="o">&gt;</span> <span class="mi">0</span>
         <span class="n">D_</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_a</span> <span class="o">*</span> <span class="n">D</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_b</span>
         <span class="n">D</span><span class="o">.</span><span class="n">pow_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_b</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
@@ -700,47 +825,256 @@
         <span class="c1"># UMAP keeps a per-edge counter (epoch_of_next_sample) so that stronger edges</span>
         <span class="c1"># (higher affinity → smaller epochs_per_sample) get updated more often.</span>
         <span class="n">mask_affinity_in</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">epoch_of_next_sample</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span> <span class="o">+</span> <span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;mask_affinity_in_&quot;</span><span class="p">,</span> <span class="n">mask_affinity_in</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">"mask_affinity_in_"</span><span class="p">,</span> <span class="n">mask_affinity_in</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">epoch_of_next_sample</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mask_affinity_in_</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs_per_sample</span><span class="p">[</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mask_affinity_in_</span>
         <span class="p">]</span>
         <span class="n">D</span><span class="o">.</span><span class="n">masked_fill_</span><span class="p">(</span><span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">mask_affinity_in_</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
-        <span class="n">diff</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-            <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span><span class="p">]</span>
-        <span class="p">)</span>
-        <span class="n">grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ijk,ij-&gt;ik&quot;</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span>
-        <span class="n">grad</span><span class="o">.</span><span class="n">clamp_</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>  <span class="c1"># clamp as in umap repo</span>
+        <span class="c1"># The edges are ordered by source row, so a segmented reduction avoids</span>
+        <span class="c1"># CUDA atomics and remains deterministic without giving up the flat</span>
+        <span class="c1"># representation's performance and memory savings.</span>
+        <span class="c1"># Clip each edge contribution before aggregation, as in UMAP. Keeping</span>
+        <span class="c1"># the edge contributions flat preserves the vectorized GPU update.</span>
+        <span class="n">edge_grad</span> <span class="o">=</span> <span class="n">diff</span><span class="o">.</span><span class="n">mul_</span><span class="p">(</span><span class="n">D</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">clamp_</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="n">grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">segment_reduce</span><span class="p">(</span><span class="n">edge_grad</span><span class="p">,</span> <span class="s2">"sum"</span><span class="p">,</span> <span class="n">lengths</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">attractive_counts_</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_is_transforming"</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="c1"># Fit-time UMAP moves both endpoints of every positive edge. The</span>
+            <span class="c1"># symmetric graph already contains the reverse edge, so scaling</span>
+            <span class="c1"># the source reduction recovers that contribution without a target</span>
+            <span class="c1"># scatter or a sequential update loop.</span>
+            <span class="n">grad</span><span class="o">.</span><span class="n">mul_</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">grad</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_repulsive_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">D</span> <span class="o">=</span> <span class="n">pairwise_distances_indexed</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span>
-            <span class="n">query_indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span><span class="p">,</span>
-            <span class="n">key_indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">neg_indices_</span><span class="p">,</span>
-            <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
+        <span class="c1"># Preserve the direct internal-call contract used by small mathematical</span>
+        <span class="c1"># fixtures that provide rectangular negative indices without affinity setup.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"negative_adjusted_exclusion_"</span><span class="p">):</span>
+            <span class="n">D</span> <span class="o">=</span> <span class="n">pairwise_distances_indexed</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">,</span>
+                <span class="n">query_indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span><span class="p">,</span>
+                <span class="n">key_indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">neg_indices_</span><span class="p">,</span>
+                <span class="n">metric</span><span class="o">=</span><span class="s2">"sqeuclidean"</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">D_</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_a</span> <span class="o">*</span> <span class="n">D</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_b</span>
+            <span class="n">D</span><span class="o">.</span><span class="n">add_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eps</span><span class="p">)</span>
+            <span class="n">D</span><span class="o">.</span><span class="n">mul_</span><span class="p">(</span><span class="n">D_</span><span class="p">)</span>
+            <span class="n">D</span><span class="o">.</span><span class="n">reciprocal_</span><span class="p">()</span><span class="o">.</span><span class="n">mul_</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="p">)</span>
+
+            <span class="n">active_positive</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">segment_reduce</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mask_affinity_in_</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span>
+                <span class="s2">"sum"</span><span class="p">,</span>
+                <span class="n">lengths</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">attractive_counts_</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">negative_counts</span> <span class="o">=</span> <span class="p">(</span><span class="n">active_positive</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative_sample_rate</span><span class="p">)</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
+            <span class="n">columns</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="n">D</span><span class="o">.</span><span class="n">masked_fill_</span><span class="p">(</span><span class="n">columns</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">&gt;=</span> <span class="n">negative_counts</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">diff</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">neg_indices_</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">diff</span><span class="o">.</span><span class="n">mul_</span><span class="p">(</span><span class="n">D</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">clamp_</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Keep the baseline cadence: each currently active positive edge asks</span>
+        <span class="c1"># for exactly ``negative_sample_rate`` draws from its source row.</span>
+        <span class="n">active_positive</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">segment_reduce</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mask_affinity_in_</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span>
+            <span class="s2">"sum"</span><span class="p">,</span>
+            <span class="n">lengths</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">attractive_counts_</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="n">negative_counts</span> <span class="o">=</span> <span class="p">(</span><span class="n">active_positive</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative_sample_rate</span><span class="p">)</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
+        <span class="n">negative_sources</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">repeat_interleave</span><span class="p">(</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">negative_counts</span><span class="o">.</span><span class="n">numel</span><span class="p">(),</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">device</span><span class="p">),</span>
+            <span class="n">negative_counts</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">negative_targets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_draw_flat_with_exclusions</span><span class="p">(</span>
+            <span class="n">negative_sources</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">negative_adjusted_exclusion_</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">negative_available_counts_</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_negative_sampling_offset_</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">"negative_sources_"</span><span class="p">,</span> <span class="n">negative_sources</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"neg_indices_"</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">neg_indices_</span> <span class="o">=</span> <span class="n">negative_targets</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">"neg_indices_"</span><span class="p">,</span> <span class="n">negative_targets</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">negative_sources</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">new_zeros</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">negative_counts</span><span class="o">.</span><span class="n">numel</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="p">)</span>
+
+        <span class="n">diff</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span><span class="p">[</span><span class="n">negative_sources</span><span class="p">]]</span>
+            <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">[</span><span class="n">negative_targets</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">D</span> <span class="o">=</span> <span class="n">diff</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">D_</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_a</span> <span class="o">*</span> <span class="n">D</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_b</span>
         <span class="n">D</span><span class="o">.</span><span class="n">add_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eps</span><span class="p">)</span>
         <span class="n">D</span><span class="o">.</span><span class="n">mul_</span><span class="p">(</span><span class="n">D_</span><span class="p">)</span>
         <span class="n">D</span><span class="o">.</span><span class="n">reciprocal_</span><span class="p">()</span><span class="o">.</span><span class="n">mul_</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="p">)</span>
 
-        <span class="c1"># Filter to keep &#39;negative_sample_rate&#39; negative edges per positive edge.</span>
-        <span class="n">neg_counts</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mask_affinity_in_</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative_sample_rate</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span>
-            <span class="n">torch</span><span class="o">.</span><span class="n">long</span>
-        <span class="p">)</span>
-        <span class="n">col_idx</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_negatives</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-        <span class="n">filtered_edges</span> <span class="o">=</span> <span class="n">col_idx</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">ge</span><span class="p">(</span><span class="n">neg_counts</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">])</span>
-        <span class="n">D</span><span class="o">.</span><span class="n">masked_fill_</span><span class="p">(</span><span class="n">filtered_edges</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># Apply UMAP's clipping to each negative edge before summing the</span>
+        <span class="c1"># repulsive contributions for a query point.</span>
+        <span class="n">edge_grad</span> <span class="o">=</span> <span class="n">diff</span><span class="o">.</span><span class="n">mul_</span><span class="p">(</span><span class="n">D</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">clamp_</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">segment_reduce</span><span class="p">(</span><span class="n">edge_grad</span><span class="p">,</span> <span class="s2">"sum"</span><span class="p">,</span> <span class="n">lengths</span><span class="o">=</span><span class="n">negative_counts</span><span class="p">)</span>
 
-        <span class="n">diff</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_indices_</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-            <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">neg_indices_</span><span class="p">]</span>
+    <span class="c1"># --- Non-parametric transform ---</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_bipartite_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">indices</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Build the UMAP bipartite affinity used during transform.</span>
+
+<span class="sd">        This is the UMAP-specific hook for the shared non-parametric transform</span>
+<span class="sd">        pipeline in :class:`NegativeSamplingNeighborEmbedding`. It mirrors the</span>
+<span class="sd">        unsymmetrized UMAP neighbor graph construction on the bipartite graph</span>
+<span class="sd">        from new points to the fitted training set.</span>
+<span class="sd">        """</span>
+        <span class="c1"># umap-learn reduces local_connectivity by one for transform.  With</span>
+        <span class="c1"># UMAP's default local_connectivity=1 this means rho=0, unlike fit-time</span>
+        <span class="c1"># graph construction.  Taking the nearest distance here would force one</span>
+        <span class="c1"># affinity to 1 for every query and make every point look like an exact</span>
+        <span class="c1"># match during initialization.</span>
+        <span class="n">rho</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="n">log_n_neighbors</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
         <span class="p">)</span>
-        <span class="n">grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ijk,ij-&gt;ik&quot;</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span>
-        <span class="n">grad</span><span class="o">.</span><span class="n">clamp_</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>  <span class="c1"># clamp as in umap repo</span>
-        <span class="k">return</span> <span class="n">grad</span></div>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">marginal_gap</span><span class="p">(</span><span class="n">eps</span><span class="p">):</span>
+            <span class="c1"># Match smooth_knn_dist's bipartite transform convention: the</span>
+            <span class="c1"># closest edge participates in the graph but is omitted from the</span>
+            <span class="c1"># bandwidth calibration sum.</span>
+            <span class="n">log_marg</span> <span class="o">=</span> <span class="n">_log_P_UMAP</span><span class="p">(</span><span class="n">C</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:],</span> <span class="n">rho</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span><span class="o">.</span><span class="n">logsumexp</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">log_marg</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">log_n_neighbors</span>
+
+        <span class="n">eps</span> <span class="o">=</span> <span class="n">binary_search</span><span class="p">(</span>
+            <span class="n">f</span><span class="o">=</span><span class="n">marginal_gap</span><span class="p">,</span>
+            <span class="n">n</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">max_iter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter_affinity</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_log_P_UMAP</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_make_transform_epochs_per_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">affinity</span><span class="p">,</span> <span class="n">n_epochs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Convert transform edge strengths into UMAP's epoch schedule.</span>
+
+<span class="sd">        This keeps the transform path aligned with UMAP's usual edge-sampling</span>
+<span class="sd">        logic while still using TorchDR's vectorized, mask-based optimizer.</span>
+<span class="sd">        """</span>
+        <span class="n">epochs_per_sample</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">affinity</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"inf"</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">n_epochs</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">epochs_per_sample</span>
+
+        <span class="n">max_affinity</span> <span class="o">=</span> <span class="n">affinity</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">max_affinity</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">epochs_per_sample</span>
+
+        <span class="n">threshold</span> <span class="o">=</span> <span class="n">max_affinity</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">n_epochs</span><span class="p">)</span>
+        <span class="n">active_edges</span> <span class="o">=</span> <span class="n">affinity</span> <span class="o">&gt;=</span> <span class="n">threshold</span>
+        <span class="n">eps</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">affinity</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">tiny</span>
+        <span class="n">epochs_per_sample</span><span class="p">[</span><span class="n">active_edges</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_affinity</span> <span class="o">/</span> <span class="n">affinity</span><span class="p">[</span><span class="n">active_edges</span><span class="p">]</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span>
+            <span class="nb">min</span><span class="o">=</span><span class="n">eps</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">epochs_per_sample</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_initialize_transform_embedding</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">affinity</span><span class="p">,</span> <span class="n">nn_indices</span><span class="p">,</span> <span class="n">train_emb</span><span class="p">,</span> <span class="n">neighbor_distances</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Match UMAP's transform initialization when exact matches exist.</span>
+
+<span class="sd">        The default weighted-average initialization from the base class is kept,</span>
+<span class="sd">        except that rows containing a zero-distance neighbor are snapped to the</span>
+<span class="sd">        corresponding training embedding exactly, as in ``umap-learn``.</span>
+<span class="sd">        """</span>
+        <span class="n">embedding_new</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_initialize_transform_embedding</span><span class="p">(</span>
+            <span class="n">affinity</span><span class="p">,</span>
+            <span class="n">nn_indices</span><span class="p">,</span>
+            <span class="n">train_emb</span><span class="p">,</span>
+            <span class="n">neighbor_distances</span><span class="o">=</span><span class="n">neighbor_distances</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">neighbor_distances</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">embedding_new</span>
+
+        <span class="n">exact_match</span> <span class="o">=</span> <span class="n">neighbor_distances</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">exact_match</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="n">exact_rows</span> <span class="o">=</span> <span class="n">exact_match</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">exact_cols</span> <span class="o">=</span> <span class="n">exact_match</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">embedding_new</span><span class="p">[</span><span class="n">exact_rows</span><span class="p">]</span> <span class="o">=</span> <span class="n">train_emb</span><span class="p">[</span>
+                <span class="n">nn_indices</span><span class="p">[</span><span class="n">exact_rows</span><span class="p">,</span> <span class="n">exact_cols</span><span class="p">[</span><span class="n">exact_rows</span><span class="p">]]</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
+            <span class="p">]</span>
+        <span class="k">return</span> <span class="n">embedding_new</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_enter_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">embedding_new</span><span class="p">,</span> <span class="n">train_emb</span><span class="p">,</span> <span class="n">affinity</span><span class="p">,</span> <span class="n">nn_indices</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Set up UMAP edge-sampling state for transform.</span>
+
+<span class="sd">        Reuses the same edge-sampling schedule as fit, but on the bipartite</span>
+<span class="sd">        graph between new points and the frozen training embedding. The actual</span>
+<span class="sd">        optimization still runs through TorchDR's vectorized mask-based update</span>
+<span class="sd">        path rather than ``umap-learn``'s edge-wise CPU loop.</span>
+<span class="sd">        """</span>
+        <span class="n">epochs_per_sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_transform_epochs_per_sample</span><span class="p">(</span>
+            <span class="n">affinity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_max_iter_transform</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">saved</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_enter_transform</span><span class="p">(</span><span class="n">embedding_new</span><span class="p">,</span> <span class="n">train_emb</span><span class="p">,</span> <span class="n">affinity</span><span class="p">,</span> <span class="n">nn_indices</span><span class="p">)</span>
+
+        <span class="n">saved</span><span class="p">[</span><span class="s2">"_is_transforming"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_is_transforming"</span><span class="p">),</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_is_transforming"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_transforming</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># Save UMAP-specific state</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="s2">"epochs_per_sample"</span><span class="p">,</span>
+            <span class="s2">"epoch_of_next_sample"</span><span class="p">,</span>
+            <span class="s2">"mask_affinity_in_"</span><span class="p">,</span>
+            <span class="s2">"attractive_source_"</span><span class="p">,</span>
+            <span class="s2">"attractive_target_"</span><span class="p">,</span>
+            <span class="s2">"attractive_counts_"</span><span class="p">,</span>
+            <span class="s2">"negative_adjusted_exclusion_"</span><span class="p">,</span>
+            <span class="s2">"negative_available_counts_"</span><span class="p">,</span>
+            <span class="s2">"negative_sources_"</span><span class="p">,</span>
+            <span class="s2">"_negative_sampling_offset_"</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="n">saved</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">),</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+
+        <span class="c1"># Flatten the (offset) transform neighbor grid to the same flat edge</span>
+        <span class="c1"># layout used at fit time so the shared closed-form gradient runs over</span>
+        <span class="c1"># real edges. super()._enter_transform set NN_indices_ to the global</span>
+        <span class="c1"># transform neighbor indices.</span>
+        <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">edge_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flatten_padded_edges</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NN_indices_</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attractive_source_</span> <span class="o">=</span> <span class="n">source</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attractive_target_</span> <span class="o">=</span> <span class="n">target</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attractive_counts_</span> <span class="o">=</span> <span class="n">edge_mask</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">epochs_per_sample</span> <span class="o">=</span> <span class="n">epochs_per_sample</span><span class="p">[</span><span class="n">edge_mask</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">epoch_of_next_sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs_per_sample</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+
+        <span class="n">n_new</span> <span class="o">=</span> <span class="n">embedding_new</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">n_train</span> <span class="o">=</span> <span class="n">train_emb</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude_neighbors_from_negative_sampling</span><span class="p">:</span>
+            <span class="n">adjusted_exclusion</span><span class="p">,</span> <span class="n">n_available</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_exclusion_sampling</span><span class="p">(</span>
+                <span class="n">nn_indices</span><span class="p">,</span> <span class="n">n_train</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">adjusted_exclusion</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">n_new</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">embedding_new</span><span class="o">.</span><span class="n">device</span>
+            <span class="p">)</span>
+            <span class="n">n_available</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">full</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">n_new</span><span class="p">,),</span> <span class="n">n_train</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">embedding_new</span><span class="o">.</span><span class="n">device</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">negative_adjusted_exclusion_</span> <span class="o">=</span> <span class="n">adjusted_exclusion</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">negative_available_counts_</span> <span class="o">=</span> <span class="n">n_available</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_negative_sampling_offset_</span> <span class="o">=</span> <span class="n">n_new</span>
+
+        <span class="k">return</span> <span class="n">saved</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sample_transform_neg_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_new</span><span class="p">,</span> <span class="n">n_train</span><span class="p">,</span> <span class="n">nn_indices</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Return a placeholder; flat targets are drawn after edge scheduling."""</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_is_transforming"</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device_</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_sample_transform_neg_indices</span><span class="p">(</span><span class="n">n_new</span><span class="p">,</span> <span class="n">n_train</span><span class="p">,</span> <span class="n">nn_indices</span><span class="p">)</span></div>
 
 </pre></div>
 
@@ -771,8 +1105,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -806,7 +1140,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0.
 </p></div>
       
     </div>

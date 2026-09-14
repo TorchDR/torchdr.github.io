@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.distance.base &#8212; TorchDR 0.4 documentation</title>
+    <title>torchdr.distance.base &#8212; TorchDR 0.5 documentation</title>
   
   
   
@@ -26,25 +26,27 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../../_static/documentation_options.js?v=7f00635f"></script>
+    <script src="../../../_static/documentation_options.js?v=db78e746"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchdr/distance/base';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <script src="../../../_static/pypi-icon.js?v=3850e9a1"></script>
     <link rel="icon" href="../../../_static/logo.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -52,20 +54,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -91,7 +99,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -117,8 +125,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.4 documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.4 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5 documentation - Home"/>
   
   
 </a></div>
@@ -212,11 +220,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -229,8 +244,7 @@
           
           
           
-          <a href="https://github.com/TorchDR/TorchDR" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/TorchDR/TorchDR" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -241,8 +255,7 @@
           
           
           
-          <a href="https://pypi.org/project/torchdr/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-custom fa-pypi fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">PyPI</span></a>
+          <a href="https://pypi.org/project/torchdr/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-custom fa-lg" data-prefix="fa-custom" data-icon="pypi" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
         </li>
 </ul></div>
       
@@ -350,11 +363,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -367,8 +387,7 @@
           
           
           
-          <a href="https://github.com/TorchDR/TorchDR" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/TorchDR/TorchDR" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -379,8 +398,7 @@
           
           
           
-          <a href="https://pypi.org/project/torchdr/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-custom fa-pypi fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">PyPI</span></a>
+          <a href="https://pypi.org/project/torchdr/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-custom fa-lg" data-prefix="fa-custom" data-icon="pypi" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
         </li>
 </ul></div>
         
@@ -444,7 +462,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for torchdr.distance.base</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Distances based on various backends.&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""Distances based on various backends."""</span>
 
 <span class="c1"># Author: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
 <span class="c1">#</span>
@@ -460,9 +478,12 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.faiss</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">pairwise_distances_faiss</span><span class="p">,</span>
     <span class="n">pairwise_distances_faiss_from_dataloader</span><span class="p">,</span>
+    <span class="n">sharded_pairwise_distances_faiss</span><span class="p">,</span>
     <span class="n">FaissConfig</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.faiss_plan</span><span class="w"> </span><span class="kn">import</span> <span class="n">FaissPlanConfig</span><span class="p">,</span> <span class="n">_resolve_faiss_plan</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">DistributedContext</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distributed.input_contract</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_distributed_input</span>
 
 
 <div class="viewcode-block" id="pairwise_distances">
@@ -470,15 +491,15 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">pairwise_distances</span><span class="p">(</span>
     <span class="n">X</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">DataLoader</span><span class="p">],</span>
     <span class="n">Y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
-    <span class="n">backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"euclidean"</span><span class="p">,</span>
+    <span class="n">backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">,</span> <span class="n">FaissPlanConfig</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">exclude_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">k</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+    <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"auto"</span><span class="p">,</span>
     <span class="n">distributed_ctx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DistributedContext</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute pairwise distances between two tensors or from a DataLoader.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Compute pairwise distances between two tensors or from a DataLoader.</span>
 
 <span class="sd">    This is the main distance computation function that supports multiple backends</span>
 <span class="sd">    for efficient computation. It can compute:</span>
@@ -488,7 +509,7 @@
 
 <span class="sd">    When X is a DataLoader, data is streamed to build the FAISS index incrementally,</span>
 <span class="sd">    avoiding the need to hold the full dataset in CPU RAM. This is particularly</span>
-<span class="sd">    useful for large datasets that don&#39;t fit in memory.</span>
+<span class="sd">    useful for large datasets that don't fit in memory.</span>
 
 <span class="sd">    For computing distances between specific indexed subsets, use</span>
 <span class="sd">    pairwise_distances_indexed instead.</span>
@@ -504,13 +525,15 @@
 <span class="sd">    Y : torch.Tensor of shape (m_samples, n_features), optional</span>
 <span class="sd">        Input data. If None, Y is set to X. Not supported with DataLoader input.</span>
 <span class="sd">    metric : str, optional</span>
-<span class="sd">        Metric to use. Default is &quot;euclidean&quot;.</span>
-<span class="sd">    backend : {&#39;keops&#39;, &#39;faiss&#39;, None} or FaissConfig, optional</span>
+<span class="sd">        Metric to use. Default is "euclidean".</span>
+<span class="sd">    backend : {'keops', 'faiss', None}, FaissConfig, or FaissPlanConfig, optional</span>
 <span class="sd">        Backend to use for computation. Can be:</span>
-<span class="sd">        - &quot;keops&quot;: Use KeOps for memory-efficient symbolic computations</span>
-<span class="sd">        - &quot;faiss&quot;: Use FAISS for fast k-NN computations with default settings</span>
+<span class="sd">        - "keops": Use KeOps for memory-efficient symbolic computations</span>
+<span class="sd">        - "faiss": Use FAISS for fast k-NN computations with default settings</span>
 <span class="sd">        - None: Use standard PyTorch operations</span>
-<span class="sd">        - FaissConfig object: Use FAISS with custom configuration</span>
+<span class="sd">        - FaissConfig object: Use FAISS with a low-level expert configuration</span>
+<span class="sd">        - FaissPlanConfig object: Use FAISS from a high-level execution intent</span>
+<span class="sd">          (e.g. ``mode="exact"``), resolved into a low-level configuration here</span>
 <span class="sd">        If None, use standard torch operations. DataLoader input forces FAISS backend.</span>
 <span class="sd">    exclude_diag : bool, optional</span>
 <span class="sd">        Whether to exclude the diagonal from the distance matrix.</span>
@@ -521,24 +544,31 @@
 <span class="sd">    return_indices : bool, optional</span>
 <span class="sd">        Whether to return the indices of the k-nearest neighbors.</span>
 <span class="sd">        Default is False.</span>
-<span class="sd">    device : str, default=&quot;auto&quot;</span>
-<span class="sd">        Device to use for computation. If &quot;auto&quot;, keeps data on its current device.</span>
+<span class="sd">    device : str, default="auto"</span>
+<span class="sd">        Device to use for computation. If "auto", keeps data on its current device.</span>
 <span class="sd">        Otherwise, temporarily moves data to specified device for computation.</span>
 <span class="sd">        Output remains on the computation device.</span>
 <span class="sd">    distributed_ctx : DistributedContext, optional</span>
 <span class="sd">        Distributed computation context for multi-GPU scenarios. When provided:</span>
 <span class="sd">        - Each GPU computes distances for its assigned chunk of rows</span>
 <span class="sd">        - Requires k to be specified (sparse computation)</span>
-<span class="sd">        - Forces backend to &quot;faiss&quot; if not already set</span>
+<span class="sd">        - Forces backend to "faiss" if not already set</span>
 <span class="sd">        - Results remain distributed (no gathering across GPUs)</span>
+<span class="sd">        - Every rank must pass the same full dataset; detectable metadata</span>
+<span class="sd">          mismatches and sharded DataLoaders are rejected before indexing</span>
 <span class="sd">        Default is None (single GPU computation).</span>
-
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    C : torch.Tensor</span>
 <span class="sd">        Pairwise distances.</span>
 <span class="sd">    indices : torch.Tensor, optional</span>
 <span class="sd">        Indices of the k-nearest neighbors. Only returned if k is not None.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        In distributed mode, if rank metadata differs or a DataLoader iterates</span>
+<span class="sd">        only a shard of its dataset.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -547,7 +577,7 @@
 
 <span class="sd">    &gt;&gt;&gt; # Basic usage with tensor</span>
 <span class="sd">    &gt;&gt;&gt; X = torch.randn(1000, 128)</span>
-<span class="sd">    &gt;&gt;&gt; distances = pairwise_distances(X, k=10, backend=&#39;faiss&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; distances = pairwise_distances(X, k=10, backend='faiss')</span>
 
 <span class="sd">    &gt;&gt;&gt; # Using DataLoader for memory-efficient computation</span>
 <span class="sd">    &gt;&gt;&gt; from torch.utils.data import DataLoader, TensorDataset</span>
@@ -557,36 +587,62 @@
 <span class="sd">    ...     dataloader, k=15, return_indices=True</span>
 <span class="sd">    ... )</span>
 
-<span class="sd">    &gt;&gt;&gt; # DataLoader with multi-GPU (after torch.distributed.init_process_group)</span>
+<span class="sd">    &gt;&gt;&gt; # DataLoader with multi-GPU (launched with torchrun or the torchdr CLI)</span>
 <span class="sd">    &gt;&gt;&gt; from torchdr.distributed import DistributedContext</span>
 <span class="sd">    &gt;&gt;&gt; dist_ctx = DistributedContext()</span>
 <span class="sd">    &gt;&gt;&gt; distances, indices = pairwise_distances(</span>
 <span class="sd">    ...     dataloader, k=15, distributed_ctx=dist_ctx, return_indices=True</span>
 <span class="sd">    ... )</span>
 <span class="sd">    &gt;&gt;&gt; # Each GPU gets its chunk of results</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
+    <span class="c1"># A FaissPlanConfig passed directly (rather than resolved by an affinity) is</span>
+    <span class="c1"># resolved here into its low-level FaissConfig so the dispatch below can treat</span>
+    <span class="c1"># it like any other FAISS backend. Estimators resolve the plan at the affinity</span>
+    <span class="c1"># layer and expose it as ``faiss_plan_``; direct callers just get the result.</span>
+    <span class="n">distribution</span> <span class="o">=</span> <span class="s2">"replicate"</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">FaissPlanConfig</span><span class="p">):</span>
+        <span class="n">_n</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">DataLoader</span><span class="p">)</span> <span class="k">else</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">_dim</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">DataLoader</span><span class="p">)</span> <span class="k">else</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">_plan</span><span class="p">,</span> <span class="n">backend</span> <span class="o">=</span> <span class="n">_resolve_faiss_plan</span><span class="p">(</span>
+            <span class="n">backend</span><span class="p">,</span>
+            <span class="n">n_samples</span><span class="o">=</span><span class="n">_n</span><span class="p">,</span>
+            <span class="n">n_features</span><span class="o">=</span><span class="n">_dim</span><span class="p">,</span>
+            <span class="n">distributed_ctx</span><span class="o">=</span><span class="n">distributed_ctx</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">distribution</span> <span class="o">=</span> <span class="n">_plan</span><span class="o">.</span><span class="n">distribution</span>
+
+    <span class="c1"># The current distributed contract requires the same full input on every</span>
+    <span class="c1"># rank, whether the FAISS index is replicated or sharded.</span>
+    <span class="k">if</span> <span class="n">distributed_ctx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">distributed_ctx</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">:</span>
+        <span class="n">validate_distributed_input</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">distributed_ctx</span><span class="p">)</span>
+
     <span class="c1"># Handle DataLoader input</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">DataLoader</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">distribution</span> <span class="o">==</span> <span class="s2">"shard"</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">"[TorchDR] distribution='shard' does not yet support DataLoader "</span>
+                <span class="s2">"input. Use distribution='replicate'."</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="n">k</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;[TorchDR] DataLoader input requires k-NN computation. &quot;</span>
-                <span class="s2">&quot;k cannot be None when X is a DataLoader.&quot;</span>
+                <span class="s2">"[TorchDR] DataLoader input requires k-NN computation. "</span>
+                <span class="s2">"k cannot be None when X is a DataLoader."</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">Y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;[TorchDR] DataLoader input does not support cross-distance. &quot;</span>
-                <span class="s2">&quot;Y must be None when X is a DataLoader.&quot;</span>
+                <span class="s2">"[TorchDR] DataLoader input does not support cross-distance. "</span>
+                <span class="s2">"Y must be None when X is a DataLoader."</span>
             <span class="p">)</span>
 
         <span class="c1"># Parse backend for DataLoader - only FAISS is supported</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">):</span>
             <span class="n">config</span> <span class="o">=</span> <span class="n">backend</span>
-        <span class="k">elif</span> <span class="n">backend</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;faiss&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">backend</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">backend</span> <span class="o">==</span> <span class="s2">"faiss"</span><span class="p">:</span>
             <span class="n">config</span> <span class="o">=</span> <span class="n">FaissConfig</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;[TorchDR] DataLoader input only supports FAISS backend, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;got backend=&#39;</span><span class="si">{</span><span class="n">backend</span><span class="si">}</span><span class="s2">&#39;. Use backend=&#39;faiss&#39; or backend=None.&quot;</span>
+                <span class="sa">f</span><span class="s2">"[TorchDR] DataLoader input only supports FAISS backend, "</span>
+                <span class="sa">f</span><span class="s2">"got backend='</span><span class="si">{</span><span class="n">backend</span><span class="si">}</span><span class="s2">'. Use backend='faiss' or backend=None."</span>
             <span class="p">)</span>
 
         <span class="n">C</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">pairwise_distances_faiss_from_dataloader</span><span class="p">(</span>
@@ -608,50 +664,57 @@
     <span class="k">if</span> <span class="n">distributed_ctx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">distributed_ctx</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">k</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;[TorchDR] Distributed mode requires sparse computation with k-NN. &quot;</span>
-                <span class="s2">&quot;k cannot be None when distributed_ctx is provided.&quot;</span>
+                <span class="s2">"[TorchDR] Distributed mode requires sparse computation with k-NN. "</span>
+                <span class="s2">"k cannot be None when distributed_ctx is provided."</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">Y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;[TorchDR] Distributed mode does not support cross-distance computation. &quot;</span>
-                <span class="s2">&quot;Y must be None when distributed_ctx is provided.&quot;</span>
+                <span class="s2">"[TorchDR] Distributed mode does not support cross-distance computation. "</span>
+                <span class="s2">"Y must be None when distributed_ctx is provided."</span>
             <span class="p">)</span>
 
         <span class="c1"># Force FAISS backend for distributed mode</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">):</span>
-            <span class="n">config</span> <span class="o">=</span> <span class="n">distributed_ctx</span><span class="o">.</span><span class="n">get_faiss_config</span><span class="p">(</span><span class="n">backend</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;faiss&quot;</span><span class="p">:</span>
-            <span class="n">config</span> <span class="o">=</span> <span class="n">distributed_ctx</span><span class="o">.</span><span class="n">get_faiss_config</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="n">backend</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">config</span> <span class="o">=</span> <span class="n">distributed_ctx</span><span class="o">.</span><span class="n">get_faiss_config</span><span class="p">()</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="n">backend</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># User specified keops or other backend - override with FAISS</span>
-            <span class="n">config</span> <span class="o">=</span> <span class="n">distributed_ctx</span><span class="o">.</span><span class="n">get_faiss_config</span><span class="p">()</span>
+            <span class="c1"># Distributed search always uses FAISS. The lower-level function</span>
+            <span class="c1"># maps this base configuration to the rank-local GPU.</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="n">FaissConfig</span><span class="p">()</span>
 
-        <span class="c1"># Compute chunk bounds for this rank</span>
-        <span class="n">n_samples</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">chunk_start</span><span class="p">,</span> <span class="n">chunk_end</span> <span class="o">=</span> <span class="n">distributed_ctx</span><span class="o">.</span><span class="n">compute_chunk_bounds</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span>
-        <span class="n">X_chunk</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">chunk_start</span><span class="p">:</span><span class="n">chunk_end</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">distribution</span> <span class="o">==</span> <span class="s2">"shard"</span><span class="p">:</span>
+            <span class="c1"># Each rank indexes only its chunk; the exact global neighbors are</span>
+            <span class="c1"># merged across ranks. Every rank still passes the full dataset and</span>
+            <span class="c1"># answers its own chunk, so the result matches the replicated path.</span>
+            <span class="n">C</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">sharded_pairwise_distances_faiss</span><span class="p">(</span>
+                <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>
+                <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
+                <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
+                <span class="n">exclude_diag</span><span class="o">=</span><span class="n">exclude_diag</span><span class="p">,</span>
+                <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+                <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+                <span class="n">distributed_ctx</span><span class="o">=</span><span class="n">distributed_ctx</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Compute chunk bounds for this rank</span>
+            <span class="n">n_samples</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">chunk_start</span><span class="p">,</span> <span class="n">chunk_end</span> <span class="o">=</span> <span class="n">distributed_ctx</span><span class="o">.</span><span class="n">compute_chunk_bounds</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span>
+            <span class="n">X_chunk</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">chunk_start</span><span class="p">:</span><span class="n">chunk_end</span><span class="p">]</span>
 
-        <span class="c1"># Compute k-NN: queries=chunk, database=full dataset</span>
-        <span class="c1"># Note: exclude_diag doesn&#39;t work since X_chunk is a subset of X</span>
-        <span class="c1"># We handle self-neighbors by searching for k+1 if needed</span>
-        <span class="n">k_search</span> <span class="o">=</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">exclude_diag</span> <span class="k">else</span> <span class="n">k</span>
-
-        <span class="n">C</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">pairwise_distances_faiss</span><span class="p">(</span>
-            <span class="n">X</span><span class="o">=</span><span class="n">X_chunk</span><span class="p">,</span>
-            <span class="n">Y</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>  <span class="c1"># Full dataset as database</span>
-            <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
-            <span class="n">k</span><span class="o">=</span><span class="n">k_search</span><span class="p">,</span>
-            <span class="n">exclude_diag</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># Can&#39;t use since X_chunk != X</span>
-            <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
-            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="c1"># Remove self-distances if needed</span>
-        <span class="k">if</span> <span class="n">exclude_diag</span><span class="p">:</span>
-            <span class="n">C</span> <span class="o">=</span> <span class="n">C</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span>
-            <span class="n">indices</span> <span class="o">=</span> <span class="n">indices</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span>
+            <span class="c1"># Compute k-NN: queries=chunk, database=full dataset. Query row j of</span>
+            <span class="c1"># the chunk is global row chunk_start + j, which is what lets</span>
+            <span class="c1"># exclude_diag identify the self-neighbor even though X_chunk is a</span>
+            <span class="c1"># subset of X.</span>
+            <span class="n">C</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">pairwise_distances_faiss</span><span class="p">(</span>
+                <span class="n">X</span><span class="o">=</span><span class="n">X_chunk</span><span class="p">,</span>
+                <span class="n">Y</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>  <span class="c1"># Full dataset as database</span>
+                <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
+                <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
+                <span class="n">exclude_diag</span><span class="o">=</span><span class="n">exclude_diag</span><span class="p">,</span>
+                <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+                <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+                <span class="n">query_ids</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">chunk_start</span><span class="p">,</span> <span class="n">chunk_end</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">),</span>
+                <span class="n">distributed_ctx</span><span class="o">=</span><span class="n">distributed_ctx</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">return_indices</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">C</span><span class="p">,</span> <span class="n">indices</span>
@@ -660,17 +723,17 @@
 
     <span class="c1"># Parse backend parameter for non-distributed case</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">):</span>
-        <span class="n">backend_str</span> <span class="o">=</span> <span class="s2">&quot;faiss&quot;</span>
+        <span class="n">backend_str</span> <span class="o">=</span> <span class="s2">"faiss"</span>
         <span class="n">config</span> <span class="o">=</span> <span class="n">backend</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">backend_str</span> <span class="o">=</span> <span class="n">backend</span>
         <span class="n">config</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">if</span> <span class="n">backend_str</span> <span class="o">==</span> <span class="s2">&quot;keops&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">backend_str</span> <span class="o">==</span> <span class="s2">"keops"</span><span class="p">:</span>
         <span class="n">C</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">pairwise_distances_keops</span><span class="p">(</span>
             <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="o">=</span><span class="n">Y</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span> <span class="n">exclude_diag</span><span class="o">=</span><span class="n">exclude_diag</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
         <span class="p">)</span>
-    <span class="k">elif</span> <span class="n">backend_str</span> <span class="o">==</span> <span class="s2">&quot;faiss&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">backend_str</span> <span class="o">==</span> <span class="s2">"faiss"</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">k</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">C</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">pairwise_distances_faiss</span><span class="p">(</span>
                 <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>
@@ -703,15 +766,15 @@
     <span class="n">query_indices</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">key_indices</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">Y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
+    <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"sqeuclidean"</span><span class="p">,</span>
     <span class="n">backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+    <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"auto"</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute pairwise distances between indexed subsets of tensors.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Compute pairwise distances between indexed subsets of tensors.</span>
 
 <span class="sd">    This function efficiently computes distances between specific subsets of points</span>
 <span class="sd">    selected by indices, rather than computing the full pairwise distance matrix.</span>
-<span class="sd">    It&#39;s particularly useful for:</span>
+<span class="sd">    It's particularly useful for:</span>
 <span class="sd">    - Computing distances to specific neighbors only (e.g., k-NN indices)</span>
 <span class="sd">    - Multi-GPU scenarios where each GPU processes a chunk of data</span>
 <span class="sd">    - Negative sampling where distances are needed only to sampled points</span>
@@ -736,12 +799,12 @@
 <span class="sd">    Y : torch.Tensor of shape (m_samples, n_features), optional</span>
 <span class="sd">        Input data containing key points. If None, uses X for keys.</span>
 <span class="sd">    metric : str, optional</span>
-<span class="sd">        Metric to use for distance computation. Default is &quot;sqeuclidean&quot;.</span>
-<span class="sd">        Supported: &quot;sqeuclidean&quot;, &quot;euclidean&quot;, &quot;manhattan&quot;, &quot;angular&quot;, &quot;sqhyperbolic&quot;</span>
-<span class="sd">    backend : {&#39;keops&#39;, &#39;faiss&#39;, None} or FaissConfig, optional</span>
+<span class="sd">        Metric to use for distance computation. Default is "sqeuclidean".</span>
+<span class="sd">        Supported: "sqeuclidean", "euclidean", "manhattan", "angular", "sqhyperbolic"</span>
+<span class="sd">    backend : {'keops', 'faiss', None} or FaissConfig, optional</span>
 <span class="sd">        Backend to use for computation. Currently only None (torch) is supported</span>
 <span class="sd">        for indexed operations.</span>
-<span class="sd">    device : str, default=&quot;auto&quot;</span>
+<span class="sd">    device : str, default="auto"</span>
 <span class="sd">        Device to use for computation.</span>
 
 <span class="sd">    Returns</span>
@@ -761,19 +824,19 @@
 
 <span class="sd">    &gt;&gt;&gt; # Compute distances from chunk to negatives (multi-GPU use case)</span>
 <span class="sd">    &gt;&gt;&gt; X = torch.randn(1000, 128)</span>
-<span class="sd">    &gt;&gt;&gt; chunk_indices = torch.arange(100, 200)  # GPU&#39;s chunk</span>
+<span class="sd">    &gt;&gt;&gt; chunk_indices = torch.arange(100, 200)  # GPU's chunk</span>
 <span class="sd">    &gt;&gt;&gt; neg_indices = torch.randint(0, 1000, (100, 5))  # Negative samples</span>
 <span class="sd">    &gt;&gt;&gt; distances = pairwise_distances_indexed(</span>
 <span class="sd">    ...     X, query_indices=chunk_indices, key_indices=neg_indices</span>
 <span class="sd">    ... )</span>
 <span class="sd">    &gt;&gt;&gt; distances.shape</span>
 <span class="sd">    torch.Size([100, 5])</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">Y</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">Y</span> <span class="o">=</span> <span class="n">X</span>
 
     <span class="c1"># Handle device placement</span>
-    <span class="k">if</span> <span class="n">device</span> <span class="o">!=</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">device</span> <span class="o">!=</span> <span class="s2">"auto"</span><span class="p">:</span>
         <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
         <span class="n">Y</span> <span class="o">=</span> <span class="n">Y</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">query_indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -787,7 +850,7 @@
     <span class="k">elif</span> <span class="n">query_indices</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">X_queries</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">query_indices</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>  <span class="c1"># 2D indices</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;2D query indices not yet supported&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"2D query indices not yet supported"</span><span class="p">)</span>
 
     <span class="c1"># Extract key points</span>
     <span class="k">if</span> <span class="n">key_indices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -799,26 +862,26 @@
         <span class="k">if</span> <span class="n">query_indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">query_indices</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="c1"># Ensure key_indices has same first dimension as number of queries</span>
             <span class="k">assert</span> <span class="n">key_indices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">query_indices</span><span class="p">),</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;key_indices first dim </span><span class="si">{</span><span class="n">key_indices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> must match number of queries </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">query_indices</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"key_indices first dim </span><span class="si">{</span><span class="n">key_indices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> must match number of queries </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">query_indices</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
         <span class="n">Y_keys</span> <span class="o">=</span> <span class="n">Y</span><span class="p">[</span>
             <span class="n">key_indices</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
         <span class="p">]</span>  <span class="c1"># Shape: (n_queries, n_keys_per_query, n_features)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;key_indices must be 1D or 2D, got </span><span class="si">{</span><span class="n">key_indices</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"key_indices must be 1D or 2D, got </span><span class="si">{</span><span class="n">key_indices</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span><span class="si">}</span><span class="s2">D"</span><span class="p">)</span>
 
     <span class="c1"># Compute distances based on shapes</span>
     <span class="k">if</span> <span class="n">Y_keys</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="c1"># Standard case: queries x keys</span>
-        <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">"sqeuclidean"</span><span class="p">:</span>
             <span class="n">distances</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cdist</span><span class="p">(</span><span class="n">X_queries</span><span class="p">,</span> <span class="n">Y_keys</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
-        <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">"euclidean"</span><span class="p">:</span>
             <span class="n">distances</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cdist</span><span class="p">(</span><span class="n">X_queries</span><span class="p">,</span> <span class="n">Y_keys</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;manhattan&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">"manhattan"</span><span class="p">:</span>
             <span class="n">distances</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cdist</span><span class="p">(</span><span class="n">X_queries</span><span class="p">,</span> <span class="n">Y_keys</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;angular&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">"angular"</span><span class="p">:</span>
             <span class="n">distances</span> <span class="o">=</span> <span class="o">-</span><span class="n">torch</span><span class="o">.</span><span class="n">mm</span><span class="p">(</span><span class="n">X_queries</span><span class="p">,</span> <span class="n">Y_keys</span><span class="o">.</span><span class="n">t</span><span class="p">())</span>
-        <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;sqhyperbolic&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">"sqhyperbolic"</span><span class="p">:</span>
             <span class="n">X_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">X_queries</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">Y_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">Y_keys</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">t</span><span class="p">()</span>
             <span class="n">distances</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cdist</span><span class="p">(</span><span class="n">X_queries</span><span class="p">,</span> <span class="n">Y_keys</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
@@ -826,19 +889,19 @@
             <span class="n">distances</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arccosh</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">distances</span> <span class="o">/</span> <span class="n">denom</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-8</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Metric &#39;</span><span class="si">{</span><span class="n">metric</span><span class="si">}</span><span class="s2">&#39; not implemented for indexed distances&quot;</span>
+                <span class="sa">f</span><span class="s2">"Metric '</span><span class="si">{</span><span class="n">metric</span><span class="si">}</span><span class="s2">' not implemented for indexed distances"</span>
             <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>  <span class="c1"># Y_keys.dim() == 3</span>
         <span class="c1"># Each query has specific keys</span>
-        <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">"sqeuclidean"</span><span class="p">:</span>
             <span class="n">distances</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">X_queries</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">Y_keys</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">"euclidean"</span><span class="p">:</span>
             <span class="n">distances</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">X_queries</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">Y_keys</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sqrt</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;manhattan&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">"manhattan"</span><span class="p">:</span>
             <span class="n">distances</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">X_queries</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">Y_keys</span><span class="p">),</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;angular&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">"angular"</span><span class="p">:</span>
             <span class="n">distances</span> <span class="o">=</span> <span class="o">-</span><span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">X_queries</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">Y_keys</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;sqhyperbolic&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">"sqhyperbolic"</span><span class="p">:</span>
             <span class="n">Y_keys_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">Y_keys</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
             <span class="n">X_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">X_queries</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">distances</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span>
@@ -848,7 +911,7 @@
             <span class="n">distances</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arccosh</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">distances</span> <span class="o">/</span> <span class="n">denom</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-8</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Metric &#39;</span><span class="si">{</span><span class="n">metric</span><span class="si">}</span><span class="s2">&#39; not implemented for indexed distances&quot;</span>
+                <span class="sa">f</span><span class="s2">"Metric '</span><span class="si">{</span><span class="n">metric</span><span class="si">}</span><span class="s2">' not implemented for indexed distances"</span>
             <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">distances</span>
@@ -881,8 +944,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -916,7 +979,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0.
 </p></div>
       
     </div>

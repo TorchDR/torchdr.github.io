@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchdr.affinity.base &#8212; TorchDR 0.4 documentation</title>
+    <title>torchdr.affinity.base &#8212; TorchDR 0.5 documentation</title>
   
   
   
@@ -26,25 +26,27 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../../_static/documentation_options.js?v=7f00635f"></script>
+    <script src="../../../_static/documentation_options.js?v=db78e746"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchdr/affinity/base';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <script src="../../../_static/pypi-icon.js?v=3850e9a1"></script>
     <link rel="icon" href="../../../_static/logo.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -52,20 +54,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -91,7 +99,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -117,8 +125,8 @@
       
     
     
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.4 documentation - Home"/>
-    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.4 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5 documentation - Home"/>
+    <img src="../../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5 documentation - Home"/>
   
   
 </a></div>
@@ -212,11 +220,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -229,8 +244,7 @@
           
           
           
-          <a href="https://github.com/TorchDR/TorchDR" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/TorchDR/TorchDR" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -241,8 +255,7 @@
           
           
           
-          <a href="https://pypi.org/project/torchdr/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-custom fa-pypi fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">PyPI</span></a>
+          <a href="https://pypi.org/project/torchdr/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-custom fa-lg" data-prefix="fa-custom" data-icon="pypi" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
         </li>
 </ul></div>
       
@@ -350,11 +363,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -367,8 +387,7 @@
           
           
           
-          <a href="https://github.com/TorchDR/TorchDR" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/TorchDR/TorchDR" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -379,8 +398,7 @@
           
           
           
-          <a href="https://pypi.org/project/torchdr/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-custom fa-pypi fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">PyPI</span></a>
+          <a href="https://pypi.org/project/torchdr/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-custom fa-lg" data-prefix="fa-custom" data-icon="pypi" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
         </li>
 </ul></div>
         
@@ -444,7 +462,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for torchdr.affinity.base</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Base classes for affinity matrices.&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""Base classes for affinity matrices."""</span>
 
 <span class="c1"># Author: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
 <span class="c1">#</span>
@@ -468,7 +486,11 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distance</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">pairwise_distances</span><span class="p">,</span>
     <span class="n">FaissConfig</span><span class="p">,</span>
+    <span class="n">FaissPlanConfig</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distance.faiss</span><span class="w"> </span><span class="kn">import</span> <span class="n">input_sharded_pairwise_distances_faiss</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distance.faiss_plan</span><span class="w"> </span><span class="kn">import</span> <span class="n">_resolve_faiss_plan</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distributed.input_contract</span><span class="w"> </span><span class="kn">import</span> <span class="n">gather_shard_layout</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch.distributed</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dist</span>
 
@@ -476,42 +498,37 @@
 <div class="viewcode-block" id="Affinity">
 <a class="viewcode-back" href="../../../stubs/torchdr.Affinity.html#torchdr.Affinity">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Affinity</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Base class for affinity matrices.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Base class for affinity matrices.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    metric : str, optional</span>
-<span class="sd">        The distance metric to use for computing pairwise distances.</span>
+<span class="sd">        Distance metric for pairwise distances. Default is "sqeuclidean".</span>
 <span class="sd">    zero_diag : bool, optional</span>
-<span class="sd">        Whether to set the diagonal of the affinity matrix to zero.</span>
+<span class="sd">        Whether to set the diagonal to zero. Default is True.</span>
 <span class="sd">    device : str, optional</span>
-<span class="sd">        The device to use for computation. Typically &quot;cuda&quot; for GPU or &quot;cpu&quot; for CPU.</span>
-<span class="sd">        If &quot;auto&quot;, uses the device of the input data. If None is passed, it is</span>
-<span class="sd">        converted to &quot;auto&quot;. Default is &quot;auto&quot;.</span>
-<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None} or FaissConfig, optional</span>
-<span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
-<span class="sd">        Can be:</span>
-<span class="sd">        - &quot;keops&quot;: Use KeOps for memory-efficient symbolic computations</span>
-<span class="sd">        - &quot;faiss&quot;: Use FAISS for fast k-NN computations with default settings</span>
-<span class="sd">        - None: Use standard PyTorch operations</span>
-<span class="sd">        - FaissConfig object: Use FAISS with custom configuration</span>
-<span class="sd">          (e.g., FaissConfig(temp_memory=2.0))</span>
-<span class="sd">        Default is None.</span>
+<span class="sd">        Device for computation. ``"auto"`` uses the input data's device.</span>
+<span class="sd">        Default is "auto".</span>
+<span class="sd">    backend : {"keops", "faiss", None}, FaissConfig, or FaissPlanConfig, optional</span>
+<span class="sd">        Backend for handling sparsity and memory efficiency. A ``FaissPlanConfig``</span>
+<span class="sd">        expresses high-level intent (e.g. ``mode="exact"``); the resolved plan is</span>
+<span class="sd">        stored as ``faiss_plan_`` after computation.</span>
+<span class="sd">        Default is None (standard PyTorch).</span>
 <span class="sd">    verbose : bool, optional</span>
 <span class="sd">        Verbosity. Default is False.</span>
 <span class="sd">    compile : bool, optional</span>
-<span class="sd">        Whether to compile the affinity matrix computation. Default is False.</span>
+<span class="sd">        Whether to compile the affinity computation. Default is False.</span>
 <span class="sd">    _pre_processed : bool, optional</span>
-<span class="sd">        If True, assumes inputs are already torch tensors on the correct device</span>
-<span class="sd">        and skips the `to_torch` conversion. Default is False.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        If True, skips ``to_torch`` conversion (inputs are already tensors</span>
+<span class="sd">        on the correct device). Default is False.</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
+        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"sqeuclidean"</span><span class="p">,</span>
         <span class="n">zero_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-        <span class="n">backend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"auto"</span><span class="p">,</span>
+        <span class="n">backend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">,</span> <span class="n">FaissPlanConfig</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -522,7 +539,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metric</span> <span class="o">=</span> <span class="n">metric</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">zero_diag</span> <span class="o">=</span> <span class="n">bool_arg</span><span class="p">(</span><span class="n">zero_diag</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span> <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;auto&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span> <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">"auto"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">=</span> <span class="n">backend</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">bool_arg</span><span class="p">(</span><span class="n">verbose</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span> <span class="o">=</span> <span class="n">random_state</span>
@@ -531,42 +548,10 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">set_logger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_compute_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the target device for computations.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        X : torch.Tensor or DataLoader</span>
-<span class="sd">            Input data to infer device from if self.device is &quot;auto&quot;.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        torch.device</span>
-<span class="sd">            The device to use for computations.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">!=</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span>
-
-        <span class="c1"># For DataLoader, extract device from first batch</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">DataLoader</span><span class="p">):</span>
-            <span class="c1"># Check for cached metadata first</span>
-            <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distance.faiss</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_dataloader_metadata</span>
-
-            <span class="n">metadata</span> <span class="o">=</span> <span class="n">get_dataloader_metadata</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s2">&quot;device&quot;</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;device&quot;</span><span class="p">]</span>
-            <span class="c1"># Get device from first batch (fallback, should rarely happen)</span>
-            <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
-                    <span class="n">batch</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="k">return</span> <span class="n">batch</span><span class="o">.</span><span class="n">device</span>
-            <span class="c1"># If DataLoader is empty, default to CPU</span>
-            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">X</span><span class="o">.</span><span class="n">device</span>
+    <span class="c1"># --- Public API ---</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the affinity matrix from the input data.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Compute the affinity matrix from the input data.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -577,117 +562,134 @@
 <span class="sd">        -------</span>
 <span class="sd">        affinity_matrix : torch.Tensor or pykeops.torch.LazyTensor</span>
 <span class="sd">            The computed affinity matrix.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pre_processed</span><span class="p">:</span>
             <span class="n">X</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_affinity</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
+    <span class="c1"># --- Core computation (must be implemented by subclasses) ---</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the affinity matrix from the input data.</span>
-
-<span class="sd">        This method must be overridden by subclasses.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        X : torch.Tensor of shape (n_samples, n_features)</span>
-<span class="sd">            Input data.</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        NotImplementedError</span>
-<span class="sd">            If the `_compute_affinity` method is not implemented by the subclass,</span>
-<span class="sd">            a NotImplementedError is raised.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Compute the affinity matrix. Must be overridden by subclasses."""</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;[TorchDR] ERROR : `_compute_affinity` method is not implemented.&quot;</span>
+            <span class="s2">"[TorchDR] ERROR : `_compute_affinity` method is not implemented."</span>
         <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_n_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get number of samples from input (tensor or DataLoader).</span>
+    <span class="c1"># --- Distance computation ---</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        X : torch.Tensor or DataLoader</span>
-<span class="sd">            Input data.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_plan_backend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Resolve and expose diagnostics for a ``FaissPlanConfig`` backend.</span>
 
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        n_samples : int</span>
-<span class="sd">            Number of samples.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">DataLoader</span><span class="p">):</span>
-            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="sd">        If ``self.backend`` is a :class:`~torchdr.distance.FaissPlanConfig`,</span>
+<span class="sd">        resolve it into an immutable execution plan (stored as</span>
+<span class="sd">        ``self.faiss_plan_`` and printed on rank 0 when ``verbose=True``) and</span>
+<span class="sd">        return the original high-level configuration for ``pairwise_distances``</span>
+<span class="sd">        to dispatch. Otherwise return ``self.backend`` unchanged.</span>
+<span class="sd">        """</span>
+        <span class="n">backend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">FaissPlanConfig</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">backend</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get dtype from input (tensor or DataLoader).</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        X : torch.Tensor or DataLoader</span>
-<span class="sd">            Input data.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        dtype : torch.dtype</span>
-<span class="sd">            Data type.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">DataLoader</span><span class="p">):</span>
-            <span class="c1"># Check for cached metadata first</span>
-            <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distance.faiss</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_dataloader_metadata</span>
-
-            <span class="n">metadata</span> <span class="o">=</span> <span class="n">get_dataloader_metadata</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;dtype&quot;</span><span class="p">]</span>
-            <span class="c1"># Get dtype from first batch (fallback, should rarely happen)</span>
-            <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
-                    <span class="n">batch</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="k">return</span> <span class="n">batch</span><span class="o">.</span><span class="n">dtype</span>
-            <span class="c1"># If DataLoader is empty, raise error</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;[TorchDR] DataLoader is empty, cannot determine dtype.&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">X</span><span class="o">.</span><span class="n">dtype</span>
+        <span class="n">plan</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_resolve_faiss_plan</span><span class="p">(</span>
+            <span class="n">backend</span><span class="p">,</span>
+            <span class="n">n_samples</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_n_samples</span><span class="p">(</span><span class="n">X</span><span class="p">),</span>
+            <span class="n">n_features</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_n_features</span><span class="p">(</span><span class="n">X</span><span class="p">),</span>
+            <span class="n">distributed_ctx</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"dist_ctx"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">faiss_plan_</span> <span class="o">=</span> <span class="n">plan</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"rank"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Resolved FAISS execution plan: </span><span class="si">{</span><span class="n">plan</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">backend</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_distance_matrix</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the pairwise distance matrix from the input data.</span>
-
-<span class="sd">        It uses the specified metric and optionally leveraging KeOps</span>
-<span class="sd">        for memory efficient computation.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Compute the pairwise distance matrix.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        X : torch.Tensor of shape (n_samples, n_features)</span>
 <span class="sd">            Input data.</span>
 <span class="sd">        k : int, optional</span>
-<span class="sd">            Number of nearest neighbors to compute the distance matrix. Default is None.</span>
+<span class="sd">            Number of nearest neighbors. Default is None (full matrix).</span>
 <span class="sd">        return_indices : bool, optional</span>
-<span class="sd">            Whether to return the indices of the k-nearest neighbors.</span>
-<span class="sd">            Default is False.</span>
+<span class="sd">            Whether to return k-NN indices. Default is False.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        C : torch.Tensor or pykeops.torch.LazyTensor</span>
-<span class="sd">            The pairwise distance matrix. The type of the returned matrix depends on the</span>
-<span class="sd">            value of the `backend` attribute. If `backend` is `keops`, a KeOps LazyTensor</span>
-<span class="sd">            is returned. Otherwise, a torch.Tensor is returned.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">            The pairwise distance matrix.</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">pairwise_distances</span><span class="p">(</span>
             <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>
             <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span>
-            <span class="n">backend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span>
-            <span class="n">exclude_diag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">zero_diag</span><span class="p">,</span>  <span class="c1"># infinite distance means zero affinity</span>
+            <span class="n">backend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolve_plan_backend</span><span class="p">(</span><span class="n">X</span><span class="p">),</span>
+            <span class="n">exclude_diag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">zero_diag</span><span class="p">,</span>
             <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
             <span class="n">return_indices</span><span class="o">=</span><span class="n">return_indices</span><span class="p">,</span>
-            <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>  <span class="c1"># Pass computation device (can be &quot;auto&quot;)</span>
+            <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
         <span class="p">)</span>
+
+    <span class="c1"># --- Utilities ---</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_compute_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Return the target device (from ``self.device`` or inferred from X)."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">!=</span> <span class="s2">"auto"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">DataLoader</span><span class="p">):</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distance.faiss</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_dataloader_metadata</span>
+
+            <span class="n">metadata</span> <span class="o">=</span> <span class="n">get_dataloader_metadata</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s2">"device"</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">metadata</span><span class="p">[</span><span class="s2">"device"</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                    <span class="n">batch</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">return</span> <span class="n">batch</span><span class="o">.</span><span class="n">device</span>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">"cpu"</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">X</span><span class="o">.</span><span class="n">device</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_n_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Return the number of samples in the input."""</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">DataLoader</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_n_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Return the feature dimension, or None if unknown (e.g. DataLoader)."""</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">DataLoader</span><span class="p">):</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distance.faiss</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_dataloader_metadata</span>
+
+            <span class="n">metadata</span> <span class="o">=</span> <span class="n">get_dataloader_metadata</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s2">"n_features"</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">metadata</span><span class="p">[</span><span class="s2">"n_features"</span><span class="p">]</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Return the dtype of the input."""</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">DataLoader</span><span class="p">):</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.distance.faiss</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_dataloader_metadata</span>
+
+            <span class="n">metadata</span> <span class="o">=</span> <span class="n">get_dataloader_metadata</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">metadata</span><span class="p">[</span><span class="s2">"dtype"</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                    <span class="n">batch</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">return</span> <span class="n">batch</span><span class="o">.</span><span class="n">dtype</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"[TorchDR] DataLoader is empty, cannot determine dtype."</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">X</span><span class="o">.</span><span class="n">dtype</span>
+
+    <span class="c1"># --- Memory management ---</span>
 
 <div class="viewcode-block" id="Affinity.clear_memory">
 <a class="viewcode-back" href="../../../stubs/torchdr.Affinity.html#torchdr.Affinity.clear_memory">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">clear_memory</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear non-persistent buffers to free memory.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_non_persistent_buffers_set&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Clear non-persistent buffers to free memory."""</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_non_persistent_buffers_set"</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_non_persistent_buffers_set</span><span class="p">):</span>
                 <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
                     <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
@@ -701,38 +703,36 @@
 <div class="viewcode-block" id="LogAffinity">
 <a class="viewcode-back" href="../../../stubs/torchdr.LogAffinity.html#torchdr.LogAffinity">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">LogAffinity</span><span class="p">(</span><span class="n">Affinity</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Base class for affinity matrices in log domain.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Base class for affinity matrices in log domain.</span>
+
+<span class="sd">    Subclasses must implement :meth:`_compute_log_affinity`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    metric : str, optional</span>
-<span class="sd">        The distance metric to use for computing pairwise distances.</span>
+<span class="sd">        Distance metric for pairwise distances. Default is "sqeuclidean".</span>
 <span class="sd">    device : str, optional</span>
-<span class="sd">        The device to use for computation. Typically &quot;cuda&quot; for GPU or &quot;cpu&quot; for CPU.</span>
-<span class="sd">        If &quot;auto&quot;, uses the device of the input data.</span>
-<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None} or FaissConfig, optional</span>
-<span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
-<span class="sd">        Can be:</span>
-<span class="sd">        - &quot;keops&quot;: Use KeOps for memory-efficient symbolic computations</span>
-<span class="sd">        - &quot;faiss&quot;: Use FAISS for fast k-NN computations with default settings</span>
-<span class="sd">        - None: Use standard PyTorch operations</span>
-<span class="sd">        - FaissConfig object: Use FAISS with custom configuration</span>
-<span class="sd">        Default is None.</span>
+<span class="sd">        Device for computation. ``"auto"`` uses the input data's device.</span>
+<span class="sd">        Default is "auto".</span>
+<span class="sd">    backend : {"keops", "faiss", None}, FaissConfig, or FaissPlanConfig, optional</span>
+<span class="sd">        Backend for handling sparsity and memory efficiency. A ``FaissPlanConfig``</span>
+<span class="sd">        expresses high-level intent (e.g. ``mode="exact"``); the resolved plan is</span>
+<span class="sd">        stored as ``faiss_plan_`` after computation.</span>
+<span class="sd">        Default is None (standard PyTorch).</span>
 <span class="sd">    verbose : bool, optional</span>
-<span class="sd">        If True, prints additional information during computation. Default is False.</span>
+<span class="sd">        Verbosity. Default is False.</span>
 <span class="sd">    compile : bool, optional</span>
-<span class="sd">        Whether to compile the affinity matrix computation. Default is False.</span>
+<span class="sd">        Whether to compile the affinity computation. Default is False.</span>
 <span class="sd">    _pre_processed : bool, optional</span>
-<span class="sd">        If True, assumes inputs are already torch tensors on the correct device</span>
-<span class="sd">        and skips the `to_torch` conversion. Default is False.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        If True, skips ``to_torch`` conversion. Default is False.</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
+        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"sqeuclidean"</span><span class="p">,</span>
         <span class="n">zero_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-        <span class="n">backend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"auto"</span><span class="p">,</span>
+        <span class="n">backend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">,</span> <span class="n">FaissPlanConfig</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -750,24 +750,25 @@
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">X</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the affinity matrix from the input data.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Compute the affinity matrix (or its log) from the input data.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        X : torch.Tensor or np.ndarray of shape (n_samples, n_features)</span>
 <span class="sd">            Input data.</span>
 <span class="sd">        log : bool, optional</span>
-<span class="sd">            If True, returns the log of the affinity matrix. Else, returns</span>
-<span class="sd">            the affinity matrix by exponentiating the log affinity matrix.</span>
+<span class="sd">            If True, returns the log affinity. Otherwise, exponentiates it.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        affinity_matrix : torch.Tensor or pykeops.torch.LazyTensor</span>
-<span class="sd">            The computed log affinity matrix if `log` is True, otherwise the</span>
-<span class="sd">            exponentiated log affinity matrix.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">            The affinity matrix (or log affinity if ``log=True``).</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pre_processed</span><span class="p">:</span>
             <span class="n">X</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="n">log_affinity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_log_affinity</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -777,97 +778,73 @@
             <span class="k">return</span> <span class="n">log_affinity</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_log_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the log affinity matrix from the input data.</span>
-
-<span class="sd">        This method must be overridden by subclasses.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        X : torch.Tensor of shape (n_samples, n_features)</span>
-<span class="sd">            Input data.</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        NotImplementedError</span>
-<span class="sd">            If the `_compute_log_affinity` method is not implemented by the subclass,</span>
-<span class="sd">            a NotImplementedError is raised.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Compute the log affinity matrix. Must be overridden by subclasses."""</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;[TorchDR] ERROR : `_compute_log_affinity` method is not implemented.&quot;</span>
+            <span class="s2">"[TorchDR] ERROR : `_compute_log_affinity` method is not implemented."</span>
         <span class="p">)</span></div>
 
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">SparseAffinity</span><span class="p">(</span><span class="n">Affinity</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Base class for sparse affinity matrices.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Base class for sparse affinity matrices.</span>
 
-<span class="sd">    If sparsity is enabled, returns the affinity matrix in a rectangular format</span>
-<span class="sd">    with the corresponding indices.</span>
-<span class="sd">    Otherwise, returns the full affinity matrix and None.</span>
+<span class="sd">    Returns the affinity matrix in rectangular format (n_samples, k) with</span>
+<span class="sd">    the corresponding k-NN indices when sparsity is enabled. Otherwise,</span>
+<span class="sd">    returns the full (n_samples, n_samples) matrix.</span>
 
-<span class="sd">    **Distributed Training:** This class supports multi-GPU distributed training</span>
-<span class="sd">    via the ``distributed`` parameter. When enabled (using ``torchrun``), each GPU</span>
-<span class="sd">    processes one chunk of the dataset in parallel:</span>
+<span class="sd">    **Distributed training:** When ``distributed='auto'`` (default) and</span>
+<span class="sd">    launched with ``torchrun``, each GPU processes a chunk of the dataset</span>
+<span class="sd">    in parallel. Requires ``sparsity=True`` and ``backend="faiss"``.</span>
 
-<span class="sd">    - The full dataset (n_samples) is partitioned across GPUs by rows</span>
-<span class="sd">    - Each GPU computes k-NN affinities for its assigned chunk against the full dataset</span>
-<span class="sd">    - GPU i handles rows [chunk_start_i, chunk_end_i) where chunks are balanced across GPUs</span>
-<span class="sd">    - All GPUs maintain the full dataset in memory but only compute distances for their chunk</span>
-<span class="sd">    - Distributed mode requires ``sparsity=True`` and ``backend=&quot;faiss&quot;``</span>
-
-<span class="sd">    Example: With 2 GPUs and 10,000 samples, GPU 0 computes rows 0-5,000 and</span>
-<span class="sd">    GPU 1 computes rows 5,000-10,000. Launch with:</span>
-<span class="sd">    ``torchrun --nproc_per_node=2 script.py``</span>
+<span class="sd">    Subclasses must implement :meth:`_compute_sparse_affinity`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    metric : str, optional</span>
-<span class="sd">        The distance metric to use for computing pairwise distances.</span>
-<span class="sd">        Default is &quot;sqeuclidean&quot;.</span>
+<span class="sd">        Distance metric for pairwise distances. Default is "sqeuclidean".</span>
 <span class="sd">    zero_diag : bool, optional</span>
-<span class="sd">        Whether to set the diagonal of the affinity matrix to zero. Default is True.</span>
+<span class="sd">        Whether to set the diagonal to zero. Default is True.</span>
 <span class="sd">    device : str, optional</span>
-<span class="sd">        The device to use for computation. Typically &quot;cuda&quot; for GPU or &quot;cpu&quot; for CPU.</span>
-<span class="sd">        If &quot;auto&quot;, uses the device of the input data. Default is &quot;auto&quot;.</span>
-<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None} or FaissConfig, optional</span>
-<span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
-<span class="sd">        Can be:</span>
-<span class="sd">        - &quot;keops&quot;: Use KeOps for memory-efficient symbolic computations</span>
-<span class="sd">        - &quot;faiss&quot;: Use FAISS for fast k-NN computations with default settings</span>
-<span class="sd">        - None: Use standard PyTorch operations</span>
-<span class="sd">        - FaissConfig object: Use FAISS with custom configuration</span>
-<span class="sd">        Default is None.</span>
+<span class="sd">        Device for computation. ``"auto"`` uses the input data's device.</span>
+<span class="sd">        Default is "auto".</span>
+<span class="sd">    backend : {"keops", "faiss", None}, FaissConfig, or FaissPlanConfig, optional</span>
+<span class="sd">        Backend for handling sparsity and memory efficiency. A ``FaissPlanConfig``</span>
+<span class="sd">        expresses high-level intent (e.g. ``mode="exact"``); the resolved plan is</span>
+<span class="sd">        stored as ``faiss_plan_`` after computation.</span>
+<span class="sd">        Default is None (standard PyTorch).</span>
 <span class="sd">    verbose : bool, optional</span>
-<span class="sd">        If True, prints additional information during computation. Default is False.</span>
+<span class="sd">        Verbosity. Default is False.</span>
 <span class="sd">    compile : bool, optional</span>
-<span class="sd">        Whether to compile the affinity matrix computation. Default is False.</span>
-<span class="sd">    sparsity : bool or &#39;auto&#39;, optional</span>
-<span class="sd">        Whether to compute the affinity matrix in a sparse format. Default is &quot;auto&quot;.</span>
-<span class="sd">    distributed : bool or &#39;auto&#39;, optional</span>
-<span class="sd">        Whether to use distributed computation across multiple GPUs.</span>
-<span class="sd">        - &quot;auto&quot;: Automatically detect if running with torchrun (default)</span>
-<span class="sd">        - True: Force distributed mode (requires torchrun)</span>
-<span class="sd">        - False: Disable distributed mode</span>
-<span class="sd">        Default is &quot;auto&quot;.</span>
+<span class="sd">        Whether to compile the affinity computation. Default is False.</span>
+<span class="sd">    sparsity : bool or 'auto', optional</span>
+<span class="sd">        Whether to use sparse (rectangular) format. Default is True.</span>
+<span class="sd">    distributed : bool or 'auto', optional</span>
+<span class="sd">        Whether to use distributed multi-GPU computation.</span>
+<span class="sd">        ``"auto"`` detects ``torchrun`` automatically. Default is "auto".</span>
+<span class="sd">    input_layout : {'replicated', 'sharded'}, optional</span>
+<span class="sd">        Whether every rank receives the full input or one contiguous row shard.</span>
+<span class="sd">        Sharded input currently requires exact Flat FAISS search. Default is</span>
+<span class="sd">        "replicated".</span>
 <span class="sd">    _pre_processed : bool, optional</span>
-<span class="sd">        If True, assumes inputs are already torch tensors on the correct device</span>
-<span class="sd">        and skips the `to_torch` conversion. Default is False.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        If True, skips ``to_torch`` conversion. Default is False.</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sqeuclidean&quot;</span><span class="p">,</span>
+        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"sqeuclidean"</span><span class="p">,</span>
         <span class="n">zero_diag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-        <span class="n">backend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"auto"</span><span class="p">,</span>
+        <span class="n">backend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">,</span> <span class="n">FaissPlanConfig</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="nb">compile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">sparsity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">distributed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">distributed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"auto"</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">input_layout</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"replicated"</span><span class="p">,</span>
         <span class="n">_pre_processed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="k">if</span> <span class="n">distributed</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
+        <span class="c1"># --- Distributed setup ---</span>
+        <span class="k">if</span> <span class="n">distributed</span> <span class="o">==</span> <span class="s2">"auto"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">distributed</span><span class="p">)</span>
@@ -875,35 +852,34 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">dist</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">():</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                    <span class="s2">&quot;[TorchDR] distributed=True requires launching with torchrun. &quot;</span>
-                    <span class="s2">&quot;Example: torchrun --nproc_per_node=4 your_script.py&quot;</span>
+                    <span class="s2">"[TorchDR] distributed=True requires launching with "</span>
+                    <span class="s2">"torchrun. "</span>
+                    <span class="s2">"Example: torchrun --nproc_per_node=4 your_script.py"</span>
                 <span class="p">)</span>
 
-            <span class="c1"># Create distributed context</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dist_ctx</span> <span class="o">=</span> <span class="n">DistributedContext</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist_ctx</span><span class="o">.</span><span class="n">rank</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">world_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist_ctx</span><span class="o">.</span><span class="n">world_size</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">is_multi_gpu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">world_size</span> <span class="o">&gt;</span> <span class="mi">1</span>
 
-            <span class="c1"># Bind to local CUDA device</span>
-            <span class="k">if</span> <span class="n">device</span> <span class="o">==</span> <span class="s2">&quot;cpu&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">device</span> <span class="o">==</span> <span class="s2">"cpu"</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;[TorchDR] Distributed mode requires GPU (device cannot be &#39;cpu&#39;)&quot;</span>
+                    <span class="s2">"[TorchDR] Distributed mode requires GPU (device cannot be 'cpu')"</span>
                 <span class="p">)</span>
-            <span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cuda:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dist_ctx</span><span class="o">.</span><span class="n">local_rank</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="sa">f</span><span class="s2">"cuda:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dist_ctx</span><span class="o">.</span><span class="n">local_rank</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-            <span class="c1"># Force sparsity for distributed mode</span>
+            <span class="c1"># Force sparsity and FAISS backend for distributed mode</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_sparsity_forced</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">sparsity</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sparsity_forced</span><span class="p">:</span>
                 <span class="n">sparsity</span> <span class="o">=</span> <span class="kc">True</span>
 
-            <span class="c1"># Track if backend was forced (for warning messages)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_backend_forced</span> <span class="o">=</span> <span class="n">backend</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;faiss&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
-                <span class="n">backend</span><span class="p">,</span> <span class="n">FaissConfig</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_backend_forced</span> <span class="o">=</span> <span class="n">backend</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="s2">"faiss"</span><span class="p">,</span>
+                <span class="kc">None</span><span class="p">,</span>
+            <span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="p">(</span><span class="n">FaissConfig</span><span class="p">,</span> <span class="n">FaissPlanConfig</span><span class="p">))</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_backend_forced</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_original_backend</span> <span class="o">=</span> <span class="n">backend</span>
-                <span class="n">backend</span> <span class="o">=</span> <span class="s2">&quot;faiss&quot;</span>  <span class="c1"># Override backend for distributed mode</span>
+                <span class="n">backend</span> <span class="o">=</span> <span class="s2">"faiss"</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dist_ctx</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">=</span> <span class="mi">0</span>
@@ -925,53 +901,194 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sparsity_forced</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="s2">&quot;Distributed mode requires sparsity=True, enabling sparsity.&quot;</span>
+                    <span class="s2">"Distributed mode requires sparsity=True, enabling sparsity."</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_backend_forced</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Distributed mode requires FAISS backend, switching from &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_original_backend</span><span class="si">}</span><span class="s2">&#39; to &#39;faiss&#39;.&quot;</span>
+                    <span class="sa">f</span><span class="s2">"Distributed mode requires FAISS backend, "</span>
+                    <span class="sa">f</span><span class="s2">"switching from '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_original_backend</span><span class="si">}</span><span class="s2">' to 'faiss'."</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_multi_gpu</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Distributed mode enabled: rank </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">world_size</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">"Distributed mode enabled: rank </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">world_size</span><span class="si">}</span><span class="s2">"</span>
                 <span class="p">)</span>
+
+        <span class="c1"># --- Input layout (replicated vs row-sharded) ---</span>
+        <span class="k">if</span> <span class="n">input_layout</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"replicated"</span><span class="p">,</span> <span class="s2">"sharded"</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"[TorchDR] input_layout must be 'replicated' or 'sharded', got "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">input_layout</span><span class="si">!r}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_layout</span> <span class="o">=</span> <span class="n">input_layout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shard_layout_</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">input_layout</span> <span class="o">==</span> <span class="s2">"sharded"</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_sharded_faiss_config</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_sharded_faiss_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Validate and cache the exact Flat config used by the sharded path.</span>
+
+<span class="sd">        Input-sharding builds a per-rank Flat index over each shard and merges</span>
+<span class="sd">        the global top-k, so it composes only with exact ``Flat`` search. A high-</span>
+<span class="sd">        level plan must explicitly request the matching sharded index topology;</span>
+<span class="sd">        replicated intent is contradictory when the caller supplies row shards.</span>
+<span class="sd">        """</span>
+        <span class="n">backend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">FaissPlanConfig</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">backend</span><span class="o">.</span><span class="n">distribution</span> <span class="o">!=</span> <span class="s2">"shard"</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">"[TorchDR] input_layout='sharded' requires "</span>
+                    <span class="s2">"FaissPlanConfig(distribution='shard'); replicated index "</span>
+                    <span class="s2">"intent contradicts a row-sharded input."</span>
+                <span class="p">)</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">resolved</span> <span class="o">=</span> <span class="n">_resolve_faiss_plan</span><span class="p">(</span><span class="n">backend</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">FaissConfig</span><span class="p">):</span>
+            <span class="n">resolved</span> <span class="o">=</span> <span class="n">backend</span>
+        <span class="k">elif</span> <span class="n">backend</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"faiss"</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">resolved</span> <span class="o">=</span> <span class="n">FaissConfig</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">"[TorchDR] input_layout='sharded' requires backend='faiss' or "</span>
+                <span class="s2">"an exact-Flat FaissConfig; an explicitly selected non-FAISS "</span>
+                <span class="sa">f</span><span class="s2">"backend cannot be used, got </span><span class="si">{</span><span class="n">backend</span><span class="si">!r}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">resolved</span><span class="o">.</span><span class="n">index_type</span> <span class="o">!=</span> <span class="s2">"Flat"</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">"[TorchDR] input_layout='sharded' currently supports only "</span>
+                <span class="sa">f</span><span class="s2">"exact 'Flat' search, got index_type=</span><span class="si">{</span><span class="n">resolved</span><span class="o">.</span><span class="n">index_type</span><span class="si">!r}</span><span class="s2">."</span>
+                <span class="s2">" An approximate sharded index is a separate follow-up."</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sharded_faiss_config_</span> <span class="o">=</span> <span class="n">resolved</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_shard_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Gather (once per call) and cache this input's rank-major shard layout.</span>
+
+<span class="sd">        Also records the chunk bounds that the distributed sparse symmetrization</span>
+<span class="sd">        and the estimator's gradient partition read back, derived here from the</span>
+<span class="sd">        true shard offsets rather than the balanced split. Single-process (no</span>
+<span class="sd">        group or one rank) short-circuits to the whole input as a single shard.</span>
+<span class="sd">        """</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shard_layout_</span>
+        <span class="k">if</span> <span class="n">layout</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">layout</span> <span class="o">=</span> <span class="n">gather_shard_layout</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist_ctx</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_shard_layout_</span> <span class="o">=</span> <span class="n">layout</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_global_</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">global_count</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chunk_start_</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">local_offset</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chunk_end_</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">local_offset</span> <span class="o">+</span> <span class="n">layout</span><span class="o">.</span><span class="n">local_count</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chunk_size_</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">local_count</span>
+        <span class="k">return</span> <span class="n">layout</span>
+
+    <span class="c1"># --- Sparsity property ---</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">sparsity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the sparsity of the affinity matrix.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return the sparsity setting."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sparsity</span>
 
     <span class="nd">@sparsity</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">sparsity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the sparsity of the affinity matrix.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set the sparsity setting."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sparsity</span> <span class="o">=</span> <span class="n">bool_arg</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="c1"># --- Public API ---</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">X</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Compute the sparse affinity matrix from the input data.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : torch.Tensor or np.ndarray of shape (n_samples, n_features)</span>
+<span class="sd">            Input data.</span>
+<span class="sd">        return_indices : bool, optional</span>
+<span class="sd">            Whether to return k-NN indices. Default is True.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        affinity_matrix : torch.Tensor</span>
+<span class="sd">            The computed affinity matrix.</span>
+<span class="sd">        indices : torch.Tensor or None</span>
+<span class="sd">            k-NN indices if ``return_indices=True`` and sparsity is enabled.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pre_processed</span><span class="p">:</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_layout</span> <span class="o">==</span> <span class="s2">"sharded"</span><span class="p">:</span>
+            <span class="c1"># Drop any layout cached by a previous call so this fit re-derives it</span>
+            <span class="c1"># from the shards actually passed here.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_shard_layout_</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_sparse_affinity</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">return_indices</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="c1"># --- Core computation (must be implemented by subclasses) ---</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_sparse_affinity</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Compute the sparse affinity matrix. Must be overridden."""</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">"[TorchDR] ERROR : `_compute_sparse_affinity` method is not implemented."</span>
+        <span class="p">)</span>
+
+    <span class="c1"># --- Distance computation ---</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_distance_matrix</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Override to pass distributed context to pairwise_distances.</span>
+<span class="w">        </span><span class="sd">"""Compute pairwise distances, passing distributed context if active.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        X : torch.Tensor</span>
-<span class="sd">            Input data tensor.</span>
+<span class="sd">            Input data.</span>
 <span class="sd">        k : int, optional</span>
 <span class="sd">            Number of nearest neighbors.</span>
 <span class="sd">        return_indices : bool, default=False</span>
-<span class="sd">            Whether to return indices along with distances.</span>
+<span class="sd">            Whether to return k-NN indices.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        distances : torch.Tensor</span>
 <span class="sd">            Distance matrix.</span>
 <span class="sd">        indices : torch.Tensor, optional</span>
-<span class="sd">            Indices if return_indices=True.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Pass distributed context to pairwise_distances if in distributed mode</span>
+<span class="sd">            Indices if ``return_indices=True``.</span>
+<span class="sd">        """</span>
+        <span class="c1"># Row-sharded input: each rank holds a distinct contiguous shard and the</span>
+        <span class="c1"># search returns *global* neighbor ids over the reconstructed dataset.</span>
+        <span class="c1"># The dispatcher's replicated-input contract does not apply here, so this</span>
+        <span class="c1"># path calls the input-sharded kernel directly and records the chunk</span>
+        <span class="c1"># bounds from the true shard offsets.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_layout</span> <span class="o">==</span> <span class="s2">"sharded"</span><span class="p">:</span>
+            <span class="n">layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_shard_layout</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span> <span class="n">FaissPlanConfig</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">faiss_plan_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_resolve_faiss_plan</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span>
+                    <span class="n">n_samples</span><span class="o">=</span><span class="n">layout</span><span class="o">.</span><span class="n">global_count</span><span class="p">,</span>
+                    <span class="n">n_features</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="n">distributed_ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dist_ctx</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="n">max_indexed_rows</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">layout</span><span class="o">.</span><span class="n">counts</span><span class="p">),</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"Resolved FAISS execution plan: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">faiss_plan_</span><span class="si">}</span><span class="s2">"</span>
+                    <span class="p">)</span>
+            <span class="n">distances</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">input_sharded_pairwise_distances_faiss</span><span class="p">(</span>
+                <span class="n">X</span><span class="p">,</span>
+                <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
+                <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span>
+                <span class="n">exclude_diag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">zero_diag</span><span class="p">,</span>
+                <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sharded_faiss_config_</span><span class="p">,</span>
+                <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+                <span class="n">distributed_ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dist_ctx</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">distances</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span> <span class="k">if</span> <span class="n">return_indices</span> <span class="k">else</span> <span class="n">distances</span>
+
+        <span class="n">backend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_plan_backend</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span>
             <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>
             <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span>
-            <span class="n">backend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span>
+            <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
             <span class="n">exclude_diag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">zero_diag</span><span class="p">,</span>
             <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
             <span class="n">return_indices</span><span class="o">=</span><span class="n">return_indices</span><span class="p">,</span>
@@ -979,7 +1096,7 @@
             <span class="n">distributed_ctx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dist_ctx</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="c1"># Store chunk bounds for later use (e.g., distributed symmetrization)</span>
+        <span class="c1"># Store chunk bounds for downstream use (e.g. distributed symmetrization)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributed</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist_ctx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">chunk_start</span><span class="p">,</span> <span class="n">chunk_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist_ctx</span><span class="o">.</span><span class="n">compute_chunk_bounds</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_get_n_samples</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
@@ -990,95 +1107,41 @@
 
         <span class="k">return</span> <span class="n">result</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the affinity matrix from the input data.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        X : torch.Tensor or np.ndarray of shape (n_samples, n_features)</span>
-<span class="sd">            Input data.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        affinity_matrix : torch.Tensor or pykeops.torch.LazyTensor</span>
-<span class="sd">            The computed affinity matrix.</span>
-<span class="sd">        indices : torch.Tensor</span>
-<span class="sd">            If return_indices is True, returns the indices of the non-zero elements</span>
-<span class="sd">            in the affinity matrix if sparsity is enabled. Otherwise, returns None.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pre_processed</span><span class="p">:</span>
-            <span class="n">X</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_sparse_affinity</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">return_indices</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_sparse_affinity</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the sparse affinity matrix from the input data.</span>
-
-<span class="sd">        This method must be overridden by subclasses.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        X : torch.Tensor of shape (n_samples, n_features)</span>
-<span class="sd">            Input data.</span>
-<span class="sd">        return_indices : bool, optional</span>
-<span class="sd">            If True, returns the indices of the non-zero elements in the affinity matrix</span>
-<span class="sd">            if sparsity is enabled. Default is False.</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        NotImplementedError</span>
-<span class="sd">            If the `_compute_sparse_affinity` method is not implemented by</span>
-<span class="sd">            the subclass, a NotImplementedError is raised.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;[TorchDR] ERROR : `_compute_sparse_affinity` method is not implemented.&quot;</span>
-        <span class="p">)</span>
-
 
 <span class="k">class</span><span class="w"> </span><span class="nc">SparseLogAffinity</span><span class="p">(</span><span class="n">SparseAffinity</span><span class="p">,</span> <span class="n">LogAffinity</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Base class for sparse log affinity matrices.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Base class for sparse log affinity matrices.</span>
 
-<span class="sd">    If sparsity is enabled, returns the log affinity matrix in a rectangular format</span>
-<span class="sd">    with the corresponding indices.</span>
-<span class="sd">    Otherwise, returns the full affinity matrix and None.</span>
+<span class="sd">    Combines :class:`SparseAffinity` (sparse format, distributed support)</span>
+<span class="sd">    with :class:`LogAffinity` (log-domain computation).</span>
+
+<span class="sd">    Subclasses must implement :meth:`_compute_sparse_log_affinity`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    metric : str, optional</span>
-<span class="sd">        The distance metric to use for computing pairwise distances.</span>
-<span class="sd">        Default is &quot;sqeuclidean&quot;.</span>
+<span class="sd">        Distance metric for pairwise distances. Default is "sqeuclidean".</span>
 <span class="sd">    zero_diag : bool, optional</span>
-<span class="sd">        Whether to set the diagonal of the affinity matrix to zero. Default is True.</span>
+<span class="sd">        Whether to set the diagonal to zero. Default is True.</span>
 <span class="sd">    device : str, optional</span>
-<span class="sd">        The device to use for computation. Typically &quot;cuda&quot; for GPU or &quot;cpu&quot; for CPU.</span>
-<span class="sd">        If &quot;auto&quot;, uses the device of the input data. Default is &quot;auto&quot;.</span>
-<span class="sd">    backend : {&quot;keops&quot;, &quot;faiss&quot;, None} or FaissConfig, optional</span>
-<span class="sd">        Which backend to use for handling sparsity and memory efficiency.</span>
-<span class="sd">        Can be:</span>
-<span class="sd">        - &quot;keops&quot;: Use KeOps for memory-efficient symbolic computations</span>
-<span class="sd">        - &quot;faiss&quot;: Use FAISS for fast k-NN computations with default settings</span>
-<span class="sd">        - None: Use standard PyTorch operations</span>
-<span class="sd">        - FaissConfig object: Use FAISS with custom configuration</span>
-<span class="sd">        Default is None.</span>
+<span class="sd">        Device for computation. ``"auto"`` uses the input data's device.</span>
+<span class="sd">        Default is "auto".</span>
+<span class="sd">    backend : {"keops", "faiss", None}, FaissConfig, or FaissPlanConfig, optional</span>
+<span class="sd">        Backend for handling sparsity and memory efficiency. A ``FaissPlanConfig``</span>
+<span class="sd">        expresses high-level intent (e.g. ``mode="exact"``); the resolved plan is</span>
+<span class="sd">        stored as ``faiss_plan_`` after computation.</span>
+<span class="sd">        Default is None (standard PyTorch).</span>
 <span class="sd">    verbose : bool, optional</span>
-<span class="sd">        If True, prints additional information during computation. Default is False.</span>
+<span class="sd">        Verbosity. Default is False.</span>
 <span class="sd">    compile : bool, optional</span>
-<span class="sd">        Whether to compile the affinity matrix computation. Default is False.</span>
-<span class="sd">    sparsity : bool or &#39;auto&#39;, optional</span>
-<span class="sd">        Whether to compute the affinity matrix in a sparse format. Default is &quot;auto&quot;.</span>
-<span class="sd">    distributed : bool or &#39;auto&#39;, optional</span>
-<span class="sd">        Whether to use distributed computation across multiple GPUs.</span>
-<span class="sd">        - &quot;auto&quot;: Automatically detect if running with torchrun (default)</span>
-<span class="sd">        - True: Force distributed mode (requires torchrun)</span>
-<span class="sd">        - False: Disable distributed mode</span>
-<span class="sd">        Default is &quot;auto&quot;.</span>
+<span class="sd">        Whether to compile the affinity computation. Default is False.</span>
+<span class="sd">    sparsity : bool or 'auto', optional</span>
+<span class="sd">        Whether to use sparse (rectangular) format. Default is True.</span>
+<span class="sd">    distributed : bool or 'auto', optional</span>
+<span class="sd">        Whether to use distributed multi-GPU computation.</span>
+<span class="sd">        ``"auto"`` detects ``torchrun`` automatically. Default is "auto".</span>
 <span class="sd">    _pre_processed : bool, optional</span>
-<span class="sd">        If True, assumes inputs are already torch tensors on the correct device</span>
-<span class="sd">        and skips the `to_torch` conversion. Default is False.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        If True, skips ``to_torch`` conversion. Default is False.</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1087,31 +1150,24 @@
         <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute and return the log affinity matrix from input data.</span>
-
-<span class="sd">        If sparsity is enabled, returns the log affinity in rectangular format with the</span>
-<span class="sd">        corresponding indices. Otherwise, returns the full affinity matrix and None.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Compute the sparse (log) affinity matrix from the input data.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        X : torch.Tensor or np.ndarray of shape (n_samples, n_features)</span>
-<span class="sd">            Input data used to compute the affinity matrix.</span>
+<span class="sd">            Input data.</span>
 <span class="sd">        log : bool, optional</span>
-<span class="sd">            If True, returns the log of the affinity matrix. Else, returns</span>
-<span class="sd">            the affinity matrix by exponentiating the log affinity matrix.</span>
+<span class="sd">            If True, returns the log affinity. Otherwise, exponentiates it.</span>
 <span class="sd">        return_indices : bool, optional</span>
-<span class="sd">            If True, returns the indices of the non-zero elements in the affinity matrix</span>
-<span class="sd">            if sparsity is enabled. Default is False.</span>
+<span class="sd">            Whether to return k-NN indices. Default is True.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        affinity_matrix : torch.Tensor or pykeops.torch.LazyTensor</span>
-<span class="sd">            The computed log affinity matrix if `log` is True, otherwise the</span>
-<span class="sd">            exponentiated log affinity matrix.</span>
-<span class="sd">        indices : torch.Tensor</span>
-<span class="sd">            If return_indices is True, returns the indices of the non-zero elements</span>
-<span class="sd">            in the affinity matrix if sparsity is enabled. Otherwise, returns None.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        affinity_matrix : torch.Tensor</span>
+<span class="sd">            The affinity matrix (or log affinity if ``log=True``).</span>
+<span class="sd">        indices : torch.Tensor or None</span>
+<span class="sd">            k-NN indices if ``return_indices=True`` and sparsity is enabled.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pre_processed</span><span class="p">:</span>
             <span class="n">X</span> <span class="o">=</span> <span class="n">to_torch</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
@@ -1131,27 +1187,10 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_sparse_log_affinity</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the log affinity matrix in a sparse format from the input data.</span>
-
-<span class="sd">        This method must be overridden by subclasses.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        X : torch.Tensor of shape (n_samples, n_features)</span>
-<span class="sd">            Input data.</span>
-<span class="sd">        return_indices : bool, optional</span>
-<span class="sd">            If True, returns the indices of the non-zero elements in the affinity matrix</span>
-<span class="sd">            if sparsity is enabled. Default is False.</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        NotImplementedError</span>
-<span class="sd">            If the `_compute_sparse_log_affinity` method is not implemented by</span>
-<span class="sd">            the subclass, a NotImplementedError is raised.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Compute the sparse log affinity matrix. Must be overridden."""</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;[TorchDR] ERROR : `_compute_sparse_log_affinity` method is &quot;</span>
-            <span class="s2">&quot;not implemented.&quot;</span>
+            <span class="s2">"[TorchDR] ERROR : `_compute_sparse_log_affinity` method is "</span>
+            <span class="s2">"not implemented."</span>
         <span class="p">)</span>
 </pre></div>
 
@@ -1182,8 +1221,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1217,7 +1256,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0.
 </p></div>
       
     </div>

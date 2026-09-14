@@ -134,6 +134,60 @@ In the above table, :math:`\mathrm{Neg}(i)` denotes the set of negative samples
 for point :math:`i`. They are usually sampled uniformly at random from the dataset.
 
 
+.. _non-parametric-transform-section:
+
+
+Transforming New Data with a Frozen Reference Embedding
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+:class:`UMAP <UMAP>`, :class:`LargeVis <LargeVis>`, and
+:class:`InfoTSNE <InfoTSNE>` support out-of-sample transformation. This makes it
+possible to fit a reference embedding once and then place unseen observations in
+the same low-dimensional space without moving the reference points::
+
+    from torchdr import UMAP
+
+    model = UMAP(n_neighbors=15, device="cuda")
+    Z_reference = model.fit_transform(X_reference)
+    Z_query = model.transform(X_query, X_train=X_reference)
+
+These methods are non-parametric: fitting does not learn an encoder that can be
+directly evaluated on ``X_query``. Instead, ``transform`` constructs a bipartite
+neighborhood graph between the query and reference observations. For every
+query observation, TorchDR:
+
+1. finds its nearest neighbors in ``X_train``;
+2. converts their input-space distances into method-specific affinity weights;
+3. initializes its position from the weighted average of the corresponding
+   reference embedding coordinates; and
+4. optimizes only the query coordinate, using the fitted reference embedding as
+   a frozen set of attractive neighbors and repulsive negative samples.
+
+Only the fitted reference embedding is retained by the estimator. The original
+input features are not stored, which avoids keeping another potentially large
+copy of the training data. Consequently, ``X_train`` passed to ``transform``
+must contain the exact samples used during fitting, in the same row order. The
+query and reference arrays must also have the same number of features and must
+use the same preprocessing. For example, when using a fitted scaler or PCA
+model, apply its ``transform`` method to both arrays before passing them to
+TorchDR.
+
+.. note::
+
+    Non-parametric transformation still performs nearest-neighbor search and a
+    short iterative optimization. It is therefore more expensive than applying
+    a learned encoder, but cheaper than fitting a new joint embedding. The
+    result is also not equivalent to calling ``fit_transform`` on the
+    concatenation of the reference and query data: reference coordinates remain
+    fixed, and the bipartite graph contains no query-to-query edges. This
+    transform path is intended for a single process and device rather than
+    distributed multi-GPU inference.
+
+For a complete reference/query workflow with preprocessing, visualization, and
+label-transfer evaluation, see
+:ref:`sphx_glr_auto_examples_basics_demo_non_parametric_transform_digits.py`.
+
+
 .. _spectral-section:
 
 
@@ -273,6 +327,15 @@ For large datasets (typically when :math:`n > 10^4`) where the full pairwise-dis
 TorchDR can offload these computations to the GPU-compatible kNN library `Faiss <https://github.com/facebookresearch/faiss>`_.
 Simply set :attr:`backend` to ``faiss`` to leverage Faiss's efficient implementations.
 
+For finer control, pass a :class:`~torchdr.distance.FaissPlanConfig` as the
+``backend`` to express accuracy and resource *intent* rather than low-level FAISS
+parameters. Exact search is the default (``FaissPlanConfig(mode="exact")``) and
+never silently approximates; the resolved execution plan (index, precision,
+distribution, and index-memory estimate) is available after fitting through the
+estimator's ``faiss_plan_`` attribute. Experts can still supply low-level options
+through ``FaissPlanConfig(expert=FaissConfig(...))`` or by passing a
+:class:`~torchdr.distance.FaissConfig` directly.
+
 Alternatively, for exact computations or affinities that can't be limited to kNNs, you can use symbolic (lazy) tensors to avoid memory overflows.
 TorchDR integrates with ``pykeops``:cite:`charlier2021kernel`, representing tensors as mathematical expressions evaluated directly on your data samples.
 By computing on-the-fly formulas instead of storing full matrices, this approach removes memory constraints entirely.
@@ -295,9 +358,9 @@ For very large datasets, TorchDR supports **multi-GPU distributed training** to 
 
 1. **Data partitioning**: The full dataset :math:`\mathbf{X} \in \mathbb{R}^{N \times d}` is split into chunks across GPUs. Each GPU handles a subset of :math:`n_i` samples.
 
-2. **Shared neighbor index**: A FAISS index is built on the full dataset and shared across all GPUs, enabling efficient k-nearest neighbor queries.
+2. **Replicated neighbor indexes**: Every rank independently builds a complete FAISS index over the full dataset on its assigned GPU. The indexes contain the same data, but their memory is not shared between GPUs.
 
-3. **Parallel affinity computation**: Each GPU computes the affinity rows for its chunk by querying the shared index. GPU :math:`i` computes rows :math:`[\text{start}_i, \text{end}_i)` of the affinity matrix.
+3. **Parallel affinity computation**: Each GPU computes the affinity rows for its chunk by querying its local index. GPU :math:`i` computes rows :math:`[\text{start}_i, \text{end}_i)` of the affinity matrix.
 
 4. **Distributed gradient computation**: During optimization, each GPU:
 
@@ -311,7 +374,7 @@ For very large datasets, TorchDR supports **multi-GPU distributed training** to 
    :width: 800
    :align: center
 
-*Multi-GPU dimensionality reduction pipeline. The dataset is split into chunks across GPUs. Each GPU performs neighbor search using a shared index, computes its affinity chunk, and generates local gradients. Gradients are synchronized via all-reduce and used to update the embedding copies maintained on each device.*
+*Multi-GPU dimensionality reduction pipeline. The dataset is split into query chunks across GPUs. Each GPU builds a complete local FAISS index, computes its affinity chunk, and generates local gradients. Gradients are synchronized via all-reduce and used to update the embedding copies maintained on each device. Both the FAISS index and embedding are replicated on every GPU.*
 
 **Usage:**
 
@@ -335,6 +398,18 @@ In your script, simply use TorchDR as usual:
     model = torchdr.UMAP(n_neighbors=15, verbose=True)
     embedding = model.fit_transform(X)
 
+.. warning::
+
+   Importing TorchDR already creates the process group when the launcher
+   provides GPUs, and destroys it at interpreter exit. Adding the usual
+   ``torch.distributed.init_process_group`` call to your script therefore
+   fails with ``ValueError: trying to initialize the default process group
+   twice!``. Scripts that must create the group explicitly, for example to run
+   on CPU with Gloo, should call ``torchdr.distributed.init_distributed()``
+   instead: it reuses an existing group and is a no-op outside a distributed
+   launch. The matching ``torchdr.distributed.shutdown_distributed()`` only
+   destroys a group that TorchDR itself created.
+
 **Requirements:**
 
 - ``backend="faiss"`` (default for most methods)
@@ -350,6 +425,21 @@ Currently, the following methods support multi-GPU:
 - :class:`UMAP <UMAP>`
 - :class:`InfoTSNE <InfoTSNE>`
 - :class:`LargeVis <LargeVis>`
+- :class:`TSNE <TSNE>`
+- :class:`SNE <SNE>`
+- :class:`COSNE <COSNE>`
+
+.. note::
+
+   Multi-GPU support does not imply that every objective term is sharded.
+   :class:`UMAP <UMAP>`, :class:`InfoTSNE <InfoTSNE>`, and
+   :class:`LargeVis <LargeVis>` use sampled repulsion. In contrast,
+   :class:`TSNE <TSNE>`, :class:`SNE <SNE>`, and :class:`COSNE <COSNE>`
+   compute their exact dense repulsive term from the full embedding on every
+   rank. Their input-affinity rows and attractive work are distributed, but
+   the repulsive calculation remains quadratic per rank. Prefer a
+   negative-sampling method when scaling this part of the objective is
+   important.
 
 
 DataLoader for Streaming Data

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Torch Dimensionality Reduction &#8212; TorchDR 0.5.dev71+g9cbbc9cc8 documentation</title>
+    <title>Torch Dimensionality Reduction &#8212; TorchDR 0.5.dev72+gb5ad93b49 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="_static/documentation_options.js?v=5e2d8d4b"></script>
+    <script src="_static/documentation_options.js?v=b8b8ad5d"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/sg-tags.js?v=d80f6fa4"></script>
@@ -129,8 +129,8 @@
       
     
     
-    <img src="_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev71+g9cbbc9cc8 documentation - Home"/>
-    <img src="_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev71+g9cbbc9cc8 documentation - Home"/>
+    <img src="_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev72+gb5ad93b49 documentation - Home"/>
+    <img src="_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev72+gb5ad93b49 documentation - Home"/>
   
   
 </a></div>
@@ -491,6 +491,13 @@
 </table>
 </div>
 </section>
+<section id="benchmarks">
+<h2>Benchmarks<a class="headerlink" href="#benchmarks" title="Link to this heading">#</a></h2>
+<p><strong>TorchDR</strong> scales UMAP across 1–8 NVIDIA B200 GPUs on Tahoe-100M, with one-GPU cuML and 64-core umap-learn as references using the same PCA initialization.</p>
+<p align="center">
+  <img src="https://github.com/torchdr/torchdr/raw/main/docs/source/figures/tahoe_scaling_runtime.png" width="1024" alt="TorchDR UMAP runtime scaling from one to eight GPUs on the Tahoe single-cell dataset">
+</p>
+</section>
 <section id="getting-started">
 <h2>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading">#</a></h2>
 <p><strong>TorchDR</strong> offers a <strong>user-friendly API similar to scikit-learn</strong> where dimensionality reduction modules can be called with the <code class="docutils literal notranslate"><span class="pre">fit_transform</span></code> method. It seamlessly accepts both NumPy arrays and PyTorch tensors as input, ensuring that the output matches the type and backend of the input.</p>
@@ -606,20 +613,12 @@ torchdr<span class="w"> </span>--gpus<span class="w"> </span><span class="m">4</
 <p><strong>TorchDR</strong> provides various <strong>spectral embedding</strong> methods: <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.PCA.html"><code class="docutils literal notranslate"><span class="pre">PCA</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.IncrementalPCA.html"><code class="docutils literal notranslate"><span class="pre">IncrementalPCA</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.ExactIncrementalPCA.html"><code class="docutils literal notranslate"><span class="pre">ExactIncrementalPCA</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.KernelPCA.html"><code class="docutils literal notranslate"><span class="pre">KernelPCA</span></code></a>, <a class="reference external" href="https://torchdr.github.io/dev/gen_modules/torchdr.PHATE.html"><code class="docutils literal notranslate"><span class="pre">PHATE</span></code></a>. <code class="docutils literal notranslate"><span class="pre">PCA</span></code> and <code class="docutils literal notranslate"><span class="pre">ExactIncrementalPCA</span></code> support multi-GPU distributed training via the <code class="docutils literal notranslate"><span class="pre">distributed=&quot;auto&quot;</span></code> parameter.</p>
 </section>
 </section>
-<section id="benchmarks">
-<h2>Benchmarks<a class="headerlink" href="#benchmarks" title="Link to this heading">#</a></h2>
-<p>Relying on <strong>TorchDR</strong> enables an <strong>orders-of-magnitude improvement in runtime performance</strong> compared to CPU-based implementations. <a class="reference external" href="https://github.com/TorchDR/TorchDR/blob/main/benchmarks/benchmark_umap_single_cell.py">See the code</a>.</p>
-<p align="center">
-  <img src="https://github.com/torchdr/torchdr/raw/main/docs/source/figures/umap_benchmark_single_cell.png" width="1024" alt="UMAP benchmark on single cell data">
-</p>
-</section>
 <section id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">#</a></h2>
 <p>See the <a class="reference external" href="https://github.com/TorchDR/TorchDR/tree/main/examples/">examples</a> folder for all examples.</p>
-<p><strong>MNIST.</strong> (<a class="reference external" href="https://github.com/TorchDR/TorchDR/tree/main/examples/images/panorama_readme.py">Code</a>)
-A comparison of various neighbor embedding methods on the MNIST digits dataset.</p>
+<p><strong>Tahoe-100M.</strong> TorchDR UMAP embedding of 80 million single cells across 50 cell lines.</p>
 <p align="center">
-  <img src="https://github.com/torchdr/torchdr/raw/main/docs/source/figures/mnist_readme.png" width="800" alt="various neighbor embedding methods on MNIST">
+  <img src="https://github.com/torchdr/torchdr/raw/main/docs/source/figures/tahoe_80m_umap.png" width="1024" alt="TorchDR UMAP embedding of 80 million cells from the Tahoe single-cell dataset">
 </p>
 <!-- **Single-cell genomics.** ([Code](https://github.com/TorchDR/TorchDR/tree/main/examples/single_cell/single_cell_readme.py))
 Visualizing cells using `LargeVis` from `TorchDR`.
@@ -721,13 +720,13 @@ Visualizing the CIFAR100 dataset using DINO features and <code class="docutils l
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-features">Key Features</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#benchmarks">Benchmarks</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-started">Getting Started</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#neighbor-embedding">Neighbor Embedding</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spectral-embedding">Spectral Embedding</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#benchmarks">Benchmarks</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples">Examples</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-features">Advanced Features</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#affinities">Affinities</a></li>

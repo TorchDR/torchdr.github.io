@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Incremental PCA on GPU &#8212; TorchDR 0.5.dev74+g77e61429e documentation</title>
+    <title>Incremental PCA on GPU &#8212; TorchDR 0.6.dev1+gd80a070dc documentation</title>
   
   
   
@@ -31,7 +31,7 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=c83e6b79" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../_static/documentation_options.js?v=71811e68"></script>
+    <script src="../../_static/documentation_options.js?v=290a7f68"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -128,8 +128,8 @@
       
     
     
-    <img src="../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev74+g77e61429e documentation - Home"/>
-    <img src="../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev74+g77e61429e documentation - Home"/>
+    <img src="../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.6.dev1+gd80a070dc documentation - Home"/>
+    <img src="../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.6.dev1+gd80a070dc documentation - Home"/>
   
   
 </a></div>
@@ -504,72 +504,71 @@ to download the full example code.</p>
 <p>This example demonstrates how to use the <cite>IncrementalPCA</cite> class on GPU.
 We compare the memory usage and time taken to fit the model with the regular
 <cite>PCA</cite> class on GPU.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">gc</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr</span><span class="w"> </span><span class="kn">import</span> <span class="n">IncrementalPCA</span><span class="p">,</span> <span class="n">PCA</span>
-
-<span class="c1"># Choose the GPU device if available.</span>
-<span class="n">device</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/stable/tensor_attributes.html#torch.device" title="torch.device" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">torch</span><span class="o">.</span><span class="n">device</span></a><span class="p">(</span><span class="s2">"cuda"</span> <span class="k">if</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.cuda.is_available.html#torch.cuda.is_available" title="torch.cuda.is_available" class="sphx-glr-backref-module-torch-cuda sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span></a><span class="p">()</span> <span class="k">else</span> <span class="s2">"cpu"</span><span class="p">)</span>
-<span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="s2">"cuda"</span><span class="p">:</span>
-    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"This example requires a CUDA-capable GPU."</span><span class="p">)</span>
-
-<span class="c1"># Generate a large random dataset on CPU.</span>
-<span class="n">n_samples</span> <span class="o">=</span> <span class="mi">100_000</span>
-<span class="n">n_features</span> <span class="o">=</span> <span class="mi">500</span>
-<span class="n">X</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.randn.html#torch.randn" title="torch.randn" class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">randn</span></a><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span><span class="p">)</span>  <span class="c1"># Stored on CPU</span>
-
-<span class="c1"># --------------------------</span>
-<span class="c1"># Incremental PCA on GPU</span>
-<span class="c1"># --------------------------</span>
-<span class="c1"># IncrementalPCA is designed so that only each batch is moved to the GPU.</span>
-<span class="c1"># Set n_components=50 and choose an appropriate batch_size.</span>
-<span class="n">ipca</span> <span class="o">=</span> <span class="n">IncrementalPCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
-
-<span class="c1"># Reset GPU memory stats before fitting.</span>
-<span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">reset_peak_memory_stats</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-
-<span class="n">start</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
-<span class="n">ipca</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">check_input</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">ipca_time</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
-
-<span class="c1"># Get the peak GPU memory allocated (in bytes).</span>
-<span class="n">ipca_peak_mem</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">max_memory_allocated</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span>
-    <span class="sa">f</span><span class="s2">"Incremental PCA on GPU:</span><span class="se">\n</span><span class="s2">"</span>
-    <span class="sa">f</span><span class="s2">"  Time: </span><span class="si">{</span><span class="n">ipca_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> sec, "</span>
-    <span class="sa">f</span><span class="s2">"Peak GPU memory: </span><span class="si">{</span><span class="n">ipca_peak_mem</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> MB"</span>
-<span class="p">)</span>
-
-<span class="c1"># Clean up and free GPU memory.</span>
-<span class="k">del</span> <span class="n">ipca</span>
-<span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">empty_cache</span><span class="p">()</span>
-<a href="https://docs.python.org/3/library/gc.html#gc.collect" title="gc.collect" class="sphx-glr-backref-module-gc sphx-glr-backref-type-py-function"><span class="n">gc</span><span class="o">.</span><span class="n">collect</span></a><span class="p">()</span>
-
-<span class="c1"># --------------------------</span>
-<span class="c1"># Regular PCA on GPU</span>
-<span class="c1"># --------------------------</span>
-<span class="c1"># Regular PCA (from torchdr) will typically move the full dataset to GPU.</span>
-<span class="n">pca</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
-
-<span class="c1"># Reset GPU memory stats before fitting.</span>
-<span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">reset_peak_memory_stats</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-
-<span class="n">start</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span>
-<span class="c1"># Here we assume that pca.fit will move the full dataset to the GPU.</span>
-<span class="n">pca</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-<span class="n">pca_time</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/time.html#time.time" title="time.time" class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
-
-<span class="c1"># Get the peak GPU memory allocated (in bytes).</span>
-<span class="n">pca_peak_mem</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">max_memory_allocated</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span>
-    <span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Regular PCA on GPU:</span><span class="se">\n</span><span class="s2">"</span>
-    <span class="sa">f</span><span class="s2">"  Time: </span><span class="si">{</span><span class="n">pca_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> sec, "</span>
-    <span class="sa">f</span><span class="s2">"Peak GPU memory: </span><span class="si">{</span><span class="n">pca_peak_mem</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> MB"</span>
-<span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="kn">import</span><span class="w"> </span><span class="nn">time</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">gc</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span><span class="w">
+</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">torchdr</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-torchdr sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../gen_modules/torchdr.IncrementalPCA.html#torchdr.IncrementalPCA" title="torchdr.IncrementalPCA"><span class="n">IncrementalPCA</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-torchdr sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../gen_modules/torchdr.PCA.html#torchdr.PCA" title="torchdr.PCA"><span class="n">PCA</span></a><span class="w">
+</span><span class="w">
+</span><span class="c1"># Choose the GPU device if available.</span><span class="w">
+</span><span class="n">device</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.pytorch.org/docs/stable/tensor_attributes.html#torch.device" title="torch.device"><span class="n">torch</span><span class="o">.</span><span class="n">device</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">cuda</span><span class="s2">&quot;</span> <span class="k">if</span> <a class="sphx-glr-backref-module-torch-cuda sphx-glr-backref-type-py-function reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.cuda.is_available.html#torch.cuda.is_available" title="torch.cuda.is_available"><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span></a><span class="p">(</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;</span><span class="s2">cpu</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="s2">&quot;</span><span class="s2">cuda</span><span class="s2">&quot;</span><span class="p">:</span><span class="w">
+</span>    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">This example requires a CUDA-capable GPU.</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># Generate a large random dataset on CPU.</span><span class="w">
+</span><span class="n">n_samples</span> <span class="o">=</span> <span class="mi">100_000</span><span class="w">
+</span><span class="n">n_features</span> <span class="o">=</span> <span class="mi">500</span><span class="w">
+</span><span class="n">X</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.randn.html#torch.randn" title="torch.randn"><span class="n">torch</span><span class="o">.</span><span class="n">randn</span></a><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span><span class="p">)</span>  <span class="c1"># Stored on CPU</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># --------------------------</span><span class="w">
+</span><span class="c1"># Incremental PCA on GPU</span><span class="w">
+</span><span class="c1"># --------------------------</span><span class="w">
+</span><span class="c1"># IncrementalPCA is designed so that only each batch is moved to the GPU.</span><span class="w">
+</span><span class="c1"># Set n_components=50 and choose an appropriate batch_size.</span><span class="w">
+</span><span class="n">ipca</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torchdr sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../gen_modules/torchdr.IncrementalPCA.html#torchdr.IncrementalPCA" title="torchdr.IncrementalPCA"><span class="n">IncrementalPCA</span></a><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># Reset GPU memory stats before fitting.</span><span class="w">
+</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">reset_peak_memory_stats</span><span class="p">(</span><span class="n">device</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="n">start</span> <span class="o">=</span> <a class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function reference external" href="https://docs.python.org/3/library/time.html#time.time" title="time.time"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span><span class="n">ipca</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">check_input</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="w">
+</span><span class="n">ipca_time</span> <span class="o">=</span> <a class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function reference external" href="https://docs.python.org/3/library/time.html#time.time" title="time.time"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">(</span><span class="p">)</span> <span class="o">-</span> <span class="n">start</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># Get the peak GPU memory allocated (in bytes).</span><span class="w">
+</span><span class="n">ipca_peak_mem</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">max_memory_allocated</span><span class="p">(</span><span class="n">device</span><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="w">
+</span>    <span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Incremental PCA on GPU:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="w">
+</span>    <span class="sa">f</span><span class="s2">&quot;</span><span class="s2">  Time: </span><span class="si">{</span><span class="n">ipca_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> sec, </span><span class="s2">&quot;</span><span class="w">
+</span>    <span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Peak GPU memory: </span><span class="si">{</span><span class="n">ipca_peak_mem</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1024</span><span class="o">*</span><span class="o">*</span><span class="mi">2</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> MB</span><span class="s2">&quot;</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># Clean up and free GPU memory.</span><span class="w">
+</span><span class="k">del</span> <span class="n">ipca</span><span class="w">
+</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">empty_cache</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-gc sphx-glr-backref-type-py-function reference external" href="https://docs.python.org/3/library/gc.html#gc.collect" title="gc.collect"><span class="n">gc</span><span class="o">.</span><span class="n">collect</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># --------------------------</span><span class="w">
+</span><span class="c1"># Regular PCA on GPU</span><span class="w">
+</span><span class="c1"># --------------------------</span><span class="w">
+</span><span class="c1"># Regular PCA (from torchdr) will typically move the full dataset to GPU.</span><span class="w">
+</span><span class="n">pca</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torchdr sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../gen_modules/torchdr.PCA.html#torchdr.PCA" title="torchdr.PCA"><span class="n">PCA</span></a><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># Reset GPU memory stats before fitting.</span><span class="w">
+</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">reset_peak_memory_stats</span><span class="p">(</span><span class="n">device</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="n">start</span> <span class="o">=</span> <a class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function reference external" href="https://docs.python.org/3/library/time.html#time.time" title="time.time"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span><span class="c1"># Here we assume that pca.fit will move the full dataset to the GPU.</span><span class="w">
+</span><span class="n">pca</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="w">
+</span><span class="n">pca_time</span> <span class="o">=</span> <a class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function reference external" href="https://docs.python.org/3/library/time.html#time.time" title="time.time"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">(</span><span class="p">)</span> <span class="o">-</span> <span class="n">start</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># Get the peak GPU memory allocated (in bytes).</span><span class="w">
+</span><span class="n">pca_peak_mem</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">max_memory_allocated</span><span class="p">(</span><span class="n">device</span><span class="p">)</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><span class="w">
+</span>    <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Regular PCA on GPU:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="w">
+</span>    <span class="sa">f</span><span class="s2">&quot;</span><span class="s2">  Time: </span><span class="si">{</span><span class="n">pca_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> sec, </span><span class="s2">&quot;</span><span class="w">
+</span>    <span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Peak GPU memory: </span><span class="si">{</span><span class="n">pca_peak_mem</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1024</span><span class="o">*</span><span class="o">*</span><span class="mi">2</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> MB</span><span class="s2">&quot;</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-basics-incremental-pca-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/17f41c694ab4716f2a7d9cbc3889257a/incremental_pca.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">incremental_pca.ipynb</span></code></a></p>

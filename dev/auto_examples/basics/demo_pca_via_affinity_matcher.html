@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>PCA via SVD and via AffinityMatcher &#8212; TorchDR 0.5.dev74+g77e61429e documentation</title>
+    <title>PCA via SVD and via AffinityMatcher &#8212; TorchDR 0.6.dev1+gd80a070dc documentation</title>
   
   
   
@@ -31,7 +31,7 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=c83e6b79" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../_static/documentation_options.js?v=71811e68"></script>
+    <script src="../../_static/documentation_options.js?v=290a7f68"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -128,8 +128,8 @@
       
     
     
-    <img src="../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.5.dev74+g77e61429e documentation - Home"/>
-    <img src="../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.5.dev74+g77e61429e documentation - Home"/>
+    <img src="../../_static/torchdr_logo.png" class="logo__image only-light" alt="TorchDR 0.6.dev1+gd80a070dc documentation - Home"/>
+    <img src="../../_static/torchdr_logo.png" class="logo__image only-dark pst-js-only" alt="TorchDR 0.6.dev1+gd80a070dc documentation - Home"/>
   
   
 </a></div>
@@ -503,56 +503,53 @@ to download the full example code.</p>
 <span id="sphx-glr-auto-examples-basics-demo-pca-via-affinity-matcher-py"></span><h1>PCA via SVD and via AffinityMatcher<a class="headerlink" href="#pca-via-svd-and-via-affinitymatcher" title="Link to this heading">#</a></h1>
 <p>We show how to compute a PCA embedding using the closed form
 and using the AffinityMatcher class. Both approaches lead to the same solution.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Author: Hugues Van Assel &lt;vanasselhugues@gmail.com&gt;</span>
-<span class="c1">#</span>
-<span class="c1"># License: BSD 3-Clause License</span>
-
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_digits</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">AffinityMatcher</span></a><span class="p">,</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">PCA</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchdr.affinity</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">Affinity</span></a>
-
-
-<span class="k">class</span><span class="w"> </span><span class="nc">ScalarProductAffinity</span><span class="p">(</span><a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">Affinity</span></a><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Compute the scalar product affinity matrix X @ X.T."""</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">"auto"</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">metric</span><span class="o">=</span><span class="s2">"angular"</span><span class="p">,</span>
-            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
-            <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-            <span class="n">zero_diag</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">):</span>
-        <span class="k">return</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a> <span class="o">@</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span><span class="o">.</span><span class="n">T</span></a>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="c1"># Author: Hugues Van Assel &lt;vanasselhugues&#64;gmail.com&gt;</span><span class="w">
+</span><span class="c1">#</span><span class="w">
+</span><span class="c1"># License: BSD 3-Clause License</span><span class="w">
+</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="nn">.</span><span class="nn">pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn</span><span class="nn">.</span><span class="nn">datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_digits</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span><span class="w">
+</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">torchdr</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-torchdr sphx-glr-backref-type-py-class reference internal" href="../../stubs/torchdr.AffinityMatcher.html#torchdr.AffinityMatcher" title="torchdr.AffinityMatcher"><span class="n">AffinityMatcher</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-torchdr sphx-glr-backref-type-py-class reference internal" href="../../gen_modules/torchdr.PCA.html#torchdr.PCA" title="torchdr.PCA"><span class="n">PCA</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">torchdr</span><span class="nn">.</span><span class="nn">affinity</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-torchdr sphx-glr-backref-type-py-class reference internal" href="../../stubs/torchdr.Affinity.html#torchdr.Affinity" title="torchdr.Affinity"><span class="n">Affinity</span></a><span class="w">
+</span><span class="w">
+</span><span class="w">
+</span><span class="k">class</span><span class="w"> </span><a class="sphx-glr-backref-module-torchdr sphx-glr-backref-type-py-class reference internal" href="../../stubs/torchdr.Affinity.html#torchdr.Affinity" title="torchdr.Affinity"><span class="nc">ScalarProductAffinity</span></a><span class="p">(</span><a class="sphx-glr-backref-module-torchdr sphx-glr-backref-type-py-class reference internal" href="../../stubs/torchdr.Affinity.html#torchdr.Affinity" title="torchdr.Affinity"><span class="n">Affinity</span></a><span class="p">)</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the scalar product affinity matrix X &#64; X.T.&quot;&quot;&quot;</span><span class="w">
+</span><span class="w">
+</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">auto</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span>        <span class="nb">super</span><span class="p">(</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="w">
+</span>            <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">angular</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span><span class="w">
+</span>            <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span><span class="w">
+</span>            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span><span class="w">
+</span>            <span class="n">zero_diag</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="w">
+</span>        <span class="p">)</span><span class="w">
+</span><span class="w">
+</span>    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_affinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">X</span></a><span class="p">)</span><span class="p">:</span><span class="w">
+</span>        <span class="k">return</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">X</span></a> <span class="o">&#64;</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">X</span><span class="o">.</span><span class="n">T</span></a><span class="w">
+</span></pre></div></div>
 <section id="load-toy-images">
 <h2>Load toy images<a class="headerlink" href="#load-toy-images" title="Link to this heading">#</a></h2>
 <p>First, let’s load 5 classes of the digits dataset from sklearn.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">digits</span> <span class="o">=</span> <span class="n">load_digits</span><span class="p">(</span><span class="n">n_class</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">digits</span><span class="o">.</span><span class="n">data</span></a>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a> <span class="o">-</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">digits</span> <span class="o">=</span> <span class="n">load_digits</span><span class="p">(</span><span class="n">n_class</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">X</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">digits</span><span class="o">.</span><span class="n">data</span></a><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">X</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">X</span></a> <span class="o">-</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">X</span></a><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 </section>
 <section id="pca-via-svd">
 <h2>PCA via SVD<a class="headerlink" href="#pca-via-svd" title="Link to this heading">#</a></h2>
 <p>Let us perform PCA using the closed form solution given by the
 Singular Value Decomposition (SVD).
 In <code class="docutils literal notranslate"><span class="pre">Torchdr</span></code>, it is available at <a class="reference internal" href="../../gen_modules/torchdr.PCA.html#torchdr.PCA" title="torchdr.PCA"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.PCA</span></code></a>.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Z_svd</span></a> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">PCA</span></a><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">)</span>
-
-<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Z_svd</span></a><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Z_svd</span></a><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">digits</span><span class="o">.</span><span class="n">target</span></a><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"PCA via SVD"</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">Z_svd</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-torchdr sphx-glr-backref-type-py-class reference internal" href="../../gen_modules/torchdr.PCA.html#torchdr.PCA" title="torchdr.PCA"><span class="n">PCA</span></a><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">X</span></a><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">Z_svd</span></a><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">Z_svd</span></a><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">digits</span><span class="o">.</span><span class="n">target</span></a><span class="p">)</span><span class="w">
+</span><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">PCA via SVD</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 <img src="../../_images/sphx_glr_demo_pca_via_affinity_matcher_001.png" srcset="../../_images/sphx_glr_demo_pca_via_affinity_matcher_001.png" alt="PCA via SVD" class = "sphx-glr-single-img"/></section>
 <section id="pca-via-affinitymatcher">
 <h2>PCA via AffinityMatcher<a class="headerlink" href="#pca-via-affinitymatcher" title="Link to this heading">#</a></h2>
@@ -562,27 +559,26 @@ as well as the scalar product affinity
 <code class="xref py py-class docutils literal notranslate"><span class="pre">torchdr.ScalarProductAffinity</span></code>
 for both input data and embeddings,
 and the square loss as global objective.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">AffinityMatcher</span></a><span class="p">(</span>
-    <span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-    <span class="n">affinity_in</span><span class="o">=</span><a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">ScalarProductAffinity</span></a><span class="p">(),</span>
-    <span class="n">affinity_out</span><span class="o">=</span><a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="torch.nn.Module" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">ScalarProductAffinity</span></a><span class="p">(),</span>
-    <span class="n">loss_fn</span><span class="o">=</span><span class="s2">"square_loss"</span><span class="p">,</span>
-    <span class="n">init</span><span class="o">=</span><span class="s2">"normal"</span><span class="p">,</span>
-    <span class="n">lr</span><span class="o">=</span><span class="mf">1e1</span><span class="p">,</span>
-    <span class="n">max_iter</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
-    <span class="n">backend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Z_am</span></a> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">)</span>
-
-<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Z_am</span></a><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Z_am</span></a><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">digits</span><span class="o">.</span><span class="n">target</span></a><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"PCA via AffinityMatcher"</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-torchdr sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../stubs/torchdr.AffinityMatcher.html#torchdr.AffinityMatcher" title="torchdr.AffinityMatcher"><span class="n">model</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-torchdr sphx-glr-backref-type-py-class reference internal" href="../../stubs/torchdr.AffinityMatcher.html#torchdr.AffinityMatcher" title="torchdr.AffinityMatcher"><span class="n">AffinityMatcher</span></a><span class="p">(</span><span class="w">
+</span>    <span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="w">
+</span>    <span class="n">affinity_in</span><span class="o">=</span><a class="sphx-glr-backref-module-torchdr sphx-glr-backref-type-py-class reference internal" href="../../stubs/torchdr.Affinity.html#torchdr.Affinity" title="torchdr.Affinity"><span class="n">ScalarProductAffinity</span></a><span class="p">(</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="n">affinity_out</span><span class="o">=</span><a class="sphx-glr-backref-module-torchdr sphx-glr-backref-type-py-class reference internal" href="../../stubs/torchdr.Affinity.html#torchdr.Affinity" title="torchdr.Affinity"><span class="n">ScalarProductAffinity</span></a><span class="p">(</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>    <span class="n">loss_fn</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">square_loss</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">init</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">normal</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">lr</span><span class="o">=</span><span class="mf">1e1</span><span class="p">,</span><span class="w">
+</span>    <span class="n">max_iter</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span><span class="w">
+</span>    <span class="n">backend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">Z_am</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-torchdr sphx-glr-backref-type-py-method reference internal" href="../../stubs/torchdr.DRModule.html#torchdr.DRModule.fit_transform" title="torchdr.DRModule.fit_transform"><span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">X</span></a><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">Z_am</span></a><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">Z_am</span></a><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">digits</span><span class="o">.</span><span class="n">target</span></a><span class="p">)</span><span class="w">
+</span><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">PCA via AffinityMatcher</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 <img src="../../_images/sphx_glr_demo_pca_via_affinity_matcher_002.png" srcset="../../_images/sphx_glr_demo_pca_via_affinity_matcher_002.png" alt="PCA via AffinityMatcher" class = "sphx-glr-single-img"/><p>We can see that we obtain the same PCA embedding (up to a rotation) using
 both methods.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 7.820 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.906 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-basics-demo-pca-via-affinity-matcher-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/01119b09b904483a657e921d21bc15d1/demo_pca_via_affinity_matcher.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">demo_pca_via_affinity_matcher.ipynb</span></code></a></p>
